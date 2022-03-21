@@ -6,7 +6,6 @@ import os
 import time
 import functools
 import subprocess, sys
-#linea 9
 from tkinter import *
 from tkinter import ttk
 from getpass import getuser
