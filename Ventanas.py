@@ -153,30 +153,35 @@ class Ventana(ttk.Frame):
 
     def _buscar(self, event=None):
         textBuscar_Event = event
+        textBuscar_Event.focus()
         self._buscar_todo(textBuscar_Event.get().strip())
 
     def _buscar_todo(self, txt_buscar=None):
         valor_aBuscar = txt_buscar
-        valor_Buscado = [n for n in self.ventanas if valor_aBuscar in n]
-        if valor_aBuscar:
-            self.limpiar_tree()
-            with open(self.path_ventanas) as g:
-                data = json.load(g)
-                count = 0
-                for md in sorted(data[self.customer], key=lambda md:md['object']):
-                    for vb in valor_Buscado:
-                        if vb == md['object']:
-                            if count % 2 == 0:
-                                self.tree.insert(parent='', index='end', iid=count, text='', value=(md['object'],md['owner'],md['tipo'],md['ownerGroup'],md['code']), tags=('evenrow'))
-                            else:
-                                self.tree.insert(parent='', index='end', iid=count, text='', value=(md['object'],md['owner'],md['tipo'],md['ownerGroup'],md['code']), tags=('oddrow'))
-                            count += 1
-                    self.limpiar_widgets()
-                self.btnBuscar.forget()
-                self.btnLimpiar.grid(row=0, column=1, sticky=W)
-                self.menu_Contextual.entryconfig("  Limpiar", state="normal")
+        if valor_aBuscar == "Buscar Directories / File ...":
+            self.cargar_ventanas()
+            self.limpiar_widgets()
         else:
-            pass
+            valor_Buscado = [n for n in self.ventanas if valor_aBuscar in n]
+            if valor_aBuscar:
+                self.limpiar_tree()
+                with open(self.path_ventanas) as g:
+                    data = json.load(g)
+                    count = 0
+                    for md in sorted(data[self.customer], key=lambda md:md['object']):
+                        for vb in valor_Buscado:
+                            if vb == md['object']:
+                                if count % 2 == 0:
+                                    self.tree.insert(parent='', index='end', iid=count, text='', value=(md['object'],md['owner'],md['tipo'],md['ownerGroup'],md['code']), tags=('evenrow'))
+                                else:
+                                    self.tree.insert(parent='', index='end', iid=count, text='', value=(md['object'],md['owner'],md['tipo'],md['ownerGroup'],md['code']), tags=('oddrow'))
+                                count += 1
+                        self.limpiar_widgets()
+                    self.btnBuscar.forget()
+                    self.btnLimpiar.grid(row=0, column=1, sticky=W)
+                    self.menu_Contextual.entryconfig("  Limpiar", state="normal")
+            else:
+                pass
 
     def cargar_ventanas(self):
         #crear una lista vacia
@@ -531,7 +536,7 @@ class Ventana(ttk.Frame):
             text='Buscar',
             style='TOP1.TButton',
             image=self.buscar_icon,
-            command=lambda:self._buscar(self.textBuscar.get())
+            command=lambda:self._buscar(self.textBuscar)
         )
         self.btnBuscar.grid(row=0, column=1, sticky=W)
 
