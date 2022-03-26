@@ -19,6 +19,9 @@ from threading import Thread
 from ScrollableNotebook  import *
 from Extraciones import PST_EXT, Extracion, MyEntry
 from Ventanas import *
+def s():
+    pass
+
 #-----------------------------------------------------------#
 user = getuser()
 mypath = os.path.expanduser("~/")
