@@ -2697,6 +2697,8 @@ class Aplicacion():
             Image.open(path_icon+r"openDesviaciones.png").resize((80, 80)))
         self.Extracion_icon = ImageTk.PhotoImage(
             Image.open(path_icon+r"openExtraciones.png").resize((80, 80)))
+        self.Automatizar_icon = ImageTk.PhotoImage(
+            Image.open(path_icon+r"automatizar.png").resize((80, 80)))
         self.Abrir_icon = ImageTk.PhotoImage(
             Image.open(path_icon+r"abrir.png").resize((30, 30)))
         self.Client_icon = ImageTk.PhotoImage(
@@ -2938,11 +2940,7 @@ class Aplicacion():
 
     def _display_menu_clickDerecho_GLS(self, event):
         self.menu_Contextual_GLS.tk_popup(event.x_root, event.y_root)
-        # txt_select = event.widget.tag_ranges(tk.SEL)
-        # if txt_select:
-        #     self.menu_Contextual.entryconfig("  Copiar", state="normal")
-        # else:
-        #     self.menu_Contextual.entryconfig("  Copiar", state="disabled")
+
     @beep_error
     def _copiar_select_GLS_clave(self, event):
         widget = event
@@ -2950,7 +2948,6 @@ class Aplicacion():
         value = widget.get(index[0])
         self.root.clipboard_clear()
         self.root.clipboard_append(value)
-
 
 ## --- MENU PARA SRC DE LOS MODULOS -------------------
     def _menu_clickDerecho(self):
@@ -3451,7 +3448,6 @@ class Aplicacion():
         self._cargar_modulo_glosario()
         self._menu_clickDerecho_GLS()
 
-
     def widgets_APP(self):
             self.menuBar = tk.Menu(self.root, relief=FLAT, border=0)
             self.root.config(menu=self.menuBar)
@@ -3576,9 +3572,19 @@ class Aplicacion():
             self.menuBar.add_cascade(label=" Editar ", menu=self.editMenu)
             self.menuBar.add_cascade(label=" Ayuda ", menu=self.helpMenu)
 
+# TODO BOTON DESVIACION
+
+            self.frameButton = ttk.Frame(
+                self.contenedor, 
+            )
+
+            self.frameButton.grid(row=0, column=0, sticky='nsew', pady=5, padx=5
+            )
+            
             self.btn_AbrirDesv = ttk.Button(
-                self.contenedor, text='DESVIACIONES',
-                width=15,
+                self.frameButton, 
+                text='DESVIACIONES',
+                width=14,
                 style='APP.TButton',
                 image=self.Desviaciones_icon,
                 compound='top',
@@ -3590,11 +3596,14 @@ class Aplicacion():
                 row=0, 
                 column=0, 
                 ipady=20, 
-                sticky='wn'
             )
+
+# TODO BOTON EXTRACION
+
             self.btn_AbrirExt = ttk.Button(
-                self.contenedor, text='EXTRACIONES',
-                width=15,
+                self.frameButton, 
+                text='EXTRACIONES',
+                width=14,
                 style='APP.TButton',
                 image=self.Extracion_icon,
                 compound='top',
@@ -3602,24 +3611,92 @@ class Aplicacion():
             )
             self.btn_AbrirExt.grid(
                 pady=30,
+                padx=(0,30),
                 row=0, 
                 column=1, 
                 ipady=20, 
-                sticky='wn'
             )
+
+# TODO BOTON AUTOMATIZAR
+
+            self.btn_AbrirExt = ttk.Button(
+                self.frameButton, 
+                text='AUTOMATIZAR',
+                width=14,
+                style='APP.TButton',
+                image=self.Automatizar_icon,
+                compound='top',
+                command=self.abrir_issuesExtracion,
+            )
+
+            self.btn_AbrirExt.grid(
+                pady=30,
+                padx=(0,30),
+                ipady=20,
+                row=0, 
+                column=2, 
+            )
+
+# TODO RESTO BOTONES
+
+            # self.btn_AbrirExt = ttk.Button(
+            #     self.frameButton, 
+            #     text='AUTOMATIZACION',
+            #     width=14,
+            #     style='APP.TButton',
+            #     image=self.Automatizar_icon,
+            #     compound='top',
+            #     command=self.abrir_issuesExtracion,
+            # )
+            # self.btn_AbrirExt.grid(
+            #     pady=30,
+            #     padx=(0,30),
+            #     ipady=20,
+            #     row=0, 
+            #     column=3, 
+            # )
+
+            # self.btn_AbrirExt = ttk.Button(
+            #     self.frameButton, 
+            #     text='AUTOMATIZACION',
+            #     width=14,
+            #     style='APP.TButton',
+            #     image=self.Automatizar_icon,
+            #     compound='top',
+            #     command=self.abrir_issuesExtracion,
+            # )
+            # self.btn_AbrirExt.grid(
+            #     pady=30,
+            #     padx=(0,30),
+            #     ipady=20,
+            #     row=0, 
+            #     column=4, 
+            # )
+
+# TODO BIENVANIDA
+            
+            self.frameLabel = ttk.Frame(
+                self.contenedor, 
+            )
+
+            self.frameLabel.grid(row=1, column=0, sticky='sew', pady=5, padx=5, columnspan=2)
+            
+            self.frameLabel.columnconfigure(0, weight=1)
+            self.frameLabel.rowconfigure(0, weight=1)
+
             self.lbl_Bienvenido = ttk.Label(
-                self.contenedor,
+                self.frameLabel,
                 style='APP.TLabel',
                 text='Bienvenido : '+user,
-                anchor='center'
+                anchor='center',
             )
             self.lbl_Bienvenido.grid(
-                row=1, 
+                row=0, 
                 column=0, 
-                columnspan=3,
-                sticky='sew'
+                sticky='nsew'
             )
-    
+
+
     def mainloop(self):
         self.root.mainloop()
 
