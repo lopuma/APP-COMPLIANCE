@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #import tkinter as tk
-## IMPORTANTE QUE ME LLEGUE A OTRA
 import json
 import os
 import time
@@ -20,9 +19,6 @@ from threading import Thread
 from ScrollableNotebook  import *
 from Extraciones import PST_EXT, Extracion, MyEntry
 from Ventanas import *
-def s():
-    pass
-
 #-----------------------------------------------------------#
 user = getuser()
 mypath = os.path.expanduser("~/")
