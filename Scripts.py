@@ -135,6 +135,28 @@ class BtnCliente(tk.Button):
             borderwidth=2,
         )
 
+class BtnScriptsClientes(tk.Button):
+    def __init__(self, *args, **kwargs):
+        tk.Button.__init__(self, *args, **kwargs)
+
+        # BtnCliente.pack_configure(self,
+        # expand=1,
+        # padx=15,
+        # pady=10,
+        # ipadx=26,
+        # ipady=10,
+        # fill='both',
+        # )
+
+        BtnCliente.config(self,
+            background="#F4FCD9",
+            foreground="#534340",
+            font=('Comfortaa', 13, font.BOLD),
+            relief='raised',
+            activebackground="#C5D8A4",
+            activeforeground="#534340",
+            borderwidth=2,
+        )
 #TODO --- Clase SCRIPTS ---------------------------------
 class Scripts(ttk.Frame):
     def __init__(self, parent, app, application=None, *args, **kwargs):
@@ -374,10 +396,31 @@ class Scripts(ttk.Frame):
             foreground="#874356"
         )
 # * ----------- BOTOTNES DE SCRIPS ------------
-        self.btn_sudoPREG4=BtnCliente(self.lb_frame_scripts,
+        self.btn_sudoPREG4=BtnScriptsClientes(self.lb_frame_scripts,
         text="sudo_preg4",
+        width=10,
+        height=4,
         command=self.src_sudo
-        ).pack()
+        )
+        self.btn_sudoPREG4.grid(row=0, column=0)
+
+        self.btn_sudoPREG5=BtnScriptsClientes(self.lb_frame_scripts,
+        text="sudo_preg4",
+        width=10,
+        height=4,
+        command=self.src_sudo
+        )
+        self.btn_sudoPREG5.grid(row=0, column=1)
+
+        self.btn_sudoPREG6=BtnScriptsClientes(self.lb_frame_scripts,
+        text="sudo_preg4",
+        width=10,
+        height=4,
+        command=self.src_sudo
+        )
+        self.btn_sudoPREG6.grid(row=0, column=2)
+        
+
 # ************************************************
 #TODO -------------------------------------------------
 #-----------------------------------------------------
