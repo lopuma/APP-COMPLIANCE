@@ -15,6 +15,7 @@ from turtle import bgcolor
 from PIL import Image, ImageTk
 from tkinter.ttk import Style
 from threading import Thread
+from Scripts import Scripts
 from ScrollableNotebook  import *
 from Extraciones import PST_EXT, Extracion, MyEntry
 from Ventanas import *
@@ -215,8 +216,8 @@ class Expandir(ttk.Frame):
         
     def _siguiente(self):
         global _tt_Desv
-        self.EXP_btnScreamEvidencia.configure(state="disabled")
-        self.EXP_btnCopyALL.configure(state="disabled")
+        self.EXP_btnScreamEvidencia.config(state="disabled")
+        self.EXP_btnCopyALL.config(state="disabled")
         if self.varNum == 1:
             with open(path_modulo.format(asigne_Cliente)) as g:
                 data = json.load(g)
@@ -248,7 +249,7 @@ class Expandir(ttk.Frame):
                             self.EXP_lblWidget['text'] =  _tt_Desv
                             self.EXP_srcExpandir.delete('1.0',END)
                             self.EXP_srcExpandir.insert(END,md['refrescar'])
-                            self.EXP_btnCopyALL.configure(state="normal")                        
+                            self.EXP_btnCopyALL.config(state="normal")                        
                             self.varNum = 4
                             self.descativar_botones()
                         else:
@@ -269,8 +270,8 @@ class Expandir(ttk.Frame):
                             self.EXP_lblWidget['text'] =  _tt_Desv
                             self.EXP_srcExpandir.delete('1.0',END)
                             self.EXP_srcExpandir.insert(END,md['evidencia'])
-                            self.EXP_btnScreamEvidencia.configure(state="normal")
-                            self.EXP_btnCopyALL.configure(state="normal")
+                            self.EXP_btnScreamEvidencia.config(state="normal")
+                            self.EXP_btnCopyALL.config(state="normal")
                             self.varNum = 5
                             self.descativar_botones()
                         else:
@@ -278,7 +279,7 @@ class Expandir(ttk.Frame):
                             self.EXP_lblWidget['text'] =  _tt_Desv
                             self.EXP_srcExpandir.delete('1.0',END)
                             self.EXP_srcExpandir.insert(END,self._txt_Desv)
-                            self.EXP_btnCopyALL.configure(state="normal")                        
+                            self.EXP_btnCopyALL.config(state="normal")                        
                             self.varNum = 4      
                             self.descativar_botones()
         elif self.varNum == 4:
@@ -299,8 +300,8 @@ class Expandir(ttk.Frame):
                             self.EXP_lblWidget['text'] =  _tt_Desv
                             self.EXP_srcExpandir.delete('1.0',END)
                             self.EXP_srcExpandir.insert(END,self._txt_Desv)
-                            self.EXP_btnScreamEvidencia.configure(state="normal")
-                            self.EXP_btnCopyALL.configure(state="normal")
+                            self.EXP_btnScreamEvidencia.config(state="normal")
+                            self.EXP_btnCopyALL.config(state="normal")
                             self.varNum = 5
                             self.descativar_botones()
         elif self.varNum == 5:
@@ -342,8 +343,8 @@ class Expandir(ttk.Frame):
 
     def _anterior(self):
         global _tt_Desv
-        self.EXP_btnScreamEvidencia.configure(state="disabled")
-        self.EXP_btnCopyALL.configure(state="disabled")
+        self.EXP_btnScreamEvidencia.config(state="disabled")
+        self.EXP_btnCopyALL.config(state="disabled")
         if self.varNum == 1:
             with open(path_modulo.format(asigne_Cliente)) as g:
                 data = json.load(g)
@@ -355,7 +356,7 @@ class Expandir(ttk.Frame):
                             self.EXP_lblWidget['text'] =  _tt_Desv
                             self.EXP_srcExpandir.delete('1.0',END)
                             self.EXP_srcExpandir.insert(END,md['refrescar'])
-                            self.EXP_btnCopyALL.configure(state="normal")                        
+                            self.EXP_btnCopyALL.config(state="normal")                        
                             self.varNum = 4
                             self.descativar_botones()
                         else:
@@ -363,8 +364,8 @@ class Expandir(ttk.Frame):
                             self.EXP_lblWidget['text'] =  _tt_Desv
                             self.EXP_srcExpandir.delete('1.0',END)
                             self.EXP_srcExpandir.insert(END,self._txt_Desv)
-                            self.EXP_btnScreamEvidencia.configure(state="normal")
-                            self.EXP_btnCopyALL.configure(state="normal")
+                            self.EXP_btnScreamEvidencia.config(state="normal")
+                            self.EXP_btnCopyALL.config(state="normal")
                             self.varNum = 5
                             self.descativar_botones()
         elif self.varNum == 2:
@@ -378,8 +379,8 @@ class Expandir(ttk.Frame):
                             self.EXP_lblWidget['text'] =  _tt_Desv
                             self.EXP_srcExpandir.delete('1.0',END)
                             self.EXP_srcExpandir.insert(END,md['evidencia'])
-                            self.EXP_btnScreamEvidencia.configure(state="normal")
-                            self.EXP_btnCopyALL.configure(state="normal")
+                            self.EXP_btnScreamEvidencia.config(state="normal")
+                            self.EXP_btnCopyALL.config(state="normal")
                             self.varNum = 5
                             self.descativar_botones()
                         else:
@@ -447,7 +448,7 @@ class Expandir(ttk.Frame):
                             self.EXP_lblWidget['text'] =  _tt_Desv
                             self.EXP_srcExpandir.delete('1.0',END)
                             self.EXP_srcExpandir.insert(END,self._txt_Desv)
-                            self.EXP_btnCopyALL.configure(state="normal")                        
+                            self.EXP_btnCopyALL.config(state="normal")                        
                             self.varNum = 1
                             self.activar_botones()
         self.Expan_color_lineas()
@@ -911,7 +912,7 @@ class Desviacion(ttk.Frame):
         self._menu_clickDerecho()
         
 ## --- SELECCIONAR ELEMENTO DEL LISTBOX. --- #
-        self.DESVfr1_listbox.bind("<<ListboxSelect>>", functools.partial(self.seleccionar_Modulo))
+        self.DESVfr1_listbox.bind("<<ListboxSelect>>", self.seleccionar_Modulo)
 
 ## --- ADJUTAR EL TEXT DE LOS LABEL --- #
         self.DESVfr2_lblModulo.bind("<Configure>", self.label_resize)
@@ -1124,11 +1125,11 @@ class Desviacion(ttk.Frame):
         ## ---------------------------------------
         
         if tittleExpand == "REFRESCAR":
-            expandir.EXP_btnCopyALL.configure(state="normal")            
+            expandir.EXP_btnCopyALL.config(state="normal")            
         elif tittleExpand == "EVIDENCIA":        
             varNum= 5
-            expandir.EXP_btnScreamEvidencia.configure(state="normal")
-            expandir.EXP_btnCopyALL.configure(state="normal")  
+            expandir.EXP_btnScreamEvidencia.config(state="normal")
+            expandir.EXP_btnCopyALL.config(state="normal")  
 
 ## --- MENU CONTEXTUAL --- ##    
     def _menu_clickDerecho(self):   
@@ -1279,7 +1280,7 @@ class Desviacion(ttk.Frame):
 ## ------------------------------------- ##
 ## --- FUNCIONES AL SELECIONAR MODULO, O BUSCAR MODULO ------- ##
     def limpiar_Widgets(self):
-        # #self.DESVfr1_listbox.selection_clear(0, tk.END)
+        #self.DESVfr1_listbox.selection_clear(0, tk.END)
         self.DESV_frame2['text'] = 'SISTEMA OPERATIVO'
         self.DESVfr2_lblModulo['text'] = 'MODULO'
         self.DESVfr2_lblDescripcion['text'] = ''
@@ -1306,7 +1307,7 @@ class Desviacion(ttk.Frame):
                 if value_selecionado in md['modulo']:
                     self.limpiar_Widgets()
                     self._asignarValor_aWidgets(md)
-            self.mostrar_buttons_modulo(value_selecionado)
+                    self.mostrar_buttons_modulo(value_selecionado)
 
     def _cargar_elemt_selected(self, value_selecionado):#TODO CARGAR MODULO
         data = []
@@ -1350,33 +1351,33 @@ class Desviacion(ttk.Frame):
 
         if md['comprobacion'] is not None:
             com.insert(END,md['comprobacion'])
-            PST_DESV.DESV_btn1Expandir.configure(state='normal')
+            PST_DESV.DESV_btn1Expandir.config(state='normal')
         else:
-            PST_DESV.DESV_btn1Expandir.configure(state='disabled')
+            PST_DESV.DESV_btn1Expandir.config(state='disabled')
 
         if md['copia'] is not None:
             bak.insert(END,md['copia'])
-            PST_DESV.DESV_btn2Expandir.configure(state='normal')
+            PST_DESV.DESV_btn2Expandir.config(state='normal')
         else:
-            PST_DESV.DESV_btn2Expandir.configure(state='disabled')
+            PST_DESV.DESV_btn2Expandir.config(state='disabled')
 
         if md['editar'] is not None:
             edi.insert(END,md['editar'])
-            PST_DESV.DESV_btn3Expandir.configure(state='normal')
+            PST_DESV.DESV_btn3Expandir.config(state='normal')
         else:
-            PST_DESV.DESV_btn3Expandir.configure(state='disabled')
+            PST_DESV.DESV_btn3Expandir.config(state='disabled')
 
         if md['refrescar'] is not None:
             res.insert(END,md['refrescar'])
-            PST_DESV.DESV_btn4Expandir.configure(state='normal')
+            PST_DESV.DESV_btn4Expandir.config(state='normal')
         else:
-            PST_DESV.DESV_btn4Expandir.configure(state='disabled')
+            PST_DESV.DESV_btn4Expandir.config(state='disabled')
 
         if md['evidencia'] is not None:
             evd.insert(END,md['evidencia'])
-            PST_DESV.DESV_btn5Expandir.configure(state='normal')
+            PST_DESV.DESV_btn5Expandir.config(state='normal')
         else:
-            PST_DESV.DESV_btn5Expandir.configure(state='disabled')
+            PST_DESV.DESV_btn5Expandir.config(state='disabled')
         
         PST_DESV.colour_line_com()
         PST_DESV.colour_line_bak()
@@ -1399,33 +1400,33 @@ class Desviacion(ttk.Frame):
 
         if md['comprobacion'] is not None:
             self.DESVfr2_srcComprobacion.insert(END,md['comprobacion'])
-            self.DESV_btn1Expandir.configure(state='normal')
+            self.DESV_btn1Expandir.config(state='normal')
         else:
-            self.DESV_btn1Expandir.configure(state='disabled')
+            self.DESV_btn1Expandir.config(state='disabled')
 
         if md['copia'] is not None:
             self.DESVfr2_srcBackup.insert(END,md['copia'])
-            self.DESV_btn2Expandir.configure(state='normal')
+            self.DESV_btn2Expandir.config(state='normal')
         else:
-            self.DESV_btn2Expandir.configure(state='disabled')
+            self.DESV_btn2Expandir.config(state='disabled')
 
         if md['editar'] is not None:
             self.DESVfr3_srcEditar.insert(END,md['editar'])
-            self.DESV_btn3Expandir.configure(state='normal')
+            self.DESV_btn3Expandir.config(state='normal')
         else:
-            self.DESV_btn3Expandir.configure(state='disabled')
+            self.DESV_btn3Expandir.config(state='disabled')
 
         if md['refrescar'] is not None:
-            self.DESV_btn4Expandir.configure(state='normal')
+            self.DESV_btn4Expandir.config(state='normal')
             self.DESVfr3_srcRefrescar.insert(END,md['refrescar'])
         else:
-            self.DESV_btn4Expandir.configure(state='disabled')
+            self.DESV_btn4Expandir.config(state='disabled')
 
         if md['evidencia'] is not None:
             self.DESVfr3_srcEvidencia.insert(END,md['evidencia'])
-            self.DESV_btn5Expandir.configure(state='normal')
+            self.DESV_btn5Expandir.config(state='normal')
         else:
-            self.DESV_btn5Expandir.configure(state='disabled')
+            self.DESV_btn5Expandir.config(state='disabled')
         
         self.colour_line_com()
         self.colour_line_bak()
@@ -1543,19 +1544,7 @@ class Desviacion(ttk.Frame):
             PST_DESV.DESV_btnRecortar.grid(row=2, column=2, padx=5, pady=5, sticky='ne')  
 # --- DISABLED ALL
         else:
-            self._btnDir = False
-            self._btnAuth = False
-            self._btnSer = False
-            self._btnAcc = False
-            self._btnCmd = False
-            self._btnIdr = False
-            PST_DESV.DESV_btnDirectory.grid_forget()
-            PST_DESV.DESV_btnAuthorized.grid_forget()
-            PST_DESV.DESV_btnService.grid_forget()
-            PST_DESV.DESV_btnAccount.grid_forget()
-            PST_DESV.DESV_btnCommand.grid_forget()
-            PST_DESV.DESV_btnIdrsa.grid_forget()
-            PST_DESV.DESV_btnRecortar.grid_forget()
+            self._disabled_buttons() 
     
     def mostrar_buttons_clave(self, clave_Buscado):
         global PST_DESV
@@ -1679,6 +1668,7 @@ class Desviacion(ttk.Frame):
     def buscar_Modulos(self, event=None):
         global value
         global no_exist
+
         dict_clave_modulo = {} 
         valor_aBuscar = event
         clave_Buscado = [n for n in listClave if valor_aBuscar.upper().strip() in n]
@@ -1689,14 +1679,15 @@ class Desviacion(ttk.Frame):
         self.DESVfr1_btnLimpiar.grid(row=1, column=1, pady=5, padx=5, sticky='nsw')        
 ## --- LIMPIAR ------------------------------------- ##
         self.limpiar_Widgets()
-        self._disabled_buttons()
+        self.enabled_Widgets()
 ## --------- OBTENER MODULO POR CLAVE O MODULO -------------- ## //TODO "definir si buscar por clave o modulo"
-##TODO --- SI EL MODULO NO EXISTE
 ##TODO --- SI NO EXISTE, MODULO O CLAVE
         if len(clave_Buscado) == 0 and len(modulo_Buscado) == 0:
+            print("1")
             self.DESVfr1_listbox.select_clear(ANCHOR)
             self.DESVfr1_entModulo.focus()
             self._disabled_buttons()
+            self.disabled_btn_expandir()
             self.DESVfr1_listbox.selection_clear(0, tk.END)
             lis_md_enct = []
             lis_clv_enct = []
@@ -1876,6 +1867,7 @@ class Desviacion(ttk.Frame):
             return 'break'
 ##TODO --- POR CLAVE UNICA
         elif len(clave_Buscado) == 1 and len(modulo_Buscado) == 0:
+            print("2")
             data = []
             no_exist = False
             clave_Buscado = str(clave_Buscado).replace("[","").replace("]","").replace("'","")
@@ -1883,9 +1875,11 @@ class Desviacion(ttk.Frame):
                 data = json.load(g)
                 for md in data:
                     if clave_Buscado in md['clave']:
+                        self.limpiar_Widgets()
+                        #self.enabled_Widgets()
                         value = md['modulo']
                         self.asignarValor_aWidgets(md)
-                self.mostrar_buttons_clave(clave_Buscado)
+                        self.mostrar_buttons_clave(clave_Buscado)
                 self.DESVfr1_listbox.selection_clear(0, tk.END)
                 modulo_ListBox = self.DESVfr1_listbox.get(0, tk.END)
                 indice = modulo_ListBox.index(value)
@@ -1893,6 +1887,7 @@ class Desviacion(ttk.Frame):
                 return 'break'
 ##TODO --- SI EXISTEN MAS DE UNA CLAVE
         elif len(clave_Buscado) > 1 and len(modulo_Buscado) == 0:
+            print("3")
             data = []
             no_exist = False
             self.DESVfr1_listbox.selection_clear(0, tk.END)
@@ -1907,6 +1902,7 @@ class Desviacion(ttk.Frame):
                 return 'break'
 ##TODO --- SI ES MODULO UNICO
         elif len(modulo_Buscado) == 1 and len(clave_Buscado) == 0:
+            print("4")
             data = []
             no_exist = False
             modulo_Buscado = str(modulo_Buscado).replace("[","").replace("]","").replace("'","")
@@ -1924,6 +1920,7 @@ class Desviacion(ttk.Frame):
                 return 'break'
 ##TODO --- SI HAY MAS DE UN MODULO
         elif len(modulo_Buscado) > 1 and len(clave_Buscado) == 0:
+            print("5")
             data = []
             no_exist = False
             self.DESVfr1_listbox.selection_clear(0, tk.END) 
@@ -1938,6 +1935,7 @@ class Desviacion(ttk.Frame):
                 return 'break'
 ##TODO --- SI EXISTE UN MODULO Y UNA CLAVE
         else:
+            print("6")
             data = []
             no_exist = False
             self.DESVfr1_listbox.selection_clear(0, tk.END) 
@@ -2016,7 +2014,7 @@ class Desviacion(ttk.Frame):
         self.DESVfr3_srcEditar.config(state="normal")
         self.DESVfr3_srcRefrescar.config(state="normal")
         self.DESVfr3_srcEvidencia.config(state="normal")
-        self.DESV_btnRiskImpact.configure(state='normal')
+        self.DESV_btnRiskImpact.config(state='normal')
         self.DESV_btn1Expandir.config(state='normal')
         self.DESV_btn2Expandir.config(state='normal')
         self.DESV_btn3Expandir.config(state='normal')
@@ -2042,6 +2040,8 @@ class Desviacion(ttk.Frame):
         self.DESVfr1_listbox.delete(0,END)
         self.limpiar_Widgets()
         self._disabled_buttons() 
+        self.disabled_btn_expandir()
+
         ## ----------------------------------------- ##
         asigne_Cliente = customer       
         with open(path_modulo.format(customer)) as g:
@@ -2158,11 +2158,13 @@ class Desviacion(ttk.Frame):
         PST_DESV.DESV_btnCommand.grid_forget()
         PST_DESV.DESV_btnIdrsa.grid_forget()
         PST_DESV.DESV_btnRecortar.grid_forget()
-        PST_DESV.DESV_btn1Expandir.configure(state='disabled')
-        PST_DESV.DESV_btn2Expandir.configure(state='disabled')
-        PST_DESV.DESV_btn3Expandir.configure(state='disabled')
-        PST_DESV.DESV_btn4Expandir.configure(state='disabled')
-        PST_DESV.DESV_btn5Expandir.configure(state='disabled')
+
+    def disabled_btn_expandir(self):
+        PST_DESV.DESV_btn1Expandir.config(state='disabled')
+        PST_DESV.DESV_btn2Expandir.config(state='disabled')
+        PST_DESV.DESV_btn3Expandir.config(state='disabled')
+        PST_DESV.DESV_btn4Expandir.config(state='disabled')
+        PST_DESV.DESV_btn5Expandir.config(state='disabled')
 
     
     def _cargar_Modulos(self):
@@ -3116,12 +3118,6 @@ class Aplicacion():
         #self._QuitarSeleccion()
         self._cerrar_vtn_bsc()
 
-    def _QuitarSeleccion(self):
-        try:
-            desviacion._disabled_buttons()
-        except:
-            pass
-
     def _cerrar_vtn_bsc(self):
         global extracion
         try:
@@ -3152,6 +3148,12 @@ class Aplicacion():
             pass
         extracion = Extracion(self.cuaderno, app, application=self)
         self.cuaderno.add(extracion, text='Issues EXTRACIONES')
+        idpTab = self.cuaderno.index('current')
+    
+    def abrir_scripts(self):
+        global idpTab
+        scripts = Scripts(self.cuaderno, app, application=self)
+        self.cuaderno.add(scripts, text='Automatizacion ')
         idpTab = self.cuaderno.index('current')
         
     def ocultar(self):
@@ -3622,7 +3624,7 @@ class Aplicacion():
                 style='APP.TButton',
                 image=self.Automatizar_icon,
                 compound='top',
-                command=self.abrir_issuesExtracion,
+                command=self.abrir_scripts,
             )
 
             self.btn_AbrirExt.grid(
