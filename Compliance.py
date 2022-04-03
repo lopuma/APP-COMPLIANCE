@@ -1682,6 +1682,8 @@ class Desviacion(ttk.Frame):
         self.enabled_Widgets()
 ## --------- OBTENER MODULO POR CLAVE O MODULO -------------- ## //TODO "definir si buscar por clave o modulo"
 ##TODO --- SI NO EXISTE, MODULO O CLAVE
+        print("clave :: ", len(clave_Buscado))
+        print("modulo :: ", len(modulo_Buscado))
         if len(clave_Buscado) == 0 and len(modulo_Buscado) == 0:
             print("1")
             self.DESVfr1_listbox.select_clear(ANCHOR)
@@ -3324,6 +3326,7 @@ class Aplicacion():
         global listbox_list
     
         widget = event.widget
+        print("widget : ", widget)
         items = widget.curselection()
         for listbox in listbox_list:
             if listbox != widget:
@@ -3693,7 +3696,6 @@ class Aplicacion():
                 column=0, 
                 sticky='nsew'
             )
-
 
     def mainloop(self):
         self.root.mainloop()

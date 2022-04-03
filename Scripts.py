@@ -11,7 +11,7 @@ import subprocess
 user = getuser()
 mypath = os.path.expanduser("~/")
 path_icon = mypath+"Compliance/image/"
-frame_open = False
+frame_inicial = ""
 fr_clt = ""
 list_client = [
     "AFB",
@@ -31,10 +31,7 @@ class FramesPoliticas(tk.Frame):
     def __init__(self, parent, cliente, frame):
         super().__init__(parent)
         self.fontFrame = font.Font(font=("Comfortaa", 15, "bold"))
-        global frame_open
-        print("--", frame_open)
         self.cliente = parent
-        print("{} y {} ".format(parent,cliente))
 
         self.canvvas=Canvas(
             frame,
@@ -50,6 +47,7 @@ class FramesPoliticas(tk.Frame):
         self._pr_ = LabelFrame(
             self.canvvas,
             text='Sistemas {}'.format(cliente),
+            width=250,
             font=self.fontFrame
         )
 
@@ -82,7 +80,8 @@ class FramesPoliticas(tk.Frame):
         self._pr_.config(
             background='#F6E7D8',
             borderwidth=3,
-            foreground="#874356"
+            foreground="#874356",
+            width=250
         ) 
 
         # * ----------- BOTOTNES DE POLITICAS ------------
@@ -107,6 +106,8 @@ class FramesPoliticas(tk.Frame):
         self.canvvas.pack_forget()
         self.h.destroy()
         self.h.pack_forget()
+        self._pr_.pack_forget()
+        self._pr_.destroy()
         print("frame borrado")
     
     def abrir_frames_politicas_(self, event):
@@ -477,29 +478,14 @@ class Scripts(ttk.Frame):
         print("que hace 2")
 
     def abrir_frames_politicas_(self, cliente):
-        global frame_open
         global fr_clt
-
-        print(cliente)
-
+        global frame_inicial
         self.lb_frame_sistemas.pack_forget()
-        if frame_open is False:
+        if type(frame_inicial) == str:
             self.fr_clt = FramesPoliticas(self, cliente, self.frame_medio)
-            self._pr_ = Frame(
-                self.fr_clt,
-                width=250
-            )
-            # self._pr_.pack(
-            #     fill=tk.BOTH,
-            #     side='left',
-            #     expand=0,
-            # )
-            print("** : ",fr_clt)
-            frame_open = True
-            print("frame is --", frame_open)
-        elif frame_open:
-            print("// : ",fr_clt)
+            frame_inicial = self.fr_clt
+        else:
             self.fr_clt.borrar()
-            frame_open = False
-            print("frame is ", frame_open)
+            self.fr_clt = FramesPoliticas(self, cliente, self.frame_medio)
+            frame_inicial = self.fr_clt
                 
