@@ -15,7 +15,7 @@ from turtle import bgcolor
 from PIL import Image, ImageTk
 from tkinter.ttk import Style
 from threading import Thread
-from Scripts import Scripts
+from Scripts import Automatizar
 from ScrollableNotebook  import *
 from Extraciones import PST_EXT, Extracion, MyEntry
 from Ventanas import *
@@ -26,34 +26,20 @@ path_icon = mypath+"Compliance/image/"
 clt = ''
 path_modulo = mypath+"Compliance/file/desviaciones_{}.json"
 path_modulo_clave = mypath+"Compliance/file/{}.json"
-list_client = [
-    "AFB",
-    "ASISA",
-    "CESCE",
-    "CTTI",
-    "ENEL",
-    "EUROFRED",
-    "FT",
-    "INFRA",
-    "IDISO",
-    "LBK",
-    "PLANETA",
-    "SERVIHABITAT"
-]  
+path_config = mypath+"Compliance/.conf/{}.json"
+
+list_client = []  
 list_issues = (
     "DESVIACIONES",
     "EXTRACIONES"
 )
-
 # --- VARIABLE GLOBAL ---
 asigne_Cliente = ""
 idOpenTab = 0
 listModulo = []
 listClave = []
-data = []
 txtWidget_focus = False
 txtWidget = ""
-top_active_LBK = False
 sis_oper = ""
 idpTab = 0
 varNum = 0
@@ -61,8 +47,11 @@ text_aExpandir = ""
 value = ""
 valor_activo_list = ""
 list_motion = ""
+#TODO VARIABLES DE VENTANAS
 PST_DESV = ""
 PST_EXP = ""
+PST_AUT = ""
+#TODO----------------------
 _tt_Desv = ""
 listbox_list = []
 no_exist =  False
@@ -2665,7 +2654,8 @@ class Aplicacion():
         position_right = int(screen_width/2 - window_width/2)
         self.root.geometry(f'{window_width}x{window_height}+{position_top}+{position_right}')
         self.root.configure(background='black') 
-        self.root.tk.call('wm', 'iconphoto', self.root._w, tk.PhotoImage(file=path_icon+r'compliance.png'))       
+        self.root.tk.call('wm', 'iconphoto', self.root._w, tk.PhotoImage(file=path_icon+r'compliance.png'))
+        self.open_client()
         self.iconos()
         self.cuaderno = ScrollableNotebook(self.root,wheelscroll=False,tabmenu=True, application=self)
         self.contenedor= ttk.Frame(self.cuaderno)
@@ -2691,7 +2681,15 @@ class Aplicacion():
         self.menu_clickDerecho()
         self._menu_clickDerecho()
         self.widgets_APP()
-    
+
+    def open_client(self):
+        global list_client
+        list_client = []
+        with open(path_config.format("clientes")) as op:
+            data = json.load(op)
+            for clt in data:
+                list_client.append(clt)
+
     def iconos(self):
         self.Desviaciones_icon = ImageTk.PhotoImage(
             Image.open(path_icon+r"openDesviaciones.png").resize((80, 80)))
@@ -3026,12 +3024,12 @@ class Aplicacion():
 ## ----------------------- ##
     def alCambiar_Pestaña(self, event):
         global idOpenTab
-        global top_active_LBK
         global asigne_Cliente
         global value
         global PST_DESV
         idOpenTab = event.widget.index('current')
         tab = event.widget.tab(idOpenTab)['text']
+        self.root.update()
         if idOpenTab != 0:
             self.menu_Contextual.entryconfig('  Copiar', state='disabled')
             self.menu_Contextual.entryconfig('  Pegar', state='disabled')
@@ -3138,6 +3136,8 @@ class Aplicacion():
     def abrir_issuesDesviacion(self):
         global idOpenTab
         global desviacion
+        #self.root.after(1, self.open_client)
+        self.open_client()
         desviacion = Desviacion(self.cuaderno)
         self.cuaderno.add(desviacion, text='Issues DESVIACIONES ')
         
@@ -3154,10 +3154,11 @@ class Aplicacion():
     
     def abrir_scripts(self):
         global idpTab
-        scripts = Scripts(self.cuaderno, app, application=self)
-        self.cuaderno.add(scripts, text='Automatizacion ')
+        automatizar = Automatizar(self.cuaderno, app, application=self)
+        automatizar.fr_clt=""
+        self.cuaderno.add(automatizar, text='Automatizacion ')
         idpTab = self.cuaderno.index('current')
-        
+
     def ocultar(self):
         extracion.hide()
 
@@ -3326,7 +3327,6 @@ class Aplicacion():
         global listbox_list
     
         widget = event.widget
-        print("widget : ", widget)
         items = widget.curselection()
         for listbox in listbox_list:
             if listbox != widget:
