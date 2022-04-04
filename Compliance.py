@@ -899,7 +899,7 @@ class Desviacion(ttk.Frame):
         self.iconos()
         self.widgets_DESVIACION()
         self._menu_clickDerecho()
-        
+          
 ## --- SELECCIONAR ELEMENTO DEL LISTBOX. --- #
         self.DESVfr1_listbox.bind("<<ListboxSelect>>", self.seleccionar_Modulo)
 
