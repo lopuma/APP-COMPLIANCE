@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from heapq import heapify
 import os
 import json
 import tkinter as tk
@@ -9,8 +8,12 @@ from tkinter import font
 from PIL import Image, ImageTk
 from getpass import getuser
 import subprocess
+from jsonpath_ng.ext import parse
+from dataclasses import dataclass
+from functools import partial
 
 PST_AUT = ""
+btn_active = False
 user = getuser()
 mypath = os.path.expanduser("~/")
 path_icon = mypath+"Compliance/image/"
@@ -120,33 +123,44 @@ class FramesPoliticas(tk.Frame):
         self.lb_frame_politica.bind("<Button-4>", self.OnVsb_up)
 
         # * ----------- BOTOTNES DE POLITICAS ------------
-        with open(path_config.format("clientes")) as op:
-            data = json.load(op)
-            i = 0
+        url = path_icon+"{}".format("icon_sys.png")
+        self.goclient_ico = ImageTk.PhotoImage(
+            Image.open(url).resize((20, 20)))
+        print(url)
+        global btn_active
+        with open('/home/esy9d7l1/Compliance/.conf/clientes.json') as op:
+            data = json.loads(op.read())
             for clt in data[cliente]:
-                print("cliente {}, politicas {}".format(cliente,clt['politica']))
-                for pol in clt['politica']:
-                    print("politica, en linea : ", pol['icon'])
-                    # for sis_pol in pol:
-                    #     print("Sis : ", sis_pol)
-                    #     for politica in pol[sis_pol]:
-                    #         lista = list(politica.keys())
-                    #         print("---POLITICA--- ", lista[0])
-                    #         for pp in lista:
-                    #             print("---", pp)
+                print("cliente {}, politicas {}".format(cliente,clt['policy']))
+                for pol in clt['policy']:
+                    for sis_pol in pol:
+                        print("*********************")
+                        print("SYS_POL ::", sis_pol)
+                        print("*********************\n")
+                        self.botones_politica = BtnCliente(
+                            self.lb_frame_politica,
+                            text=sis_pol,
+                            compound='left',
+                            image=self.goclient_ico,
+                            #command=lambda e=sis_pol: self.abrir_frames_politicas_(e)
+                        )
+                        self.botones_politica.pack(ipady=20)
                         
-                        
-                        
-                    #     self.botones_politica = BtnCliente(
-                    #         self.lb_frame_politica,
-                    #         text=sis_pol,
-                    #         command=lambda e=sis_pol: self.abrir_frames_politicas_(e)
-                    #     )
-                    #     self.botones_politica.pack(ipady=20)
-                    #     #self.botones_politica.configure(font=('Open Sans', 15))
-                    #     self.botones_politica.bind("<Button-5>", self.OnVsb_down)
-                    #     self.botones_politica.bind("<Button-4>", self.OnVsb_up)
+                        #self.botones_politica["command"] = partial(self.abrir_frames_politicas_,self.botones_politica)
+                        self.botones_politica.bind("<Motion>", self.callback)
+                        self.botones_politica.bind("<Button-1>", self.abrir_frames_politicas_)
+                        self.botones_politica.bind("<Button-5>", self.OnVsb_down)
+                        self.botones_politica.bind("<Button-4>", self.OnVsb_up)
+                        #self.botones_politica.configure(image=self.pol_ico)
         # ************************************************
+    
+    def icons_and_scripts(self, user, data):
+        busca_icons = parse(f"{user}..icon")
+        busca_scripts = parse(f"{user}..scripts")
+        icons = [e.value for e in busca_icons.find(data)]
+        scripts = [e.value for e in busca_scripts.find(data)]
+        return icons, scripts
+
     def resize_frame(self, e):
         self.canvas.itemconfigure(self._frame_id, height=e.height, width=e.width)
 
@@ -159,11 +173,18 @@ class FramesPoliticas(tk.Frame):
         self.lb_frame_politica.destroy()
         self.fr_md2.pack_forget()
         self.fr_md2.destroy()
-        print("frame borrado")
     
     def abrir_frames_politicas_(self, event):
-        print(event)
-    
+        global btn_active
+        event = event.widget
+        event.focus_set()
+        event.configure(bg="#61A4BC")
+
+    def callback(self, event):
+        print(event.widget)
+        widget = event.widget
+        widget.configure(bg="#F4FCD9")
+
     def OnVsb_down(self, event):
         #list_event = event.widget
         print("mas 1")
@@ -376,7 +397,8 @@ class Automatizar(ttk.Frame):
                 self.buttons_clientes = BtnCliente(
                     self.lb_frame_menu,
                     text=clt,
-                    compound='left',                    image=self.goclient_ico,
+                    compound='left',                    
+                    image=self.goclient_ico,
                     command=lambda e=clt:self.abrir_frames_politicas_(e)
                 )
                 self.buttons_clientes.pack()
@@ -503,7 +525,7 @@ class Automatizar(ttk.Frame):
     def abrir_frames_politicas_(self, cliente):
         print("{}----{}".format(cliente,self.fr_clt))
         self.lb_frame_sistemas.pack_forget()
-        
+        #self.botones_politica.configure(background="red")
         if type(self.fr_clt) == str:
             self.fr_clt = FramesPoliticas(self, cliente, self.frame_medio)
         else:
