@@ -37,11 +37,7 @@ class FramesPoliticas(tk.Frame):
         self.font_LabelFrame = font.Font(font=("Open Sanz", 15, "bold"))
         global PST_AUT
         self.frame = frame
-        print("--------------------------")
-        print("self :: ", self)
-        print("self frame :: ", frame)
-        print("self self.frame :: ", self.frame)
-        print("--------------------------")
+        cliente = cliente
         self.fr_md2 = Frame(
             self.frame,
         )
@@ -58,7 +54,6 @@ class FramesPoliticas(tk.Frame):
             highlightthickness=0,
             border=0
         )
-        print("SELF PARTE 2 FRAME MEDIO ::: ", self.fr_md2)
 
         self.canvas=Canvas(
             self.fr_md2,
@@ -127,19 +122,30 @@ class FramesPoliticas(tk.Frame):
         # * ----------- BOTOTNES DE POLITICAS ------------
         with open(path_config.format("clientes")) as op:
             data = json.load(op)
+            i = 0
             for clt in data[cliente]:
                 print("cliente {}, politicas {}".format(cliente,clt['politica']))
                 for pol in clt['politica']:
-                    print("politica, en linea : ", pol)
-                    self.botones_politica=BtnCliente(
-                        self.lb_frame_politica,
-                        text=pol,
-                        command=lambda e=pol: self.abrir_frames_politicas_(e)
-                    )
-                    self.botones_politica.pack(ipady=20)
-                    self.botones_politica.configure(font=('Open Sans', 15))
-                    self.botones_politica.bind("<Button-5>", self.OnVsb_down)
-                    self.botones_politica.bind("<Button-4>", self.OnVsb_up)
+                    print("politica, en linea : ", pol['icon'])
+                    # for sis_pol in pol:
+                    #     print("Sis : ", sis_pol)
+                    #     for politica in pol[sis_pol]:
+                    #         lista = list(politica.keys())
+                    #         print("---POLITICA--- ", lista[0])
+                    #         for pp in lista:
+                    #             print("---", pp)
+                        
+                        
+                        
+                    #     self.botones_politica = BtnCliente(
+                    #         self.lb_frame_politica,
+                    #         text=sis_pol,
+                    #         command=lambda e=sis_pol: self.abrir_frames_politicas_(e)
+                    #     )
+                    #     self.botones_politica.pack(ipady=20)
+                    #     #self.botones_politica.configure(font=('Open Sans', 15))
+                    #     self.botones_politica.bind("<Button-5>", self.OnVsb_down)
+                    #     self.botones_politica.bind("<Button-4>", self.OnVsb_up)
         # ************************************************
     def resize_frame(self, e):
         self.canvas.itemconfigure(self._frame_id, height=e.height, width=e.width)
@@ -230,7 +236,6 @@ class Automatizar(ttk.Frame):
         PST_AUT = self
         self.iconos()
         self.frames()
-        print (PST_AUT)
 
         self.bind("<Motion>", lambda x: self.AUT_motion(x))
     
@@ -243,6 +248,9 @@ class Automatizar(ttk.Frame):
             Image.open(path_icon+r"close1.png").resize((80, 60)))
         self.ctti_icon = ImageTk.PhotoImage(
             Image.open(path_icon+r"ctti.png").resize((30, 30)))
+        self.goclient_ico = ImageTk.PhotoImage(
+            Image.open(path_icon+r"goclient.png").resize((20, 20)))
+        
 
         # self.g1_icon = Image.open(file=path_icon+r"g1.gif")
         # self.g1_icon = self.g1_icon.rezise((30,30))
@@ -277,11 +285,6 @@ class Automatizar(ttk.Frame):
             highlightthickness=2
         )
         # fuente de los titulos de los LABEL FRAMES
-        print("***********************************")
-        print("FRAMES : ",self)
-        print("FRAMES PST : ", PST_AUT)
-        print("FRAMES TITULO : ", self.frame_titulo)
-        print("***********************************")
 
 #TODO -------------- FRAME MEDIO-----------------------------
         self.frame_medio = Frame(
@@ -298,7 +301,6 @@ class Automatizar(ttk.Frame):
             highlightbackground='black',
             highlightthickness=2
         )
-        print("FRAME MEDIO :::: ", self.frame_medio)
 #---------------------------------------------------------------------------------------------
 #? ------------- PARTE 1 DE FRAMES MEDIO ------------------------
         self.fr_md1 = Frame(
@@ -374,6 +376,7 @@ class Automatizar(ttk.Frame):
                 self.buttons_clientes = BtnCliente(
                     self.lb_frame_menu,
                     text=clt,
+                    compound='left',                    image=self.goclient_ico,
                     command=lambda e=clt:self.abrir_frames_politicas_(e)
                 )
                 self.buttons_clientes.pack()
