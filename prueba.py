@@ -1,15 +1,17 @@
-import json
-
-with open('/home/esy9d7l1/Compliance/.conf/clientes.json') as op:
-    data = json.load(op)
-
-politicas = {
-    tipo : { k : { "icon": v[0]["icon"], "scripts": v[1]["scripts"] }
-           for pol in pols[0]["policy"]
-           for k,v in pol.items() }
-    for tipo, pols in data.items()
-}
-icons = [ x["icon"] for pol in politicas.values() for x in pol.values() ]
-scripts = [ x["scripts"] for pol in politicas.values() for x in pol.values() ]
-
-print(icons)
+from functools import partial
+import tkinter as tk
+class MainFrame(tk.Frame):
+    def __init__(self, parent, *args, **kwargs):
+        super().__init__(parent, *args, **kwargs)
+        for row in range(0, 20):
+            for column in range(0, 40):
+                new_button = tk.Button(self, text="")
+                new_button.grid(row=row, column=column)
+                new_button["command"] = partial(self.press, new_button)
+    def press(self, btn):
+        btn.configure(bg="gold")
+        btn.configure(activebackground="gold")
+if __name__ == "__main__":
+    root = tk.Tk()
+    MainFrame(root).pack(side="top", fill="both", expand=True)
+    root.mainloop()
