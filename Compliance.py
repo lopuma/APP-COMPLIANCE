@@ -5,7 +5,6 @@ import os
 import time
 import functools
 import subprocess, sys
-from tkinter import *
 from tkinter import ttk
 from getpass import getuser
 from tkinter import scrolledtext as st
@@ -1694,13 +1693,12 @@ class Desviacion(ttk.Frame):
                 infile_eurofred = path_modulo.format("EUROFRED")
                 infile_ft = path_modulo.format("FT")
                 infile_infra = path_modulo.format("INFRA")
-                infile_idiso = path_modulo.format("IDISO")
                 infile_lbk = path_modulo.format("LBK")
                 infile_planeta = path_modulo.format("PLANETA")
                 infile_servihabitat = path_modulo.format("SERVIHABITAT")
 
 ## --- ABRIR TODOS LOS JSON DE LOS CLIENTES
-                with open(infile_afb, 'r') as infileAFB, open(infile_asisa, 'r') as infileASISA, open(infile_cesce, 'r') as infileCESCE, open(infile_ctti, 'r') as infileCTTI, open(infile_enel, 'r') as infileENEL, open(infile_eurofred, 'r') as infileEUROFRED, open(infile_ft, 'r') as infileFT,  open(infile_infra, 'r') as infileINFRA, open(infile_idiso, 'r') as infileIDISO, open(infile_lbk, 'r') as infileLBK, open(infile_planeta, 'r') as infilePLANETA, open(infile_servihabitat, 'r') as infileSERVIHABITAT:           
+                with open(infile_afb, 'r') as infileAFB, open(infile_asisa, 'r') as infileASISA, open(infile_cesce, 'r') as infileCESCE, open(infile_ctti, 'r') as infileCTTI, open(infile_enel, 'r') as infileENEL, open(infile_eurofred, 'r') as infileEUROFRED, open(infile_ft, 'r') as infileFT,  open(infile_infra, 'r') as infileINFRA, open(infile_lbk, 'r') as infileLBK, open(infile_planeta, 'r') as infilePLANETA, open(infile_servihabitat, 'r') as infileSERVIHABITAT:           
                     fileAFB_data = json.load(infileAFB)
                     fileASISA_data = json.load(infileASISA)
                     fileCESCE_data = json.load(infileCESCE)
@@ -1709,7 +1707,6 @@ class Desviacion(ttk.Frame):
                     fileEUROFRED_data = json.load(infileEUROFRED)
                     fileFT_data = json.load(infileFT)
                     fileINFRA_data = json.load(infileINFRA)
-                    fileIDISO_data = json.load(infileIDISO)
                     fileLBK_data = json.load(infileLBK)
                     filePLANETA_data = json.load(infilePLANETA)
                     fileSERVIHABITAT_data = json.load(infileSERVIHABITAT)
@@ -1758,11 +1755,6 @@ class Desviacion(ttk.Frame):
                         lis_md_enct.append(ln_infra['modulo'])
                         _md_Buscado = [n for n in lis_md_enct if md_a_buscar.strip().replace("\\","/") in n]
                         self._add_newList_clt(dict_clave_modulo, _md_Buscado, ln_infra, CUST='INFRA')
-## ---IDISO
-                    for ln_idiso in fileIDISO_data:
-                        lis_md_enct.append(ln_idiso['modulo'])
-                        _md_Buscado = [n for n in lis_md_enct if md_a_buscar.strip().replace("\\","/") in n]
-                        self._add_newList_clt(dict_clave_modulo, _md_Buscado, ln_idiso, CUST='IDISO')
 ## ---LBK
                     for ln_lbk in fileLBK_data:
                         lis_md_enct.append(ln_lbk['modulo'])
@@ -1825,11 +1817,6 @@ class Desviacion(ttk.Frame):
                                 lis_clv_enct.append(ln_infra['clave'])
                                 _clv_Buscado = [n for n in lis_clv_enct if clv_a_buscar in n]
                                 self._add_newList_clt_clv(dict_clave_modulo, _clv_Buscado, ln_infra, CUST='INFRA')
-## ---IDISO
-                            for ln_idiso in fileIDISO_data:
-                                lis_clv_enct.append(ln_idiso['clave'])
-                                _clv_Buscado = [n for n in lis_clv_enct if clv_a_buscar in n]
-                                self._add_newList_clt_clv(dict_clave_modulo, _clv_Buscado, ln_idiso, CUST='IDISO')
 ## ---LBK
                             for ln_lbk in fileLBK_data:
                                 lis_clv_enct.append(ln_lbk['clave'])
@@ -3155,7 +3142,9 @@ class Aplicacion():
     def abrir_scripts(self):
         global idpTab
         automatizar = Automatizar(self.cuaderno, app, application=self)
-        automatizar.fr_clt=""
+        automatizar.fr_pol = ""
+        automatizar.fr_ = ""
+        automatizar.fr_clt = ""
         self.cuaderno.add(automatizar, text='Automatizacion ')
         idpTab = self.cuaderno.index('current')
 

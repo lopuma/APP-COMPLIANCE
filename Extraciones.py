@@ -4,7 +4,6 @@ import tkinter as tk
 from os import listdir, path, sep, stat
 from os.path import isdir, join, abspath
 from getpass import getuser
-from tkinter import *
 from tkinter import Button, ttk
 from tkinter import scrolledtext as st
 from tkinter import messagebox as mb
@@ -114,7 +113,7 @@ class MyEntry(tk.Entry):
             label="  Selecionar todo",
             command=self.seleccionar_todo,
             accelerator='Ctrl+A',
-            compound=LEFT,
+            compound=tk.LEFT,
             background='#ccffff', 
             foreground='black',
             activebackground='#004c99', 
@@ -149,7 +148,7 @@ class MyEntry(tk.Entry):
 
     def pegar(self, event=None):
         if self.select_present():
-            self.delete(0, END)
+            self.delete(0, tk.END)
             self.event_generate("<<Paste>>")
         else:
             self.event_generate("<<Paste>>")
@@ -164,15 +163,15 @@ class MyEntry(tk.Entry):
     def deshacer(self, event=None):
         if self.steps != 0:
             self.steps -= 1
-            self.delete(0, END)
-            self.insert(END, self.changes[self.steps])
+            self.delete(0, tk.END)
+            self.insert(tk.END, self.changes[self.steps])
             self.menu_opciones.entryconfig("  Rehacer", state="normal")
 
     @beep_error
     def rehacer(self, event=None):
         if self.steps < len(self.changes):
-            self.delete(0, END)
-            self.insert(END, self.changes[self.steps])
+            self.delete(0, tk.END)
+            self.insert(tk.END, self.changes[self.steps])
             self.steps += 1
             self.menu_opciones.entryconfig("  Rehacer", state="disabled")
     
@@ -608,7 +607,7 @@ class Extracion(ttk.Frame):
 
     def _menu_clickDerecho(self):
         self.text_font = font.Font(family='Courier', size=14, font=font.BOLD)
-        self.menu_Contextual = Menu(self, tearoff=0)
+        self.menu_Contextual = tk.Menu(self, tearoff=0)
         self.menu_Contextual.add_command(
             label="  Buscar",
             accelerator='Ctrl+F',
@@ -649,7 +648,7 @@ class Extracion(ttk.Frame):
         self.menu_Contextual.add_command(
             label="  Ocultar Panel",
             accelerator='Ctrl+L',
-            compound=LEFT,
+            compound=tk.LEFT,
             background='#ccffff', foreground='black',
             activebackground='#004c99', activeforeground='white',
             font=self.text_font,
@@ -659,7 +658,7 @@ class Extracion(ttk.Frame):
             label="  Mostrar Panel",
             state="disabled",
             accelerator='Ctrl+L',
-            compound=LEFT,
+            compound=tk.LEFT,
             background='#ccffff', foreground='black',
             activebackground='#004c99', activeforeground='white',
             font=self.text_font,
@@ -668,7 +667,7 @@ class Extracion(ttk.Frame):
         self.menu_Contextual.add_separator(background='#ccffff')
         self.menu_Contextual.add_command(
             label="  Cerrar pestaña",
-            compound=LEFT,
+            compound=tk.LEFT,
             background='#ccffff', foreground='black',
             activebackground='#004c99', activeforeground='white',
             font=self.text_font,
@@ -876,7 +875,7 @@ class Extracion(ttk.Frame):
         self.menu_opciones.add_command(
             label="  Selecionar todo",
             accelerator='Ctrl+A',
-            compound=LEFT,
+            compound=tk.LEFT,
             background='#ccffff', foreground='black',
             activebackground='#004c99', activeforeground='white',
             font=self.text_font,
