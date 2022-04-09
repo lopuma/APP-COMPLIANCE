@@ -5,7 +5,6 @@ from pickle import FRAME
 import tkinter as tk
 from tkinter import ttk
 from tkinter import font
-from traceback import print_tb
 from PIL import Image, ImageTk
 from getpass import getuser
 import subprocess
@@ -20,7 +19,7 @@ fr_clt = False
 fr_scr = ""
 frame_script_Clt = ""
 #* Lista de botones
-#btn_lis_pol = []
+btn_lis_pol = []
 btn_lis_cli = []
 btn_lis_scr = []
 
@@ -36,12 +35,13 @@ class FramesPoliticas(tk.Frame):
         self.font_LabelFrame = font.Font(font=("Open Sanz", 15, "bold"))
         global PST_AUT
         global FR_POL
+        self.btn_lis_pol = []
         self.frame = frame
         FR_POL = self.frame
         self.cliente = cliente
         self.btn_lis_pol = []
-        print("FRAME SCRIPT SELF : ", self.frame)
-        print("FRAME SCRIPT : ", FR_POL)
+        # print("FRAME SCRIPT SELF : ", self.frame)
+        # print("FRAME SCRIPT : ", FR_POL)
         self.bind_all("<Motion>", self.FR_POL_motion)
         self.fr_md2 = tk.Frame(
             self.frame,
@@ -132,7 +132,7 @@ class FramesPoliticas(tk.Frame):
                         
                         self.botones_politica.bind("<Button-5>", self.OnVsb_down)
                         self.botones_politica.bind("<Button-4>", self.OnVsb_up)
-                        self.botones_politica.bind("<FocusIn>", partial(self.botones_politica.on_enter, self.botones_politica))
+                        self.botones_politica.bind("<Button-1>", partial(self.on_enter, self.botones_politica))
         # ************************************************
     def FR_POL_motion(self, event):
         global FR_POL
@@ -164,22 +164,22 @@ class FramesPoliticas(tk.Frame):
                 fg="#A97155"
             )
         if type(fr_scr) == str:
-            print("3 - politica")
+            # print("3 - politica")
             fr_scr = FramesScripts(self, cliente, frame, politica)
             frame_script_Clt = fr_scr
             FR_SCR = frame_script_Clt
-            print("fr_scr - 3 :",fr_scr)
-            print("frame_script_Clt - 3 :",frame_script_Clt)
+            # print("fr_scr - 3 :",fr_scr)
+            # print("frame_script_Clt - 3 :",frame_script_Clt)
         else:
-            print("4 - politica")
+            # print("4 - politica")
             self.borrar_frame_script(fr_scr)
             fr_scr = FramesScripts(self, cliente, self.frame, politica)
             frame_script_Clt = fr_scr
-            print("fr_scr - 4 :",fr_scr)
-            print("frame_script_Clt - 4 :",frame_script_Clt)
+            # print("fr_scr - 4 :",fr_scr)
+            # print("frame_script_Clt - 4 :",frame_script_Clt)
 
     def borrar_frame_script(self, frame_scr):
-        print("frame sale error : ", frame_scr)
+        # print("frame sale error : ", frame_scr)
         frame_scr.borrar_script()
     
 
@@ -189,6 +189,26 @@ class FramesPoliticas(tk.Frame):
 
     def OnVsb_up(self, event):
         self.canvas.yview_scroll(-1, "units")
+
+    def on_enter(self, btn, *arg):
+        global btn_lis_pol
+        print("btn  --- ", btn)
+        btn_lis_pol.append(btn)
+        self.btn_lis_pol.append(btn)
+        print("\n",btn_lis_pol,"\n")
+        print("\n -- --- LISTA DE BOTONES POL self :", self.btn_lis_pol, "\n --------------")
+
+        for i in self.btn_lis_pol:
+            i['background']="#F4FCD9"
+            i['foreground']="#534340"
+        if btn.focus_set:
+            btn['background']="#8FBDD3"
+            btn['foreground']="#A97155"
+    
+    def on_leave(self, e):
+        widget = e.widget
+        widget['background']="#F4FCD9"
+        widget['foreground']="#534340"
 
 class FramesScripts(tk.Frame):
     def __init__(self, parent, cliente, frame, politica, *args, **kwargs):
@@ -358,6 +378,8 @@ class BtnCliente(tk.Button):
         
         self.font_LabelFrame = font.Font(font=("Open Sanz", 15, "bold"))
         
+        #print("self :: ", self)
+
         BtnCliente.pack_configure(self,
         expand=0,
         padx=15,
@@ -378,39 +400,11 @@ class BtnCliente(tk.Button):
             highlightbackground="#F6E7D8"
         )
 
-    def on_enter(self, btn, *arg):
-        global btn_lis_cli
-        global PST_AUT
-        btn_lis_cli.append(btn)
-        print("\nBTN ---", btn, "---\n")
-        print("\nLISTA DE BOTONES :", btn_lis_cli, "\n")
-
-        # widget = e.widget
-        for i in btn_lis_cli:
-            print("QUE AHCE", self)
-            print(PST_AUT)
-
-            i['background']="#F4FCD9"
-            i['foreground']="#534340"
-
-        if btn.focus_set:
-            print("y tuuuuuuuuuuu")
-            btn['background']="#8FBDD3"
-            btn['foreground']="#A97155"
-        else:
-            btn_lis_cli = []
-            print("tu si o que")
-    
-    def on_leave(self, e):
-        global btn_lis_cli
-        btn_lis_cli = []
-
-
 class BtnPolitica(tk.Button):
     def __init__(self, *args, **kwargs):
         tk.Button.__init__(self, *args, **kwargs)
         self.font_LabelFrame = font.Font(font=("Open Sanz", 15, "bold"))
-        self.btn_lis_pol = []
+        #self.btn_lis_pol = []
         BtnPolitica.pack_configure(self,
         expand=0,
         padx=15,
@@ -430,22 +424,6 @@ class BtnPolitica(tk.Button):
             highlightthickness=2,
             highlightbackground="#F6E7D8"
         )
-
-    def on_enter(self, btn, *arg):
-        #global btn_lis_pol
-        self.btn_lis_pol.append(btn)
-
-        for i in self.btn_lis_pol:
-            i['background']="#F4FCD9"
-            i['foreground']="#534340"
-        if btn.focus_set:
-            btn['background']="#8FBDD3"
-            btn['foreground']="#A97155"
-    
-    def on_leave(self, e):
-        widget = e.widget
-        widget['background']="#F4FCD9"
-        widget['foreground']="#534340"
 
 class BtnScripts(tk.Button):
     def __init__(self, *args, **kwargs):
@@ -479,10 +457,10 @@ class Automatizar(ttk.Frame):
         self.font_LabelFrame = font.Font(font=("Open Sanz", 15, "bold"))
         #global btn_lis_pol
         global PST_AUT
+        self.btn_lis_cli = []
         self.click = True
         self.cont = 0
         PST_AUT = self
-        #btn_lis_cli = []
         self.iconos()
         self.frames()
 
@@ -491,6 +469,7 @@ class Automatizar(ttk.Frame):
     def AUT_motion(self, event):
         global PST_AUT
         PST_AUT = event.widget
+        # print("MOTION : ", event.widget)
     
     def iconos(self):
         self.close_icon = ImageTk.PhotoImage(
@@ -508,8 +487,9 @@ class Automatizar(ttk.Frame):
     def frames(self):
 # TODO ---------- FRAME ARRIBA --------------
         global PST_AUT
-        #global btn_lis_cli
-        #btn_lis_cli = []
+        global btn_lis_cli
+        btn_lis_cli = []
+        print("INICIO :: ", btn_lis_cli)
         self.frame_titulo = tk.Frame(
             self,
             height=100
@@ -606,10 +586,10 @@ class Automatizar(ttk.Frame):
             foreground="#874356",
         )
 
-        self.canvvas.bind("<Button-5>", self._OnVsb_down)
-        self.canvvas.bind("<Button-4>", self._OnVsb_up)
-        self.lb_frame_menu.bind("<Button-5>", self._OnVsb_down)
-        self.lb_frame_menu.bind("<Button-4>", self._OnVsb_up)
+        self.canvvas.bind("<Button-5>", self._On_canvas_down)
+        self.canvvas.bind("<Button-4>", self._On_canvas_up)
+        self.lb_frame_menu.bind("<Button-5>", self._On_canvas_down)
+        self.lb_frame_menu.bind("<Button-4>", self._On_canvas_up)
 
 # # * ----------- BOTOTNES DE CLIENTES ------------
         with open(path_config.format("clientes")) as op:
@@ -629,9 +609,9 @@ class Automatizar(ttk.Frame):
 
                 self.buttons_clientes.pack()
                 #self.buttons_clientes.bind("<Button-1>", self._OnVsb_down)
-                self.buttons_clientes.bind("<Button-5>", self._OnVsb_down)
-                self.buttons_clientes.bind("<Button-4>", self._OnVsb_up)
-                self.buttons_clientes.bind("<FocusIn>", partial(self.buttons_clientes.on_enter, self.buttons_clientes))
+                self.buttons_clientes.bind("<Button-5>", self._On_canvas_down)
+                self.buttons_clientes.bind("<Button-4>", self._On_canvas_up)
+                self.buttons_clientes.bind("<Button-1>", partial(self.on_enter, self.buttons_clientes))
                 #self.buttons_clientes.bind("<FocusOut>", self.buttons_clientes.on_leave)
 # ********************************************************
 #TODO ----------- LABEL FRAME POLITICA -------------------
@@ -714,12 +694,12 @@ class Automatizar(ttk.Frame):
         )
 #TODO------------------------------------------------------------
 #----------------------------------------------------------------
-    def _OnVsb_down(self, event):
+    def _On_canvas_down(self, event):
         #list_event = event.widget
         PST_AUT.canvvas.yview_scroll(1, "units")
 
 ## --- FUNCIONES PARA SCROLLBAR
-    def _OnVsb_up(self, event):
+    def _On_canvas_up(self, event):
         #list_event = event.widget
         PST_AUT.canvvas.yview_scroll(-1, "units")
 
@@ -728,27 +708,47 @@ class Automatizar(ttk.Frame):
         global fr_pol
         global fr_scr
         #global btn_lis_cli
-        btn.focus_set()
+        #btn.focus_set()
         #btn_lis_cli = []
         # print("self : ", self)
         # print("global : ", PST_AUT)
 
-        if btn:
-            btn.configure(
-                bg="#8FBDD3",
-                fg="#A97155"
-            )
+        # if btn:
+        #     btn.configure(
+        #         bg="#8FBDD3",
+        #         fg="#A97155"
+        #     )
         self.lb_frame_sistemas.pack_forget()
         self.lb_frame_scripts.pack_forget()
         fr_scr = ""
         if type(self.fr_clt) == str:
-            print("1 - cliente")
+            # print("1 - cliente")
             self.fr_clt = FramesPoliticas(self, cliente, self.frame_medio)
-            print("nuevo frame - 1 ", self.fr_clt, "\n")
+            # print("nuevo frame - 1 ", self.fr_clt, "\n")
         else:
-            print("2 - cliente")
+            # print("2 - cliente")
             self.fr_clt.borrar()
             if type(frame_script_Clt) != str:
                 self.fr_clt.borrar_frame_script(frame_script_Clt)
             self.fr_clt = FramesPoliticas(self, cliente, self.frame_medio)
-            print("nuevo frame - 2 ", self.fr_clt, "\n")
+
+    def on_enter(self, btn, *arg):
+        global btn_lis_cli
+        global PST_AUT
+        btn_lis_cli.append(btn)
+        self.btn_lis_cli.append(btn)
+        # print("\nBTN ---", btn, "---\n")
+        print("\n -- --- LISTA DE BOTONES :", btn_lis_cli, "\n --------------")
+        print("\n -- --- LISTA DE BOTONES self :", self.btn_lis_cli, "\n --------------")
+        print("\nSELF CLIENT --- ", self)
+
+        # widget = e.widget
+        for i in self.btn_lis_cli:
+            #print(PST_AUT)
+
+            i['background']="#F4FCD9"
+            i['foreground']="#534340"
+
+        if btn.focus_set:
+            btn['background']="#8FBDD3"
+            btn['foreground']="#A97155"

@@ -10,7 +10,6 @@ from getpass import getuser
 from tkinter import scrolledtext as st
 from tkinter import messagebox as mb
 from tkinter import font as font
-from turtle import bgcolor
 from PIL import Image, ImageTk
 from tkinter.ttk import Style
 from threading import Thread
@@ -46,6 +45,7 @@ text_aExpandir = ""
 value = ""
 valor_activo_list = ""
 list_motion = ""
+automatizar = ""
 #TODO VARIABLES DE VENTANAS
 PST_DESV = ""
 PST_EXP = ""
@@ -3014,6 +3014,10 @@ class Aplicacion():
         global asigne_Cliente
         global value
         global PST_DESV
+        # global automatizar
+        # if automatizar in globals():
+        #     automatizar.btn_lis_cli = []
+        #     print("LISTA AL cambiar ", automatizar.btn_lis_cli)
         idOpenTab = event.widget.index('current')
         tab = event.widget.tab(idOpenTab)['text']
         self.root.update()
@@ -3141,6 +3145,7 @@ class Aplicacion():
     
     def abrir_scripts(self):
         global idpTab
+        global automatizar
         automatizar = Automatizar(self.cuaderno, app, application=self)
         automatizar.fr_pol = ""
         automatizar.fr_ = ""
