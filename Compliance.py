@@ -3147,8 +3147,6 @@ class Aplicacion():
         global idpTab
         global automatizar
         automatizar = Automatizar(self.cuaderno, app, application=self)
-        automatizar.fr_pol = ""
-        automatizar.fr_ = ""
         automatizar.fr_clt = ""
         self.cuaderno.add(automatizar, text='Automatizacion ')
         idpTab = self.cuaderno.index('current')
