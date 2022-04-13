@@ -10,7 +10,7 @@ import subprocess
 from jsonpath_ng.ext import parse
 from functools import partial
 from ScrollableNotebook  import *
-#from Compliance import app
+from Compliance import fondo_app
 
 #* variable para actualizar la ventana
 PST_AUT = ""
@@ -23,10 +23,20 @@ mypath = os.path.expanduser("~/")
 path_icon = mypath+"Compliance/image/"
 path_config = mypath+"Compliance/.conf/{}.json"
 
-class FramesPoliticas(tk.Frame):
+# * COLORES INICIALES
+# ? -------------------------------------------------------------
+color_bd_fr = 'black'
+colour_fr_pie = '#C65D7B'
+colour_fr_tittle = '#F68989'
+cl_btn_actbg = '#8FBDD3'
+cl_btn_actfg = '#A97155'
+cl_btn_bg = '#F4FCD9'
+cl_btn_fg = '#534340'
+# ? -------------------------------------------------------------
+class FramesPoliticas(ttk.Frame):
     def __init__(self, parent, cliente, frame, *args, **kwargs):
-        tk.Frame.__init__(self, parent, *args, **kwargs)
-        self.font_LabelFrame = font.Font(font=("Open Sanz", 15, "bold"))
+        ttk.Frame.__init__(self, parent, *args, **kwargs)
+        self.font_LabelFrame = font.Font(font=("Open Sanz", 13, "bold"))
         global PST_AUT
         global FR_POL
         self.btn_lis_pol = []
@@ -34,26 +44,26 @@ class FramesPoliticas(tk.Frame):
         FR_POL = self.frame
         self.cliente = cliente
         self.bind_all("<Motion>", self.FR_POL_motion)
-        self.fr_md2 = tk.Frame(
+        self.fr_md2 = ttk.Frame(
             self.frame,
         )
 
         self.fr_md2.pack(
             fill=tk.BOTH,
             side='left',
-            expand=0,
+           # self.lb_frame_sistemas.config(
+        #     borderwidth=3,
+        # )         expand=0,
         )
 
         self.fr_md2.config(
-            background='#F6E7D8',
             borderwidth=0,
-            highlightthickness=0,
             border=0
         )
 
         self.canvas = tk.Canvas(
             self.fr_md2,
-            background='#F6E7D8',
+            background=fondo_app,
             width=400,
             borderwidth=0,
             border=0,
@@ -66,10 +76,9 @@ class FramesPoliticas(tk.Frame):
             command=self.canvas.yview
         )
 
-        self.lb_frame_politica = tk.LabelFrame(
+        self.lb_frame_politica = ttk.LabelFrame(
             self.canvas,
-            text='POLICY : {}'.format(cliente),
-            font=self.font_LabelFrame
+            text='POLICY : {}'.format(cliente)
         )
 
         self.lb_frame_politica.bind("<Configure>", lambda e:self.canvas.configure(scrollregion=self.canvas.bbox("all")))
@@ -91,13 +100,6 @@ class FramesPoliticas(tk.Frame):
             pady=(15,0)
         )
 
-        self.lb_frame_politica.config(
-            background='#F6E7D8',
-            borderwidth=1,
-            foreground="#874356",
-            highlightthickness=0,
-        )
-
         self.canvas.bind("<Button-5>", self.OnVsb_down)
         self.canvas.bind("<Button-4>", self.OnVsb_up)
         self.lb_frame_politica.bind("<Button-5>", self.OnVsb_down)
@@ -112,13 +114,19 @@ class FramesPoliticas(tk.Frame):
             for clt in data[cliente]:
                 for pol in clt['politica']:
                     for sis_pol in pol:
-                        self.botones_politica = BtnPolitica(
+                        self.botones_politica = BtnScripts(
                             self.lb_frame_politica,
                             text=sis_pol,
                             compound='left',
                             image=self.gopolitica_ico,
                         )
-                        self.botones_politica.pack(ipady=20)
+                        self.botones_politica.pack(
+                            expand=0,
+                            padx=15,
+                            pady=10,
+                            ipady=15,
+                            fill='both',
+                        )
                         self.botones_politica["command"] = partial(self.abrir_frames_scripts_,self.botones_politica, self.cliente, sis_pol, self.frame)
                         
                         self.botones_politica.bind("<Button-5>", self.OnVsb_down)
@@ -146,8 +154,8 @@ class FramesPoliticas(tk.Frame):
         politica = politica
         if btn:
             btn.configure(
-                bg="#8FBDD3",
-                fg="#A97155"
+                bg=cl_btn_actbg,
+                fg=cl_btn_actfg
             )
         if type(framescript) == str:
             self.framescript = FramesScripts(self, cliente, frame, politica)
@@ -168,20 +176,20 @@ class FramesPoliticas(tk.Frame):
         self.btn_lis_pol.append(btn)
 
         for i in self.btn_lis_pol:
-            i['background']="#F4FCD9"
-            i['foreground']="#534340"
+            i['background']=cl_btn_bg
+            i['foreground']=cl_btn_fg
         if btn.focus_set:
-            btn['background']="#8FBDD3"
-            btn['foreground']="#A97155"
+            btn['background']=cl_btn_actbg
+            btn['foreground']=cl_btn_actfg
     
     def on_leave(self, e):
         widget = e.widget
-        widget['background']="#F4FCD9"
-        widget['foreground']="#534340"
+        widget['background']=cl_btn_bg
+        widget['foreground']=cl_btn_fg
 
-class FramesScripts(tk.Frame):
+class FramesScripts(ttk.Frame):
     def __init__(self, parent, cliente, frame, politica, *args, **kwargs):
-        tk.Frame.__init__(self, parent, *args, **kwargs)
+        ttk.Frame.__init__(self, parent, *args, **kwargs)
         self.font_LabelFrame = font.Font(font=("Open Sanz", 15, "bold"))
         global PST_AUT
         self.frame = frame
@@ -189,7 +197,7 @@ class FramesScripts(tk.Frame):
         self.politica = politica
         global framescript
         print("\n** FRAME QUE LLEGA ** :: ", framescript)
-        self.fr_md3 = tk.Frame(
+        self.fr_md3 = ttk.Frame(
             self.frame,
         )
 
@@ -200,15 +208,13 @@ class FramesScripts(tk.Frame):
         )
 
         self.fr_md3.config(
-            background='#F6E7D8',
             borderwidth=0,
-            highlightthickness=0,
             border=0
         )
 
         self.canvas3 = tk.Canvas(
             self.fr_md3,
-            background='#F6E7D8',
+            background=fondo_app,
             borderwidth=0,
             border=0,
             highlightthickness=0
@@ -220,10 +226,9 @@ class FramesScripts(tk.Frame):
             command=self.canvas3.yview
         )
 
-        self.lb_frame_script = tk.LabelFrame(
+        self.lb_frame_script = ttk.LabelFrame(
             self.canvas3,
             text='{} - SCRIPTS - {}'.format(cliente, politica),
-            font=self.font_LabelFrame
         )
 
         self.lb_frame_script.bind("<Configure>", lambda e:self.canvas3.configure(scrollregion=self.canvas3.bbox("all")))
@@ -243,13 +248,6 @@ class FramesScripts(tk.Frame):
             side=tk.RIGHT, 
             fill=tk.Y,
             pady=(15,0)
-        )
-
-        self.lb_frame_script.config(
-            background='#F6E7D8',
-            borderwidth=3,
-            foreground="#874356",
-            highlightthickness=0,
         )
 
         def ceildiv(dividendo, divisor):
@@ -343,81 +341,21 @@ class FramesScripts(tk.Frame):
     def OnVsb_up(self, event):
         self.canvas3.yview_scroll(-1, "units")
 
-class BtnCliente(tk.Button):
-    def __init__(self, *args, **kwargs):
-        tk.Button.__init__(self, *args, **kwargs)
-        
-        self.font_LabelFrame = font.Font(font=("Open Sanz", 15, "bold"))
-        
-
-        BtnCliente.pack_configure(self,
-        expand=0,
-        padx=15,
-        pady=10,
-        ipady=15,
-        fill='both',
-        )
-
-        BtnCliente.configure(self,
-            background="#F4FCD9",
-            foreground="#534340",
-            font=('Open Sans', 13, font.BOLD),
-            relief='ridge',
-            activeforeground="#8FBDD3",
-            activebackground="#A97155",
-            border=2,
-            highlightthickness=2,
-            highlightbackground="#F6E7D8"
-        )
-
-class BtnPolitica(tk.Button):
-    def __init__(self, *args, **kwargs):
-        tk.Button.__init__(self, *args, **kwargs)
-        self.font_LabelFrame = font.Font(font=("Open Sanz", 15, "bold"))
-        BtnPolitica.pack_configure(self,
-        expand=0,
-        padx=15,
-        pady=10,
-        ipady=15,
-        fill='both',
-        )
-
-        BtnPolitica.configure(self,
-            background="#F4FCD9",
-            foreground="#534340",
-            font=('Open Sans', 13, font.BOLD),
-            relief='ridge',
-            activeforeground="#8FBDD3",
-            activebackground="#A97155",
-            border=2,
-            highlightthickness=2,
-            highlightbackground="#F6E7D8"
-        )
-
 class BtnScripts(tk.Button):
     def __init__(self, *args, **kwargs):
         tk.Button.__init__(self, *args, **kwargs)
         self.font_LabelFrame = font.Font(font=("Open Sanz", 15, "bold"))
 
-        # BtnCliente.pack_configure(self,
-        # expand=1,
-        # padx=15,
-        # pady=10,
-        # ipadx=26,
-        # ipady=10,
-        # fill='both',
-        # )
-
         BtnScripts.configure(self,
-            background="#F4FCD9",
-            foreground="#534340",
+            background=cl_btn_bg,
+            foreground=cl_btn_fg,
             font=('Open Sans', 13, font.BOLD),
             relief='ridge',
-            activeforeground="#8FBDD3",
-            activebackground="#A97155",
+            activeforeground=cl_btn_actbg,
+            activebackground=cl_btn_actfg,
             border=2,
             highlightthickness=2,
-            highlightbackground="#F6E7D8"
+            highlightbackground=fondo_app
         )
 
 class Automatizar(ttk.Frame):
@@ -466,9 +404,9 @@ class Automatizar(ttk.Frame):
             expand=0
         )
         self.frame_titulo.config(
-            background='#F68989',
-            borderwidth=5,
-            highlightbackground='black',
+            background=colour_fr_tittle,
+            borderwidth=2,
+            highlightbackground=color_bd_fr,
             highlightthickness=2
         )
         # fuente de los titulos de los LABEL FRAMES
@@ -482,14 +420,14 @@ class Automatizar(ttk.Frame):
             expand=1
         )
         self.frame_medio.config(
-            background='#F6E7D8',
-            borderwidth=5,
-            highlightbackground='black',
+            background=fondo_app,
+            borderwidth=2,
+            highlightbackground=color_bd_fr,
             highlightthickness=2
         )
 #---------------------------------------------------------------------------------------------
 #? ------------- PARTE 1 DE FRAMES MEDIO ------------------------
-        self.fr_md1 = tk.Frame(
+        self.fr_md1 = ttk.Frame(
             self.frame_medio,
         )
         self.fr_md1.pack(
@@ -498,16 +436,14 @@ class Automatizar(ttk.Frame):
             expand=0,
         )
         self.fr_md1.config(
-            background='#F6E7D8',
             borderwidth=0,
-            highlightthickness=0,
             border=0
         )
 # ------------------------------------------------------------------
 # #? ----------- CREAR  CANVAS PARA AÑADIR BOTONES Y SER SCROLLABLE
-        self.canvvas = tk.Canvas(
+        self.canvas = tk.Canvas(
             self.fr_md1,
-            background='#F6E7D8',
+            background=fondo_app,
             width=300,
             borderwidth=0,
             border=0,
@@ -517,22 +453,21 @@ class Automatizar(ttk.Frame):
         h = tk.Scrollbar(
             self.fr_md1,
             orient='vertical',
-            command=self.canvvas.yview
+            command=self.canvas.yview
         )
         
-        self.lb_frame_menu =  tk.LabelFrame(
-            self.canvvas,
+        self.lb_frame_menu =  ttk.LabelFrame(
+            self.canvas,
             text='CLIENTS',
-            font=self.font_LabelFrame,
         )
         
-        self.lb_frame_menu.bind("<Configure>", lambda e:self.canvvas.configure(scrollregion=self.canvvas.bbox("all")))
+        self.lb_frame_menu.bind("<Configure>", lambda e:self.canvas.configure(scrollregion=self.canvas.bbox("all")))
 
-        self.canvvas.create_window((0,0), window=self.lb_frame_menu, anchor="nw", width=300)
+        self.canvas.create_window((0,0), window=self.lb_frame_menu, anchor="nw", width=300)
         
-        self.canvvas.config(yscrollcommand=h.set)
+        self.canvas.config(yscrollcommand=h.set)
 
-        self.canvvas.pack(
+        self.canvas.pack(
             fill=tk.BOTH,
             side='left',
             expand=0,
@@ -544,15 +479,12 @@ class Automatizar(ttk.Frame):
             pady=(15,0)
         )
         
-        self.lb_frame_menu.config(
-            background='#F6E7D8',
-            borderwidth=1,
-            highlightthickness=0,
-            foreground="#874356",
-        )
+        # self.lb_frame_menu.config(
+        #     borderwidth=1,
+        # )
 
-        self.canvvas.bind("<Button-5>", self._On_canvas_down)
-        self.canvvas.bind("<Button-4>", self._On_canvas_up)
+        self.canvas.bind("<Button-5>", self._On_canvas_down)
+        self.canvas.bind("<Button-4>", self._On_canvas_up)
         self.lb_frame_menu.bind("<Button-5>", self._On_canvas_down)
         self.lb_frame_menu.bind("<Button-4>", self._On_canvas_up)
 
@@ -560,7 +492,7 @@ class Automatizar(ttk.Frame):
         with open(path_config.format("clientes")) as op:
             data = json.load(op)
             for clt in data:
-                self.buttons_clientes = BtnCliente(
+                self.buttons_clientes = BtnScripts(
                     self.lb_frame_menu,
                     text=clt,
                     compound='left',                    
@@ -569,7 +501,13 @@ class Automatizar(ttk.Frame):
                 
                 self.buttons_clientes["command"] = partial(self.abrir_frames_politicas_,self.buttons_clientes, clt)
 
-                self.buttons_clientes.pack()
+                self.buttons_clientes.pack(
+                    expand=0,
+                    padx=15,
+                    pady=10,
+                    ipady=15,
+                    fill='both',
+                )
                 #self.buttons_clientes.bind("<Button-1>", self._OnVsb_down)
                 self.buttons_clientes.bind("<Button-5>", self._On_canvas_down)
                 self.buttons_clientes.bind("<Button-4>", self._On_canvas_up)
@@ -577,44 +515,33 @@ class Automatizar(ttk.Frame):
                 #self.buttons_clientes.bind("<FocusOut>", self.buttons_clientes.on_leave)
 # ********************************************************
 #TODO ----------- LABEL FRAME POLITICA -------------------
-        self.lb_frame_sistemas = tk.LabelFrame(
+        self.lb_frame_sistemas = ttk.LabelFrame(
             self.frame_medio,
             text='POLICY',
-            width=400,
-            font=self.font_LabelFrame
-            )
+            width=400
+        )
         self.lb_frame_sistemas.pack(
             side='left',
             fill=tk.BOTH,
             expand=0,
-            pady=5,
             padx=5
-        )
-        self.lb_frame_sistemas.config(
-            background='#F6E7D8',
-            borderwidth=3,
-            foreground="#874356"
         )
 #TODO ----------------------------------------------------
 #------------------------------------------------------
 # TODO -------------- LABEL FRAME SCRIPTS -------------
-        self.lb_frame_scripts = tk.LabelFrame(
+        self.lb_frame_scripts = ttk.LabelFrame(
             self.frame_medio,
             text="SCRIPTS",
-            font=self.font_LabelFrame,
             )
         self.lb_frame_scripts.pack(
             side=tk.RIGHT,
             fill=tk.BOTH,
             expand=1,
             padx=5,
-            pady=5,
         )
-        self.lb_frame_scripts.config(
-            background='#F6E7D8',
-            borderwidth=3,
-            foreground="#874356"
-        )
+        # self.lb_frame_scripts.config(
+        #     borderwidth=3,
+        # )
 #TODO -------------------------------------------------
 #-----------------------------------------------------
 # TODO ------------- FRAME PIE ----------------------
@@ -629,16 +556,14 @@ class Automatizar(ttk.Frame):
             expand=0
         )
         self.frame_pie.config(
-            background='#C65D7B',
-            borderwidth=5,
-            highlightbackground='black',
+            background=colour_fr_pie,
+            borderwidth=2,
+            highlightbackground=color_bd_fr,
             highlightthickness=2
         )
 # TODO ------------- BOTON CERRAR, FRAME PIE
         self.btn_cerrar = tk.Button(
             self.frame_pie,
-            # text="Cerrar",
-            # anchor='center',
             image=self.close_icon,
         )
         self.btn_cerrar.pack(
@@ -647,23 +572,19 @@ class Automatizar(ttk.Frame):
             pady=5
         )
         self.btn_cerrar.config(
-            background="#C65D7B",
-            # foreground="white",
-            activebackground="#C65D7B",
-            # font=('Source Sans Pro',12, font.BOLD),
+            background=colour_fr_pie,
+            activebackground=colour_fr_pie,
             borderwidth=0,
-            highlightbackground="#C65D7B"
+            highlightbackground=colour_fr_pie
         )
-#TODO------------------------------------------------------------
-#----------------------------------------------------------------
+
     def _On_canvas_down(self, event):
         #list_event = event.widget
-        PST_AUT.canvvas.yview_scroll(1, "units")
+        PST_AUT.canvas.yview_scroll(1, "units")
 
-## --- FUNCIONES PARA SCROLLBAR
     def _On_canvas_up(self, event):
         #list_event = event.widget
-        PST_AUT.canvvas.yview_scroll(-1, "units")
+        PST_AUT.canvas.yview_scroll(-1, "units")
 
     def abrir_frames_politicas_(self, btn, cliente):
         global PST_AUT
@@ -672,8 +593,8 @@ class Automatizar(ttk.Frame):
 
         if btn:
             btn.configure(
-                bg="#8FBDD3",
-                fg="#A97155"
+                bg=cl_btn_actbg,
+                fg=cl_btn_actfg
             )
         self.lb_frame_sistemas.pack_forget()
         self.lb_frame_scripts.pack_forget()
@@ -690,21 +611,15 @@ class Automatizar(ttk.Frame):
                 self.fr_clt.framescript.borrar_script()
             self.fr_clt = FramesPoliticas(self, cliente, self.frame_medio)
             framescript = ""
-        #print(app)
-        #app.cuaderno.tab(1, option=None, text='AUTO : {} '.format(cliente))
-        #scrolla =  ScrollableNotebook(self,wheelscroll=False, tabmenu=False, application=None)
-        # ScrollableNotebook.tab(scrolla, 1, option=None, text='AUTO : {} '.format(cliente))
-        # from Compliance import Desviacion
-        # Desviacion.cambiar_NamePestaña(None, cliente)
-    
+
     def on_enter(self, btn, *arg):
         global PST_AUT
         self.btn_lis_cli.append(btn)
         for i in self.btn_lis_cli:
 
-            i['background']="#F4FCD9"
-            i['foreground']="#534340"
+            i['background']=cl_btn_bg
+            i['foreground']=cl_btn_fg
 
         if btn.focus_set:
-            btn['background']="#8FBDD3"
-            btn['foreground']="#A97155"
+            btn['background']=cl_btn_actbg
+            btn['foreground']=cl_btn_actfg

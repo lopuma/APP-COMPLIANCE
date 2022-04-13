@@ -13,10 +13,10 @@ from tkinter import font as font
 from PIL import Image, ImageTk
 from tkinter.ttk import Style
 from threading import Thread
-from Scripts import Automatizar
 from ScrollableNotebook  import *
 from Extraciones import PST_EXT, Extracion, MyEntry
-from Ventanas import *
+from Preferencias import SelectFont
+from configparser import ConfigParser
 #-----------------------------------------------------------#
 user = getuser()
 mypath = os.path.expanduser("~/")
@@ -25,6 +25,7 @@ clt = ''
 path_modulo = mypath+"Compliance/file/desviaciones_{}.json"
 path_modulo_clave = mypath+"Compliance/file/{}.json"
 path_config = mypath+"Compliance/.conf/{}.json"
+path_config_ini = mypath+"Compliance/.conf/{}"
 
 list_client = []  
 list_issues = (
@@ -64,6 +65,17 @@ edi = ""
 res = ""
 evd = ""
 
+#* Configuracion de APARIENCIA INICIAL
+parse = ConfigParser()
+parse.read(path_config_ini.format("apariencia.ini"))
+bg_menu = parse.get('menu', 'background')
+fg_menu = parse.get('menu', 'foreground')
+acbg_menu = parse.get('menu', 'activebackground')
+acfg_menu = parse.get('menu', 'activeforeground')
+fg_submenu = parse.get('menu', 'foreground_submenu')
+bg_submenu = parse.get('menu', 'background_submenu')
+fondo_app = '#FBF8F1'
+
 def beep_error(f):
     '''
     Decorador que permite emitir un beep cuando un método de instancia
@@ -98,7 +110,7 @@ class Expandir(ttk.Frame):
         self.st_btnIDR = st_btnIDR
         self.varNum = varNum
         self.vtn_expandir = tk.Toplevel(self)
-        self.vtn_expandir.config(background='#F1ECC3')
+        self.vtn_expandir.config(background=fondo_app)
         window_width=1010
         window_height=650
         screen_width = app.root.winfo_x()
@@ -470,7 +482,6 @@ class Expandir(ttk.Frame):
             compound='left',
             image=desviacion.Expandir_icon1,            
             command=desviacion.abrir_DIRECTORY,
-            style='DESV.TButton',
             state="normal"
         )
         self.EXP_btn_VentanasAUTH = ttk.Button(
@@ -479,7 +490,6 @@ class Expandir(ttk.Frame):
             compound='left',
             image=desviacion.Expandir_icon1,            
             command=desviacion.abrir_AUTHORIZED,
-            style='DESV.TButton',
             state="normal"
         )
         self.EXP_btn_VentanasSER = ttk.Button(
@@ -488,7 +498,6 @@ class Expandir(ttk.Frame):
             compound='left',
             image=desviacion.Expandir_icon1,            
             command=desviacion.abrir_SERVICE,
-            style='DESV.TButton',
             state="normal"
         )
         self.EXP_btn_VentanasACC = ttk.Button(
@@ -497,7 +506,6 @@ class Expandir(ttk.Frame):
             compound='left',
             image=desviacion.Expandir_icon1,            
             command=desviacion.abrir_ACCOUNT,
-            style='DESV.TButton',
             state="normal"
         )
         self.EXP_btn_VentanasCMD = ttk.Button(
@@ -506,7 +514,6 @@ class Expandir(ttk.Frame):
             compound='left',
             image=desviacion.Expandir_icon1,            
             command=desviacion.abrir_COMMAND,
-            style='DESV.TButton',
             state="normal"
         )
         self.EXP_btn_VentanasIDR = ttk.Button(
@@ -515,7 +522,6 @@ class Expandir(ttk.Frame):
             compound='left',
             image=desviacion.Expandir_icon1,            
             command=desviacion.abrir_IDRSA,
-            style='DESV.TButton',
             state="normal"
         )
         self.EXP_btn_Siguiente = tk.Button(
@@ -526,10 +532,10 @@ class Expandir(ttk.Frame):
             border=0,
             borderwidth=0,
             highlightthickness=0,
-            background='#f1ecc3',
+            background=fondo_app,
             relief="flat",
-            highlightbackground='#f1ecc3',
-            activebackground='#f1ecc3',
+            highlightbackground=fondo_app,
+            activebackground=fondo_app,
         )
         self.EXP_btn_Siguiente.grid(row=0, column=2, pady=5, padx=10, sticky='ns')
         
@@ -541,10 +547,10 @@ class Expandir(ttk.Frame):
             border=0,
             borderwidth=0,
             highlightthickness=0,
-            background='#f1ecc3',
+            background=fondo_app,
             relief="flat",
-            highlightbackground='#f1ecc3', 
-            activebackground='#f1ecc3',
+            highlightbackground=fondo_app, 
+            activebackground=fondo_app,
         )
         self.EXP_btn_Anterior.grid(row=0, column=1, pady=5, sticky='ns')
         if self.st_btnDIR and self.titulo == "COMPROBACION" and self.varNum == 1:
@@ -566,7 +572,6 @@ class Expandir(ttk.Frame):
             self.vtn_expandir,
             image=desviacion.CopyALL1_icon,
             command=lambda e=self.EXP_srcExpandir : self.copiarALL(e),
-            style='DESV.TButton',
             state="disabled"
         )
         self.EXP_btnCopyALL.grid(row=0, column=4, padx=20, pady=5, sticky='ne')
@@ -574,7 +579,6 @@ class Expandir(ttk.Frame):
             self.vtn_expandir,
             image=desviacion.Captura1_icon,
             command=desviacion.ScreamEvidencia,
-            style='DESV.TButton',
             state="disabled",
         )
         self.EXP_btnScreamEvidencia.grid(row=0, column=5, pady=5, sticky='ne')
@@ -582,7 +586,6 @@ class Expandir(ttk.Frame):
             self.vtn_expandir,
             image=desviacion.Reducir_icon,
             command=self.cerrar_vtn_expandir,
-            style='DESV.TButton',
         )
         self.EXP_btnReducir.grid(row=0, column=6, padx=20, pady=5, sticky='ne')
         self.EXP_srcExpandir.grid(row=1, column=0, padx=5, pady=5, sticky='nsew', columnspan=7)
@@ -636,9 +639,9 @@ class TextSimilar(ttk.Frame):
 
 
 ## --- FRAME TITULO
-        self.frame1 = tk.Frame(
+        self.frame1 = ttk.Frame(
             self.vtn_modulos,
-            background='#F1ECC3',                )
+        )
         self.frame1.pack(fill='both', side='top', expand=0)
 
         self.titulo = ttk.Label(
@@ -646,14 +649,12 @@ class TextSimilar(ttk.Frame):
             text=self.titulo,
             foreground="#E45826",
             font=('Consolas', 15, font.BOLD),
-            background='#F1ECC3'
         )
         self.titulo.pack()
 
 ## --- FRAME LISTBOX
-        self.frame2 = tk.Frame(
+        self.frame2 = ttk.Frame(
             self.vtn_modulos,
-            background='#F1ECC3',
         )
         self.frame2.pack(fill='both', side='left', expand=1, pady=5, padx=5)
         self.frame2.pack_propagate(1)
@@ -682,10 +683,8 @@ class TextSimilar(ttk.Frame):
         self._list_modulo.bind("<Up>", lambda e: self._OnVsb_up(e))
 
 ## --- FRAME 3
-        self.frame3 = tk.Frame(
+        self.frame3 = ttk.Frame(
             self.vtn_modulos,
-            background='#F1ECC3',
-            #width=10
         )
         self.frame3.pack(fill='both', side='right', expand=0, pady=5, padx=5)
         self.frame3.rowconfigure(0, weight=1)
@@ -890,10 +889,7 @@ class Desviacion(ttk.Frame):
 # --- FUENTE PARA DESVIACIONES
 # --- Fuente Menu click derecho 
         self._font_MC_DESV = font.Font(family='Courier', size=14, font=font.BOLD)
-# ----------------------------------------------------------
-# --- Fuente para TXT de DESV
         self._font_TXT_DESV = font.Font(family='IBM Plex Sans', size=13)
-# -----------------------------------------------------------
 
         self.iconos()
         self.widgets_DESVIACION()
@@ -2249,20 +2245,15 @@ class Desviacion(ttk.Frame):
 # -----------------------------------------------------------------------------#
 ##TODO --- ENTRY DE BUSQUEDA
         self.var_entry_bsc = tk.StringVar(self)
+        
         self.DESVfr1_entModulo = MyEntry(
             self.DESV_frame1,
             textvariable=self.var_entry_bsc,
         )
+        
         self.DESVfr1_entModulo.config(
-            foreground="black",
-            font=self._font_TXT_DESV,
             state='disabled',
-            border=0,
-            borderwidth=0,
-            highlightthickness=2,
-            highlightcolor='#316B83',
-            selectforeground='#CDFFEB', 
-            selectbackground='#476072'
+            font=('Consolas',15)
         )
         self.DESVfr1_entModulo.grid(row=1, column=0, pady=5, padx=(5,0), sticky='nsew')
         
@@ -2272,7 +2263,6 @@ class Desviacion(ttk.Frame):
             image=self.BuscarModulo_icon,
             state='disabled',
             command=lambda: self.buscar_Modulos(self.DESVfr1_entModulo.get()),
-            style='DESV.TButton'
         )
         self.DESVfr1_btnBuscar.grid(row=1, column=1, pady=5, padx=5, sticky='nsw')
 ##TODO --- BOTON LIMPIAR BUSQUEDA
@@ -2280,7 +2270,6 @@ class Desviacion(ttk.Frame):
             self.DESV_frame1, 
             image=self.LimpiarModulo_icon,
             command=self.limpiar_busqueda,
-            style='DESV.TButton'
         )
         # -----------------------------------------------------------------------------#
         self.DESVlist_yScroll = tk.Scrollbar(self.DESV_frame1, orient=tk.VERTICAL)
@@ -2300,7 +2289,7 @@ class Desviacion(ttk.Frame):
             highlightthickness=2,
             highlightcolor='#297F87',
         )
-        self.DESVfr1_listbox.grid(row=2, column=0, pady=(5,15), padx=(5,15), sticky='nsew', columnspan=2)
+        self.DESVfr1_listbox.grid(row=2, column=0, pady=(5,12), padx=(5,12), sticky='nsew', columnspan=2)
         self.DESVlist_yScroll.grid(row=2, column=0, pady=(5,15), sticky='nse', columnspan=2)
         self.DESVlist_xScroll.grid(row=2, column=0, padx=5, sticky='sew', columnspan=2)
         self.DESVlist_xScroll['command'] = self.DESVfr1_listbox.xview
@@ -2321,7 +2310,6 @@ class Desviacion(ttk.Frame):
             text='',
             font=('Consolas', 12),
             width=10, 
-            background='#f1ecc3',
             foreground='gray55'
         ) 
         self.DESVfr2_lblDescripcion.grid(row=1, column=0, padx=5, pady=5, sticky='new', columnspan=5)
@@ -2582,8 +2570,8 @@ class Desviacion(ttk.Frame):
         if list_motion:
             list_motion.selection_clear(0,tk.END)
             self.limpiar_Widgets()
-
     def abrir_DIRECTORY(self):
+        from Ventanas import Ventana
         global asigne_Cliente
         global directory
         name_vtn = "PERMISSIONS"
@@ -2591,6 +2579,7 @@ class Desviacion(ttk.Frame):
         directory = Ventana(self,name_vtn, asigne_Cliente, app,desviacion,path)
     
     def abrir_COMMAND(self):
+        from Ventanas import Ventana
         global asigne_Cliente
         global command
         name_vtn = "COMMAND"
@@ -2598,6 +2587,7 @@ class Desviacion(ttk.Frame):
         command = Ventana(self,name_vtn, asigne_Cliente, app,desviacion,path)
     
     def abrir_AUTHORIZED(self):
+        from Ventanas import Ventana
         global asigne_Cliente
         global authorized
         name_vtn = "AUTHORIZED"
@@ -2605,6 +2595,7 @@ class Desviacion(ttk.Frame):
         authorized = Ventana(self,name_vtn, asigne_Cliente, app,desviacion,path)
     
     def abrir_ACCOUNT(self):
+        from Ventanas import Ventana
         global asigne_Cliente
         global account
         name_vtn = "ACCOUNT"
@@ -2612,6 +2603,7 @@ class Desviacion(ttk.Frame):
         account = Ventana(self,name_vtn, asigne_Cliente, app,desviacion,path)
     
     def abrir_SERVICE(self):
+        from Ventanas import Ventana
         global asigne_Cliente
         global service
         name_vtn = "SERVICE"
@@ -2619,6 +2611,7 @@ class Desviacion(ttk.Frame):
         service = Ventana(self,name_vtn, asigne_Cliente, app,desviacion,path)
     
     def abrir_IDRSA(self):
+        from Ventanas import Ventana
         global asigne_Cliente
         global idrsa
         name_vtn = "ID_RSA"
@@ -2640,7 +2633,7 @@ class Aplicacion():
         position_top = int(screen_height/2 - window_height/2)
         position_right = int(screen_width/2 - window_width/2)
         self.root.geometry(f'{window_width}x{window_height}+{position_top}+{position_right}')
-        self.root.configure(background='black') 
+        self.root.configure(background=fondo_app) 
         self.root.tk.call('wm', 'iconphoto', self.root._w, tk.PhotoImage(file=path_icon+r'compliance.png'))
         self.open_client()
         self.iconos()
@@ -2659,9 +2652,13 @@ class Aplicacion():
         # Fuente MENU CLICK DERECHO APP
         self._font_MC_APP = font.Font(family='Courier', size=14, font=font.BOLD)
         # ----------------------------------------------------------
-
+        self.sizegrid = ttk.Sizegrip(
+            self.cuaderno,
+        )
+        self.sizegrid.pack(side="right", anchor='se')
+        
         # Fuente para la barra de MENU
-        self._font_BARRA_APP = font.Font(family='Segoe Script', size=13, weight=font.BOLD)
+        self._font_BARRA_APP = font.Font(family='Segoe Script', size=11, weight=font.BOLD)
         # ----------------------------------------------------------
 
         self.estilos()
@@ -2712,33 +2709,28 @@ class Aplicacion():
             fieldbackground= 'white',
             background='#F4D19B',
             selectbackground="lightblue",
-            selectforeground="black"
+            selectforeground="#F6D167"
         )
         self.style.map('TCombobox',
             background=[
                 ("active","#D7E9F7")
             ]
         )
+        self.style.configure('TSizegrip',
+            background=fondo_app,
+            borderwidth=0,
+            border=0
+        )
         self.style.configure('TFrame',
-                            background='#f1ecc3',
+            background=fondo_app,
         )
         self.style.configure('TLabelframe',
-            background='#f1ecc3',
+            background=fondo_app,
         )
         self.style.configure('TLabelframe.Label',
-            background='#1A1C20',
-            foreground='#F0A500',
-            font=('Source Sans Pro',12, font.BOLD),
-        )
-        ## --- ESTILOS DE VENTANAS TOP
-        self.style.configure(
-            'TOP.TLabelframe',
-            background='#F9F3DF',
-        )
-        self.style.configure(
-            'TOP.TLabelframe.Label',
-            background='#D7E9F7',
-            foreground='black',
+            background=fondo_app,
+            foreground='red',
+            font=('Open Sanz',13, font.BOLD),
         )
         self.style.configure(
             'TOP.TButton',
@@ -2784,12 +2776,6 @@ class Aplicacion():
             relief=[("active",'ridge'),("pressed",'groove')],
             borderwidth=[("active",1)],
         )
-        self.style.configure(
-            'TOP.TLabel',
-            background = "#F9F3DF",
-            foreground = "#A45D5D",
-            font=('Source Sans Pro',14, font.BOLD)
-        )
         ## ===============================================================================
         self.style.configure(
             'APP.TButton',
@@ -2810,47 +2796,58 @@ class Aplicacion():
         )
         
         self.style.configure('TButton',
-                            background = "#D4ECDD",
-                            relief='sunke',
-                            borderwidth=1,
-                            #padding=7,
-                            font=('Source Sans Pro', 12, font.BOLD)
-                            )
-        self.style.map('TButton',
-                            background=[("active","#FAD586")],
-                            foreground=[("active","#C64756")],
-                            #padding=[("active",7),("pressed",5)],
-                            relief=[("active",'ridge'),("pressed",'groove')],
-                            borderwidth=[("active",1)],
-                            )
-
-
-        self.style.configure( 
-            'DESV.TButton',
             background = "#D4ECDD",
             relief='sunke',
             borderwidth=1,
-            padding=10,
-            font=('Source Sans Pro', 13, font.BOLD), 
+            padding=6,
+            font=('Source Sans Pro', 13, font.BOLD)
         )
-        self.style.map('DESV.TButton',
-                            background = [("active","#F6D167")],
-                            padding=[("active",10),("pressed",10)],
-                            relief=[("active",'ridge'),("pressed",'groove')],
-                            borderwidth=[("active",1)],
-                            )
+        self.style.map('TButton',
+            background=[("active","#F6D167")],
+            foreground=[("active","#C64756")],
+            padding=[("active",6),("pressed",6)],
+            relief=[("active",'ridge'),("pressed",'groove')],
+            borderwidth=[("active",1)],
+        )
+
+        # self.style.configure( 
+        #     'DESV.TButton',
+        #     background = "#D4ECDD",
+        #     relief='sunke',
+        #     borderwidth=1,
+        #     padding=10,
+        #     font=('Source Sans Pro', 13, font.BOLD), 
+        # )
+
+        # self.style.map('DESV.TButton',
+        #     background = [("active","#F6D167")],
+        #     padding=[("active",10),("pressed",10)],
+        #     relief=[("active",'ridge'),("pressed",'groove')],
+        #     borderwidth=[("active",1)],
+        # )
+        
         self.style.configure('APP.TLabel',
-                            background = "#082032",
-                            foreground = "#CDFFEB",
-                            font=('Comfortaa',30,font.BOLD))
+            background = bg_menu,
+            foreground = fg_menu,
+            font=('Comfortaa',30,font.BOLD)
+        )
+        
         self.style.configure('TLabel',
-                            background = "#f1ecc3",
-                            foreground = "gray17",
-                            font=('Helvetica',12, font.BOLD))
+            background = fondo_app,
+            foreground = "gray17",
+            font=('Helvetica',12, font.BOLD)
+        )
+        
         self.style.configure('TEntry',
-                            background = "#f1ecc3",
-                            foreground = "gray17",
-                            font=('Helvetica',12, font.BOLD))
+            background = fondo_app,
+            foreground = "black",
+            border=2,
+            borderwidth=2,
+            highlightthickness=2,
+            highlightcolor='#316B83',
+            selectforeground='back',
+            selectbackground='lightblue',
+        )
 
 ## --- MENU CONTEXTUAL --- ##
 ## --- MENU PARA EXPANDIR -----------------------------
@@ -3144,6 +3141,7 @@ class Aplicacion():
         idpTab = self.cuaderno.index('current')
     
     def abrir_scripts(self):
+        from Scripts import Automatizar
         global idpTab
         global automatizar
         automatizar = Automatizar(self.cuaderno, app, application=self)
@@ -3168,7 +3166,7 @@ class Aplicacion():
 
     def _acerca_de(self):
         self.vtn_acerca_de = tk.Toplevel(self.root)
-        self.vtn_acerca_de.config(background='#F1ECC3')
+        self.vtn_acerca_de.config(background=fondo_app)
         window_width=780
         window_height=370
         screen_width = app.root.winfo_x()
@@ -3184,112 +3182,96 @@ class Aplicacion():
         self.icono_Acerca_de = ImageTk.PhotoImage(
             Image.open(path_icon+r"img_acerca_de.png").resize((200, 200)))
 
-        self.AcercaDe_ico_frame = tk.Frame(
+        self.AcercaDe_ico_frame = ttk.Frame(
                 self.vtn_acerca_de,
-                background='#F1ECC3',
                 width=300,
             )
         self.AcercaDe_ico_frame.pack(fill='both', expand=1, side='left')
         self.AcercaDe_ico_frame.pack_propagate(False)
 
-        self.ico_Acerca_de = tk.Label(
+        self.ico_Acerca_de = ttk.Label(
             self.AcercaDe_ico_frame, 
             text='imagen',
             image=self.icono_Acerca_de,
-            background='#F1ECC3',
         )
         self.ico_Acerca_de.place(x=50, y=50)
 
-        self.AcercaDe_txt_frame = tk.Frame(
+        self.AcercaDe_txt_frame = ttk.Frame(
                 self.vtn_acerca_de, 
-                background='#F1ECC3',
-                #width=40,
-                #height=50 
             )
         self.AcercaDe_txt_frame.pack(fill='both', expand=1, side='left')
         #self.AcercaDe_txt_frame.pack_propagate(False)
 
-        self.lbl1 = tk.Label(
+        self.lbl1 = ttk.Label(
             self.AcercaDe_txt_frame, 
             text='CONTINUOUS COMPLIANCE',
-            background="#F1ECC3",
             anchor='center',
             font=("Consolas", 16, "bold")
         )
         self.lbl1.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
 
-        self.lbl5 = tk.Label(
+        self.lbl5 = ttk.Label(
             self.AcercaDe_txt_frame,
             width=20,
             text='Herramienta para resolucion    de ISSUES Desviaciones / Extraciones',
-            background="#F1ECC3",
             anchor='w',
             font=("Consolas", 13)
         )
         self.lbl5.grid(row=1, column=0, padx=5, pady=5, sticky='nsew')
         self.lbl5.bind("<Configure>", self.label_resize)
 
-        self.lbl2 = tk.Label(
+        self.lbl2 = ttk.Label(
             self.AcercaDe_txt_frame, 
             text='Versión:   2.0',
-            background="#F1ECC3",
             anchor='w',
-            #width=20,
             font=("Consolas", 13)
         )
         self.lbl2.grid(row=2, column=0, padx=5, pady=5, sticky='nsew')
         #self.lbl2.bind("<Configure>", self.label_resize)
 
-        self.lbl3 = tk.Label(
+        self.lbl3 = ttk.Label(
             self.AcercaDe_txt_frame, 
             text='Fecha:   sabado marzo 12 CET 2022',
-            background="#F1ECC3",
             anchor='w',
-            #width=20,
             font=("Consolas", 11)
         )
         self.lbl3.grid(row=3, column=0, padx=5, pady=5, sticky='nsew')
         #self.lbl3.bind("<Configure>", self.label_resize)
 
-        self.lbl4 = tk.Label(
+        self.lbl4 = ttk.Label(
             self.AcercaDe_txt_frame, 
-            #width=20,
             text='OS: x86_64 GNU/Linux',
-            background="#F1ECC3",
             anchor='w',
             font=("Consolas", 11)
         )
         self.lbl4.grid(row=4, column=0, padx=5, pady=5, sticky='nsew')
         #self.lbl4.bind("<Configure>", self.label_resize)
 
-        self.lbl6 = tk.Label(
+        self.lbl6 = ttk.Label(
             self.AcercaDe_txt_frame, 
             #width=20,
             foreground='gray',
             text='Documentado por el equipo de PHC - UNIX',
-            background="#F1ECC3",
             anchor='w',
             font=("Consolas", 11)
         )
         self.lbl6.grid(row=5, column=0, padx=5, pady=5, sticky='nsew')
 
-        self.lbl7 = tk.Label(
+        self.lbl7 = ttk.Label(
             self.AcercaDe_txt_frame, 
             #width=20,
             foreground='gray',
             text='Creado por Jose Alvaro Cedeño Panchana',
-            background="#F1ECC3",
             anchor='w',
             font=("Consolas", 11)
         )
         self.lbl7.grid(row=6, column=0, padx=5, pady=5, sticky='nsew')
 
-        self.lbl8 = tk.Label(
+        self.lbl8 = ttk.Label(
             self.AcercaDe_txt_frame, 
             #width=20,
             foreground='gray',
             text='Copyright © 2021 - 2022 Jose Alvaro Cedeño Panchana',
-            background="#F1ECC3",
             anchor='w',
             font=("Consolas", 11, 'bold')
         )
@@ -3328,7 +3310,7 @@ class Aplicacion():
 
     def _glosario(self):
         self.vtn_glosario = tk.Toplevel(self.root)
-        self.vtn_glosario.config(background='#F1ECC3')
+        self.vtn_glosario.config(background=fondo_app)
         window_width=800
         window_height=400
         screen_width = app.root.winfo_x()
@@ -3341,35 +3323,30 @@ class Aplicacion():
         self.vtn_glosario.resizable(False,False)
         self.vtn_glosario.title("Continuous Compliance")
         
-        self.frame1 = tk.Frame(
+        self.frame1 = ttk.Frame(
             self.vtn_glosario,
-            background='#F1ECC3',
             height=40,
         )
         self.frame1.pack(fill='both', side='top', expand=0)
 
-        self.titulo = tk.Label(
+        self.titulo = ttk.Label(
             self.frame1,
             text='PALABRAS CLAVES DESVIACIONES',
             font=('Consolas', 20, font.BOLD),
-            background='#F1ECC3'
         )
         self.titulo.pack(expand=1)
 
-        self.frame2 = tk.Frame(
+        self.frame2 = ttk.Frame(
             self.vtn_glosario,
-            background='#F1ECC3',
         )
         self.frame2.pack(fill='both', side='left', expand=0, pady=10)
         
-        #self.frame2.rowconfigure(0, weight=1)
         self.frame2.rowconfigure(1, weight=1)
 
-        self.titulo_modulo = tk.Label(
+        self.titulo_modulo = ttk.Label(
             self.frame2,
             text='MODULO',
             font=('Consolas', 15, font.BOLD),
-            background='#F1ECC3',
             anchor='center',
             width=50
         )
@@ -3382,8 +3359,8 @@ class Aplicacion():
             self.frame2,
             font=('Consolas', 12),
             foreground='blue',
-            selectbackground='#297F87',
-            selectforeground='#F6D167',
+            selectbackground='lightblue',
+            selectforeground='black',
             disabledforeground='black',
             exportselection=False,
             highlightbackground='gray88',
@@ -3394,20 +3371,18 @@ class Aplicacion():
         self._list_modulo.grid(row=1, column=0, sticky='nsew', pady=10)
         listbox_list.append(self._list_modulo)
         
-        self.frame3 = tk.Frame(
+        self.frame3 = ttk.Frame(
             self.vtn_glosario,
-            background='#F1ECC3',
             width=40
         )
         self.frame3.pack(fill='both', side='right', expand=1, pady=10,padx=10)
         self.frame3.columnconfigure(0, weight=1)
         self.frame3.rowconfigure(1, weight=1)
 
-        self.titulo_clave = tk.Label(
+        self.titulo_clave = ttk.Label(
             self.frame3,
             text='CLAVE',
             font=('Consolas', 15, font.BOLD),
-            background='#F1ECC3',
             anchor='center'
         )
         self.titulo_clave.grid(row=0, column=0, sticky='nsew', pady=5, padx=5, columnspan=2)
@@ -3445,19 +3420,19 @@ class Aplicacion():
             self.menuBar = tk.Menu(self.root, relief=FLAT, border=0)
             self.root.config(menu=self.menuBar)
             self.menuBar.config(
-                background='#1A1C20',
-                foreground='#CF7500',
+                background=bg_menu,
+                foreground=fg_menu,
                 font=self._font_BARRA_APP,
-                activebackground='#003638',
-                activeforeground='#53B8BB',
+                activebackground=acbg_menu,
+                activeforeground=acfg_menu,
             )
             self.fileMenu = Menu(self.menuBar, tearoff=0)
             self.fileMenu.config(
-                background='#003638',
-                foreground='#F3F2C9',
+                background=bg_submenu,
+                foreground=fg_submenu,
                 font=self._font_BARRA_APP,
-                activebackground='#003638',
-                activeforeground='#53B8BB',
+                activebackground=acbg_menu,
+                activeforeground=acfg_menu,
             )
             # --- INICIAMOS SUB MENU -------------------------- #
             self.clientMenu = Menu(self.fileMenu, tearoff=0)
@@ -3465,19 +3440,19 @@ class Aplicacion():
             # -------------------------------------------------- #
 
             self.issuesMenu.config(
-                background='#003638',
-                foreground='#F3F2C9',
+                background=bg_submenu,
+                foreground=fg_submenu,
                 font=self._font_BARRA_APP,
-                activebackground='#003638',
-                activeforeground='#53B8BB',
+                activebackground=acbg_menu,
+                activeforeground=acfg_menu,
                 selectcolor='#CF7500'
             )
             self.clientMenu.config(
-                background='#003638',
-                foreground='#F3F2C9',
+                background=bg_submenu,
+                foreground=fg_submenu,
                 font=self._font_BARRA_APP,
-                activebackground='#003638',
-                activeforeground='#53B8BB',
+                activebackground=acbg_menu,
+                activeforeground=acfg_menu,
                 selectcolor='#CF7500'
             )
 
@@ -3493,6 +3468,17 @@ class Aplicacion():
                 image=self.Client_icon,
                 compound=LEFT,
                 menu=self.clientMenu
+            )
+
+            self.fileMenu.add_separator()
+
+            #* MENU PREFERENCIAS
+            self.fileMenu.add_command(
+                label="  Preferencias",
+                image=self.Client_icon,
+                compound=LEFT,
+                command=self._fontchooser
+                #menu=self.clientMenu
             )
 
             self.fileMenu.add_separator()
@@ -3524,11 +3510,11 @@ class Aplicacion():
 
             self.editMenu = Menu(self.menuBar, tearoff=0)
             self.editMenu.config(
-                background='#003638',
-                foreground='#F3F2C9',
+                background=bg_submenu,
+                foreground=fg_submenu,
                 font=self._font_BARRA_APP,
-                activebackground='#003638',
-                activeforeground='#53B8BB',
+                activebackground=acbg_menu,
+                activeforeground=acfg_menu,
             )
             self.editMenu.add_command(
                 label="  Buscar",
@@ -3541,11 +3527,11 @@ class Aplicacion():
             self.fileMenu.add_separator()
             self.helpMenu = Menu(self.menuBar, tearoff=0)
             self.helpMenu.config(
-                background='#003638',
-                foreground='#F3F2C9',
+                background=bg_submenu,
+                foreground=fg_submenu,
                 font=self._font_BARRA_APP,
-                activebackground='#003638',
-                activeforeground='#53B8BB',
+                activebackground=acbg_menu,
+                activeforeground=acfg_menu,
             )
             self.helpMenu.add_command(
                 label="  Ayuda",
@@ -3689,6 +3675,12 @@ class Aplicacion():
                 sticky='nsew'
             )
 
+    def _fontchooser(self):
+        print("ABRE")
+        ventanafont = SelectFont(parent=None, titulo="Ventana")
+
+        #ventanafont.grab_set()
+    
     def mainloop(self):
         self.root.mainloop()
 

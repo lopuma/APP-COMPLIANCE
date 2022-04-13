@@ -12,6 +12,8 @@ from PIL import Image, ImageTk
 from tkinter.ttk import Style
 from threading import Thread
 import time
+
+from setuptools import Command
 user = getuser()
 mypath = os.path.expanduser("~/")
 path_extracion = mypath+"Compliance/extracion/"
@@ -35,9 +37,9 @@ def beep_error(f):
                 args[0].bell()
     return applicator
 
-class MyEntry(tk.Entry):
+class MyEntry(ttk.Entry):
     def __init__(self, parent=None, *args, **kwargs):
-        tk.Entry.__init__(self, parent, *args, **kwargs)
+        ttk.Entry.__init__(self, parent, *args, **kwargs)
         self.parent = parent
         self.changes = [""]
         self.steps = int()
@@ -251,6 +253,13 @@ class Extracion(ttk.Frame):
         self.frame1.columnconfigure(0, weight=1)
         self.frame1.rowconfigure(1, weight=1)
         
+        self.sizegrid = tk.Button(
+            self.frame1,
+            width=1,
+            height=1
+        )
+        self.sizegrid.grid(row=1, column=1, sticky='ns')
+
         self.btn_close = tk.Button(
             self.frame1,
             background="#39A2DB",
@@ -261,7 +270,8 @@ class Extracion(ttk.Frame):
             image=self.closeIcon,
             command=self.hide_btn_nav,
         )
-        self.btn_close.grid(row=0, column=0, sticky="e")
+        self.btn_close.grid(row=0, column=0, sticky="e", columnspan=2)
+
         self.treeview = ttk.Treeview(
             self.frame1,
             style="myTREE.Treeview",
@@ -298,7 +308,7 @@ class Extracion(ttk.Frame):
             text="+",
             font=("Consolas", 12, font.BOLD)
         )
-        self.max.grid(row=2, column=0, sticky="e")
+        self.max.grid(row=2, column=0, sticky="e",columnspan=2)
 
         self.min = tk.Button(
             self.frame1,
@@ -933,20 +943,12 @@ class Extracion(ttk.Frame):
                 font=('Consolas', 12, 'bold'))
 
             self.var_entry_bsc = tk.StringVar(self)
+            
             self.entr_str = MyEntry(
                 self.busca_frm_content,
                 textvariable=self.var_entry_bsc,
-                width=50
-            )
-            self.entr_str.config(
-                foreground="black",
-                font=("Consolas", 14),
-                border=0,
-                borderwidth=0,
-                highlightthickness=1,
-                highlightcolor='#316B83',
-                selectforeground='#CDFFEB',
-                selectbackground='#476072'
+                width=45,
+                font=('Consolas',15)
             )
             self.entr_str.grid(row=0, column=0, padx=5, sticky="nsew")
 
