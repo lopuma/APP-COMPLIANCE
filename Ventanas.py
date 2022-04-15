@@ -8,7 +8,7 @@ from tkinter import scrolledtext as st
 from tkinter import messagebox as mb
 from tkinter import font as font
 from PIL import Image, ImageTk
-from Compliance import fondo_app
+from Compliance import fondo_app, color_titulos, _Font_Texto, color_fg_list, sel_bg_txt, sel_fg_txt, active_color, _Font_Menu
 user = getuser()
 mypath = os.path.expanduser("~/")
 path_icon = mypath+"Compliance/image/"
@@ -26,7 +26,7 @@ class Ventana(ttk.Frame):
         self.vtn_ventanas.config(
             background=fondo_app
         )
-        window_width=1028
+        window_width=1170
         window_height=720
         screen_width = self.app.root.winfo_x()
         screen_height= self.app.root.winfo_y()
@@ -41,7 +41,7 @@ class Ventana(ttk.Frame):
         #self.vtn_ventanas.grab_set()
         self.vtn_ventanas.columnconfigure(0, weight=1)
         self.vtn_ventanas.rowconfigure(2, weight=5)
-        self.text_font = font.Font(family='Consolas', size=13) 
+        _Font_Menu = font.Font(family='Consolas', size=13) 
         self.iconos()
         self.widgets_ventanas()
         self.menu_clickDerecho()
@@ -113,13 +113,19 @@ class Ventana(ttk.Frame):
         text_widget = event.widget
         entry = self.var_ent_buscar.get()
         if entry == "Buscar Directories / File ...":
-            text_widget.config(foreground="black", font=("Consolas", 14))
+            text_widget.config(
+                foreground="black", 
+                font=_Font_Texto
+            )
             self.var_ent_buscar.set("")
             text_widget.icursor(0)
             self.btnLimpiar.grid_forget()
             self.btnBuscar.grid(row=0, column=1, sticky=tk.W)
         elif entry == "":
-            text_widget.config(foreground="gray75", font=("Consolas", 12))
+            text_widget.config(
+                foreground="gray75", 
+                font=_Font_Texto
+            )
             self.var_ent_buscar.set("Buscar Directories / File ...")
             text_widget.icursor(0)
             self.btnLimpiar.grid_forget()
@@ -317,14 +323,13 @@ class Ventana(ttk.Frame):
         return 'break'
     
     def menu_clickDerecho(self):
-        self.text_font = font.Font(family='Courier', size=14, font=font.BOLD)   
         self.menu_Contextual = tk.Menu(self, tearoff=0)
         self.menu_Contextual.add_command(
             label="  Buscar", 
             accelerator='Ctrl+F',
             background='#ccffff', foreground='black',
             activebackground='#004c99',activeforeground='white',
-            font=self.text_font,
+            font=_Font_Menu,
             command=self.act_buscar,
         )
         self.menu_Contextual.add_separator(background='#ccffff')
@@ -333,7 +338,7 @@ class Ventana(ttk.Frame):
             accelerator='Ctrl+C',
             background='#ccffff', foreground='black',
             activebackground='#004c99',activeforeground='white',
-            font=self.text_font,
+            font=_Font_Menu,
             command=self.copiar,
             state='normal',
         )
@@ -342,7 +347,7 @@ class Ventana(ttk.Frame):
             accelerator='Ctrl+V',
             background='#ccffff', foreground='black',
             activebackground='#004c99',activeforeground='white',
-            font=self.text_font,
+            font=_Font_Menu,
             command=self.pegar,
         )
         self.menu_Contextual.add_separator(background='#ccffff')
@@ -351,7 +356,7 @@ class Ventana(ttk.Frame):
             accelerator='Ctrl+A',
             background='#ccffff', foreground='black',
             activebackground='#004c99',activeforeground='white',
-            font=self.text_font,
+            font=_Font_Menu,
             command=self.seleccionar_todo,
             state='normal',
         )
@@ -360,7 +365,7 @@ class Ventana(ttk.Frame):
             accelerator='Ctrl+X',
             background='#ccffff', foreground='black',
             activebackground='#004c99',activeforeground='white',
-            font=self.text_font,
+            font=_Font_Menu,
             command=self.limpiar_bsq2,
             state='disabled',
         )
@@ -370,7 +375,7 @@ class Ventana(ttk.Frame):
                                 compound=tk.LEFT,
                                 background='#ccffff', foreground='black',
                                 activebackground='#004c99',activeforeground='white',
-                                font=self.text_font,
+                                font=_Font_Menu,
                                 command=self.cerrar_vtn
                                 )
     
@@ -410,7 +415,6 @@ class Ventana(ttk.Frame):
         listbox.selection_set(0, tk.END)
     
     def menuList_clickDerecho(self):
-        self.text_font = font.Font(family='Courier', size=14, font=font.BOLD)   
         self.menuLis_Contextual = tk.Menu(self, tearoff=0)
         ## buscar
         self.menuLis_Contextual.add_command(
@@ -418,7 +422,7 @@ class Ventana(ttk.Frame):
             accelerator='Ctrl+F',
             background='#ccffff', foreground='black',
             activebackground='#004c99',activeforeground='white',
-            font=self.text_font,
+            font=_Font_Menu,
             command=self.act_buscar,
         )
         self.menuLis_Contextual.add_separator(background='#ccffff')
@@ -428,7 +432,7 @@ class Ventana(ttk.Frame):
             accelerator='Ctrl+C',
             background='#ccffff', foreground='black',
             activebackground='#004c99',activeforeground='white',
-            font=self.text_font,
+            font=_Font_Menu,
             command=lambda e=self.listServer:self.copiar_optionLis(e),
             state='disabled',
         )
@@ -438,7 +442,7 @@ class Ventana(ttk.Frame):
             accelerator='Ctrl+V',
             background='#ccffff', foreground='black',
             activebackground='#004c99',activeforeground='white',
-            font=self.text_font,
+            font=_Font_Menu,
             state='disabled',
         )
         self.menuLis_Contextual.add_separator(background='#ccffff')
@@ -448,7 +452,7 @@ class Ventana(ttk.Frame):
             accelerator='Ctrl+A',
             background='#ccffff', foreground='black',
             activebackground='#004c99',activeforeground='white',
-            font=self.text_font,
+            font=_Font_Menu,
             command=lambda e=self.listServer:self.selALL_optionLis(e),
             state='normal',
         )
@@ -458,7 +462,7 @@ class Ventana(ttk.Frame):
             accelerator='Ctrl+X',
             background='#ccffff', foreground='black',
             activebackground='#004c99',activeforeground='white',
-            font=self.text_font,
+            font=_Font_Menu,
             state='disabled',
         )
         self.menuLis_Contextual.add_separator(background='#ccffff')
@@ -469,7 +473,7 @@ class Ventana(ttk.Frame):
             compound=tk.LEFT,
             background='#ccffff', foreground='black',
             activebackground='#004c99',activeforeground='white',
-            font=self.text_font,
+            font=_Font_Menu,
             command=self.cerrar_vtn
         )
     
@@ -522,7 +526,7 @@ class Ventana(ttk.Frame):
             justify='left',
             width=40,
             foreground="gray75",
-            font=("Consolas", 12),
+            font=_Font_Texto,
             border=0,
             borderwidth=0,
             highlightthickness=3,
@@ -565,7 +569,6 @@ class Ventana(ttk.Frame):
         self.labelframe1=ttk.LabelFrame(
             self.vtn_ventanas, 
             text="DATOS",
-            style='TOP.TLabelframe'
         )
         self.labelframe1.grid(column=0, row=1, padx=10, pady=5, columnspan=3, sticky='nsew')
         self.labelframe1.columnconfigure(0, weight=1)
@@ -598,8 +601,8 @@ class Ventana(ttk.Frame):
         self.tree.heading("#3", text="TIPO", anchor=tk.CENTER)
         self.tree.heading("#4", text="OWNER GROUP", anchor=tk.CENTER)
         self.tree.heading("#5", text="CODE", anchor=tk.CENTER)
-        self.tree.tag_configure('oddrow', background="#CEE5D0", font=self.text_font)
-        self.tree.tag_configure('evenrow', background="#F3F0D7", font=self.text_font)
+        self.tree.tag_configure('oddrow', background="#CEE5D0", font=_Font_Texto)
+        self.tree.tag_configure('evenrow', background="#F3F0D7", font=_Font_Texto)
         self.tree.grid(column=0, row=0, pady=10, padx=(5,0), sticky=tk.E+tk.W)
 
         ## ====================================================================================
@@ -607,7 +610,6 @@ class Ventana(ttk.Frame):
         self.labelframe2=ttk.LabelFrame(
             self.vtn_ventanas, 
             text="OTROS DATOS",
-            style='TOP.TLabelframe'
         )
         self.labelframe2.grid(column=0, row=2, padx=10, pady=5, columnspan=3, sticky='nsew')
         self.labelframe2.rowconfigure(1, weight=1)
@@ -619,7 +621,6 @@ class Ventana(ttk.Frame):
         self.lbl1 = ttk.Label(
             self.labelframe2,
             text='SERVER',
-            style='TOP.TLabel',
         )
         self.lbl1.grid(row=0, column=0, pady=5, padx=5, columnspan=2)
         
@@ -630,13 +631,13 @@ class Ventana(ttk.Frame):
         self.fr2_scroll1 = tk.Scrollbar(self.labelframe2, orient=tk.VERTICAL)
         self.listServer.config(
             selectmode=tk.EXTENDED,
-            foreground='#334257',
-            selectforeground='black', 
-            selectbackground='lightblue', 
-            font=self.text_font,
-            highlightcolor='#297F87',
+            foreground=color_fg_list,
+            selectbackground=sel_bg_txt,
+            selectforeground=sel_fg_txt,
+            font=_Font_Texto,
+            highlightcolor = active_color,
             borderwidth=0, 
-            highlightthickness=3,
+            highlightthickness=2,
             height=8,
             width=15,
             yscrollcommand=self.fr2_scroll1.set
@@ -649,7 +650,6 @@ class Ventana(ttk.Frame):
         self.lbl2 = ttk.Label(
             self.labelframe2, 
             text='RISK',
-            style='TOP.TLabel',
         )
         self.lbl2.grid(row=0, column=2, pady=5, padx=5, sticky='W')
         
@@ -657,7 +657,7 @@ class Ventana(ttk.Frame):
             self.labelframe2,
         )
         self.srcRisk.config(
-            font=self.text_font, 
+            font=_Font_Texto, 
             height=6,
             wrap=tk.WORD,
             highlightcolor='#297F87',
@@ -682,7 +682,6 @@ class Ventana(ttk.Frame):
         self.lbl3 = ttk.Label(
             self.labelframe2,
             text='IMPACT',
-            style='TOP.TLabel',
         )
         self.lbl3.grid(row=0, column=4, pady=5, padx=5, sticky='W')
         
@@ -690,7 +689,7 @@ class Ventana(ttk.Frame):
             self.labelframe2,
         )
         self.srcImpact.config(
-            font=self.text_font, 
+            font=_Font_Texto, 
             height=6,
             wrap=tk.WORD,
             highlightcolor='#297F87',
@@ -715,8 +714,7 @@ class Ventana(ttk.Frame):
         self.lbl_SO = ttk.Label(
             self.labelframe2,
             text='SISTEMAS OPERATIVO',
-            font=("Consolas",15, font.BOLD),
-            style='TOP.TLabelframe.Label',
+            foreground=color_titulos,
             justify='center',
         )
         self.lbl_SO.grid(row=2, column=2, pady=5, padx=10, sticky='w')
@@ -726,9 +724,8 @@ class Ventana(ttk.Frame):
             self.labelframe2,
         )
         self.cbxUser.config(
-            font=("Consolas",14,font.BOLD), 
+            font = _Font_Texto,
             justify='center',
-            foreground='#D9534F'
         )
         self.cbxUser.set('CONTACTOS')
         self.cbxUser.grid(row=3, column=2, padx=5, pady=5, ipady=7, sticky='new')
@@ -737,7 +734,6 @@ class Ventana(ttk.Frame):
         self.lbl4 = ttk.Label(
             self.labelframe2,
             text='VARIABLES',
-            style='TOP.TLabel',
         )
         self.lbl4.grid(row=2, column=3, pady=5, padx=5, sticky='W')
 
@@ -745,7 +741,7 @@ class Ventana(ttk.Frame):
             self.labelframe2,
         )
         self.srcVariable.config(
-            font=self.text_font, 
+            font=_Font_Texto, 
             height=5,
             wrap=tk.WORD,
             highlightcolor='#297F87',

@@ -10,7 +10,7 @@ import subprocess
 from jsonpath_ng.ext import parse
 from functools import partial
 from ScrollableNotebook  import *
-from Compliance import fondo_app
+from Compliance import fondo_app, _Font_Boton
 
 #* variable para actualizar la ventana
 PST_AUT = ""
@@ -36,7 +36,6 @@ cl_btn_fg = '#534340'
 class FramesPoliticas(ttk.Frame):
     def __init__(self, parent, cliente, frame, *args, **kwargs):
         ttk.Frame.__init__(self, parent, *args, **kwargs)
-        self.font_LabelFrame = font.Font(font=("Open Sanz", 13, "bold"))
         global PST_AUT
         global FR_POL
         self.btn_lis_pol = []
@@ -190,7 +189,6 @@ class FramesPoliticas(ttk.Frame):
 class FramesScripts(ttk.Frame):
     def __init__(self, parent, cliente, frame, politica, *args, **kwargs):
         ttk.Frame.__init__(self, parent, *args, **kwargs)
-        self.font_LabelFrame = font.Font(font=("Open Sanz", 15, "bold"))
         global PST_AUT
         self.frame = frame
         self.cliente = cliente
@@ -344,12 +342,11 @@ class FramesScripts(ttk.Frame):
 class BtnScripts(tk.Button):
     def __init__(self, *args, **kwargs):
         tk.Button.__init__(self, *args, **kwargs)
-        self.font_LabelFrame = font.Font(font=("Open Sanz", 15, "bold"))
 
         BtnScripts.configure(self,
             background=cl_btn_bg,
             foreground=cl_btn_fg,
-            font=('Open Sans', 13, font.BOLD),
+            font=_Font_Boton,
             relief='ridge',
             activeforeground=cl_btn_actbg,
             activebackground=cl_btn_actfg,
@@ -361,7 +358,6 @@ class BtnScripts(tk.Button):
 class Automatizar(ttk.Frame):
     def __init__(self, parent, app, application=None, *args, **kwargs):
         ttk.Frame.__init__(self, parent, *args, **kwargs)
-        self.font_LabelFrame = font.Font(font=("Open Sanz", 15, "bold"))
         global PST_AUT
         self.btn_lis_cli = []
         self.click = True

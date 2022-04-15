@@ -15,7 +15,6 @@ from tkinter.ttk import Style
 from threading import Thread
 from ScrollableNotebook  import *
 from Extraciones import PST_EXT, Extracion, MyEntry
-from Preferencias import SelectFont
 from configparser import ConfigParser
 #-----------------------------------------------------------#
 user = getuser()
@@ -75,6 +74,30 @@ acfg_menu = parse.get('menu', 'activeforeground')
 fg_submenu = parse.get('menu', 'foreground_submenu')
 bg_submenu = parse.get('menu', 'background_submenu')
 fondo_app = '#FBF8F1'
+color_titulos = '#FF8080'
+sel_bg_txt = 'lightblue'
+sel_fg_txt = 'black'
+active_color = '#297F87'
+color_fg_list =  '#334257'
+fuente_titulos = 'Open Sanz'
+fuente_texto = 'Consolas'
+fuente_menu = 'Consolas'
+fuente_boton = 'Open Sanz'
+fuente_pestañas = 'Sans-Serif'
+tamñ_titulo = 14
+tamñ_texto = 13
+tamñ_boton = 14
+tamñ_menu = 14
+tamñ_texto_exp = 16
+tamñ_pestaña = 12
+_Font_Menu = (fuente_menu, tamñ_menu, font.BOLD)
+_Font_Texto = (fuente_texto, tamñ_texto)
+_Font_Boton = (fuente_boton, tamñ_boton, font.BOLD)
+_Font_Titulo_bold = (fuente_titulos, tamñ_titulo, font.BOLD)
+_Font_pestañas = (fuente_pestañas, tamñ_pestaña, font.BOLD)
+_Font_txt_exp = (fuente_texto, tamñ_texto_exp)
+_Font_txt_exp_bold = (fuente_texto, tamñ_texto_exp, font.BOLD)
+_Font_tt_exp = (fuente_titulos, tamñ_texto_exp, font.BOLD)
 
 def beep_error(f):
     '''
@@ -111,7 +134,7 @@ class Expandir(ttk.Frame):
         self.varNum = varNum
         self.vtn_expandir = tk.Toplevel(self)
         self.vtn_expandir.config(background=fondo_app)
-        window_width=1010
+        window_width=1170
         window_height=650
         screen_width = app.root.winfo_x()
         screen_height= app.root.winfo_y()
@@ -123,9 +146,7 @@ class Expandir(ttk.Frame):
         self.vtn_expandir.title("DESVIACIONES : {} - {}".format(self.customer,self.so))
         self.vtn_expandir.columnconfigure(0, weight=1)
         self.vtn_expandir.rowconfigure(1, weight=1)
-        
-        # FUENTE PARA MENU CLICK DERECHO DE EXPLANDIR
-        self._font_MC_Expan = font.Font(family='Courier', size=14, font=font.BOLD)
+        self.vtn_expandir.resizable(False, False)
         # ----------------------------------------------------------------
         self.icono()
         self.menu_clickDerecho()
@@ -158,7 +179,7 @@ class Expandir(ttk.Frame):
             compound=LEFT,
             background='#ccffff', foreground='black',
             activebackground='#004c99',activeforeground='white',
-            font=self._font_MC_Expan,
+            font=_Font_Menu,
             command= desviacion.copiar_texto_seleccionado,
             state="disabled"
         )
@@ -168,7 +189,7 @@ class Expandir(ttk.Frame):
             compound=LEFT,
             background='#ccffff', foreground='black',
             activebackground='#004c99',activeforeground='white',
-            font=self._font_MC_Expan,
+            font=_Font_Menu,
             command=lambda : desviacion.seleccionar_todo(event=None),
         )
         self.menu_Contextual.add_separator(background='#ccffff')
@@ -178,7 +199,7 @@ class Expandir(ttk.Frame):
             compound=LEFT,
             background='#ccffff', foreground='black',
             activebackground='#004c99',activeforeground='white',
-            font=self._font_MC_Expan,
+            font=_Font_Menu,
             command=self.cerrar_vtn_expandir
         )
     
@@ -457,21 +478,21 @@ class Expandir(ttk.Frame):
         self.EXP_lblWidget = ttk.Label(
             self.vtn_expandir, 
             text=self.titulo,
-            foreground='blue',
-            font=('Source Sans Pro', 16, font.BOLD),
+            foreground=color_titulos,
+            font=_Font_tt_exp,
         )
         self.EXP_lblWidget.grid(row=0, column=0, padx=5, pady=5,sticky='w')
         self.EXP_srcExpandir = st.ScrolledText(
             self.vtn_expandir,
         )
         self.EXP_srcExpandir.config(
-            font=('IBM Plex Sans', 15), 
+            font=_Font_txt_exp, 
             wrap=tk.WORD,
-            highlightcolor='#297F87',
+            highlightcolor=active_color,
             borderwidth=0, 
             highlightthickness=3,
-            insertbackground='#297F87',
-            selectbackground='lightblue',
+            insertbackground=active_color,
+            selectbackground=sel_bg_txt,
         )
         ## Inserta el TEXT DEL SRC RECIBIO
         self.EXP_srcExpandir.insert('1.0',self.txt_Expan)
@@ -612,7 +633,7 @@ class Expandir(ttk.Frame):
                 self.EXP_srcExpandir.tag_config(
                 'found1', 
                 foreground='#396eb0',
-                font=("Consolas", 14, font.BOLD)
+                font=_Font_txt_exp_bold
                 )
 
 class TextSimilar(ttk.Frame):
@@ -647,8 +668,7 @@ class TextSimilar(ttk.Frame):
         self.titulo = ttk.Label(
             self.frame1,
             text=self.titulo,
-            foreground="#E45826",
-            font=('Consolas', 15, font.BOLD),
+            font=_Font_Titulo_bold,
         )
         self.titulo.pack()
 
@@ -665,15 +685,13 @@ class TextSimilar(ttk.Frame):
 ## --- LISTBOX MODULO - FRAME2
         self._list_modulo = tk.Listbox(
             self.frame2,
-            font=('Consolas', 12),
-            foreground='blue',
-            selectbackground='#297F87',
-            selectforeground='#F6D167',
-            disabledforeground='black',
+            font=_Font_Texto,
+            foreground=color_fg_list,
+            selectbackground=sel_bg_txt,
+            selectforeground=sel_fg_txt,
             exportselection=False,
-            highlightbackground='gray88',
-            highlightthickness=1,
-            highlightcolor='#297F87',
+            highlightthickness=2,
+            highlightcolor = active_color,
         )
 
         self._list_modulo.grid(row=0, column=0, sticky='nsew', pady=5, padx=5)
@@ -692,15 +710,13 @@ class TextSimilar(ttk.Frame):
 ## --- LISTBOX CLAVE - FRAME 3
         self._list_clave = tk.Listbox(
             self.frame3,
-            font=('Consolas', 12),
-            foreground='blue',
-            selectbackground='#297F87',
-            selectforeground='#F6D167',
-            disabledforeground='black',
+            font=_Font_Texto,
+            foreground=color_fg_list,
+            selectbackground=sel_bg_txt,
+            selectforeground=sel_fg_txt,
             exportselection=False,
-            highlightbackground='gray88',
-            highlightthickness=1,
-            highlightcolor='#297F87',
+            highlightthickness=2,
+            highlightcolor = active_color,
             width=18,
             height=18,
         )
@@ -709,15 +725,13 @@ class TextSimilar(ttk.Frame):
 ## --- LISTBOX SO - FRAME 2
         self._list_SO = tk.Listbox(
             self.frame3,
-            font=('Consolas', 12),
-            foreground='blue',
-            selectbackground='#297F87',
-            selectforeground='#F6D167',
-            disabledforeground='black',
+            font=_Font_Texto,
+            foreground=color_fg_list,
+            selectbackground=sel_bg_txt,
+            selectforeground=sel_fg_txt,
             exportselection=False,
-            highlightbackground='gray88',
-            highlightthickness=1,
-            highlightcolor='#297F87',
+            highlightthickness=2,
+            highlightcolor = active_color,
             width=12,
             height=12,
         )
@@ -888,9 +902,6 @@ class Desviacion(ttk.Frame):
         self.bind("<Motion>", lambda e : self.DESV_motion(e))
 # --- FUENTE PARA DESVIACIONES
 # --- Fuente Menu click derecho 
-        self._font_MC_DESV = font.Font(family='Courier', size=14, font=font.BOLD)
-        self._font_TXT_DESV = font.Font(family='IBM Plex Sans', size=13)
-
         self.iconos()
         self.widgets_DESVIACION()
         self._menu_clickDerecho()
@@ -1123,7 +1134,7 @@ class Desviacion(ttk.Frame):
             accelerator='Ctrl+F',
             background='#ccffff', foreground='black',
             activebackground='#004c99',activeforeground='white',
-            font=self._font_MC_DESV,
+            font=_Font_Menu,
             command=lambda e=self.DESVfr1_entModulo:self._buscar(e),
             state='disabled',
         )
@@ -1133,7 +1144,7 @@ class Desviacion(ttk.Frame):
             accelerator='Ctrl+C',
             background='#ccffff', foreground='black',
             activebackground='#004c99',activeforeground='white',
-            font=self._font_MC_DESV,
+            font=_Font_Menu,
             command=self.copiar_texto_seleccionado,
             state='disabled',
         )
@@ -1143,7 +1154,7 @@ class Desviacion(ttk.Frame):
             accelerator='Ctrl+V',
             background='#ccffff', foreground='black',
             activebackground='#004c99',activeforeground='white',
-            font=self._font_MC_DESV,
+            font=_Font_Menu,
             command=lambda e=self.DESVfr1_entModulo:self.pegar_texto_seleccionado(e),
         )
         
@@ -1154,7 +1165,7 @@ class Desviacion(ttk.Frame):
             accelerator='Ctrl+A',
             background='#ccffff', foreground='black',
             activebackground='#004c99',activeforeground='white',
-            font=self._font_MC_DESV,
+            font=_Font_Menu,
             command=lambda : self.seleccionar_todo(event=None),
             state='disabled',
         )
@@ -1163,7 +1174,7 @@ class Desviacion(ttk.Frame):
             accelerator='Ctrl+X',
             background='#ccffff', foreground='black',
             activebackground='#004c99',activeforeground='white',
-            font=self._font_MC_DESV,
+            font=_Font_Menu,
             command=lambda e=None:self._clear_busqueda(e),
             state='disabled',
         )
@@ -1173,7 +1184,7 @@ class Desviacion(ttk.Frame):
             compound=LEFT,
             background='#ccffff', foreground='black',
             activebackground='#004c99',activeforeground='white',
-            font=self._font_MC_DESV,
+            font=_Font_Menu,
             command=app.cerrar_vtn_desviacion
         )
     
@@ -2045,7 +2056,7 @@ class Desviacion(ttk.Frame):
                 PST_DESV.DESVfr2_srcComprobacion.tag_config(
                 'found1', 
                 foreground='#396eb0',
-                font=("Consolas", 13)
+                font=_Font_Texto
                 )
     
     def colour_line_bak(self):
@@ -2062,7 +2073,7 @@ class Desviacion(ttk.Frame):
                 PST_DESV.DESVfr2_srcBackup.tag_config(
                 'found1', 
                 foreground='#396eb0',
-                font=("Consolas", 13)
+                font=_Font_Texto
                 )
     
     def colour_line_ref(self):
@@ -2079,7 +2090,7 @@ class Desviacion(ttk.Frame):
                 PST_DESV.DESVfr3_srcRefrescar.tag_config(
                 'found1', 
                 foreground='#396eb0',
-                font=("Consolas", 13)
+                font=_Font_Texto
                 )
 
     def colour_line_edi(self):
@@ -2097,7 +2108,7 @@ class Desviacion(ttk.Frame):
                 PST_DESV.DESVfr3_srcEditar.tag_config(
                 'found1', 
                 foreground='#396eb0',
-                font=("Consolas", 13)
+                font=_Font_Texto
                 )
 
     def colour_line_evi(self):
@@ -2114,7 +2125,7 @@ class Desviacion(ttk.Frame):
                 PST_DESV.DESVfr3_srcEvidencia.tag_config(
                 'found1', 
                 foreground='#396eb0',
-                font=("Consolas", 13)
+                font=_Font_Texto
                 )
 
     def _disabled_buttons(self):
@@ -2140,7 +2151,6 @@ class Desviacion(ttk.Frame):
         PST_DESV.DESV_btn4Expandir.config(state='disabled')
         PST_DESV.DESV_btn5Expandir.config(state='disabled')
 
-    
     def _cargar_Modulos(self):
         idx = app.ClientVar.get()
         itm = list_client[idx]
@@ -2225,21 +2235,21 @@ class Desviacion(ttk.Frame):
             command=self.cargar_Modulos,
         )
         self.DESVfr1_optMn.config(
-            background = "#5F939A",
-            foreground = "#F2EDD7",
-            font=('Source Sans Pro',15,font.BOLD),
-            activebackground="#3A6351",
-            activeforeground="#F6D167",
+            background = bg_menu,
+            foreground = fg_menu,
+            font=_Font_Titulo_bold,
+            activebackground = acbg_menu,
+            activeforeground = acfg_menu,
             relief="groove",
             borderwidth=2,
             width=20
         )
         self.DESVfr1_optMn["menu"].config(
-            background='#3A6351',
-            selectcolor='red',
-            activebackground='#5F939A',
-            foreground="#F2EDD7",
-            font=('Consolas', 13, font.BOLD),
+            background=bg_menu,
+            activebackground=acfg_menu,
+            activeforeground=bg_menu,
+            foreground=fg_menu,
+            font=_Font_Texto,
         )
         self.DESVfr1_optMn.grid(row=0, column=0, padx=5, pady=5, sticky='new', columnspan=2)
 # -----------------------------------------------------------------------------#
@@ -2253,7 +2263,7 @@ class Desviacion(ttk.Frame):
         
         self.DESVfr1_entModulo.config(
             state='disabled',
-            font=('Consolas',15)
+            font=_Font_Texto
         )
         self.DESVfr1_entModulo.grid(row=1, column=0, pady=5, padx=(5,0), sticky='nsew')
         
@@ -2279,15 +2289,13 @@ class Desviacion(ttk.Frame):
             state='disabled',
             xscrollcommand=self.DESVlist_xScroll.set, 
             yscrollcommand=self.DESVlist_yScroll.set,
-            font=self._font_TXT_DESV,
-            foreground='blue',
-            selectbackground='#297F87',
-            selectforeground='#F6D167',
-            disabledforeground='black',
+            font=_Font_Texto,
+            foreground=color_fg_list,
+            selectbackground=sel_bg_txt,
+            selectforeground=sel_fg_txt,
             exportselection=False,
-            highlightbackground='gray88',
             highlightthickness=2,
-            highlightcolor='#297F87',
+            highlightcolor = active_color,
         )
         self.DESVfr1_listbox.grid(row=2, column=0, pady=(5,12), padx=(5,12), sticky='nsew', columnspan=2)
         self.DESVlist_yScroll.grid(row=2, column=0, pady=(5,15), sticky='nse', columnspan=2)
@@ -2308,7 +2316,7 @@ class Desviacion(ttk.Frame):
         self.DESVfr2_lblDescripcion = ttk.Label(
             self.DESV_frame2,
             text='',
-            font=('Consolas', 12),
+            font=_Font_Texto,
             width=10, 
             foreground='gray55'
         ) 
@@ -2318,7 +2326,8 @@ class Desviacion(ttk.Frame):
 
         self.DESVfr2_lblComprobacion = ttk.Label(
             self.DESV_frame2, 
-            text='COMPROBACIÓN'
+            text='COMPROBACIÓN',
+            font=_Font_Titulo_bold
         ) 
         self.DESVfr2_lblComprobacion.grid(row=2, column=0, padx=5, pady=5, sticky='w' )
         
@@ -2329,7 +2338,6 @@ class Desviacion(ttk.Frame):
             image=self.Expandir_icon,
             state='disabled',
             command=self.abrir_DIRECTORY,
-            style='TOPS.TButton'
         )
         self.DESV_btnService = ttk.Button(
             self.DESV_frame2,
@@ -2338,7 +2346,6 @@ class Desviacion(ttk.Frame):
             image=self.Expandir_icon,
             state='enabled',
             command=self.abrir_SERVICE,
-            style='TOPS.TButton'
         )
         self.DESV_btnAuthorized = ttk.Button(
             self.DESV_frame2,
@@ -2347,7 +2354,6 @@ class Desviacion(ttk.Frame):
             image=self.Expandir_icon,
             state='enabled',
             command=self.abrir_AUTHORIZED,
-            style='TOPS.TButton'
         )
         self.DESV_btnRecortar = ttk.Button(
             self.DESV_frame2,
@@ -2363,8 +2369,8 @@ class Desviacion(ttk.Frame):
             image=self.Expandir_icon,
             state='enabled',
             command=self.abrir_ACCOUNT,
-            style='TOPS.TButton'
         )
+
         self.DESV_btnCommand = ttk.Button(
             self.DESV_frame2,
             text='Command',
@@ -2372,8 +2378,8 @@ class Desviacion(ttk.Frame):
             image=self.Expandir_icon,
             state='enabled',
             command=self.abrir_COMMAND,
-            style='TOPS.TButton'
         )
+
         self.DESV_btnIdrsa = ttk.Button(
             self.DESV_frame2,
             text='Id_Rsa',
@@ -2381,18 +2387,17 @@ class Desviacion(ttk.Frame):
             image=self.Expandir_icon,
             state='enabled',
             command=self.abrir_IDRSA,
-            style='TOPS.TButton'
         )
         
         self.DESVfr2_srcComprobacion = st.ScrolledText(self.DESV_frame2)
         self.DESVfr2_srcComprobacion.config(
-            font=self._font_TXT_DESV,
+            font=_Font_Texto,
             wrap=tk.WORD,
-            highlightcolor='#297F87',
+            highlightcolor=active_color,
             borderwidth=0, 
             highlightthickness=2,
-            insertbackground='#297F87',
-            selectbackground='lightblue',
+            insertbackground=active_color,
+            selectbackground=sel_bg_txt,
             state='disabled',
         )
         self.DESVfr2_srcComprobacion.grid(row=3, column=0, padx=5, pady=5, sticky='new', columnspan=5)
@@ -2419,7 +2424,6 @@ class Desviacion(ttk.Frame):
         self.DESVfr2_lblBackup = ttk.Label(
             self.DESV_frame2, 
             text='BACKUP', 
-            #width=10
         ) 
         self.DESVfr2_lblBackup.grid(row=4, column=0, padx=5, pady=5, sticky='w')
         
@@ -2427,13 +2431,13 @@ class Desviacion(ttk.Frame):
             self.DESV_frame2,
         )
         self.DESVfr2_srcBackup.config(
-            font=self._font_TXT_DESV,
+            font=_Font_Texto,
             wrap=tk.WORD,
-            highlightcolor='#297F87',
+            highlightcolor=active_color,
             borderwidth=0, 
             highlightthickness=2,
-            insertbackground='#297F87',
-            selectbackground='lightblue',
+            insertbackground=active_color,
+            selectbackground=sel_bg_txt,
             state='disabled',
         )
         self.DESVfr2_srcBackup.grid(row=5, column=0, padx=5, pady=5, sticky='new', columnspan=5)
@@ -2456,13 +2460,13 @@ class Desviacion(ttk.Frame):
         
         self.DESVfr3_srcEditar = st.ScrolledText(self.DESV_frame3)
         self.DESVfr3_srcEditar.config(
-            font=self._font_TXT_DESV,
+            font=_Font_Texto,
             wrap=tk.WORD,
-            highlightcolor='#297F87',
+            highlightcolor=active_color,
             borderwidth=0, 
             highlightthickness=2,
-            insertbackground='#297F87',
-            selectbackground='lightblue',
+            insertbackground=active_color,
+            selectbackground=sel_bg_txt,
             state='disabled',
         )
         self.DESVfr3_srcEditar.grid(row=1, column=0, padx=5, pady=5, sticky='new', columnspan=4)
@@ -2483,13 +2487,13 @@ class Desviacion(ttk.Frame):
         self.DESVfr3_lblRefrescar.grid(row=2, column=0, padx=5, pady=5, sticky='w', columnspan=2)
         self.DESVfr3_srcRefrescar = st.ScrolledText(self.DESV_frame3)
         self.DESVfr3_srcRefrescar.config(
-            font=self._font_TXT_DESV,
+            font=_Font_Texto,
             wrap=tk.WORD,
-            highlightcolor='#297F87',
+            highlightcolor=active_color,
             borderwidth=0, 
             highlightthickness=2,
-            insertbackground='#297F87',
-            selectbackground='lightblue',
+            insertbackground=active_color,
+            selectbackground=sel_bg_txt,
             state='disabled',
         )
         self.DESVfr3_srcRefrescar.grid(row=3, column=0, padx=5, pady=5, sticky='new', columnspan=4)
@@ -2519,13 +2523,13 @@ class Desviacion(ttk.Frame):
         self.DESVfr3_lblEvidencia.grid(row=4, column=0, padx=5, pady=5, sticky='w')
         self.DESVfr3_srcEvidencia = st.ScrolledText(self.DESV_frame3)
         self.DESVfr3_srcEvidencia.config(
-            font=self._font_TXT_DESV,
+            font=_Font_Texto,
             wrap=tk.WORD,
-            highlightcolor='#297F87',
+            highlightcolor=active_color,
             borderwidth=0, 
             highlightthickness=2,
-            insertbackground='#297F87',
-            selectbackground='lightblue',
+            insertbackground=active_color,
+            selectbackground=sel_bg_txt,
             state='disabled',
         )
         self.DESVfr3_srcEvidencia.grid(row=5, column=0, padx=5, pady=5, sticky='new', columnspan=4)
@@ -2553,8 +2557,7 @@ class Desviacion(ttk.Frame):
         )
         self.DESV_btn5Expandir.grid(row=4, column=3, padx=(5,20), pady=5, sticky='ne')
 
-## --- FUNCIONES PARA ABRIR VENTANAS EMERGENTE --------------- #
-    
+## --- FUNCIONES PARA ABRIR VENTANAS EMERGENTE --------------- #    
     def _QuitarSeleccion_(self):
         global list_motion
         global txtWidget
@@ -2570,6 +2573,7 @@ class Desviacion(ttk.Frame):
         if list_motion:
             list_motion.selection_clear(0,tk.END)
             self.limpiar_Widgets()
+    
     def abrir_DIRECTORY(self):
         from Ventanas import Ventana
         global asigne_Cliente
@@ -2650,16 +2654,11 @@ class Aplicacion():
         self.root.bind_all("<Control-l>", lambda x : self.ocultar())
         self.root.focus_set()
         # Fuente MENU CLICK DERECHO APP
-        self._font_MC_APP = font.Font(family='Courier', size=14, font=font.BOLD)
         # ----------------------------------------------------------
         self.sizegrid = ttk.Sizegrip(
             self.cuaderno,
         )
         self.sizegrid.pack(side="right", anchor='se')
-        
-        # Fuente para la barra de MENU
-        self._font_BARRA_APP = font.Font(family='Segoe Script', size=11, weight=font.BOLD)
-        # ----------------------------------------------------------
 
         self.estilos()
         self.menu_clickDerecho()
@@ -2704,84 +2703,41 @@ class Aplicacion():
     
     def estilos(self):
         self.style = Style()
-        self.style.configure(
-            'TCombobox',
-            fieldbackground= 'white',
-            background='#F4D19B',
-            selectbackground="lightblue",
-            selectforeground="#F6D167"
+        self.style.configure('TCombobox',
+            background = bg_menu,
+            selectbackground = sel_bg_txt,
+            selectforeground = sel_fg_txt, 
         )
         self.style.map('TCombobox',
             background=[
-                ("active","#D7E9F7")
+                ("active", bg_menu)
             ]
         )
+        
         self.style.configure('TSizegrip',
             background=fondo_app,
             borderwidth=0,
             border=0
         )
+        
         self.style.configure('TFrame',
             background=fondo_app,
         )
+        
         self.style.configure('TLabelframe',
             background=fondo_app,
         )
         self.style.configure('TLabelframe.Label',
             background=fondo_app,
-            foreground='red',
-            font=('Open Sanz',13, font.BOLD),
+            foreground=color_titulos,
+            font=_Font_Titulo_bold,
         )
-        self.style.configure(
-            'TOP.TButton',
-            background = "#F4D19B",
-            relief='sunke',
-            borderwidth=1,
-            padding=7,
-        )
-        self.style.map(
-            'TOP.TButton',
-            background = [("active","#D7E9F7")],
-            padding=[("active",7),("pressed",10)],
-            relief=[("active",'ridge'),("pressed",'groove')],
-            borderwidth=[("active",1)],
-        )
-        self.style.configure('TOP1.TButton',
-                            background = "#F4D19B",
-                            relief='sunke',
-                            borderwidth=1,
-                            padding=10,
-        )
-        self.style.map('TOP1.TButton',
-                            background = [("active","#D7E9F7")],
-                            padding=[("active",7),("pressed",10)],
-                            relief=[("active",'ridge'),("pressed",'groove')],
-                            borderwidth=[("active",1)],
-        )
-        self.style.configure(
-            'TOPS.TButton',
-            background = "#96BB7C",
-            foreground="white",
-            relief='sunke',
-            borderwidth=1,
-            anchor="center",
-            #padding=7,
-            font=('Source Sans Pro', 12, font.BOLD), 
-        )
-        self.style.map(
-            'TOPS.TButton',
-            background=[("active","#FAD586")],
-            foreground=[("active","#C64756")],
-            #padding=[("active",3)],
-            relief=[("active",'ridge'),("pressed",'groove')],
-            borderwidth=[("active",1)],
-        )
-        ## ===============================================================================
+        # *===============================================================================
         self.style.configure(
             'APP.TButton',
             background = "#297F87",
             foreground = "#FFF7AE",
-            font=('Source Sans Pro',14,font.BOLD),
+            font=_Font_Boton,
             padding=20,
             relief='sunke',
             borderwidth=5,
@@ -2800,7 +2756,7 @@ class Aplicacion():
             relief='sunke',
             borderwidth=1,
             padding=6,
-            font=('Source Sans Pro', 13, font.BOLD)
+            font=_Font_Boton
         )
         self.style.map('TButton',
             background=[("active","#F6D167")],
@@ -2810,32 +2766,16 @@ class Aplicacion():
             borderwidth=[("active",1)],
         )
 
-        # self.style.configure( 
-        #     'DESV.TButton',
-        #     background = "#D4ECDD",
-        #     relief='sunke',
-        #     borderwidth=1,
-        #     padding=10,
-        #     font=('Source Sans Pro', 13, font.BOLD), 
-        # )
-
-        # self.style.map('DESV.TButton',
-        #     background = [("active","#F6D167")],
-        #     padding=[("active",10),("pressed",10)],
-        #     relief=[("active",'ridge'),("pressed",'groove')],
-        #     borderwidth=[("active",1)],
-        # )
-        
         self.style.configure('APP.TLabel',
             background = bg_menu,
             foreground = fg_menu,
-            font=('Comfortaa',30,font.BOLD)
+            font=(fuente_titulos, 30, font.BOLD)
         )
         
         self.style.configure('TLabel',
             background = fondo_app,
             foreground = "gray17",
-            font=('Helvetica',12, font.BOLD)
+            font=_Font_Titulo_bold
         )
         
         self.style.configure('TEntry',
@@ -2846,7 +2786,7 @@ class Aplicacion():
             highlightthickness=2,
             highlightcolor='#316B83',
             selectforeground='back',
-            selectbackground='lightblue',
+            selectbackground=sel_bg_txt,
         )
 
 ## --- MENU CONTEXTUAL --- ##
@@ -2858,7 +2798,7 @@ class Aplicacion():
             accelerator='Ctrl+F',
             background='#ccffff', foreground='black',
             activebackground='#004c99',activeforeground='white',
-            font=self._font_MC_APP,
+            font=_Font_Menu,
             state='disabled',
         )
         self.menu_Contextual.add_separator(background='#ccffff')
@@ -2867,7 +2807,7 @@ class Aplicacion():
             accelerator='Ctrl+C',
             background='#ccffff', foreground='black',
             activebackground='#004c99',activeforeground='white',
-            font=self._font_MC_APP,
+            font=_Font_Menu,
             state='disabled',
         )
         self.menu_Contextual.add_command(
@@ -2875,7 +2815,7 @@ class Aplicacion():
             accelerator='Ctrl+V',
             background='#ccffff', foreground='black',
             activebackground='#004c99',activeforeground='white',
-            font=self._font_MC_APP,
+            font=_Font_Menu,
             state='disabled',
         )
         self.menu_Contextual.add_separator(background='#ccffff')
@@ -2884,7 +2824,7 @@ class Aplicacion():
             accelerator='Ctrl+A',
             background='#ccffff', foreground='black',
             activebackground='#004c99',activeforeground='white',
-            font=self._font_MC_APP,
+            font=_Font_Menu,
             state='disabled',
         )
         self.menu_Contextual.add_command(
@@ -2892,7 +2832,7 @@ class Aplicacion():
             accelerator='Ctrl+X',
             background='#ccffff', foreground='black',
             activebackground='#004c99',activeforeground='white',
-            font=self._font_MC_APP,
+            font=_Font_Menu,
             state='disabled',
         )
         self.menu_Contextual.add_separator(background='#ccffff')
@@ -2901,7 +2841,7 @@ class Aplicacion():
             compound=LEFT,
             background='#ccffff', foreground='black',
             activebackground='#004c99',activeforeground='white',
-            font=self._font_MC_APP,
+            font=_Font_Menu,
             command=self.cerrar_vtn_desviacion
         )
     
@@ -2939,7 +2879,7 @@ class Aplicacion():
             accelerator='Ctrl+F',
             background='#ccffff', foreground='black',
             activebackground='#004c99',activeforeground='white',
-            font=self._font_MC_APP,
+            font=_Font_Menu,
             state='disabled',
         )
         self._menu_Contextual.add_separator(background='#ccffff')
@@ -2948,7 +2888,7 @@ class Aplicacion():
             accelerator='Ctrl+C',
             background='#ccffff', foreground='black',
             activebackground='#004c99',activeforeground='white',
-            font=self._font_MC_APP,
+            font=_Font_Menu,
             state='disabled',
         )
         self._menu_Contextual.add_command(
@@ -2956,7 +2896,7 @@ class Aplicacion():
             accelerator='Ctrl+V',
             background='#ccffff', foreground='black',
             activebackground='#004c99',activeforeground='white',
-            font=self._font_MC_APP,
+            font=_Font_Menu,
             state='disabled',
         )
         self._menu_Contextual.add_separator(background='#ccffff')
@@ -2965,7 +2905,7 @@ class Aplicacion():
             accelerator='Ctrl+A',
             background='#ccffff', foreground='black',
             activebackground='#004c99',activeforeground='white',
-            font=self._font_MC_APP,
+            font=_Font_Menu,
             state='disabled',
         )
         self._menu_Contextual.add_command(
@@ -2973,7 +2913,7 @@ class Aplicacion():
             accelerator='Ctrl+X',
             background='#ccffff', foreground='black',
             activebackground='#004c99',activeforeground='white',
-            font=self._font_MC_APP,
+            font=_Font_Menu,
             state='disabled',
         )
         self._menu_Contextual.add_separator(background='#ccffff')
@@ -2982,7 +2922,7 @@ class Aplicacion():
             compound=LEFT,
             background='#ccffff', foreground='black',
             activebackground='#004c99',activeforeground='white',
-            font=self._font_MC_APP,
+            font=_Font_Menu,
             state='disabled'
         )
         self._menu_Contextual.add_command(
@@ -2990,7 +2930,7 @@ class Aplicacion():
             compound=LEFT,
             background='#ccffff', foreground='black',
             activebackground='#004c99',activeforeground='white',
-            font=self._font_MC_APP,
+            font=_Font_Menu,
             command=self.root.quit
         )
     
@@ -3028,10 +2968,10 @@ class Aplicacion():
         else:
             self.menu_Contextual.entryconfig('  Cerrar pestaña', state='normal')
         if idOpenTab == 1 or idOpenTab == 2 or idOpenTab == 3 or idOpenTab == 4:
-            self.cuaderno.rightArrow.configure(foreground='#297F87')
+            self.cuaderno.rightArrow.configure(foreground=active_color)
             Thread(target=self.cuaderno._leftSlide, daemon=True).start()
             self.cuaderno._release_callback(e=None)
-            self.cuaderno.rightArrow.configure(foreground='#297F87')
+            self.cuaderno.rightArrow.configure(foreground=active_color)
 ## ---ASIGNAMOS A UNA VARIABLE CADA CLIENTE----------------------------
         if tab == 'WorkSpace  ':
             asigne_Cliente = ""
@@ -3206,7 +3146,7 @@ class Aplicacion():
             self.AcercaDe_txt_frame, 
             text='CONTINUOUS COMPLIANCE',
             anchor='center',
-            font=("Consolas", 16, "bold")
+            font=(fuente_titulos, 16, "bold")
         )
         self.lbl1.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
 
@@ -3215,7 +3155,7 @@ class Aplicacion():
             width=20,
             text='Herramienta para resolucion    de ISSUES Desviaciones / Extraciones',
             anchor='w',
-            font=("Consolas", 13)
+            font=(fuente_titulos, 13)
         )
         self.lbl5.grid(row=1, column=0, padx=5, pady=5, sticky='nsew')
         self.lbl5.bind("<Configure>", self.label_resize)
@@ -3224,7 +3164,7 @@ class Aplicacion():
             self.AcercaDe_txt_frame, 
             text='Versión:   2.0',
             anchor='w',
-            font=("Consolas", 13)
+            font=(fuente_titulos, 13)
         )
         self.lbl2.grid(row=2, column=0, padx=5, pady=5, sticky='nsew')
         #self.lbl2.bind("<Configure>", self.label_resize)
@@ -3233,7 +3173,7 @@ class Aplicacion():
             self.AcercaDe_txt_frame, 
             text='Fecha:   sabado marzo 12 CET 2022',
             anchor='w',
-            font=("Consolas", 11)
+            font=(fuente_titulos, 11)
         )
         self.lbl3.grid(row=3, column=0, padx=5, pady=5, sticky='nsew')
         #self.lbl3.bind("<Configure>", self.label_resize)
@@ -3242,7 +3182,7 @@ class Aplicacion():
             self.AcercaDe_txt_frame, 
             text='OS: x86_64 GNU/Linux',
             anchor='w',
-            font=("Consolas", 11)
+            font=(fuente_titulos, 11)
         )
         self.lbl4.grid(row=4, column=0, padx=5, pady=5, sticky='nsew')
         #self.lbl4.bind("<Configure>", self.label_resize)
@@ -3253,7 +3193,7 @@ class Aplicacion():
             foreground='gray',
             text='Documentado por el equipo de PHC - UNIX',
             anchor='w',
-            font=("Consolas", 11)
+            font=(fuente_titulos, 11)
         )
         self.lbl6.grid(row=5, column=0, padx=5, pady=5, sticky='nsew')
 
@@ -3263,7 +3203,7 @@ class Aplicacion():
             foreground='gray',
             text='Creado por Jose Alvaro Cedeño Panchana',
             anchor='w',
-            font=("Consolas", 11)
+            font=(fuente_titulos, 11)
         )
         self.lbl7.grid(row=6, column=0, padx=5, pady=5, sticky='nsew')
 
@@ -3273,7 +3213,7 @@ class Aplicacion():
             foreground='gray',
             text='Copyright © 2021 - 2022 Jose Alvaro Cedeño Panchana',
             anchor='w',
-            font=("Consolas", 11, 'bold')
+            font=(fuente_titulos, 11, 'bold')
         )
         self.lbl8.grid(row=7, column=0, padx=5, pady=5, sticky='nsew')
         #self.lbl8.bind("<Configure>", self.label_resize)
@@ -3332,7 +3272,7 @@ class Aplicacion():
         self.titulo = ttk.Label(
             self.frame1,
             text='PALABRAS CLAVES DESVIACIONES',
-            font=('Consolas', 20, font.BOLD),
+            font=(fuente_titulos, 20, font.BOLD),
         )
         self.titulo.pack(expand=1)
 
@@ -3346,7 +3286,7 @@ class Aplicacion():
         self.titulo_modulo = ttk.Label(
             self.frame2,
             text='MODULO',
-            font=('Consolas', 15, font.BOLD),
+            font=_Font_Titulo_bold,
             anchor='center',
             width=50
         )
@@ -3357,15 +3297,13 @@ class Aplicacion():
         ## LISTBOX MODULO
         self._list_modulo = tk.Listbox(
             self.frame2,
-            font=('Consolas', 12),
-            foreground='blue',
-            selectbackground='lightblue',
-            selectforeground='black',
-            disabledforeground='black',
+            font=_Font_Texto,
+            foreground=color_fg_list,
+            selectbackground=sel_bg_txt,
+            selectforeground=sel_fg_txt,
             exportselection=False,
-            highlightbackground='gray88',
-            highlightthickness=1,
-            highlightcolor='#297F87',
+            highlightthickness=2,
+            highlightcolor = active_color,
             yscrollcommand=self.ListModulo_yScroll.set,
         )
         self._list_modulo.grid(row=1, column=0, sticky='nsew', pady=10)
@@ -3382,7 +3320,7 @@ class Aplicacion():
         self.titulo_clave = ttk.Label(
             self.frame3,
             text='CLAVE',
-            font=('Consolas', 15, font.BOLD),
+            font=_Font_Titulo_bold,
             anchor='center'
         )
         self.titulo_clave.grid(row=0, column=0, sticky='nsew', pady=5, padx=5, columnspan=2)
@@ -3392,15 +3330,13 @@ class Aplicacion():
         ## LISTBOX CLAVE
         self._list_clave = tk.Listbox(
             self.frame3,
-            font=('Consolas', 12),
-            foreground='blue',
-            selectbackground='#297F87',
-            selectforeground='#F6D167',
-            disabledforeground='black',
+            font=_Font_Texto,
+            foreground=color_fg_list,
+            selectbackground=sel_bg_txt,
+            selectforeground=sel_fg_txt,
             exportselection=False,
-            highlightbackground='gray88',
-            highlightthickness=1,
-            highlightcolor='#297F87',
+            highlightthickness=2,
+            highlightcolor = active_color,
             yscrollcommand=self.ListClave_yScroll.set,
         )
         self._list_clave.grid(row=1, column=0, sticky='nsew', pady=10,)
@@ -3422,7 +3358,7 @@ class Aplicacion():
             self.menuBar.config(
                 background=bg_menu,
                 foreground=fg_menu,
-                font=self._font_BARRA_APP,
+                font=_Font_Menu,
                 activebackground=acbg_menu,
                 activeforeground=acfg_menu,
             )
@@ -3430,7 +3366,7 @@ class Aplicacion():
             self.fileMenu.config(
                 background=bg_submenu,
                 foreground=fg_submenu,
-                font=self._font_BARRA_APP,
+                font=_Font_Menu,
                 activebackground=acbg_menu,
                 activeforeground=acfg_menu,
             )
@@ -3442,7 +3378,7 @@ class Aplicacion():
             self.issuesMenu.config(
                 background=bg_submenu,
                 foreground=fg_submenu,
-                font=self._font_BARRA_APP,
+                font=_Font_Menu,
                 activebackground=acbg_menu,
                 activeforeground=acfg_menu,
                 selectcolor='#CF7500'
@@ -3450,7 +3386,7 @@ class Aplicacion():
             self.clientMenu.config(
                 background=bg_submenu,
                 foreground=fg_submenu,
-                font=self._font_BARRA_APP,
+                font=_Font_Menu,
                 activebackground=acbg_menu,
                 activeforeground=acfg_menu,
                 selectcolor='#CF7500'
@@ -3512,7 +3448,7 @@ class Aplicacion():
             self.editMenu.config(
                 background=bg_submenu,
                 foreground=fg_submenu,
-                font=self._font_BARRA_APP,
+                font=_Font_Menu,
                 activebackground=acbg_menu,
                 activeforeground=acfg_menu,
             )
@@ -3529,7 +3465,7 @@ class Aplicacion():
             self.helpMenu.config(
                 background=bg_submenu,
                 foreground=fg_submenu,
-                font=self._font_BARRA_APP,
+                font=_Font_Menu,
                 activebackground=acbg_menu,
                 activeforeground=acfg_menu,
             )
@@ -3676,7 +3612,7 @@ class Aplicacion():
             )
 
     def _fontchooser(self):
-        print("ABRE")
+        from Preferencias import SelectFont
         ventanafont = SelectFont(parent=None, titulo="Ventana")
 
         #ventanafont.grab_set()

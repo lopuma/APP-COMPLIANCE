@@ -114,6 +114,7 @@ class ScrollableNotebook(ttk.Frame):
         self._active = None
     
     def _initialize(self):
+        from Compliance import _Font_pestañas
         self.style = ttk.Style()
         self.images = (
         tk.PhotoImage("img1", data='''
@@ -158,7 +159,7 @@ class ScrollableNotebook(ttk.Frame):
             padding=[2, 2],
             anchor="center",
             justify="center",
-            font=('Sans-Serif', 12, font.BOLD)
+            font=_Font_pestañas
         )         
         self.style.map('ScrollableNotebook.Tab', background = [("selected", "#B61919"),
                                                     ("active", "#FF6B6B")],
@@ -183,14 +184,14 @@ class ScrollableNotebook(ttk.Frame):
         #     #self._leftSlide()
 
     def _bottomMenu(self,event):
-        self.text_font = tkFont.Font(family='Consolas', size=13)
+        from Compliance import _Font_Texto
         tabListMenu = Menu(self, tearoff = 0)
         for tab in self.notebookTab.tabs():
             tabListMenu.add_command(label=self.notebookTab.tab(tab, option="text"),
                                     command= lambda temp=tab: self.select(temp),
                                     background='#ccffff', 
                                     foreground='blue',
-                                    font=self.text_font,
+                                    font=_Font_Texto,
                                     activebackground='#004c99',
                                     activeforeground='white')
         tabListMenu.entryconfig('WorkSpace  ', 
@@ -205,7 +206,7 @@ class ScrollableNotebook(ttk.Frame):
                                 foreground='#F6D167')
 
     def _bottomMenu_novo(self,event):
-        self.text_font = tkFont.Font(family='Consolas', size=13)
+        from Compliance import _Font_Texto
         self.tabListMenu = Menu(self, tearoff = 0)
         self.tabListMenu.add_command(
             label="  Desviaciones", 
@@ -213,7 +214,7 @@ class ScrollableNotebook(ttk.Frame):
             command=self._abrir_issuesDESV,
             background='#ccffff', foreground='black',
             activebackground='#004c99',activeforeground='white',
-            font=self.text_font,
+            font=_Font_Texto,
         )
         self.tabListMenu.add_command(
             label="  Extraciones", 
@@ -221,7 +222,7 @@ class ScrollableNotebook(ttk.Frame):
             command=self._abrir_issuesEXT,
             background='#ccffff', foreground='black',
             activebackground='#004c99',activeforeground='white',
-            font=self.text_font,
+            font=_Font_Texto,
         )
         self.tabListMenu.tk_popup(event.x_root, event.y_root)
     
