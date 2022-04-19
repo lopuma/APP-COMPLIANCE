@@ -8,7 +8,7 @@ from tkinter import scrolledtext as st
 from tkinter import messagebox as mb
 from tkinter import font as font
 from PIL import Image, ImageTk
-from Compliance import fondo_app, color_titulos, _Font_Texto, color_fg_list, sel_bg_txt, sel_fg_txt, active_color, _Font_Menu
+from Compliance import fondo_app, bg_menu, acfg_menu, fg_menu, color_titulos, _Font_Texto, color_fg_list, sel_bg_txt, sel_fg_txt, active_color, _Font_Menu, oddrow, evenrow
 user = getuser()
 mypath = os.path.expanduser("~/")
 path_icon = mypath+"Compliance/image/"
@@ -41,7 +41,6 @@ class Ventana(ttk.Frame):
         #self.vtn_ventanas.grab_set()
         self.vtn_ventanas.columnconfigure(0, weight=1)
         self.vtn_ventanas.rowconfigure(2, weight=5)
-        _Font_Menu = font.Font(family='Consolas', size=13) 
         self.iconos()
         self.widgets_ventanas()
         self.menu_clickDerecho()
@@ -74,8 +73,7 @@ class Ventana(ttk.Frame):
         self.tree.bind("<Up>", lambda e:self.TreeUp(e))
         self.textBuscar.bind("<Control-x>",self.limpiar_bsq2)
         self.textBuscar.bind("<Control-f>",self._buscar_focus)        
-        self.textBuscar.bind("<Control-F>",self._buscar_focus)        
-        self.textBuscar.bind("<Button-1>",self._buscar_focus)        
+        self.textBuscar.bind("<Control-F>",self._buscar_focus)              
         self.srcRisk.bind("<Control-a>",lambda e:self._seleccionar_todo(e))
         self.srcImpact.bind("<Control-a>",lambda e:self._seleccionar_todo(e))
         self.srcVariable.bind("<Control-a>",lambda e:self._seleccionar_todo(e))
@@ -292,7 +290,7 @@ class Ventana(ttk.Frame):
         entry_event.select_range(0,tk.END)
         entry_event.focus_set()
         return 'break'
-    
+
     def seleccionar_todo(self):
         self.srcEvent.tag_add("sel","1.0","end")
         return 'break'
@@ -327,17 +325,17 @@ class Ventana(ttk.Frame):
         self.menu_Contextual.add_command(
             label="  Buscar", 
             accelerator='Ctrl+F',
-            background='#ccffff', foreground='black',
-            activebackground='#004c99',activeforeground='white',
+            background=bg_menu, foreground=fg_menu,
+            activebackground=acfg_menu,activeforeground=bg_menu,
             font=_Font_Menu,
             command=self.act_buscar,
         )
-        self.menu_Contextual.add_separator(background='#ccffff')
+        self.menu_Contextual.add_separator(background=bg_menu)
         self.menu_Contextual.add_command(
             label="  Copiar", 
             accelerator='Ctrl+C',
-            background='#ccffff', foreground='black',
-            activebackground='#004c99',activeforeground='white',
+            background=bg_menu, foreground=fg_menu,
+            activebackground=acfg_menu,activeforeground=bg_menu,
             font=_Font_Menu,
             command=self.copiar,
             state='normal',
@@ -345,17 +343,17 @@ class Ventana(ttk.Frame):
         self.menu_Contextual.add_command(
             label="  Pegar", 
             accelerator='Ctrl+V',
-            background='#ccffff', foreground='black',
-            activebackground='#004c99',activeforeground='white',
+            background=bg_menu, foreground=fg_menu,
+            activebackground=acfg_menu,activeforeground=bg_menu,
             font=_Font_Menu,
             command=self.pegar,
         )
-        self.menu_Contextual.add_separator(background='#ccffff')
+        self.menu_Contextual.add_separator(background=bg_menu)
         self.menu_Contextual.add_command(
             label="  Seleccionar todo", 
             accelerator='Ctrl+A',
-            background='#ccffff', foreground='black',
-            activebackground='#004c99',activeforeground='white',
+            background=bg_menu, foreground=fg_menu,
+            activebackground=acfg_menu,activeforeground=bg_menu,
             font=_Font_Menu,
             command=self.seleccionar_todo,
             state='normal',
@@ -363,18 +361,18 @@ class Ventana(ttk.Frame):
         self.menu_Contextual.add_command(
             label="  Limpiar", 
             accelerator='Ctrl+X',
-            background='#ccffff', foreground='black',
-            activebackground='#004c99',activeforeground='white',
+            background=bg_menu, foreground=fg_menu,
+            activebackground=acfg_menu,activeforeground=bg_menu,
             font=_Font_Menu,
             command=self.limpiar_bsq2,
             state='disabled',
         )
-        self.menu_Contextual.add_separator(background='#ccffff')
+        self.menu_Contextual.add_separator(background=bg_menu)
         self.menu_Contextual.add_command(label="  Cerrar pestaña", 
                                 #image=self.cerrar_icon,
                                 compound=tk.LEFT,
-                                background='#ccffff', foreground='black',
-                                activebackground='#004c99',activeforeground='white',
+                                background=bg_menu, foreground=fg_menu,
+                                activebackground=acfg_menu,activeforeground=bg_menu,
                                 font=_Font_Menu,
                                 command=self.cerrar_vtn
                                 )
@@ -420,18 +418,18 @@ class Ventana(ttk.Frame):
         self.menuLis_Contextual.add_command(
             label="  Buscar",
             accelerator='Ctrl+F',
-            background='#ccffff', foreground='black',
-            activebackground='#004c99',activeforeground='white',
+            background=bg_menu, foreground=fg_menu,
+            activebackground=acfg_menu,activeforeground=bg_menu,
             font=_Font_Menu,
             command=self.act_buscar,
         )
-        self.menuLis_Contextual.add_separator(background='#ccffff')
+        self.menuLis_Contextual.add_separator(background=bg_menu)
         ## Copiar
         self.menuLis_Contextual.add_command(
             label="  Copiar", 
             accelerator='Ctrl+C',
-            background='#ccffff', foreground='black',
-            activebackground='#004c99',activeforeground='white',
+            background=bg_menu, foreground=fg_menu,
+            activebackground=acfg_menu,activeforeground=bg_menu,
             font=_Font_Menu,
             command=lambda e=self.listServer:self.copiar_optionLis(e),
             state='disabled',
@@ -440,18 +438,18 @@ class Ventana(ttk.Frame):
         self.menuLis_Contextual.add_command(
             label="  Pegar", 
             accelerator='Ctrl+V',
-            background='#ccffff', foreground='black',
-            activebackground='#004c99',activeforeground='white',
+            background=bg_menu, foreground=fg_menu,
+            activebackground=acfg_menu,activeforeground=bg_menu,
             font=_Font_Menu,
             state='disabled',
         )
-        self.menuLis_Contextual.add_separator(background='#ccffff')
+        self.menuLis_Contextual.add_separator(background=bg_menu)
         ## Selecionar todo
         self.menuLis_Contextual.add_command(
             label="  Seleccionar todo", 
             accelerator='Ctrl+A',
-            background='#ccffff', foreground='black',
-            activebackground='#004c99',activeforeground='white',
+            background=bg_menu, foreground=fg_menu,
+            activebackground=acfg_menu,activeforeground=bg_menu,
             font=_Font_Menu,
             command=lambda e=self.listServer:self.selALL_optionLis(e),
             state='normal',
@@ -460,19 +458,19 @@ class Ventana(ttk.Frame):
         self.menuLis_Contextual.add_command(
             label="  Limpiar", 
             accelerator='Ctrl+X',
-            background='#ccffff', foreground='black',
-            activebackground='#004c99',activeforeground='white',
+            background=bg_menu, foreground=fg_menu,
+            activebackground=acfg_menu,activeforeground=bg_menu,
             font=_Font_Menu,
             state='disabled',
         )
-        self.menuLis_Contextual.add_separator(background='#ccffff')
+        self.menuLis_Contextual.add_separator(background=bg_menu)
         ## Cerrar pestñaa
         self.menuLis_Contextual.add_command(
             label="  Cerrar pestaña", 
             #image=self.cerrar_icon,
             compound=tk.LEFT,
-            background='#ccffff', foreground='black',
-            activebackground='#004c99',activeforeground='white',
+            background=bg_menu, foreground=fg_menu,
+            activebackground=acfg_menu,activeforeground=bg_menu,
             font=_Font_Menu,
             command=self.cerrar_vtn
         )
@@ -520,19 +518,13 @@ class Ventana(ttk.Frame):
     
     def widgets_ventanas(self):
         self.var_ent_buscar = tk.StringVar(self)
-        self.textBuscar = tk.Entry(
+        self.textBuscar = ttk.Entry(
             self.vtn_ventanas,
             textvariable=self.var_ent_buscar,
             justify='left',
             width=40,
             foreground="gray75",
             font=_Font_Texto,
-            border=0,
-            borderwidth=0,
-            highlightthickness=3,
-            highlightcolor='#316B83',
-            selectforeground='#CDFFEB', 
-            selectbackground='#476072'
         )
         self.var_ent_buscar.set("Buscar Directories / File ...")
         self.textBuscar.grid(row=0, column=0, padx=10, pady=5, sticky='nsew')
@@ -540,7 +532,6 @@ class Ventana(ttk.Frame):
         self.btnBuscar = ttk.Button(
             self.vtn_ventanas,
             text='Buscar',
-            style='TOP1.TButton',
             image=self.buscar_icon,
             command=lambda:self._buscar(self.textBuscar)
         )
@@ -549,7 +540,6 @@ class Ventana(ttk.Frame):
         self.btnLimpiar = ttk.Button(
             self.vtn_ventanas,
             text='Limpiar',
-            style='TOP1.TButton',
             image=self.limpiar_icon,
             command= self.limpiar_bsq,            
         )
@@ -558,7 +548,6 @@ class Ventana(ttk.Frame):
         self.btnCerrar = ttk.Button(
             self.vtn_ventanas, 
             text='Cerrar',
-            style='TOP1.TButton',
             image=self.cerrar_icon,
             command=self.cerrar_vtn
         )
@@ -601,10 +590,9 @@ class Ventana(ttk.Frame):
         self.tree.heading("#3", text="TIPO", anchor=tk.CENTER)
         self.tree.heading("#4", text="OWNER GROUP", anchor=tk.CENTER)
         self.tree.heading("#5", text="CODE", anchor=tk.CENTER)
-        self.tree.tag_configure('oddrow', background="#CEE5D0", font=_Font_Texto)
-        self.tree.tag_configure('evenrow', background="#F3F0D7", font=_Font_Texto)
+        self.tree.tag_configure('oddrow', background=oddrow, font=_Font_Texto)
+        self.tree.tag_configure('evenrow', background=evenrow, font=_Font_Texto)
         self.tree.grid(column=0, row=0, pady=10, padx=(5,0), sticky=tk.E+tk.W)
-
         ## ====================================================================================
         ## --- CREAMOS EL SEGUNDO LABEL FRAME
         self.labelframe2=ttk.LabelFrame(
@@ -660,17 +648,16 @@ class Ventana(ttk.Frame):
             font=_Font_Texto, 
             height=6,
             wrap=tk.WORD,
-            highlightcolor='#297F87',
+            highlightcolor=active_color,
             borderwidth=0, 
             highlightthickness=3,
-            insertbackground='#297F87',
-            selectbackground='lightblue',
+            insertbackground=active_color,
+            selectbackground=sel_bg_txt,
         )
 
         self.btnCpRisk = ttk.Button(
             self.labelframe2, 
             text='Copiar',
-            style='TOP.TButton',
             image=self.copiar_icon,
             command=lambda e=self.srcRisk:self.copiarALL(e),
         )
@@ -692,17 +679,16 @@ class Ventana(ttk.Frame):
             font=_Font_Texto, 
             height=6,
             wrap=tk.WORD,
-            highlightcolor='#297F87',
+            highlightcolor=active_color,
             borderwidth=0, 
             highlightthickness=3,
-            insertbackground='#297F87',
-            selectbackground='lightblue',
+            insertbackground=active_color,
+            selectbackground=sel_bg_txt,
         )
 
         self.btnCpImp = ttk.Button(
             self.labelframe2,
             text='Copiar',
-            style='TOP.TButton',                
             image=self.copiar_icon,
             command=lambda e=self.srcImpact:self.copiarALL(e),
         )
@@ -744,17 +730,16 @@ class Ventana(ttk.Frame):
             font=_Font_Texto, 
             height=5,
             wrap=tk.WORD,
-            highlightcolor='#297F87',
+            highlightcolor=active_color,
             borderwidth=0, 
             highlightthickness=2,
-            insertbackground='#297F87',
-            selectbackground='lightblue',
+            insertbackground=active_color,
+            selectbackground=sel_bg_txt,
         )
 
         self.btnCpVariable = ttk.Button(
             self.labelframe2, 
             text='Copiar',
-            style='TOP.TButton',                
             image=self.copiar_icon,
             command=lambda e=self.srcVariable:self.copiarALL(e),
         )

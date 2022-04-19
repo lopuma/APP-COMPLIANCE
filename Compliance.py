@@ -14,7 +14,6 @@ from PIL import Image, ImageTk
 from tkinter.ttk import Style
 from threading import Thread
 from ScrollableNotebook  import *
-from Extraciones import PST_EXT, Extracion, MyEntry
 from configparser import ConfigParser
 #-----------------------------------------------------------#
 user = getuser()
@@ -73,30 +72,35 @@ acbg_menu = parse.get('menu', 'activebackground')
 acfg_menu = parse.get('menu', 'activeforeground')
 fg_submenu = parse.get('menu', 'foreground_submenu')
 bg_submenu = parse.get('menu', 'background_submenu')
+oddrow = '#CEE5D0'
+evenrow = '#F3F0D7'
 fondo_app = '#FBF8F1'
 color_titulos = '#FF8080'
 sel_bg_txt = 'lightblue'
 sel_fg_txt = 'black'
 active_color = '#297F87'
 color_fg_list =  '#334257'
+bg_panel_buscar = '#A2D5AB'
+acbg_panel_buscar = '#39AEA9'
 fuente_titulos = 'Open Sanz'
 fuente_texto = 'Consolas'
 fuente_menu = 'Consolas'
 fuente_boton = 'Open Sanz'
 fuente_pestañas = 'Sans-Serif'
 tamñ_titulo = 14
-tamñ_texto = 13
+tamñ_texto = 14
+tamñ_texto_menucon = 13
 tamñ_boton = 14
 tamñ_menu = 14
 tamñ_texto_exp = 16
 tamñ_pestaña = 12
 _Font_Menu = (fuente_menu, tamñ_menu, font.BOLD)
 _Font_Texto = (fuente_texto, tamñ_texto)
+_Font_Texto_menucon = (fuente_texto, tamñ_texto_menucon)
 _Font_Boton = (fuente_boton, tamñ_boton, font.BOLD)
 _Font_Titulo_bold = (fuente_titulos, tamñ_titulo, font.BOLD)
 _Font_pestañas = (fuente_pestañas, tamñ_pestaña, font.BOLD)
 _Font_txt_exp = (fuente_texto, tamñ_texto_exp)
-_Font_txt_exp_bold = (fuente_texto, tamñ_texto_exp, font.BOLD)
 _Font_tt_exp = (fuente_titulos, tamñ_texto_exp, font.BOLD)
 
 def beep_error(f):
@@ -173,32 +177,32 @@ class Expandir(ttk.Frame):
         self.vtn_expandir.destroy()
     
     def menu_clickDerecho(self):
-        self.menu_Contextual = Menu(self.vtn_expandir, tearoff=0)
+        self.menu_Contextual = tk.Menu(self.vtn_expandir, tearoff=0)
         self.menu_Contextual.add_command(
             label="  Copiar", 
-            compound=LEFT,
-            background='#ccffff', foreground='black',
-            activebackground='#004c99',activeforeground='white',
+            compound=tk.LEFT,
+            background=bg_menu, foreground=fg_menu,
+            activebackground=acfg_menu,activeforeground=bg_menu,
             font=_Font_Menu,
             command= desviacion.copiar_texto_seleccionado,
             state="disabled"
         )
-        self.menu_Contextual.add_separator(background='#ccffff')
+        self.menu_Contextual.add_separator(background=bg_menu)
         self.menu_Contextual.add_command(
             label="  Seleccionar todo", 
-            compound=LEFT,
-            background='#ccffff', foreground='black',
-            activebackground='#004c99',activeforeground='white',
+            compound=tk.LEFT,
+            background=bg_menu, foreground=fg_menu,
+            activebackground=acfg_menu,activeforeground=bg_menu,
             font=_Font_Menu,
             command=lambda : desviacion.seleccionar_todo(event=None),
         )
-        self.menu_Contextual.add_separator(background='#ccffff')
+        self.menu_Contextual.add_separator(background=bg_menu)
         self.menu_Contextual.add_command(
             label="  Cerrar pestaña", 
             #image=self.cerrar_icon,
-            compound=LEFT,
-            background='#ccffff', foreground='black',
-            activebackground='#004c99',activeforeground='white',
+            compound=tk.LEFT,
+            background=bg_menu, foreground=fg_menu,
+            activebackground=acfg_menu,activeforeground=bg_menu,
             font=_Font_Menu,
             command=self.cerrar_vtn_expandir
         )
@@ -248,15 +252,15 @@ class Expandir(ttk.Frame):
                         if self._txt_Desv is None:
                             _tt_Desv = "EDITAR"
                             self.EXP_lblWidget['text'] =  _tt_Desv
-                            self.EXP_srcExpandir.delete('1.0',END)
-                            self.EXP_srcExpandir.insert(END,md['editar'])
+                            self.EXP_srcExpandir.delete('1.0',tk.END)
+                            self.EXP_srcExpandir.insert(tk.END,md['editar'])
                             self.varNum = 3
                             self.descativar_botones()
                         else:
                             _tt_Desv = "BACKUP"
                             self.EXP_lblWidget['text'] =  _tt_Desv
-                            self.EXP_srcExpandir.delete('1.0',END)
-                            self.EXP_srcExpandir.insert(END,self._txt_Desv)
+                            self.EXP_srcExpandir.delete('1.0',tk.END)
+                            self.EXP_srcExpandir.insert(tk.END,self._txt_Desv)
                             self.varNum = 2
                             self.descativar_botones()
         elif self.varNum == 2:
@@ -268,16 +272,16 @@ class Expandir(ttk.Frame):
                         if self._txt_Desv is None:
                             _tt_Desv = "REFRESCAR"
                             self.EXP_lblWidget['text'] =  _tt_Desv
-                            self.EXP_srcExpandir.delete('1.0',END)
-                            self.EXP_srcExpandir.insert(END,md['refrescar'])
+                            self.EXP_srcExpandir.delete('1.0',tk.END)
+                            self.EXP_srcExpandir.insert(tk.END,md['refrescar'])
                             self.EXP_btnCopyALL.config(state="normal")                        
                             self.varNum = 4
                             self.descativar_botones()
                         else:
                             _tt_Desv = "EDITAR"
                             self.EXP_lblWidget['text'] =  _tt_Desv
-                            self.EXP_srcExpandir.delete('1.0',END)
-                            self.EXP_srcExpandir.insert(END,self._txt_Desv)
+                            self.EXP_srcExpandir.delete('1.0',tk.END)
+                            self.EXP_srcExpandir.insert(tk.END,self._txt_Desv)
                             self.varNum = 3
                             self.descativar_botones()
         elif self.varNum == 3:
@@ -289,8 +293,8 @@ class Expandir(ttk.Frame):
                         if self._txt_Desv is None:
                             _tt_Desv = "EVIDENCIA"
                             self.EXP_lblWidget['text'] =  _tt_Desv
-                            self.EXP_srcExpandir.delete('1.0',END)
-                            self.EXP_srcExpandir.insert(END,md['evidencia'])
+                            self.EXP_srcExpandir.delete('1.0',tk.END)
+                            self.EXP_srcExpandir.insert(tk.END,md['evidencia'])
                             self.EXP_btnScreamEvidencia.config(state="normal")
                             self.EXP_btnCopyALL.config(state="normal")
                             self.varNum = 5
@@ -298,8 +302,8 @@ class Expandir(ttk.Frame):
                         else:
                             _tt_Desv = "REFRESCAR"
                             self.EXP_lblWidget['text'] =  _tt_Desv
-                            self.EXP_srcExpandir.delete('1.0',END)
-                            self.EXP_srcExpandir.insert(END,self._txt_Desv)
+                            self.EXP_srcExpandir.delete('1.0',tk.END)
+                            self.EXP_srcExpandir.insert(tk.END,self._txt_Desv)
                             self.EXP_btnCopyALL.config(state="normal")                        
                             self.varNum = 4      
                             self.descativar_botones()
@@ -312,15 +316,15 @@ class Expandir(ttk.Frame):
                         if self._txt_Desv is None:
                             _tt_Desv = "COMPROBACION"
                             self.EXP_lblWidget['text'] =  _tt_Desv
-                            self.EXP_srcExpandir.delete('1.0',END)
-                            self.EXP_srcExpandir.insert(END,md['comprobacion'])
+                            self.EXP_srcExpandir.delete('1.0',tk.END)
+                            self.EXP_srcExpandir.insert(tk.END,md['comprobacion'])
                             self.varNum = 1
                             self.activar_botones()
                         else:
                             _tt_Desv = "EVIDENCIA"
                             self.EXP_lblWidget['text'] =  _tt_Desv
-                            self.EXP_srcExpandir.delete('1.0',END)
-                            self.EXP_srcExpandir.insert(END,self._txt_Desv)
+                            self.EXP_srcExpandir.delete('1.0',tk.END)
+                            self.EXP_srcExpandir.insert(tk.END,self._txt_Desv)
                             self.EXP_btnScreamEvidencia.config(state="normal")
                             self.EXP_btnCopyALL.config(state="normal")
                             self.varNum = 5
@@ -334,15 +338,15 @@ class Expandir(ttk.Frame):
                         if self._txt_Desv is None:
                             _tt_Desv = "BACKUP"
                             self.EXP_lblWidget['text'] =  _tt_Desv
-                            self.EXP_srcExpandir.delete('1.0',END)
-                            self.EXP_srcExpandir.insert(END,md['copia'])
+                            self.EXP_srcExpandir.delete('1.0',tk.END)
+                            self.EXP_srcExpandir.insert(tk.END,md['copia'])
                             self.varNum = 2
                             self.descativar_botones()
                         else:
                             _tt_Desv = "COMPROBACION"
                             self.EXP_lblWidget['text'] =  _tt_Desv
-                            self.EXP_srcExpandir.delete('1.0',END)
-                            self.EXP_srcExpandir.insert(END,self._txt_Desv)
+                            self.EXP_srcExpandir.delete('1.0',tk.END)
+                            self.EXP_srcExpandir.insert(tk.END,self._txt_Desv)
                             self.varNum = 1
                             self.activar_botones()
         self.Expan_color_lineas()
@@ -375,16 +379,16 @@ class Expandir(ttk.Frame):
                         if self._txt_Desv is None:
                             _tt_Desv = "REFRESCAR"
                             self.EXP_lblWidget['text'] =  _tt_Desv
-                            self.EXP_srcExpandir.delete('1.0',END)
-                            self.EXP_srcExpandir.insert(END,md['refrescar'])
+                            self.EXP_srcExpandir.delete('1.0',tk.END)
+                            self.EXP_srcExpandir.insert(tk.END,md['refrescar'])
                             self.EXP_btnCopyALL.config(state="normal")                        
                             self.varNum = 4
                             self.descativar_botones()
                         else:
                             _tt_Desv = "EVIDENCIA"
                             self.EXP_lblWidget['text'] =  _tt_Desv
-                            self.EXP_srcExpandir.delete('1.0',END)
-                            self.EXP_srcExpandir.insert(END,self._txt_Desv)
+                            self.EXP_srcExpandir.delete('1.0',tk.END)
+                            self.EXP_srcExpandir.insert(tk.END,self._txt_Desv)
                             self.EXP_btnScreamEvidencia.config(state="normal")
                             self.EXP_btnCopyALL.config(state="normal")
                             self.varNum = 5
@@ -398,8 +402,8 @@ class Expandir(ttk.Frame):
                         if self._txt_Desv is None:
                             _tt_Desv = "EVIDENCIA"
                             self.EXP_lblWidget['text'] =  _tt_Desv
-                            self.EXP_srcExpandir.delete('1.0',END)
-                            self.EXP_srcExpandir.insert(END,md['evidencia'])
+                            self.EXP_srcExpandir.delete('1.0',tk.END)
+                            self.EXP_srcExpandir.insert(tk.END,md['evidencia'])
                             self.EXP_btnScreamEvidencia.config(state="normal")
                             self.EXP_btnCopyALL.config(state="normal")
                             self.varNum = 5
@@ -407,8 +411,8 @@ class Expandir(ttk.Frame):
                         else:
                             _tt_Desv = "COMPROBACION"
                             self.EXP_lblWidget['text'] =  _tt_Desv
-                            self.EXP_srcExpandir.delete('1.0',END)
-                            self.EXP_srcExpandir.insert(END,self._txt_Desv)
+                            self.EXP_srcExpandir.delete('1.0',tk.END)
+                            self.EXP_srcExpandir.insert(tk.END,self._txt_Desv)
                             self.varNum = 1
                             self.activar_botones()
         elif self.varNum == 3:
@@ -420,15 +424,15 @@ class Expandir(ttk.Frame):
                         if self._txt_Desv is None:
                             _tt_Desv = "COMPROBACION"
                             self.EXP_lblWidget['text'] =  _tt_Desv
-                            self.EXP_srcExpandir.delete('1.0',END)
-                            self.EXP_srcExpandir.insert(END,md['evidencia'])
+                            self.EXP_srcExpandir.delete('1.0',tk.END)
+                            self.EXP_srcExpandir.insert(tk.END,md['evidencia'])
                             self.varNum = 1
                             self.activar_botones()
                         else:
                             _tt_Desv = "BACKUP"
                             self.EXP_lblWidget['text'] =  _tt_Desv
-                            self.EXP_srcExpandir.delete('1.0',END)
-                            self.EXP_srcExpandir.insert(END,self._txt_Desv)
+                            self.EXP_srcExpandir.delete('1.0',tk.END)
+                            self.EXP_srcExpandir.insert(tk.END,self._txt_Desv)
                             self.varNum = 2
                             self.descativar_botones()
         elif self.varNum == 4:
@@ -440,15 +444,15 @@ class Expandir(ttk.Frame):
                         if self._txt_Desv is None:
                             _tt_Desv = "BACKUP"
                             self.EXP_lblWidget['text'] =  _tt_Desv
-                            self.EXP_srcExpandir.delete('1.0',END)
-                            self.EXP_srcExpandir.insert(END,md['copia'])
+                            self.EXP_srcExpandir.delete('1.0',tk.END)
+                            self.EXP_srcExpandir.insert(tk.END,md['copia'])
                             self.varNum = 2
                             self.descativar_botones()
                         else:
                             _tt_Desv = "EDITAR"
                             self.EXP_lblWidget['text'] =  _tt_Desv
-                            self.EXP_srcExpandir.delete('1.0',END)
-                            self.EXP_srcExpandir.insert(END,self._txt_Desv)
+                            self.EXP_srcExpandir.delete('1.0',tk.END)
+                            self.EXP_srcExpandir.insert(tk.END,self._txt_Desv)
                             self.varNum = 3
                             self.descativar_botones()
         elif self.varNum == 5:
@@ -460,15 +464,15 @@ class Expandir(ttk.Frame):
                         if self._txt_Desv is None:
                             _tt_Desv = "EDITAR"
                             self.EXP_lblWidget['text'] =  _tt_Desv
-                            self.EXP_srcExpandir.delete('1.0',END)
-                            self.EXP_srcExpandir.insert(END,md['editar'])
+                            self.EXP_srcExpandir.delete('1.0',tk.END)
+                            self.EXP_srcExpandir.insert(tk.END,md['editar'])
                             self.varNum = 2
                             self.descativar_botones()
                         else:
                             _tt_Desv = "REFRESCAR"
                             self.EXP_lblWidget['text'] =  _tt_Desv
-                            self.EXP_srcExpandir.delete('1.0',END)
-                            self.EXP_srcExpandir.insert(END,self._txt_Desv)
+                            self.EXP_srcExpandir.delete('1.0',tk.END)
+                            self.EXP_srcExpandir.insert(tk.END,self._txt_Desv)
                             self.EXP_btnCopyALL.config(state="normal")                        
                             self.varNum = 1
                             self.activar_botones()
@@ -500,7 +504,7 @@ class Expandir(ttk.Frame):
         self.EXP_btn_VentanasDIR = ttk.Button(
             self.vtn_expandir,
             text='Permissions',
-            compound='left',
+            compound=tk.LEFT,
             image=desviacion.Expandir_icon1,            
             command=desviacion.abrir_DIRECTORY,
             state="normal"
@@ -508,7 +512,7 @@ class Expandir(ttk.Frame):
         self.EXP_btn_VentanasAUTH = ttk.Button(
             self.vtn_expandir,
             text='Authorized',
-            compound='left',
+            compound=tk.LEFT,
             image=desviacion.Expandir_icon1,            
             command=desviacion.abrir_AUTHORIZED,
             state="normal"
@@ -516,7 +520,7 @@ class Expandir(ttk.Frame):
         self.EXP_btn_VentanasSER = ttk.Button(
             self.vtn_expandir,
             text='Service',
-            compound='left',
+            compound=tk.LEFT,
             image=desviacion.Expandir_icon1,            
             command=desviacion.abrir_SERVICE,
             state="normal"
@@ -524,7 +528,7 @@ class Expandir(ttk.Frame):
         self.EXP_btn_VentanasACC = ttk.Button(
             self.vtn_expandir,
             text='Account',
-            compound='left',
+            compound=tk.LEFT,
             image=desviacion.Expandir_icon1,            
             command=desviacion.abrir_ACCOUNT,
             state="normal"
@@ -532,7 +536,7 @@ class Expandir(ttk.Frame):
         self.EXP_btn_VentanasCMD = ttk.Button(
             self.vtn_expandir,
             text='Command',
-            compound='left',
+            compound=tk.LEFT,
             image=desviacion.Expandir_icon1,            
             command=desviacion.abrir_COMMAND,
             state="normal"
@@ -540,7 +544,7 @@ class Expandir(ttk.Frame):
         self.EXP_btn_VentanasIDR = ttk.Button(
             self.vtn_expandir,
             text='Id_Rsa',
-            compound='left',
+            compound=tk.LEFT,
             image=desviacion.Expandir_icon1,            
             command=desviacion.abrir_IDRSA,
             state="normal"
@@ -632,8 +636,8 @@ class Expandir(ttk.Frame):
                 indx = lastidx
                 self.EXP_srcExpandir.tag_config(
                 'found1', 
-                foreground='#396eb0',
-                font=_Font_txt_exp_bold
+                foreground='dodgerblue',
+                font=(fuente_texto, 16, font.BOLD)
                 )
 
 class TextSimilar(ttk.Frame):
@@ -644,7 +648,7 @@ class TextSimilar(ttk.Frame):
         self.cliente = cliente
 ## ---- TOP LEVEL-----
         self.vtn_modulos = tk.Toplevel(self)
-        self.vtn_modulos.config(background='#F9F3DF')
+        self.vtn_modulos.config(background=fondo_app)
         window_width=1000
         window_height=300
         screen_width = app.root.winfo_x()
@@ -656,7 +660,7 @@ class TextSimilar(ttk.Frame):
         self.vtn_modulos.transient(self)
         self.vtn_modulos.grab_set()
         self.vtn_modulos.focus_set()
-        self.vtn_modulos.config(background='black')
+        self.vtn_modulos.config(background=fondo_app)
 
 
 ## --- FRAME TITULO
@@ -676,7 +680,7 @@ class TextSimilar(ttk.Frame):
         self.frame2 = ttk.Frame(
             self.vtn_modulos,
         )
-        self.frame2.pack(fill='both', side='left', expand=1, pady=5, padx=5)
+        self.frame2.pack(fill='both', side=tk.LEFT, expand=1, pady=5, padx=5)
         self.frame2.pack_propagate(1)
         self.frame2.rowconfigure(0, weight=5)
         self.frame2.columnconfigure(0, weight=5)
@@ -857,7 +861,7 @@ class TextSimilar(ttk.Frame):
             for md in data:
                 listModulo.append(md['modulo'])
         listModulo.sort()
-        desviacion.DESVfr1_listbox.insert(END,*listModulo)
+        desviacion.DESVfr1_listbox.insert(tk.END,*listModulo)
         data = []
         modulo_Buscado = str(modulo_Buscado).replace("[","").replace("]","").replace("'","")
         with open(path_modulo.format(clt)) as g:
@@ -1089,6 +1093,7 @@ class Desviacion(ttk.Frame):
 
 ## ------ VENTANAS TOP EXPANDIR ------------------------------ ##
     def expandir(self, event, var): #TODO comprobando expandir
+
         global expandir
         global sis_oper
         global asigne_Cliente
@@ -1128,22 +1133,22 @@ class Desviacion(ttk.Frame):
 
 ## --- MENU CONTEXTUAL --- ##    
     def _menu_clickDerecho(self):   
-        self.menu_Contextual = Menu(self, tearoff=0)
+        self.menu_Contextual = tk.Menu(self, tearoff=0)
         self.menu_Contextual.add_command(
             label="  Buscar", 
             accelerator='Ctrl+F',
-            background='#ccffff', foreground='black',
-            activebackground='#004c99',activeforeground='white',
+            background=bg_menu, foreground=fg_menu,
+            activebackground=acfg_menu,activeforeground=bg_menu,
             font=_Font_Menu,
             command=lambda e=self.DESVfr1_entModulo:self._buscar(e),
             state='disabled',
         )
-        self.menu_Contextual.add_separator(background='#ccffff')
+        self.menu_Contextual.add_separator(background=bg_menu)
         self.menu_Contextual.add_command(
             label="  Copiar", 
             accelerator='Ctrl+C',
-            background='#ccffff', foreground='black',
-            activebackground='#004c99',activeforeground='white',
+            background=bg_menu, foreground=fg_menu,
+            activebackground=acfg_menu,activeforeground=bg_menu,
             font=_Font_Menu,
             command=self.copiar_texto_seleccionado,
             state='disabled',
@@ -1152,19 +1157,19 @@ class Desviacion(ttk.Frame):
         self.menu_Contextual.add_command(
             label="  Pegar", 
             accelerator='Ctrl+V',
-            background='#ccffff', foreground='black',
-            activebackground='#004c99',activeforeground='white',
+            background=bg_menu, foreground=fg_menu,
+            activebackground=acfg_menu,activeforeground=bg_menu,
             font=_Font_Menu,
             command=lambda e=self.DESVfr1_entModulo:self.pegar_texto_seleccionado(e),
         )
         
-        self.menu_Contextual.add_separator(background='#ccffff')
+        self.menu_Contextual.add_separator(background=bg_menu)
         
         self.menu_Contextual.add_command(
             label="  Seleccionar todo", 
             accelerator='Ctrl+A',
-            background='#ccffff', foreground='black',
-            activebackground='#004c99',activeforeground='white',
+            background=bg_menu, foreground=fg_menu,
+            activebackground=acfg_menu,activeforeground=bg_menu,
             font=_Font_Menu,
             command=lambda : self.seleccionar_todo(event=None),
             state='disabled',
@@ -1172,18 +1177,18 @@ class Desviacion(ttk.Frame):
         self.menu_Contextual.add_command(
             label="  Limpiar", 
             accelerator='Ctrl+X',
-            background='#ccffff', foreground='black',
-            activebackground='#004c99',activeforeground='white',
+            background=bg_menu, foreground=fg_menu,
+            activebackground=acfg_menu,activeforeground=bg_menu,
             font=_Font_Menu,
             command=lambda e=None:self._clear_busqueda(e),
             state='disabled',
         )
-        self.menu_Contextual.add_separator(background='#ccffff')
+        self.menu_Contextual.add_separator(background=bg_menu)
         self.menu_Contextual.add_command(
             label="  Cerrar pestaña", 
-            compound=LEFT,
-            background='#ccffff', foreground='black',
-            activebackground='#004c99',activeforeground='white',
+            compound=tk.LEFT,
+            background=bg_menu, foreground=fg_menu,
+            activebackground=acfg_menu,activeforeground=bg_menu,
             font=_Font_Menu,
             command=app.cerrar_vtn_desviacion
         )
@@ -1279,11 +1284,11 @@ class Desviacion(ttk.Frame):
         self.DESV_frame2['text'] = 'SISTEMA OPERATIVO'
         self.DESVfr2_lblModulo['text'] = 'MODULO'
         self.DESVfr2_lblDescripcion['text'] = ''
-        self.DESVfr2_srcComprobacion.delete('1.0',END)
-        self.DESVfr2_srcBackup.delete('1.0',END)
-        self.DESVfr3_srcEditar.delete('1.0',END)
-        self.DESVfr3_srcRefrescar.delete('1.0',END)
-        self.DESVfr3_srcEvidencia.delete('1.0',END)
+        self.DESVfr2_srcComprobacion.delete('1.0',tk.END)
+        self.DESVfr2_srcBackup.delete('1.0',tk.END)
+        self.DESVfr3_srcEditar.delete('1.0',tk.END)
+        self.DESVfr3_srcRefrescar.delete('1.0',tk.END)
+        self.DESVfr3_srcEvidencia.delete('1.0',tk.END)
 
 ## --- SELECIONA UN ELEMNETO DEL LIST BOX ACTUAL
     def seleccionar_Modulo(self, event):
@@ -1345,31 +1350,31 @@ class Desviacion(ttk.Frame):
             lblDs['text'] = md['descripcion']
 
         if md['comprobacion'] is not None:
-            com.insert(END,md['comprobacion'])
+            com.insert(tk.END,md['comprobacion'])
             PST_DESV.DESV_btn1Expandir.config(state='normal')
         else:
             PST_DESV.DESV_btn1Expandir.config(state='disabled')
 
         if md['copia'] is not None:
-            bak.insert(END,md['copia'])
+            bak.insert(tk.END,md['copia'])
             PST_DESV.DESV_btn2Expandir.config(state='normal')
         else:
             PST_DESV.DESV_btn2Expandir.config(state='disabled')
 
         if md['editar'] is not None:
-            edi.insert(END,md['editar'])
+            edi.insert(tk.END,md['editar'])
             PST_DESV.DESV_btn3Expandir.config(state='normal')
         else:
             PST_DESV.DESV_btn3Expandir.config(state='disabled')
 
         if md['refrescar'] is not None:
-            res.insert(END,md['refrescar'])
+            res.insert(tk.END,md['refrescar'])
             PST_DESV.DESV_btn4Expandir.config(state='normal')
         else:
             PST_DESV.DESV_btn4Expandir.config(state='disabled')
 
         if md['evidencia'] is not None:
-            evd.insert(END,md['evidencia'])
+            evd.insert(tk.END,md['evidencia'])
             PST_DESV.DESV_btn5Expandir.config(state='normal')
         else:
             PST_DESV.DESV_btn5Expandir.config(state='disabled')
@@ -1394,31 +1399,31 @@ class Desviacion(ttk.Frame):
             self.DESVfr2_lblDescripcion['text'] = md['descripcion']
 
         if md['comprobacion'] is not None:
-            self.DESVfr2_srcComprobacion.insert(END,md['comprobacion'])
+            self.DESVfr2_srcComprobacion.insert(tk.END,md['comprobacion'])
             self.DESV_btn1Expandir.config(state='normal')
         else:
             self.DESV_btn1Expandir.config(state='disabled')
 
         if md['copia'] is not None:
-            self.DESVfr2_srcBackup.insert(END,md['copia'])
+            self.DESVfr2_srcBackup.insert(tk.END,md['copia'])
             self.DESV_btn2Expandir.config(state='normal')
         else:
             self.DESV_btn2Expandir.config(state='disabled')
 
         if md['editar'] is not None:
-            self.DESVfr3_srcEditar.insert(END,md['editar'])
+            self.DESVfr3_srcEditar.insert(tk.END,md['editar'])
             self.DESV_btn3Expandir.config(state='normal')
         else:
             self.DESV_btn3Expandir.config(state='disabled')
 
         if md['refrescar'] is not None:
             self.DESV_btn4Expandir.config(state='normal')
-            self.DESVfr3_srcRefrescar.insert(END,md['refrescar'])
+            self.DESVfr3_srcRefrescar.insert(tk.END,md['refrescar'])
         else:
             self.DESV_btn4Expandir.config(state='disabled')
 
         if md['evidencia'] is not None:
-            self.DESVfr3_srcEvidencia.insert(END,md['evidencia'])
+            self.DESVfr3_srcEvidencia.insert(tk.END,md['evidencia'])
             self.DESV_btn5Expandir.config(state='normal')
         else:
             self.DESV_btn5Expandir.config(state='disabled')
@@ -1681,7 +1686,7 @@ class Desviacion(ttk.Frame):
         print("modulo :: ", len(modulo_Buscado))
         if len(clave_Buscado) == 0 and len(modulo_Buscado) == 0:
             print("1")
-            self.DESVfr1_listbox.select_clear(ANCHOR)
+            self.DESVfr1_listbox.select_clear(tk.ANCHOR)
             self.DESVfr1_entModulo.focus()
             self._disabled_buttons()
             self.disabled_btn_expandir()
@@ -1705,14 +1710,14 @@ class Desviacion(ttk.Frame):
                 infile_servihabitat = path_modulo.format("SERVIHABITAT")
 
 ## --- ABRIR TODOS LOS JSON DE LOS CLIENTES
-                with open(infile_afb, 'r') as infileAFB, open(infile_asisa, 'r') as infileASISA, open(infile_cesce, 'r') as infileCESCE, open(infile_ctti, 'r') as infileCTTI, open(infile_enel, 'r') as infileENEL, open(infile_eurofred, 'r') as infileEUROFRED, open(infile_ft, 'r') as infileFT,  open(infile_infra, 'r') as infileINFRA, open(infile_lbk, 'r') as infileLBK, open(infile_planeta, 'r') as infilePLANETA, open(infile_servihabitat, 'r') as infileSERVIHABITAT:           
+                with open(infile_afb, 'r') as infileAFB, open(infile_asisa, 'r') as infileASISA, open(infile_cesce, 'r') as infileCESCE, open(infile_ctti, 'r') as infileCTTI, open(infile_enel, 'r') as infileENEL, open(infile_eurofred, 'r') as infileEUROFRED, open(infile_ft, 'r') as tk.infitk.LEFT,  open(infile_infra, 'r') as infileINFRA, open(infile_lbk, 'r') as infileLBK, open(infile_planeta, 'r') as infilePLANETA, open(infile_servihabitat, 'r') as infileSERVIHABITAT:           
                     fileAFB_data = json.load(infileAFB)
                     fileASISA_data = json.load(infileASISA)
                     fileCESCE_data = json.load(infileCESCE)
                     fileCTTI_data = json.load(infileCTTI)
                     fileENEL_data = json.load(infileENEL)
                     fileEUROFRED_data = json.load(infileEUROFRED)
-                    fileFT_data = json.load(infileFT)
+                    tk.fitk.LEFT_data = json.load(tk.infitk.LEFT)
                     fileINFRA_data = json.load(infileINFRA)
                     fileLBK_data = json.load(infileLBK)
                     filePLANETA_data = json.load(infilePLANETA)
@@ -1753,7 +1758,7 @@ class Desviacion(ttk.Frame):
                         _md_Buscado = [n for n in lis_md_enct if md_a_buscar.strip().replace("\\","/") in n]
                         self._add_newList_clt(dict_clave_modulo, _md_Buscado, ln_eurofred, CUST='EUROFRED')
 ## ---FT    
-                    for ln_ft in fileFT_data:
+                    for ln_ft in tk.fitk.LEFT_data:
                         lis_md_enct.append(ln_ft['modulo'])
                         _md_Buscado = [n for n in lis_md_enct if md_a_buscar.strip().replace("\\","/") in n]
                         self._add_newList_clt(dict_clave_modulo, _md_Buscado, ln_ft, CUST='FT')
@@ -1815,7 +1820,7 @@ class Desviacion(ttk.Frame):
                                 _clv_Buscado = [n for n in lis_clv_enct if clv_a_buscar in n]
                                 self._add_newList_clt_clv(dict_clave_modulo, _clv_Buscado, ln_eurofred, CUST='EUROFRED')## ---FT    
 ## ---FT
-                            for ln_ft in fileFT_data:
+                            for ln_ft in tk.fitk.LEFT_data:
                                 lis_clv_enct.append(ln_ft['clave'])
                                 _clv_Buscado = [n for n in lis_clv_enct if clv_a_buscar in n]
                                 self._add_newList_clt_clv(dict_clave_modulo, _clv_Buscado, ln_ft, CUST='FT')
@@ -1969,7 +1974,7 @@ class Desviacion(ttk.Frame):
     
     def limpiar_busqueda(self):
         widget_event = self.DESVfr1_entModulo
-        widget_event.delete(0, END)
+        widget_event.delete(0, tk.END)
         widget_event.focus()
         widget_event.icursor(0)
         self.DESVfr1_btnLimpiar.grid_forget()
@@ -2021,8 +2026,8 @@ class Desviacion(ttk.Frame):
         else:
             customer = self.clientesVar.get()
         ## --- LIMPIAR -----------------------------
-        self.DESVfr1_entModulo.delete(0, END)
-        self.DESVfr1_listbox.delete(0,END)
+        self.DESVfr1_entModulo.delete(0, tk.END)
+        self.DESVfr1_listbox.delete(0,tk.END)
         self.limpiar_Widgets()
         self._disabled_buttons() 
         self.disabled_btn_expandir()
@@ -2037,7 +2042,7 @@ class Desviacion(ttk.Frame):
                 listModulo.append(md['modulo'])
                 listClave.append(md['clave'])
         listModulo.sort()
-        self.DESVfr1_listbox.insert(END,*listModulo)
+        self.DESVfr1_listbox.insert(tk.END,*listModulo)
         self.cambiar_NamePestaña(customer)
 
     def colour_line_com(self):
@@ -2055,7 +2060,7 @@ class Desviacion(ttk.Frame):
                 indx = lastidx
                 PST_DESV.DESVfr2_srcComprobacion.tag_config(
                 'found1', 
-                foreground='#396eb0',
+                foreground='dodgerblue',
                 font=_Font_Texto
                 )
     
@@ -2072,7 +2077,7 @@ class Desviacion(ttk.Frame):
                 indx1 = lastidx1
                 PST_DESV.DESVfr2_srcBackup.tag_config(
                 'found1', 
-                foreground='#396eb0',
+                foreground='dodgerblue',
                 font=_Font_Texto
                 )
     
@@ -2089,7 +2094,7 @@ class Desviacion(ttk.Frame):
                 indx3 = lastidx3
                 PST_DESV.DESVfr3_srcRefrescar.tag_config(
                 'found1', 
-                foreground='#396eb0',
+                foreground='dodgerblue',
                 font=_Font_Texto
                 )
 
@@ -2107,7 +2112,7 @@ class Desviacion(ttk.Frame):
                 indx2 = lastidx2
                 PST_DESV.DESVfr3_srcEditar.tag_config(
                 'found1', 
-                foreground='#396eb0',
+                foreground='dodgerblue',
                 font=_Font_Texto
                 )
 
@@ -2124,7 +2129,7 @@ class Desviacion(ttk.Frame):
                 indx4 = lastidx4
                 PST_DESV.DESVfr3_srcEvidencia.tag_config(
                 'found1', 
-                foreground='#396eb0',
+                foreground='dodgerblue',
                 font=_Font_Texto
                 )
 
@@ -2183,6 +2188,7 @@ class Desviacion(ttk.Frame):
             event.tag_remove("sel","1.0","end")
     
     def widgets_DESVIACION(self):
+        from Extraciones import MyEntry
 # --- DEFINIMOS LOS LABEL FRAMEs, QUE CONTENDRAN LOS WIDGETS --------------------------#
         self.DESV_frame1=ttk.LabelFrame(
             self, 
@@ -2238,8 +2244,8 @@ class Desviacion(ttk.Frame):
             background = bg_menu,
             foreground = fg_menu,
             font=_Font_Titulo_bold,
-            activebackground = acbg_menu,
-            activeforeground = acfg_menu,
+            activebackground = acfg_menu,
+            activeforeground = bg_menu,
             relief="groove",
             borderwidth=2,
             width=20
@@ -2261,9 +2267,14 @@ class Desviacion(ttk.Frame):
             textvariable=self.var_entry_bsc,
         )
         
-        self.DESVfr1_entModulo.config(
+        self.DESVfr1_entModulo.configure(
             state='disabled',
-            font=_Font_Texto
+            font=_Font_Texto,
+            borderwidth=0,
+            highlightcolor=active_color,
+            insertbackground=active_color,
+            selectbackground=sel_bg_txt,
+            highlightthickness=2,
         )
         self.DESVfr1_entModulo.grid(row=1, column=0, pady=5, padx=(5,0), sticky='nsew')
         
@@ -2334,7 +2345,7 @@ class Desviacion(ttk.Frame):
         self.DESV_btnDirectory = ttk.Button(
             self.DESV_frame2,
             text='Permissions',
-            compound='left',
+            compound=tk.LEFT,
             image=self.Expandir_icon,
             state='disabled',
             command=self.abrir_DIRECTORY,
@@ -2342,7 +2353,7 @@ class Desviacion(ttk.Frame):
         self.DESV_btnService = ttk.Button(
             self.DESV_frame2,
             text='Service',
-            compound='left',
+            compound=tk.LEFT,
             image=self.Expandir_icon,
             state='enabled',
             command=self.abrir_SERVICE,
@@ -2350,7 +2361,7 @@ class Desviacion(ttk.Frame):
         self.DESV_btnAuthorized = ttk.Button(
             self.DESV_frame2,
             text='Authorized',
-            compound='left',
+            compound=tk.LEFT,
             image=self.Expandir_icon,
             state='enabled',
             command=self.abrir_AUTHORIZED,
@@ -2365,7 +2376,7 @@ class Desviacion(ttk.Frame):
         self.DESV_btnAccount = ttk.Button(
             self.DESV_frame2,
             text='Account',
-            compound='left',
+            compound=tk.LEFT,
             image=self.Expandir_icon,
             state='enabled',
             command=self.abrir_ACCOUNT,
@@ -2374,7 +2385,7 @@ class Desviacion(ttk.Frame):
         self.DESV_btnCommand = ttk.Button(
             self.DESV_frame2,
             text='Command',
-            compound='left',
+            compound=tk.LEFT,
             image=self.Expandir_icon,
             state='enabled',
             command=self.abrir_COMMAND,
@@ -2383,7 +2394,7 @@ class Desviacion(ttk.Frame):
         self.DESV_btnIdrsa = ttk.Button(
             self.DESV_frame2,
             text='Id_Rsa',
-            compound='left',
+            compound=tk.LEFT,
             image=self.Expandir_icon,
             state='enabled',
             command=self.abrir_IDRSA,
@@ -2563,11 +2574,11 @@ class Desviacion(ttk.Frame):
         global txtWidget
         PST_DESV.DESV_frame2['text'] = 'SISTEMA OPERATIVO'
         PST_DESV.DESVfr2_lblDescripcion['text'] = ''
-        PST_DESV.DESVfr2_srcComprobacion.delete('1.0',END)
-        PST_DESV.DESVfr2_srcBackup.delete('1.0',END)
-        PST_DESV.DESVfr3_srcEditar.delete('1.0',END)
-        PST_DESV.DESVfr3_srcRefrescar.delete('1.0',END)
-        PST_DESV.DESVfr3_srcEvidencia.delete('1.0',END)
+        PST_DESV.DESVfr2_srcComprobacion.delete('1.0',tk.END)
+        PST_DESV.DESVfr2_srcBackup.delete('1.0',tk.END)
+        PST_DESV.DESVfr3_srcEditar.delete('1.0',tk.END)
+        PST_DESV.DESVfr3_srcRefrescar.delete('1.0',tk.END)
+        PST_DESV.DESVfr3_srcEvidencia.delete('1.0',tk.END)
         PST_DESV.DESVfr2_lblModulo['text'] = 'MODULO'
 
         if list_motion:
@@ -2637,7 +2648,7 @@ class Aplicacion():
         position_top = int(screen_height/2 - window_height/2)
         position_right = int(screen_width/2 - window_width/2)
         self.root.geometry(f'{window_width}x{window_height}+{position_top}+{position_right}')
-        self.root.configure(background=fondo_app) 
+        self.root.configure(background=fondo_app, borderwidth=0, border=0) 
         self.root.tk.call('wm', 'iconphoto', self.root._w, tk.PhotoImage(file=path_icon+r'compliance.png'))
         self.open_client()
         self.iconos()
@@ -2645,7 +2656,7 @@ class Aplicacion():
         self.contenedor= ttk.Frame(self.cuaderno)
         self.contenedor.columnconfigure(1, weight=1)
         self.contenedor.rowconfigure(1, weight=1)
-        self.cuaderno.add(self.contenedor, text='WorkSpace  ', underline=0, image=self.WorkSpace_icon, compound='left')
+        self.cuaderno.add(self.contenedor, text='WorkSpace  ', underline=0, image=self.WorkSpace_icon, compound=tk.LEFT)
         self.cuaderno.pack(fill="both",expand=True)
         self.cuaderno.bind_all("<<NotebookTabChanged>>",lambda e:self.alCambiar_Pestaña(e))
         self.cuaderno.enable_traversal()
@@ -2780,67 +2791,67 @@ class Aplicacion():
         
         self.style.configure('TEntry',
             background = fondo_app,
-            foreground = "black",
+            foreground = sel_fg_txt,
             border=2,
             borderwidth=2,
             highlightthickness=2,
-            highlightcolor='#316B83',
-            selectforeground='back',
+            highlightcolor=active_color,
+            selectforeground=sel_fg_txt,
             selectbackground=sel_bg_txt,
         )
 
 ## --- MENU CONTEXTUAL --- ##
 ## --- MENU PARA EXPANDIR -----------------------------
     def menu_clickDerecho(self):  
-        self.menu_Contextual = Menu(self.root, tearoff=0)
+        self.menu_Contextual = tk.Menu(self.root, tearoff=0)
         self.menu_Contextual.add_command(
             label="  Buscar", 
             accelerator='Ctrl+F',
-            background='#ccffff', foreground='black',
-            activebackground='#004c99',activeforeground='white',
+            background=bg_menu, foreground=fg_menu,
+            activebackground=acfg_menu,activeforeground=bg_menu,
             font=_Font_Menu,
             state='disabled',
         )
-        self.menu_Contextual.add_separator(background='#ccffff')
+        self.menu_Contextual.add_separator(background=bg_menu)
         self.menu_Contextual.add_command(
             label="  Copiar", 
             accelerator='Ctrl+C',
-            background='#ccffff', foreground='black',
-            activebackground='#004c99',activeforeground='white',
+            background=bg_menu, foreground=fg_menu,
+            activebackground=acfg_menu,activeforeground=bg_menu,
             font=_Font_Menu,
             state='disabled',
         )
         self.menu_Contextual.add_command(
             label="  Pegar", 
             accelerator='Ctrl+V',
-            background='#ccffff', foreground='black',
-            activebackground='#004c99',activeforeground='white',
+            background=bg_menu, foreground=fg_menu,
+            activebackground=acfg_menu,activeforeground=bg_menu,
             font=_Font_Menu,
             state='disabled',
         )
-        self.menu_Contextual.add_separator(background='#ccffff')
+        self.menu_Contextual.add_separator(background=bg_menu)
         self.menu_Contextual.add_command(
             label="  Seleccionar todo", 
             accelerator='Ctrl+A',
-            background='#ccffff', foreground='black',
-            activebackground='#004c99',activeforeground='white',
+            background=bg_menu, foreground=fg_menu,
+            activebackground=acfg_menu,activeforeground=bg_menu,
             font=_Font_Menu,
             state='disabled',
         )
         self.menu_Contextual.add_command(
             label="  Limpiar", 
             accelerator='Ctrl+X',
-            background='#ccffff', foreground='black',
-            activebackground='#004c99',activeforeground='white',
+            background=bg_menu, foreground=fg_menu,
+            activebackground=acfg_menu,activeforeground=bg_menu,
             font=_Font_Menu,
             state='disabled',
         )
-        self.menu_Contextual.add_separator(background='#ccffff')
+        self.menu_Contextual.add_separator(background=bg_menu)
         self.menu_Contextual.add_command(
             label="  Cerrar pestaña", 
-            compound=LEFT,
-            background='#ccffff', foreground='black',
-            activebackground='#004c99',activeforeground='white',
+            compound=tk.LEFT,
+            background=bg_menu, foreground=fg_menu,
+            activebackground=acfg_menu,activeforeground=bg_menu,
             font=_Font_Menu,
             command=self.cerrar_vtn_desviacion
         )
@@ -2850,12 +2861,12 @@ class Aplicacion():
 
     def _menu_clickDerecho_GLS(self):
         self.text_font = font.Font(family='Courier', size=14, font=font.BOLD)
-        self.menu_Contextual_GLS = Menu(self.root, tearoff=0)
+        self.menu_Contextual_GLS = tk.Menu(self.root, tearoff=0)
         self.menu_Contextual_GLS.add_command(
             label="  Copiar",
             accelerator='Ctrl+C',
-            background='#ccffff', foreground='black',
-            activebackground='#004c99', activeforeground='white',
+            background=bg_menu, foreground=fg_menu,
+            activebackground=acfg_menu, activeforeground=bg_menu,
             font=self.text_font,
             command=lambda e=self._list_clave : self._copiar_select_GLS_clave(e)
         )
@@ -2873,63 +2884,63 @@ class Aplicacion():
 
 ## --- MENU PARA SRC DE LOS MODULOS -------------------
     def _menu_clickDerecho(self):
-        self._menu_Contextual = Menu(self.root, tearoff=0)
+        self._menu_Contextual = tk.Menu(self.root, tearoff=0)
         self._menu_Contextual.add_command(
             label="  Buscar", 
             accelerator='Ctrl+F',
-            background='#ccffff', foreground='black',
-            activebackground='#004c99',activeforeground='white',
+            background=bg_menu, foreground=fg_menu,
+            activebackground=acfg_menu,activeforeground=bg_menu,
             font=_Font_Menu,
             state='disabled',
         )
-        self._menu_Contextual.add_separator(background='#ccffff')
+        self._menu_Contextual.add_separator(background=bg_menu)
         self._menu_Contextual.add_command(
             label="  Copiar", 
             accelerator='Ctrl+C',
-            background='#ccffff', foreground='black',
-            activebackground='#004c99',activeforeground='white',
+            background=bg_menu, foreground=fg_menu,
+            activebackground=acfg_menu,activeforeground=bg_menu,
             font=_Font_Menu,
             state='disabled',
         )
         self._menu_Contextual.add_command(
             label="  Pegar", 
             accelerator='Ctrl+V',
-            background='#ccffff', foreground='black',
-            activebackground='#004c99',activeforeground='white',
+            background=bg_menu, foreground=fg_menu,
+            activebackground=acfg_menu,activeforeground=bg_menu,
             font=_Font_Menu,
             state='disabled',
         )
-        self._menu_Contextual.add_separator(background='#ccffff')
+        self._menu_Contextual.add_separator(background=bg_menu)
         self._menu_Contextual.add_command(
             label="  Seleccionar todo", 
             accelerator='Ctrl+A',
-            background='#ccffff', foreground='black',
-            activebackground='#004c99',activeforeground='white',
+            background=bg_menu, foreground=fg_menu,
+            activebackground=acfg_menu,activeforeground=bg_menu,
             font=_Font_Menu,
             state='disabled',
         )
         self._menu_Contextual.add_command(
             label="  Limpiar", 
             accelerator='Ctrl+X',
-            background='#ccffff', foreground='black',
-            activebackground='#004c99',activeforeground='white',
+            background=bg_menu, foreground=fg_menu,
+            activebackground=acfg_menu,activeforeground=bg_menu,
             font=_Font_Menu,
             state='disabled',
         )
-        self._menu_Contextual.add_separator(background='#ccffff')
+        self._menu_Contextual.add_separator(background=bg_menu)
         self._menu_Contextual.add_command(
             label="  Cerrar pestaña", 
-            compound=LEFT,
-            background='#ccffff', foreground='black',
-            activebackground='#004c99',activeforeground='white',
+            compound=tk.LEFT,
+            background=bg_menu, foreground=fg_menu,
+            activebackground=acfg_menu,activeforeground=bg_menu,
             font=_Font_Menu,
             state='disabled'
         )
         self._menu_Contextual.add_command(
             label="  Salir", 
-            compound=LEFT,
-            background='#ccffff', foreground='black',
-            activebackground='#004c99',activeforeground='white',
+            compound=tk.LEFT,
+            background=bg_menu, foreground=fg_menu,
+            activebackground=acfg_menu,activeforeground=bg_menu,
             font=_Font_Menu,
             command=self.root.quit
         )
@@ -2969,7 +2980,7 @@ class Aplicacion():
             self.menu_Contextual.entryconfig('  Cerrar pestaña', state='normal')
         if idOpenTab == 1 or idOpenTab == 2 or idOpenTab == 3 or idOpenTab == 4:
             self.cuaderno.rightArrow.configure(foreground=active_color)
-            Thread(target=self.cuaderno._leftSlide, daemon=True).start()
+            Thread(target=self.cuaderno._tk.LEFTSlide, daemon=True).start()
             self.cuaderno._release_callback(e=None)
             self.cuaderno.rightArrow.configure(foreground=active_color)
 ## ---ASIGNAMOS A UNA VARIABLE CADA CLIENTE----------------------------
@@ -3035,7 +3046,7 @@ class Aplicacion():
         else:
             self.editMenu.entryconfig('  Buscar', state='disabled')
         try:
-            self.valor_activo_list = desviacion.DESVfr1_listbox.get(ANCHOR)
+            self.valor_activo_list = desviacion.DESVfr1_listbox.get(tk.ANCHOR)
         except:
             pass
         try:
@@ -3070,12 +3081,15 @@ class Aplicacion():
         self.cuaderno.add(desviacion, text='Issues DESVIACIONES ')
         
     def abrir_issuesExtracion(self):
+        from Extraciones import Extracion
+
         global idpTab
         global extracion
         try:
             extracion._on_closing_busca_top()
         except:
             pass
+
         extracion = Extracion(self.cuaderno, app, application=self)
         self.cuaderno.add(extracion, text='Issues EXTRACIONES')
         idpTab = self.cuaderno.index('current')
@@ -3126,7 +3140,7 @@ class Aplicacion():
                 self.vtn_acerca_de,
                 width=300,
             )
-        self.AcercaDe_ico_frame.pack(fill='both', expand=1, side='left')
+        self.AcercaDe_ico_frame.pack(fill='both', expand=1, side=tk.LEFT)
         self.AcercaDe_ico_frame.pack_propagate(False)
 
         self.ico_Acerca_de = ttk.Label(
@@ -3139,7 +3153,7 @@ class Aplicacion():
         self.AcercaDe_txt_frame = ttk.Frame(
                 self.vtn_acerca_de, 
             )
-        self.AcercaDe_txt_frame.pack(fill='both', expand=1, side='left')
+        self.AcercaDe_txt_frame.pack(fill='both', expand=1, side=tk.LEFT)
         #self.AcercaDe_txt_frame.pack_propagate(False)
 
         self.lbl1 = ttk.Label(
@@ -3234,8 +3248,8 @@ class Aplicacion():
                 listModulo.append(md['modulo'])
                 listClave.append(md['clave'])
         listModulo.sort()
-        self._list_modulo.insert(END,*listModulo)
-        self._list_clave.insert(END,*listClave)
+        self._list_modulo.insert(tk.END,*listModulo)
+        self._list_clave.insert(tk.END,*listClave)
 
     def on_select(self, event):
         global listbox_list
@@ -3279,7 +3293,7 @@ class Aplicacion():
         self.frame2 = ttk.Frame(
             self.vtn_glosario,
         )
-        self.frame2.pack(fill='both', side='left', expand=0, pady=10)
+        self.frame2.pack(fill='both', side=tk.LEFT, expand=0, pady=10)
         
         self.frame2.rowconfigure(1, weight=1)
 
@@ -3353,7 +3367,7 @@ class Aplicacion():
         self._menu_clickDerecho_GLS()
 
     def widgets_APP(self):
-            self.menuBar = tk.Menu(self.root, relief=FLAT, border=0)
+            self.menuBar = tk.Menu(self.root, relief=tk.FLAT, border=0)
             self.root.config(menu=self.menuBar)
             self.menuBar.config(
                 background=bg_menu,
@@ -3362,7 +3376,7 @@ class Aplicacion():
                 activebackground=acbg_menu,
                 activeforeground=acfg_menu,
             )
-            self.fileMenu = Menu(self.menuBar, tearoff=0)
+            self.fileMenu = tk.Menu(self.menuBar, tearoff=0)
             self.fileMenu.config(
                 background=bg_submenu,
                 foreground=fg_submenu,
@@ -3371,8 +3385,8 @@ class Aplicacion():
                 activeforeground=acfg_menu,
             )
             # --- INICIAMOS SUB MENU -------------------------- #
-            self.clientMenu = Menu(self.fileMenu, tearoff=0)
-            self.issuesMenu = Menu(self.fileMenu, tearoff=0)
+            self.clientMenu = tk.Menu(self.fileMenu, tearoff=0)
+            self.issuesMenu = tk.Menu(self.fileMenu, tearoff=0)
             # -------------------------------------------------- #
 
             self.issuesMenu.config(
@@ -3381,7 +3395,7 @@ class Aplicacion():
                 font=_Font_Menu,
                 activebackground=acbg_menu,
                 activeforeground=acfg_menu,
-                selectcolor='#CF7500'
+                selectcolor=fg_menu
             )
             self.clientMenu.config(
                 background=bg_submenu,
@@ -3389,12 +3403,12 @@ class Aplicacion():
                 font=_Font_Menu,
                 activebackground=acbg_menu,
                 activeforeground=acfg_menu,
-                selectcolor='#CF7500'
+                selectcolor=fg_menu
             )
 
             self.fileMenu.add_cascade(
                 label="  Abrir",
-                compound=LEFT,
+                compound=tk.LEFT,
                 image=self.Abrir_icon,
                 menu = self.issuesMenu
             )
@@ -3402,7 +3416,7 @@ class Aplicacion():
             self.fileMenu.add_cascade(
                 label="  Clientes",
                 image=self.Client_icon,
-                compound=LEFT,
+                compound=tk.LEFT,
                 menu=self.clientMenu
             )
 
@@ -3412,7 +3426,7 @@ class Aplicacion():
             self.fileMenu.add_command(
                 label="  Preferencias",
                 image=self.Client_icon,
-                compound=LEFT,
+                compound=tk.LEFT,
                 command=self._fontchooser
                 #menu=self.clientMenu
             )
@@ -3422,7 +3436,7 @@ class Aplicacion():
             self.fileMenu.add_command(
                 label="  Salir",
                 image=self.Salir_icon,
-                compound=LEFT,
+                compound=tk.LEFT,
                 command=self.root.quit
             )
 
@@ -3444,7 +3458,7 @@ class Aplicacion():
                     command=self.abrir_issues
                 )
 
-            self.editMenu = Menu(self.menuBar, tearoff=0)
+            self.editMenu = tk.Menu(self.menuBar, tearoff=0)
             self.editMenu.config(
                 background=bg_submenu,
                 foreground=fg_submenu,
@@ -3457,11 +3471,11 @@ class Aplicacion():
                 accelerator='Ctrl+F',
                 command=self.bsc,
                 image=self.BuscarBar_icon,
-                compound=LEFT,
+                compound=tk.LEFT,
                 state="disabled"
             )
             self.fileMenu.add_separator()
-            self.helpMenu = Menu(self.menuBar, tearoff=0)
+            self.helpMenu = tk.Menu(self.menuBar, tearoff=0)
             self.helpMenu.config(
                 background=bg_submenu,
                 foreground=fg_submenu,
@@ -3472,14 +3486,14 @@ class Aplicacion():
             self.helpMenu.add_command(
                 label="  Ayuda",
                 image=self.Ayuda_icon,
-                compound=LEFT,
+                compound=tk.LEFT,
                 command=self._glosario
             )
             self.helpMenu.add_separator()
             self.helpMenu.add_command(
                 label="  Acerca de...",
                 image=self.AcercaDe_icon,
-                compound=LEFT,
+                compound=tk.LEFT,
                 command=self._acerca_de
             )
 

@@ -12,6 +12,7 @@ from PIL import Image, ImageTk
 from tkinter.ttk import Style
 from threading import Thread
 import time
+from Compliance import bg_panel_buscar, bg_menu, fg_menu, acbg_panel_buscar, _Font_Texto_menucon, _Font_Texto, sel_bg_txt, fondo_app, active_color, acbg_menu, acfg_menu, fuente_texto, tamñ_texto
 
 from setuptools import Command
 user = getuser()
@@ -20,7 +21,6 @@ path_extracion = mypath+"Compliance/extracion/"
 path_icon = mypath+"Compliance/image/"
 
 parar = False
-pnl_buscar = ""
 _estado_actual = False
 PST_EXT = ""
 HIDDEN = 0
@@ -37,16 +37,18 @@ def beep_error(f):
                 args[0].bell()
     return applicator
 
-class MyEntry(ttk.Entry):
+class MyEntry(tk.Entry):
     def __init__(self, parent=None, *args, **kwargs):
-        ttk.Entry.__init__(self, parent, *args, **kwargs)
+        tk.Entry.__init__(self, parent, *args, **kwargs)
         self.parent = parent
         self.changes = [""]
         self.steps = int()
         self.mostrar_menu()
         self.bind('<Control-a>', self.seleccionar_todo)
         self.bind('<Control-f>', self.seleccionar_todo)
+        self.bind('<Control-F>', self.seleccionar_todo)
         self.bind('<Control-x>', self.cortar)
+        self.bind('<Control-X>', self.cortar)
         self.bind('<Control-c>', self.copiar)
         self.bind('<Control-C>', self.copiar)
         self.bind('<Control-v>', self.pegar)
@@ -57,70 +59,71 @@ class MyEntry(ttk.Entry):
         self.bind("<Key>", self.add_changes)
 
     def mostrar_menu(self):
-        self.text_font = font.Font(family='Courier', size=14, font=font.BOLD)
         self.menu_opciones = tk.Menu(self, tearoff=0)
         self.menu_opciones.add_command(# --- DESHACER
             label="  Deshacer",
             command=self.deshacer,
             accelerator='Ctrl+Z',
-            background='#ccffff', 
-            foreground='black',
-            activebackground='#004c99', 
-            activeforeground='white',
-            font=self.text_font,
+            background=bg_menu, 
+            foreground=fg_menu,
+            activebackground=acfg_menu, 
+            activeforeground=bg_menu,
+            font=_Font_Texto_menucon,
             state='disabled'
         )
         self.menu_opciones.add_command(# --- REHACER
             label="  Rehacer",
             command=self.rehacer,
             accelerator='Ctrl+Y',
-            background='#ccffff',
-            foreground='black',
-            activebackground='#004c99', 
-            activeforeground='white',
-            font=self.text_font,
+            background=bg_menu,
+            foreground=fg_menu,
+            activebackground=acfg_menu, 
+            activeforeground=bg_menu,
+            font=_Font_Texto_menucon,
             state='disabled'
         )
-        self.menu_opciones.add_separator(background='#ccffff')
+        self.menu_opciones.add_separator(background=bg_menu)
         self.menu_opciones.add_command(# --- CORTAR
             label="  Cortar",
             accelerator='Ctrl+X',
-            background='#ccffff', foreground='black',
-            activebackground='#004c99', activeforeground='white',
-            font=self.text_font,
+            background=bg_menu, foreground=fg_menu,
+            activebackground=acfg_menu, activeforeground=bg_menu,
+            font=_Font_Texto_menucon,
             state='disabled',
             command=self.cortar
         )
         self.menu_opciones.add_command(# --- COPIAR
             label="  Copiar",
             accelerator='Ctrl+C',
-            background='#ccffff', foreground='black',
-            activebackground='#004c99', activeforeground='white',
-            font=self.text_font,
+            background=bg_menu, 
+            foreground=fg_menu,
+            activebackground=acfg_menu, 
+            activeforeground=bg_menu,
+            font=_Font_Texto_menucon,
             state='disable',
             command=self.copiar
         )
         self.menu_opciones.add_command(# --- PEGAR
             label="  Pegar",
             accelerator='Ctrl+V',
-            background='#ccffff',
-            foreground='black',
-            activebackground='#004c99',
-            activeforeground='white',
-            font=self.text_font,
+            background=bg_menu,
+            foreground=fg_menu,
+            activebackground=acfg_menu,
+            activeforeground=bg_menu,
+            font=_Font_Texto_menucon,
             command=self.pegar
         )
-        self.menu_opciones.add_separator(background='#ccffff')
+        self.menu_opciones.add_separator(background=bg_menu)
         self.menu_opciones.add_command(# --- SELECT ALL
             label="  Selecionar todo",
             command=self.seleccionar_todo,
             accelerator='Ctrl+A',
             compound=tk.LEFT,
-            background='#ccffff', 
-            foreground='black',
-            activebackground='#004c99', 
-            activeforeground='white',
-            font=self.text_font,
+            background=bg_menu, 
+            foreground=fg_menu,
+            activebackground=acfg_menu, 
+            activeforeground=bg_menu,
+            font=_Font_Texto_menucon,
         )
         
     def _display_menu_(self, event=None):
@@ -137,7 +140,6 @@ class MyEntry(ttk.Entry):
             #self.menu_opciones.entryconfig("  Rehacer", state="disabled")
         else:
             self.menu_opciones.entryconfig("  Deshacer", state="disabled")
-            #self.menu_opciones.entryconfig("  Rehacer", state="normal")
 
     def copiar(self, event=None):
         self.event_generate("<<Copy>>")
@@ -216,13 +218,8 @@ class Extracion(ttk.Frame):
         _estado_actual = False
         self._menu_clickDerecho()
         
-        self.btn_nav = Button(
+        self.btn_nav = ttk.Button(
             self,
-            background="#39A2DB",
-            border=0,
-            borderwidth=0,
-            highlightthickness=0,
-            relief='flat',
             image=self.navIcon,
             command=self.show_btn_nav,
         )
@@ -242,7 +239,6 @@ class Extracion(ttk.Frame):
             Image.open(path_icon+r"btn-x.png").resize((20, 20)))
 
     def menu(self):
-        self.text_font = font.Font(family='Consolas', size=14, weight="bold")
         self.frame1 = tk.Frame(
             self,
             background="gold",
@@ -253,20 +249,15 @@ class Extracion(ttk.Frame):
         self.frame1.columnconfigure(0, weight=1)
         self.frame1.rowconfigure(1, weight=1)
         
-        self.sizegrid = tk.Button(
-            self.frame1,
-            width=1,
-            height=1
-        )
-        self.sizegrid.grid(row=1, column=1, sticky='ns')
+        # self.sizegrid = tk.Button(
+        #     self.frame1,
+        #     width=1,
+        #     height=1
+        # )
+        # self.sizegrid.grid(row=1, column=1, sticky='ns')
 
-        self.btn_close = tk.Button(
+        self.btn_close = ttk.Button(
             self.frame1,
-            background="#39A2DB",
-            border=0,
-            borderwidth=0,
-            highlightthickness=0,
-            relief='flat',
             image=self.closeIcon,
             command=self.hide_btn_nav,
         )
@@ -274,11 +265,12 @@ class Extracion(ttk.Frame):
 
         self.treeview = ttk.Treeview(
             self.frame1,
-            style="myTREE.Treeview",
         )
+
+        #? COLOR TEXT DE LAS CARPETAS DE EXTRACION
         self.treeview.tag_configure(
             "folder",
-            font=self.text_font,
+            font=(_Font_Texto, 14),
             foreground="#533e85"
         )
         self.treeview.heading("#0", text="FICHEROS de EXTRACIONES", anchor="center")
@@ -298,29 +290,19 @@ class Extracion(ttk.Frame):
         self.file_image = tk.PhotoImage(file=path_icon+r"files.png")
         self.folder_image = tk.PhotoImage(file=path_icon+r"folder.png")
 
-        self.max = tk.Button(
+        self.max = ttk.Button(
             self.frame1,
-            background="#39A2DB",
-            border=0,
-            borderwidth=0,
-            highlightthickness=0,
-            relief='flat',
             text="+",
-            font=("Consolas", 12, font.BOLD)
         )
         self.max.grid(row=2, column=0, sticky="e",columnspan=2)
+        self.max.config(width=2)
 
-        self.min = tk.Button(
+        self.min = ttk.Button(
             self.frame1,
-            background="#39A2DB",
-            border=0,
-            borderwidth=0,
-            highlightthickness=0,
-            relief='flat',
             text="-",
-            font=("Consolas", 12, font.BOLD)
         )
         self.min.grid(row=2, column=0, sticky="w")
+        self.min.config(width=2)
 
         # Cargar el directorio raíz.
         self.load_tree(abspath(path_extracion))
@@ -365,34 +347,6 @@ class Extracion(ttk.Frame):
             for md in data:
                 self.txt.insert(tk.END, md)
 
-    def estilos(self):
-        self.style = Style()
-        self.style.configure(
-            'myTREE.Treeview',
-            fieldbackground='#CEE5D0',
-            background='#CEE5D0',
-            selectbackground="#FF7878",
-            selectforeground="#E0C097",
-            padding=0,
-        )
-        self.style.configure(
-            'TOPS.TButton',
-            background="#96BB7C",
-            foreground="white",
-            relief='sunke',
-            borderwidth=1,
-            anchor="center",
-            padding=2,
-            font=('Source Sans Pro', 10, font.BOLD),
-        )
-        self.style.map(
-            'TOPS.TButton',
-            background=[("active", "#FAD586")],
-            foreground=[("active", "#C64756")],
-            padding=[("active", 2)],
-            relief=[("active", 'ridge'), ("pressed", 'groove')],
-            borderwidth=[("active", 1)],
-        )
 
     def listdir(self, path):
         try:
@@ -496,7 +450,7 @@ class Extracion(ttk.Frame):
             self.txt.tag_config(
                 'found1',
                 foreground='dodgerblue',
-                font=("Consolas", 14, font.BOLD)
+                font=(fuente_texto, tamñ_texto, font.BOLD)
             )
         if line3:
             while True:
@@ -507,11 +461,13 @@ class Extracion(ttk.Frame):
                 lastidx3 = '%s+%dc' % (indx3, len(line3))
                 self.txt.tag_add('found3', indx3, lastidx3)
                 indx3 = lastidx3
+
+            #? COLOR CONTESTAR NO
             self.txt.tag_config(
                 'found3',
-                background='black',
-                foreground="red",
-                font=("Consolas", 14, font.BOLD)
+                background="#FFE6E6",
+                foreground="#FF2626",
+                font=(fuente_texto, tamñ_texto, font.BOLD)
             )
         if line4:
             while True:
@@ -522,12 +478,15 @@ class Extracion(ttk.Frame):
                 lastidx4 = '%s+%dc' % (indx4, len(line4))
                 self.txt.tag_add('found4', indx4, lastidx4)
                 indx4 = lastidx4
+
+            #? COLOR CONTESTAR N/A            
             self.txt.tag_config(
                 'found4',
-                background='black',
-                foreground="ORANGE",
-                font=("Consolas", 14, font.BOLD)
+                background="#FFCB91",
+                foreground="#FF5F00",
+                font=(fuente_texto, tamñ_texto, font.BOLD)
             )
+
         if line5:
             while True:
                 indx5 = self.txt.search(
@@ -537,10 +496,12 @@ class Extracion(ttk.Frame):
                 lastidx5 = '%s+%dc' % (indx5, len(line5)+27)
                 self.txt.tag_add('found5', indx5, lastidx5)
                 indx5 = lastidx5
+            
             self.txt.tag_config(
                 'found5',
-                font=("Consolas", 14, font.BOLD)
+                font=(fuente_texto, tamñ_texto, font.BOLD)
             )
+
         if line6:
             while True:
                 indx6 = self.txt.search(
@@ -550,9 +511,10 @@ class Extracion(ttk.Frame):
                 lastidx6 = '%s+%dc' % (indx6, len(line6)+27)
                 self.txt.tag_add('found6', indx6, lastidx6)
                 indx6 = lastidx6
+            
             self.txt.tag_config(
                 'found6',
-                font=("Consolas", 14, font.BOLD)
+                font=(fuente_texto, tamñ_texto, font.BOLD)
             )
 
     def colour_line2(self):
@@ -565,11 +527,13 @@ class Extracion(ttk.Frame):
             lastidx2 = '%s+%dc' % (indx2, len(line2))
             self.txt.tag_add('found2', indx2, lastidx2)
             indx2 = lastidx2
+        
+        #? COLOR CONTESTAR YES
         self.txt.tag_config(
             'found2',
-            background="black",
-            foreground='#4E9F3D',
-            font=("Consolas", 14, font.BOLD)
+            background="#000000",
+            foreground="#357C3C",
+            font=(fuente_texto, tamñ_texto, font.BOLD)
         )
 
     def ampliador(self):
@@ -588,17 +552,20 @@ class Extracion(ttk.Frame):
         self.frame2.grid(row=0, column=2, sticky="nsew", padx=5, pady=(10,0))
         self.frame2.columnconfigure(0, weight=1)
         self.frame2.rowconfigure(0, weight=1)
+        
         self.txt = st.ScrolledText(
             self.frame2,
-            font=("Consolas", 14),
+            font=(fuente_texto, tamñ_texto),
         )
+
         self.txt.config(
+            font=_Font_Texto, 
             wrap=tk.WORD,
-            highlightcolor='#297F87',
+            highlightcolor=active_color,
             borderwidth=0,
-            highlightthickness=2,
-            insertbackground='#297F87',
-            selectbackground='lightblue',
+            highlightthickness=3,
+            insertbackground=active_color,
+            selectbackground=sel_bg_txt,
             state='normal'
         )
         self.txt.grid(row=0, column=0, sticky="nsew")
@@ -616,52 +583,51 @@ class Extracion(ttk.Frame):
             return "break"
 
     def _menu_clickDerecho(self):
-        self.text_font = font.Font(family='Courier', size=14, font=font.BOLD)
         self.menu_Contextual = tk.Menu(self, tearoff=0)
         self.menu_Contextual.add_command(
             label="  Buscar",
             accelerator='Ctrl+F',
-            background='#ccffff', foreground='black',
-            activebackground='#004c99', activeforeground='white',
-            font=self.text_font,
+            background=bg_menu, foreground=fg_menu,
+            activebackground=acfg_menu, activeforeground=bg_menu,
+            font=_Font_Texto_menucon,
             command=lambda e=self.txt: self.panel_buscar(e)
         )
-        self.menu_Contextual.add_separator(background='#ccffff')
+        self.menu_Contextual.add_separator(background=bg_menu)
         self.menu_Contextual.add_command(
             label="  Copiar",
             accelerator='Ctrl+C',
-            background='#ccffff', foreground='black',
-            activebackground='#004c99', activeforeground='white',
-            font=self.text_font,
+            background=bg_menu, foreground=fg_menu,
+            activebackground=acfg_menu, activeforeground=bg_menu,
+            font=_Font_Texto_menucon,
             state="disabled",
             command=self.copiar_texto_seleccionado
         )
-        self.menu_Contextual.add_separator(background='#ccffff')
+        self.menu_Contextual.add_separator(background=bg_menu)
         self.menu_Contextual.add_command(
             label="  Seleccionar todo",
             accelerator='Ctrl+A',
-            background='#ccffff', foreground='black',
-            activebackground='#004c99', activeforeground='white',
-            font=self.text_font,
+            background=bg_menu, foreground=fg_menu,
+            activebackground=acfg_menu, activeforeground=bg_menu,
+            font=_Font_Texto_menucon,
             command=self.seleccionar_todo
         )
         self.menu_Contextual.add_command(
             label="  Limpiar Busqueda",
             accelerator='Ctrl+X',
-            background='#ccffff', foreground='black',
-            activebackground='#004c99', activeforeground='white',
-            font=self.text_font,
+            background=bg_menu, foreground=fg_menu,
+            activebackground=acfg_menu, activeforeground=bg_menu,
+            font=_Font_Texto_menucon,
             state="disabled",
             command=self.limpiar_busqueda
         )
-        self.menu_Contextual.add_separator(background='#ccffff')
+        self.menu_Contextual.add_separator(background=bg_menu)
         self.menu_Contextual.add_command(
             label="  Ocultar Panel",
             accelerator='Ctrl+L',
             compound=tk.LEFT,
-            background='#ccffff', foreground='black',
-            activebackground='#004c99', activeforeground='white',
-            font=self.text_font,
+            background=bg_menu, foreground=fg_menu,
+            activebackground=acfg_menu, activeforeground=bg_menu,
+            font=_Font_Texto_menucon,
             command=self.hide
         )
         self.menu_Contextual.add_command(
@@ -669,18 +635,18 @@ class Extracion(ttk.Frame):
             state="disabled",
             accelerator='Ctrl+L',
             compound=tk.LEFT,
-            background='#ccffff', foreground='black',
-            activebackground='#004c99', activeforeground='white',
-            font=self.text_font,
+            background=bg_menu, foreground=fg_menu,
+            activebackground=acfg_menu, activeforeground=bg_menu,
+            font=_Font_Texto_menucon,
             command=self.hide
         )
-        self.menu_Contextual.add_separator(background='#ccffff')
+        self.menu_Contextual.add_separator(background=bg_menu)
         self.menu_Contextual.add_command(
             label="  Cerrar pestaña",
             compound=tk.LEFT,
-            background='#ccffff', foreground='black',
-            activebackground='#004c99', activeforeground='white',
-            font=self.text_font,
+            background=bg_menu, foreground=fg_menu,
+            activebackground=acfg_menu, activeforeground=bg_menu,
+            font=_Font_Texto_menucon,
             command=self.cerrar_vtn_desviacion
         )
 
@@ -829,75 +795,13 @@ class Extracion(ttk.Frame):
     def ocurrencias_encontradas(self):
         return self._ocurrencias_encontradas
 
-    def _menu_entry(self):
-        self.text_font = font.Font(family='Consolas', size=13)
-        self.menu_opciones = tk.Menu(self, tearoff=0)
-        self.menu_opciones.add_command(
-            label="  Deshacer",
-            command=self.entr_str.deshacer,
-            accelerator='Ctrl+Z',
-            background='#ccffff', 
-            foreground='black',
-            activebackground='#004c99', 
-            activeforeground='white',
-            font=self.text_font,
-        )
-        self.menu_opciones.add_command(
-            label="  Rehacer",
-            command=self.entr_str.rehacer,
-            accelerator='Ctrl+Y',
-            background='#ccffff',
-            foreground='black',
-            activebackground='#004c99', 
-            activeforeground='white',
-            font=self.text_font,
-        )
-        self.menu_opciones.add_separator(background='#ccffff')
-        self.menu_opciones.add_command(
-            label="  Cortar",
-            accelerator='Ctrl+X',
-            background='#ccffff', foreground='black',
-            activebackground='#004c99', activeforeground='white',
-            font=self.text_font,
-            state='disabled',
-            command=lambda e=self.entr_str: self._popup_cut(e)
-        )
-        self.menu_opciones.add_command(
-            label="  Copiar",
-            accelerator='Ctrl+C',
-            background='#ccffff', foreground='black',
-            activebackground='#004c99', activeforeground='white',
-            font=self.text_font,
-            state='disable',
-            command=lambda e=self.entr_str: self.popup_copy(e)
-        )
-        self.menu_opciones.add_command(
-            label="  Pegar",
-            accelerator='Ctrl+V',
-            background='#ccffff',
-            foreground='black',
-            activebackground='#004c99',
-            activeforeground='white',
-            font=self.text_font,
-            command=lambda e=self.entr_str: self.popup_paste(e)
-        )
-        self.menu_opciones.add_separator(background='#ccffff')
-        self.menu_opciones.add_command(
-            label="  Selecionar todo",
-            accelerator='Ctrl+A',
-            compound=tk.LEFT,
-            background='#ccffff', foreground='black',
-            activebackground='#004c99', activeforeground='white',
-            font=self.text_font,
-        )
-
 ## --- BUSCAR -------------------------------------
     def panel_buscar(self, event=None):
         global _estado_actual
         if not _estado_actual:
             self.busca_top = tk.Toplevel(self.frame2)
             self.busca_top.attributes('-type', 'splash')
-            window_width = 700
+            window_width = 710
             window_height = 100
             bus_reem_top_msg_w = 240
             screen_width = (self.app.root.winfo_x() + 640)
@@ -907,18 +811,22 @@ class Extracion(ttk.Frame):
             self.busca_top.geometry(
                 f'{window_width}x{window_height}+{position_right}+{position_top}')
             self.busca_top.transient(self)
-            self.busca_top.config(bg='#f1ecc3', padx=5, pady=5)
+            
+            self.busca_top.config(
+                bg=fondo_app, 
+                padx=5, 
+                pady=5
+            )
             self.busca_top.resizable(0, 0)
 
-            self.busca_frm_tit = tk.Frame(
+            self.busca_frm_tit = ttk.Frame(
                 self.busca_top,
-                bg='#D1E8E4',
             )
             self.busca_frm_tit.pack(fill='x', expand=1)
 
             self.busca_frm_content = tk.Frame(
                 self.busca_top,
-                bg='#39A2DB',
+                bg=bg_panel_buscar,
                 padx=5,
                 pady=10
             )
@@ -937,20 +845,28 @@ class Extracion(ttk.Frame):
             buscar_01_msg.pack(fill='both', expand=1)
             buscar_01_msg.config(
                 width=bus_reem_top_msg_w,
-                background="#035397",
-                foreground="white",
+                background=acbg_panel_buscar,
+                foreground="black",
                 justify='center',
-                font=('Consolas', 12, 'bold'))
+                font=(fuente_texto, 14, 'bold')
+            )
 
             self.var_entry_bsc = tk.StringVar(self)
             
             self.entr_str = MyEntry(
                 self.busca_frm_content,
                 textvariable=self.var_entry_bsc,
-                width=45,
-                font=('Consolas',15)
             )
             self.entr_str.grid(row=0, column=0, padx=5, sticky="nsew")
+
+            self.entr_str.configure(
+                width=50,
+                highlightcolor=active_color,
+                insertbackground=active_color,
+                selectbackground=sel_bg_txt,
+                highlightthickness=2,
+                font=(fuente_texto, 14)
+            )
 
             self.btn_cerrar_buscar = tk.Button(
                 self.busca_frm_content,
@@ -959,10 +875,11 @@ class Extracion(ttk.Frame):
                 command=self._on_closing_busca_top
             )
             self.btn_cerrar_buscar.config(
-                background="#39A2DB",
-                activebackground="#035397",
+                background=bg_panel_buscar,
+                highlightcolor=active_color,
+                activebackground=acbg_panel_buscar,
                 border=0,
-                highlightbackground="#39A2DB",
+                highlightbackground=bg_panel_buscar,
             )
             self.btn_cerrar_buscar.grid(row=0, column=4, padx=5, pady=5)
 
@@ -975,10 +892,11 @@ class Extracion(ttk.Frame):
             )
             
             self.btn_limpiar.config(
-                background="#39A2DB",
-                activebackground="#035397",
+                background=bg_panel_buscar,
+                highlightcolor=active_color,
+                activebackground=acbg_panel_buscar,
                 border=0,
-                highlightbackground="#39A2DB",
+                highlightbackground=bg_panel_buscar,
             )
 
             self.btn_limpiar.grid(
@@ -993,10 +911,11 @@ class Extracion(ttk.Frame):
             )
 
             self.btn_buscar_prev.config(
-                background="#39A2DB",
-                activebackground="#035397",
+                background=bg_panel_buscar,
+                highlightcolor=active_color,
+                activebackground=acbg_panel_buscar,
                 border=0,
-                highlightbackground="#39A2DB",
+                highlightbackground=bg_panel_buscar,
             )
 
             self.btn_buscar_prev.grid(
@@ -1007,15 +926,15 @@ class Extracion(ttk.Frame):
                 self.busca_frm_content,
                 text='|>',
                 image=self.flecha_down,
-                # style='TOPS.TButton',
                 command=self._buscar_siguiente
             )
 
             self.btn_buscar_next.config(
-                background="#39A2DB",
-                activebackground="#035397",
+                background=bg_panel_buscar,
+                highlightcolor=active_color,
+                activebackground=acbg_panel_buscar,
                 border=0,
-                highlightbackground="#39A2DB",
+                highlightbackground=bg_panel_buscar,
             )
 
             self.btn_buscar_next.grid(
@@ -1035,7 +954,7 @@ class Extracion(ttk.Frame):
             return 'break'
 
 ## --- Activa el motion en cada widget del panel
-        #self.busca_top.bind("<Motion>", lambda e: self._activar_Focus(e))
+        self.busca_top.bind("<Motion>", lambda e: self._activar_Focus(e))
 
     def _buscar_focus(self, event):
         MyEntry.seleccionar_todo(event)
@@ -1050,7 +969,6 @@ class Extracion(ttk.Frame):
 
 ## --- Activa el focu de los widgets del PANEL
     def _activar_Focus(self, event):
-        global pnl_buscar
         pnl_buscar = event.widget
         pnl_buscar.focus()
 
