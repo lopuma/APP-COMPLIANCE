@@ -3,12 +3,13 @@ import json
 import os
 import tkinter as tk
 from getpass import getuser
-from tkinter import *
 from tkinter import ttk
 from tkinter import scrolledtext as st
 from tkinter import messagebox as mb
 from tkinter import font as font
 from PIL import Image, ImageTk
+from Compliance import fondo_app, acfg_menu, acbg_menu, bg_submenu, color_txt_entry, fuente_texto, fg_submenu, acfg_menu, fg_menu, color_titulos, _Font_Texto, color_fg_list, sel_bg_txt, sel_fg_txt, active_color, _Font_Menu, oddrow, evenrow
+from Extraciones import MyEntry
 user = getuser()
 mypath = os.path.expanduser("~/")
 path_icon = mypath+"Compliance/image/"
@@ -23,8 +24,10 @@ class Ventana(ttk.Frame):
         self.path_ventanas = mypath+path
         self.tt_vtn = name_vtn
         self.vtn_ventanas = tk.Toplevel(self)
-        self.vtn_ventanas.config(background='#F9F3DF')
-        window_width=1028
+        self.vtn_ventanas.config(
+            background=fondo_app
+        )
+        window_width=1170
         window_height=720
         screen_width = self.app.root.winfo_x()
         screen_height= self.app.root.winfo_y()
@@ -39,7 +42,6 @@ class Ventana(ttk.Frame):
         #self.vtn_ventanas.grab_set()
         self.vtn_ventanas.columnconfigure(0, weight=1)
         self.vtn_ventanas.rowconfigure(2, weight=5)
-        self.text_font = font.Font(family='Consolas', size=13) 
         self.iconos()
         self.widgets_ventanas()
         self.menu_clickDerecho()
@@ -72,8 +74,7 @@ class Ventana(ttk.Frame):
         self.tree.bind("<Up>", lambda e:self.TreeUp(e))
         self.textBuscar.bind("<Control-x>",self.limpiar_bsq2)
         self.textBuscar.bind("<Control-f>",self._buscar_focus)        
-        self.textBuscar.bind("<Control-F>",self._buscar_focus)        
-        self.textBuscar.bind("<Button-1>",self._buscar_focus)        
+        self.textBuscar.bind("<Control-F>",self._buscar_focus)              
         self.srcRisk.bind("<Control-a>",lambda e:self._seleccionar_todo(e))
         self.srcImpact.bind("<Control-a>",lambda e:self._seleccionar_todo(e))
         self.srcVariable.bind("<Control-a>",lambda e:self._seleccionar_todo(e))
@@ -103,7 +104,7 @@ class Ventana(ttk.Frame):
         long_entry = len(entry)
         if long_entry <=1:
             self.btnLimpiar.grid_forget()
-            self.btnBuscar.grid(row=0, column=1, sticky=W)
+            self.btnBuscar.grid(row=0, column=1, sticky=tk.W)
             self.cargar_ventanas()
             self.limpiar_widgets()
     
@@ -111,17 +112,23 @@ class Ventana(ttk.Frame):
         text_widget = event.widget
         entry = self.var_ent_buscar.get()
         if entry == "Buscar Directories / File ...":
-            text_widget.config(foreground="black", font=("Consolas", 14))
+            text_widget.config(
+                foreground=color_txt_entry,
+                font=_Font_Texto
+            )
             self.var_ent_buscar.set("")
             text_widget.icursor(0)
             self.btnLimpiar.grid_forget()
-            self.btnBuscar.grid(row=0, column=1, sticky=W)
+            self.btnBuscar.grid(row=0, column=1, sticky=tk.W)
         elif entry == "":
-            text_widget.config(foreground="gray75", font=("Consolas", 12))
+            text_widget.config(
+                foreground="gray75", 
+                font=_Font_Texto
+            )
             self.var_ent_buscar.set("Buscar Directories / File ...")
             text_widget.icursor(0)
             self.btnLimpiar.grid_forget()
-            self.btnBuscar.grid(row=0, column=1, sticky=W)
+            self.btnBuscar.grid(row=0, column=1, sticky=tk.W)
         
     def limpiar_bsq(self):
         self.var_ent_buscar.set("Buscar Directories / File ...")
@@ -129,7 +136,7 @@ class Ventana(ttk.Frame):
         self.textBuscar.focus()
         self.textBuscar.icursor(0)
         self.btnLimpiar.grid_forget()
-        self.btnBuscar.grid(row=0, column=1, sticky=W)
+        self.btnBuscar.grid(row=0, column=1, sticky=tk.W)
         self.menu_Contextual.entryconfig("  Limpiar", state="disabled")
         self.cargar_ventanas()
         self.limpiar_widgets()
@@ -139,7 +146,7 @@ class Ventana(ttk.Frame):
         self.textBuscar.focus()
         self.textBuscar.icursor(0)
         self.btnLimpiar.grid_forget()
-        self.btnBuscar.grid(row=0, column=1, sticky=W)
+        self.btnBuscar.grid(row=0, column=1, sticky=tk.W)
         self.menu_Contextual.entryconfig("  Limpiar", state="disabled")
         self.cargar_ventanas()
         self.limpiar_widgets()
@@ -178,7 +185,7 @@ class Ventana(ttk.Frame):
                                 count += 1
                         self.limpiar_widgets()
                     self.btnBuscar.forget()
-                    self.btnLimpiar.grid(row=0, column=1, sticky=W)
+                    self.btnLimpiar.grid(row=0, column=1, sticky=tk.W)
                     self.menu_Contextual.entryconfig("  Limpiar", state="normal")
             else:
                 pass
@@ -190,16 +197,16 @@ class Ventana(ttk.Frame):
         self.limpiar_tree()
         #Cargar datos desde el archivo JSON
         with open(self.path_ventanas) as g:
-                data = json.load(g)
-                count = 0
-                for md in sorted(data[self.customer], key=lambda md:md['object']):
-                    #guardar solo el valor de 'object a una lista'
-                    self.ventanas.append(md['object'])
-                    if count % 2 == 0:
-                        self.tree.insert(parent='', index='end', iid=count, text='', value=(md['object'],md['owner'],md['tipo'],md['ownerGroup'],md['code']), tags=('evenrow'))
-                    else:
-                        self.tree.insert(parent='', index='end', iid=count, text='', value=(md['object'],md['owner'],md['tipo'],md['ownerGroup'],md['code']), tags=('oddrow'))
-                    count += 1
+            data = json.load(g)
+            count = 0
+            for md in sorted(data[self.customer], key=lambda md:md['object']):
+                #guardar solo el valor de 'object a una lista'
+                self.ventanas.append(md['object'])
+                if count % 2 == 0:
+                    self.tree.insert(parent='', index='end', iid=count, text='', value=(md['object'],md['owner'],md['tipo'],md['ownerGroup'],md['code']), tags=('evenrow'))
+                else:
+                    self.tree.insert(parent='', index='end', iid=count, text='', value=(md['object'],md['owner'],md['tipo'],md['ownerGroup'],md['code']), tags=('oddrow'))
+                count += 1
 
     def limpiar_tree(self):
         records = self.tree.get_children()
@@ -227,9 +234,9 @@ class Ventana(ttk.Frame):
                         #limpiar------------------------------------                      
                         self.limpiar_widgets()
                         #-------------------------------------------
-                        self.listServer.insert(END,*md['servers'])
-                        self.srcRisk.insert(END,md['risk'])
-                        self.srcImpact.insert(END,md['impact'])
+                        self.listServer.insert(tk.END,*md['servers'])
+                        self.srcRisk.insert(tk.END,md['risk'])
+                        self.srcImpact.insert(tk.END,md['impact'])
                         self.cbxUser['values'] = md["user"]
                         variables = str(md['variable'])
                         variables = variables.replace("[","").replace("]","").replace("'","").replace("\"","'").replace(",",";").replace("+",",").replace("`","\"")
@@ -241,14 +248,14 @@ class Ventana(ttk.Frame):
                             self.lbl2['text'] = "INFORMACION"
                             self.lbl3['text'] = "INFORMACION"
                             self.lbl4['text'] = "VARIABLES"
-                        self.srcVariable.insert(END,variables)
+                        self.srcVariable.insert(tk.END,variables)
                         self.lbl_SO['text'] = "S.O : "+md['SO']
                         user = str(md["user"]).replace("[","").replace("]","").replace("'","")
                         self.cbxUser.set(user)
     
     def limpiar_widgets(self):
         self.lbl_SO['text'] = "SISTEMA OPERATIVO"
-        self.listServer.delete(0,END)
+        self.listServer.delete(0,tk.END)
         self.srcRisk.delete('1.0',tk.END)
         self.srcImpact.delete('1.0',tk.END)
         self.cbxUser.option_clear()
@@ -284,7 +291,7 @@ class Ventana(ttk.Frame):
         entry_event.select_range(0,tk.END)
         entry_event.focus_set()
         return 'break'
-    
+
     def seleccionar_todo(self):
         self.srcEvent.tag_add("sel","1.0","end")
         return 'break'
@@ -310,65 +317,64 @@ class Ventana(ttk.Frame):
         if self.srcEvent.select_present():
             self.var_ent_buscar.set("")
             self.btnLimpiar.grid_forget()
-            self.btnBuscar.grid(row=0, column=1, sticky=W)
+            self.btnBuscar.grid(row=0, column=1, sticky=tk.W)
         self.srcEvent.event_generate("<<Paste>>")
         return 'break'
     
     def menu_clickDerecho(self):
-        self.text_font = font.Font(family='Courier', size=14, font=font.BOLD)   
-        self.menu_Contextual = Menu(self, tearoff=0)
+        self.menu_Contextual = tk.Menu(self, tearoff=0)
         self.menu_Contextual.add_command(
             label="  Buscar", 
             accelerator='Ctrl+F',
-            background='#ccffff', foreground='black',
-            activebackground='#004c99',activeforeground='white',
-            font=self.text_font,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu,activeforeground=acfg_menu,
+            font=_Font_Menu,
             command=self.act_buscar,
         )
-        self.menu_Contextual.add_separator(background='#ccffff')
+        self.menu_Contextual.add_separator(background=bg_submenu)
         self.menu_Contextual.add_command(
             label="  Copiar", 
             accelerator='Ctrl+C',
-            background='#ccffff', foreground='black',
-            activebackground='#004c99',activeforeground='white',
-            font=self.text_font,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu,activeforeground=acfg_menu,
+            font=_Font_Menu,
             command=self.copiar,
             state='normal',
         )
         self.menu_Contextual.add_command(
             label="  Pegar", 
             accelerator='Ctrl+V',
-            background='#ccffff', foreground='black',
-            activebackground='#004c99',activeforeground='white',
-            font=self.text_font,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu,activeforeground=acfg_menu,
+            font=_Font_Menu,
             command=self.pegar,
         )
-        self.menu_Contextual.add_separator(background='#ccffff')
+        self.menu_Contextual.add_separator(background=bg_submenu)
         self.menu_Contextual.add_command(
             label="  Seleccionar todo", 
             accelerator='Ctrl+A',
-            background='#ccffff', foreground='black',
-            activebackground='#004c99',activeforeground='white',
-            font=self.text_font,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu,activeforeground=acfg_menu,
+            font=_Font_Menu,
             command=self.seleccionar_todo,
             state='normal',
         )
         self.menu_Contextual.add_command(
             label="  Limpiar", 
             accelerator='Ctrl+X',
-            background='#ccffff', foreground='black',
-            activebackground='#004c99',activeforeground='white',
-            font=self.text_font,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu,activeforeground=acfg_menu,
+            font=_Font_Menu,
             command=self.limpiar_bsq2,
             state='disabled',
         )
-        self.menu_Contextual.add_separator(background='#ccffff')
+        self.menu_Contextual.add_separator(background=bg_submenu)
         self.menu_Contextual.add_command(label="  Cerrar pestaña", 
                                 #image=self.cerrar_icon,
-                                compound=LEFT,
-                                background='#ccffff', foreground='black',
-                                activebackground='#004c99',activeforeground='white',
-                                font=self.text_font,
+                                compound=tk.LEFT,
+                                background=bg_submenu, foreground=fg_submenu,
+                                activebackground=acbg_menu,activeforeground=acfg_menu,
+                                font=_Font_Menu,
                                 command=self.cerrar_vtn
                                 )
     
@@ -408,25 +414,24 @@ class Ventana(ttk.Frame):
         listbox.selection_set(0, tk.END)
     
     def menuList_clickDerecho(self):
-        self.text_font = font.Font(family='Courier', size=14, font=font.BOLD)   
-        self.menuLis_Contextual = Menu(self, tearoff=0)
+        self.menuLis_Contextual = tk.Menu(self, tearoff=0)
         ## buscar
         self.menuLis_Contextual.add_command(
             label="  Buscar",
             accelerator='Ctrl+F',
-            background='#ccffff', foreground='black',
-            activebackground='#004c99',activeforeground='white',
-            font=self.text_font,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu,activeforeground=acfg_menu,
+            font=_Font_Menu,
             command=self.act_buscar,
         )
-        self.menuLis_Contextual.add_separator(background='#ccffff')
+        self.menuLis_Contextual.add_separator(background=bg_submenu)
         ## Copiar
         self.menuLis_Contextual.add_command(
             label="  Copiar", 
             accelerator='Ctrl+C',
-            background='#ccffff', foreground='black',
-            activebackground='#004c99',activeforeground='white',
-            font=self.text_font,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu,activeforeground=acfg_menu,
+            font=_Font_Menu,
             command=lambda e=self.listServer:self.copiar_optionLis(e),
             state='disabled',
         )
@@ -434,19 +439,19 @@ class Ventana(ttk.Frame):
         self.menuLis_Contextual.add_command(
             label="  Pegar", 
             accelerator='Ctrl+V',
-            background='#ccffff', foreground='black',
-            activebackground='#004c99',activeforeground='white',
-            font=self.text_font,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu,activeforeground=acfg_menu,
+            font=_Font_Menu,
             state='disabled',
         )
-        self.menuLis_Contextual.add_separator(background='#ccffff')
+        self.menuLis_Contextual.add_separator(background=bg_submenu)
         ## Selecionar todo
         self.menuLis_Contextual.add_command(
             label="  Seleccionar todo", 
             accelerator='Ctrl+A',
-            background='#ccffff', foreground='black',
-            activebackground='#004c99',activeforeground='white',
-            font=self.text_font,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu,activeforeground=acfg_menu,
+            font=_Font_Menu,
             command=lambda e=self.listServer:self.selALL_optionLis(e),
             state='normal',
         )
@@ -454,20 +459,20 @@ class Ventana(ttk.Frame):
         self.menuLis_Contextual.add_command(
             label="  Limpiar", 
             accelerator='Ctrl+X',
-            background='#ccffff', foreground='black',
-            activebackground='#004c99',activeforeground='white',
-            font=self.text_font,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu,activeforeground=acfg_menu,
+            font=_Font_Menu,
             state='disabled',
         )
-        self.menuLis_Contextual.add_separator(background='#ccffff')
+        self.menuLis_Contextual.add_separator(background=bg_submenu)
         ## Cerrar pestñaa
         self.menuLis_Contextual.add_command(
             label="  Cerrar pestaña", 
             #image=self.cerrar_icon,
-            compound=LEFT,
-            background='#ccffff', foreground='black',
-            activebackground='#004c99',activeforeground='white',
-            font=self.text_font,
+            compound=tk.LEFT,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu,activeforeground=acfg_menu,
+            font=_Font_Menu,
             command=self.cerrar_vtn
         )
     
@@ -514,63 +519,63 @@ class Ventana(ttk.Frame):
     
     def widgets_ventanas(self):
         self.var_ent_buscar = tk.StringVar(self)
-        self.textBuscar = tk.Entry(
+        self.textBuscar = MyEntry(
             self.vtn_ventanas,
             textvariable=self.var_ent_buscar,
-            justify='left',
-            width=40,
-            foreground="gray75",
-            font=("Consolas", 12),
-            border=0,
-            borderwidth=0,
-            highlightthickness=3,
-            highlightcolor='#316B83',
-            selectforeground='#CDFFEB', 
-            selectbackground='#476072'
+            #justify='left',
+            #width=40,
+            #
+            #font=_Font_Texto,
         )
         self.var_ent_buscar.set("Buscar Directories / File ...")
         self.textBuscar.grid(row=0, column=0, padx=10, pady=5, sticky='nsew')
 
+        self.textBuscar.config(
+            foreground="gray75",
+            width=40,
+            highlightcolor=active_color,
+            insertbackground=active_color,
+            selectbackground=sel_bg_txt,
+            highlightthickness=2,
+            font=(fuente_texto, 14)
+        )
+
         self.btnBuscar = ttk.Button(
             self.vtn_ventanas,
             text='Buscar',
-            style='TOP1.TButton',
             image=self.buscar_icon,
             command=lambda:self._buscar(self.textBuscar)
         )
-        self.btnBuscar.grid(row=0, column=1, sticky=W)
+        self.btnBuscar.grid(row=0, column=1, sticky=tk.W)
 
         self.btnLimpiar = ttk.Button(
             self.vtn_ventanas,
             text='Limpiar',
-            style='TOP1.TButton',
             image=self.limpiar_icon,
             command= self.limpiar_bsq,            
         )
-        #self.btnLimpiar.grid(row=0, column=1, sticky=W)
+        #self.btnLimpiar.grid(row=0, column=1, sticky=tk.W)
 
         self.btnCerrar = ttk.Button(
             self.vtn_ventanas, 
             text='Cerrar',
-            style='TOP1.TButton',
             image=self.cerrar_icon,
             command=self.cerrar_vtn
         )
-        self.btnCerrar.grid(row=0, column=2, padx=10, pady=5, sticky=E)
+        self.btnCerrar.grid(row=0, column=2, padx=10, pady=5, sticky=tk.E)
         
         ## ====================================================================================
         ## --- CREAMOS EL PRIMER LABEL FRAME
         self.labelframe1=ttk.LabelFrame(
             self.vtn_ventanas, 
             text="DATOS",
-            style='TOP.TLabelframe'
         )
         self.labelframe1.grid(column=0, row=1, padx=10, pady=5, columnspan=3, sticky='nsew')
         self.labelframe1.columnconfigure(0, weight=1)
         
         ## --- creamos el scrollbar
         self.tree_scrollbar=tk.Scrollbar(self.labelframe1, orient=tk.VERTICAL)
-        self.tree_scrollbar.grid(column=1, row=0, sticky=N+S,padx=(0,5), pady=10)
+        self.tree_scrollbar.grid(column=1, row=0, sticky=tk.N+tk.S,padx=(0,5), pady=10)
         
         ## ---creamos el treeview
         self.tree = ttk.Treeview(
@@ -583,29 +588,27 @@ class Ventana(ttk.Frame):
         ## ---creamos las columnas
         self.tree['columns'] = ("NAME","OWNER","TIPO","OWNERGROUP","CODE")
         ## --- formato a las columnas
-        self.tree.column("#0", width=0, stretch=NO)
-        self.tree.column("NAME", anchor=W, width=350)
-        self.tree.column("OWNER", anchor=CENTER, width=150)
-        self.tree.column("TIPO", anchor=CENTER, width=100)
-        self.tree.column("OWNERGROUP", anchor=CENTER, width=150)
-        self.tree.column("CODE", anchor=CENTER, width=100)
+        self.tree.column("#0", width=0, stretch=tk.NO)
+        self.tree.column("NAME", anchor=tk.W, width=350)
+        self.tree.column("OWNER", anchor=tk.CENTER, width=150)
+        self.tree.column("TIPO", anchor=tk.CENTER, width=100)
+        self.tree.column("OWNERGROUP", anchor=tk.CENTER, width=150)
+        self.tree.column("CODE", anchor=tk.CENTER, width=100)
         ## --- indicar cabecera
-        self.tree.heading("#0", text="", anchor=W)
-        self.tree.heading("#1", text="NAME", anchor=W)
-        self.tree.heading("#2", text="OWNER", anchor=CENTER)
-        self.tree.heading("#3", text="TIPO", anchor=CENTER)
-        self.tree.heading("#4", text="OWNER GROUP", anchor=CENTER)
-        self.tree.heading("#5", text="CODE", anchor=CENTER)
-        self.tree.tag_configure('oddrow', background="#CEE5D0", font=self.text_font)
-        self.tree.tag_configure('evenrow', background="#F3F0D7", font=self.text_font)
-        self.tree.grid(column=0, row=0, pady=10, padx=(5,0), sticky=E+W)
-
+        self.tree.heading("#0", text="", anchor=tk.W)
+        self.tree.heading("#1", text="NAME", anchor=tk.W)
+        self.tree.heading("#2", text="OWNER", anchor=tk.CENTER)
+        self.tree.heading("#3", text="TIPO", anchor=tk.CENTER)
+        self.tree.heading("#4", text="OWNER GROUP", anchor=tk.CENTER)
+        self.tree.heading("#5", text="CODE", anchor=tk.CENTER)
+        self.tree.tag_configure('oddrow', background=oddrow, font=_Font_Texto)
+        self.tree.tag_configure('evenrow', background=evenrow, font=_Font_Texto)
+        self.tree.grid(column=0, row=0, pady=10, padx=(5,0), sticky=tk.E+tk.W)
         ## ====================================================================================
         ## --- CREAMOS EL SEGUNDO LABEL FRAME
         self.labelframe2=ttk.LabelFrame(
             self.vtn_ventanas, 
             text="OTROS DATOS",
-            style='TOP.TLabelframe'
         )
         self.labelframe2.grid(column=0, row=2, padx=10, pady=5, columnspan=3, sticky='nsew')
         self.labelframe2.rowconfigure(1, weight=1)
@@ -617,7 +620,6 @@ class Ventana(ttk.Frame):
         self.lbl1 = ttk.Label(
             self.labelframe2,
             text='SERVER',
-            style='TOP.TLabel',
         )
         self.lbl1.grid(row=0, column=0, pady=5, padx=5, columnspan=2)
         
@@ -628,13 +630,13 @@ class Ventana(ttk.Frame):
         self.fr2_scroll1 = tk.Scrollbar(self.labelframe2, orient=tk.VERTICAL)
         self.listServer.config(
             selectmode=tk.EXTENDED,
-            foreground='#334257',
-            selectforeground='black', 
-            selectbackground='lightblue', 
-            font=self.text_font,
-            highlightcolor='#297F87',
+            foreground=color_fg_list,
+            selectbackground=sel_bg_txt,
+            selectforeground=sel_fg_txt,
+            font=_Font_Texto,
+            highlightcolor = active_color,
             borderwidth=0, 
-            highlightthickness=3,
+            highlightthickness=2,
             height=8,
             width=15,
             yscrollcommand=self.fr2_scroll1.set
@@ -647,7 +649,6 @@ class Ventana(ttk.Frame):
         self.lbl2 = ttk.Label(
             self.labelframe2, 
             text='RISK',
-            style='TOP.TLabel',
         )
         self.lbl2.grid(row=0, column=2, pady=5, padx=5, sticky='W')
         
@@ -655,24 +656,24 @@ class Ventana(ttk.Frame):
             self.labelframe2,
         )
         self.srcRisk.config(
-            font=self.text_font, 
+            font=_Font_Texto, 
             height=6,
             wrap=tk.WORD,
-            highlightcolor='#297F87',
+            highlightcolor=active_color,
             borderwidth=0, 
             highlightthickness=3,
-            insertbackground='#297F87',
-            selectbackground='lightblue',
+            insertbackground=active_color,
+            selectforeground=sel_fg_txt,
+            selectbackground=sel_bg_txt,
         )
 
         self.btnCpRisk = ttk.Button(
             self.labelframe2, 
             text='Copiar',
-            style='TOP.TButton',
             image=self.copiar_icon,
             command=lambda e=self.srcRisk:self.copiarALL(e),
         )
-        self.btnCpRisk.grid(row=0, column=3, padx=20, pady=5, sticky=E)
+        self.btnCpRisk.grid(row=0, column=3, padx=20, pady=5, sticky=tk.E)
         
         self.srcRisk.grid(row=1, column=2, pady=5, padx=5, sticky='new', columnspan=2)
         
@@ -680,7 +681,6 @@ class Ventana(ttk.Frame):
         self.lbl3 = ttk.Label(
             self.labelframe2,
             text='IMPACT',
-            style='TOP.TLabel',
         )
         self.lbl3.grid(row=0, column=4, pady=5, padx=5, sticky='W')
         
@@ -688,24 +688,24 @@ class Ventana(ttk.Frame):
             self.labelframe2,
         )
         self.srcImpact.config(
-            font=self.text_font, 
+            font=_Font_Texto, 
             height=6,
             wrap=tk.WORD,
-            highlightcolor='#297F87',
+            highlightcolor=active_color,
             borderwidth=0, 
             highlightthickness=3,
-            insertbackground='#297F87',
-            selectbackground='lightblue',
+            insertbackground=active_color,
+            selectforeground=sel_fg_txt,
+            selectbackground=sel_bg_txt,
         )
 
         self.btnCpImp = ttk.Button(
             self.labelframe2,
             text='Copiar',
-            style='TOP.TButton',                
             image=self.copiar_icon,
             command=lambda e=self.srcImpact:self.copiarALL(e),
         )
-        self.btnCpImp.grid(row=0, column=5, padx=20, pady=5, sticky=E)   
+        self.btnCpImp.grid(row=0, column=5, padx=20, pady=5, sticky=tk.E)   
         
         self.srcImpact.grid(row=1, column=4, pady=5, padx=5, sticky='new', columnspan=2)
         
@@ -713,8 +713,7 @@ class Ventana(ttk.Frame):
         self.lbl_SO = ttk.Label(
             self.labelframe2,
             text='SISTEMAS OPERATIVO',
-            font=("Consolas",15, font.BOLD),
-            style='TOP.TLabelframe.Label',
+            foreground=color_titulos,
             justify='center',
         )
         self.lbl_SO.grid(row=2, column=2, pady=5, padx=10, sticky='w')
@@ -724,9 +723,8 @@ class Ventana(ttk.Frame):
             self.labelframe2,
         )
         self.cbxUser.config(
-            font=("Consolas",14,font.BOLD), 
+            font = _Font_Texto,
             justify='center',
-            foreground='#D9534F'
         )
         self.cbxUser.set('CONTACTOS')
         self.cbxUser.grid(row=3, column=2, padx=5, pady=5, ipady=7, sticky='new')
@@ -735,7 +733,6 @@ class Ventana(ttk.Frame):
         self.lbl4 = ttk.Label(
             self.labelframe2,
             text='VARIABLES',
-            style='TOP.TLabel',
         )
         self.lbl4.grid(row=2, column=3, pady=5, padx=5, sticky='W')
 
@@ -743,23 +740,23 @@ class Ventana(ttk.Frame):
             self.labelframe2,
         )
         self.srcVariable.config(
-            font=self.text_font, 
+            font=_Font_Texto, 
             height=5,
             wrap=tk.WORD,
-            highlightcolor='#297F87',
+            highlightcolor=active_color,
             borderwidth=0, 
             highlightthickness=2,
-            insertbackground='#297F87',
-            selectbackground='lightblue',
+            insertbackground=active_color,
+            selectforeground=sel_fg_txt,
+            selectbackground=sel_bg_txt,
         )
 
         self.btnCpVariable = ttk.Button(
             self.labelframe2, 
             text='Copiar',
-            style='TOP.TButton',                
             image=self.copiar_icon,
             command=lambda e=self.srcVariable:self.copiarALL(e),
         )
-        self.btnCpVariable.grid(row=2, column=5, padx=20, pady=5, sticky=E)
+        self.btnCpVariable.grid(row=2, column=5, padx=20, pady=5, sticky=tk.E)
 
         self.srcVariable.grid(row=3, column=3, pady=5, padx=5, sticky='new', columnspan=3)

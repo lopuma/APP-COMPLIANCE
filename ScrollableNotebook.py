@@ -7,7 +7,6 @@ import tkinter.font as tkFont
 from tkinter import font
 import os
 import time
-from tkinter import *
 from tkinter import ttk
 from threading import Thread
 from PIL import Image, ImageTk
@@ -15,6 +14,13 @@ release = True
 path = os.path.expanduser("~/")
 path_icon = path+"Compliance/image/"
 count = 0
+color_btn_tab = '#297F87'
+color_out_bg_pestaña = '#FDD2BF'
+color_sel_bg_pestaña = '#B61919'
+color_act_bg_pestaña = '#FF6B6B'
+color_out_fg_pestaña = '#012443'
+color_sel_fg_pestaña = '#ffffff'
+color_act_fg_pestaña = '#012443'
 class ScrollableNotebook(ttk.Frame):
     _initialized = False
     def __init__(self,parent,wheelscroll=False,tabmenu=False, application=None,*args,**kwargs):
@@ -37,48 +43,47 @@ class ScrollableNotebook(ttk.Frame):
             self.notebookTab.bind("<Button-4>", self._wheelscroll)
             self.notebookTab.bind("<Button-5>", self._wheelscroll)
         slideFrame = ttk.Frame(self)
-        slideFrame.config(border=0,
-        borderwidth=0,
+        slideFrame.config(
+            border=0,
+            borderwidth=0,
+            padding=2
         )
-        slideFrame.place(relx=1.0, x=0, y=0, anchor='ne')
+        
+        slideFrame.place(x=0, y=0, anchor='ne', relx=1.0)
+        
         self.menuSpace=30
         if tabmenu==True:
             self.menuSpace=50
+
             self.bottomTab = ttk.Label(slideFrame, 
                                 text="  \u2630  ", 
-                                background='#DF2E2E',
-                                foreground='#F6D167',
-                                width=5, 
-                                anchor="center"
+                                foreground=color_btn_tab,
                                 )
             self.bottomTab.bind("<1>",self._bottomMenu)
-            self.bottomTab.pack(side=RIGHT, ipady=12)
+            self.bottomTab.pack(side=tk.RIGHT)
+
         self.bottomTab_novo = ttk.Label(slideFrame, 
                                 image=self.novo,
                                 text="Abrir",
-                                #width=5,
-                                padding=(10,0),
-                                #background="#082032",
-                                foreground="white",
                                 )
         self.bottomTab_novo.bind("<1>",self._bottomMenu_novo)
-        self.bottomTab_novo.pack(side=LEFT, ipady=8, anchor='center')
+        self.bottomTab_novo.pack(side=tk.LEFT, padx=5)
 
         self.leftArrow = ttk.Label(slideFrame, 
                                 text=" \u276E ",
-                                foreground="#297F87",
                                 )
         self.leftArrow.bind("<Button-1>",lambda e: Thread(target=self._leftSlide, daemon=True).start())
         self.leftArrow.bind("<ButtonRelease-1>", self._release_callback)
-        self.leftArrow.pack(side=LEFT)
+        self.leftArrow.pack(side=tk.LEFT, padx=5)
+        
         self.rightArrow = ttk.Label(slideFrame, 
                                 text=" \u276F ",
-                                foreground="#297F87",
+                                padding=5
                                 )
         #rightArrow.bind("<1>",self._rightSlide)
         self.rightArrow.bind("<Button-1>",lambda e: Thread(target=self._rightSlide, daemon=True).start())
         self.rightArrow.bind("<ButtonRelease-1>", self._release_callback)
-        self.rightArrow.pack(side=RIGHT)
+        self.rightArrow.pack(side=tk.RIGHT)
 
         self.notebookContent.bind("<Configure>", self._resetSlide)
         self.notebookTab.bind("<ButtonPress-1>", self.on_tab_close_press, True)
@@ -89,8 +94,8 @@ class ScrollableNotebook(ttk.Frame):
     def _release_callback(self, e):
         global release
         release = True
-        self.rightArrow.configure(foreground='#297F87')
-        self.leftArrow.configure(foreground='#297F87')
+        self.rightArrow.configure(foreground=color_btn_tab)
+        self.leftArrow.configure(foreground=color_btn_tab)
     
     def on_tab_close_press(self, event):
         name = self.identify(event.x, event.y)  
@@ -114,6 +119,7 @@ class ScrollableNotebook(ttk.Frame):
         self._active = None
     
     def _initialize(self):
+        from Compliance import _Font_pestañas, bg_submenu, bg_menu
         self.style = ttk.Style()
         self.images = (
         tk.PhotoImage("img1", data='''
@@ -150,20 +156,22 @@ class ScrollableNotebook(ttk.Frame):
             })
         ])
         self.style.configure('ScrollableNotebook',
-                            background='#082032',
+                            background=bg_menu,
+                            borderwith=2,
+                            highlightcolor='red'
         )
         self.style.configure("ScrollableNotebook.Tab",
-            background='#FDD2BF',
-            foreground='#012443',
+            background=color_out_bg_pestaña,
+            foreground=color_out_fg_pestaña,
             padding=[2, 2],
             anchor="center",
             justify="center",
-            font=('Sans-Serif', 12, font.BOLD)
+            font=_Font_pestañas
         )         
-        self.style.map('ScrollableNotebook.Tab', background = [("selected", "#B61919"),
-                                                    ("active", "#FF6B6B")],
-                                        foreground = [("selected", "#ffffff"),
-                                                    ("active", "#012443")]
+        self.style.map('ScrollableNotebook.Tab', background = [("selected", color_sel_bg_pestaña),
+                                                    ("active", color_act_bg_pestaña)],
+                                        foreground = [("selected", color_sel_fg_pestaña),
+                                                    ("active", color_act_fg_pestaña)]
                                                     )
     
     def _wheelscroll(self, event):
@@ -183,16 +191,16 @@ class ScrollableNotebook(ttk.Frame):
         #     #self._leftSlide()
 
     def _bottomMenu(self,event):
-        self.text_font = tkFont.Font(family='Consolas', size=13)
-        tabListMenu = Menu(self, tearoff = 0)
+        from Compliance import _Font_Texto, bg_submenu, fg_submenu, fg_menu, acfg_menu, acbg_menu
+        tabListMenu = tk.Menu(self, tearoff = 0)
         for tab in self.notebookTab.tabs():
             tabListMenu.add_command(label=self.notebookTab.tab(tab, option="text"),
                                     command= lambda temp=tab: self.select(temp),
-                                    background='#ccffff', 
-                                    foreground='blue',
-                                    font=self.text_font,
-                                    activebackground='#004c99',
-                                    activeforeground='white')
+                                    background=bg_submenu, 
+                                    foreground=fg_submenu,
+                                    font=_Font_Texto,
+                                    activebackground=acbg_menu,
+                                    activeforeground=acfg_menu)
         tabListMenu.entryconfig('WorkSpace  ', 
                                 accelerator="ALT+W",
                                 image=self.WorkSpac_icon, 
@@ -201,39 +209,44 @@ class ScrollableNotebook(ttk.Frame):
         try: 
             tabListMenu.tk_popup(event.x_root, event.y_root)
         except:
-            self.bottomTab.configure(background='#DF2E2E',
-                                foreground='#F6D167')
+            pass
 
     def _bottomMenu_novo(self,event):
-        self.text_font = tkFont.Font(family='Consolas', size=13)
-        self.tabListMenu = Menu(self, tearoff = 0)
+        from Compliance import _Font_Texto, fg_submenu, acbg_menu, bg_submenu, bg_menu, acfg_menu
+        self.tabListMenu = tk.Menu(self, tearoff = 0)
         self.tabListMenu.add_command(
             label="  Desviaciones", 
             #accelerator='Ctrl+F',
             command=self._abrir_issuesDESV,
-            background='#ccffff', foreground='black',
-            activebackground='#004c99',activeforeground='white',
-            font=self.text_font,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu,activeforeground=acfg_menu,
+            font=_Font_Texto,
         )
         self.tabListMenu.add_command(
             label="  Extraciones", 
             #accelerator='Ctrl+F',
             command=self._abrir_issuesEXT,
-            background='#ccffff', foreground='black',
-            activebackground='#004c99',activeforeground='white',
-            font=self.text_font,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu,activeforeground=acfg_menu,
+            font=_Font_Texto,
+        )
+        self.tabListMenu.add_command(
+            label="  Automatizacion", 
+            #accelerator='Ctrl+F',
+            #command=self._abrir_issuesEXT,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu,activeforeground=acfg_menu,
+            font=_Font_Texto,
         )
         self.tabListMenu.tk_popup(event.x_root, event.y_root)
     
     def _abrir_issuesEXT(self):
         self._application.abrir_issuesExtracion()
         Thread(target=self._rightSlide, daemon=True).start()
-        self.leftArrow.configure(foreground='#297F87')
 
     def _abrir_issuesDESV(self):
         self._application.abrir_issuesDesviacion()
         Thread(target=self._rightSlide, daemon=True).start()
-        self.leftArrow.configure(foreground='#297F87')
 
     def _tabChanger(self,event):
         if event.state == 0:
@@ -243,9 +256,10 @@ class ScrollableNotebook(ttk.Frame):
         except: pass
 
     def _rightSlide(self):
+        from Compliance import bg_menu
         global release
         release = False
-        self.rightArrow.configure(foreground='#DF2E2E')
+        self.rightArrow.configure(foreground=bg_menu)
         while not release:
             time.sleep(0.01)
             if self.notebookTab.winfo_width()>self.notebookContent.winfo_width()-self.menuSpace:
@@ -256,9 +270,10 @@ class ScrollableNotebook(ttk.Frame):
                     self._release_callback(e=None)
     
     def _leftSlide(self):
+        from Compliance import bg_menu
         global release
         release = False
-        self.leftArrow.configure(foreground='#DF2E2E')
+        self.leftArrow.configure(foreground=bg_menu)
         while not release:
             time.sleep(0.01)
             if not self.notebookTab.winfo_x()== 0:
@@ -310,10 +325,8 @@ class ScrollableNotebook(ttk.Frame):
             self._release_callback(e=None)
         elif tab_id == '.!scrollablenotebook.!notebook2.!frame2' or tab_id == '.!scrollablenotebook.!notebook2.!frame3' or tab_id == '.!scrollablenotebook.!notebook2.!frame4':
             Thread(target=self._leftSlide, daemon=True).start()
-            self.rightArrow.configure(foreground='#297F87')
         else:
             Thread(target=self._rightSlide, daemon=True).start()
-            self.leftArrow.configure(foreground='#297F87')
 
     def tab(self,tab_id, option=None, **kwargs):
         kwargs_Content = kwargs.copy()
