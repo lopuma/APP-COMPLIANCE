@@ -12,7 +12,7 @@ from PIL import Image, ImageTk
 from tkinter.ttk import Style
 from threading import Thread
 import time
-from Compliance import bg_panel_buscar, bg_menu, fg_menu, acbg_panel_buscar, _Font_Texto_menucon, _Font_Texto, sel_bg_txt, fondo_app, active_color, acbg_menu, acfg_menu, fuente_texto, tamñ_texto
+from Compliance import bg_panel_buscar, bg_submenu, color_txt_entry, bg_menu, fg_submenu, acbg_panel_buscar, _Font_Menu, _Font_Texto, sel_bg_txt, sel_fg_txt, fondo_app, active_color, acbg_menu, acfg_menu, fuente_texto, tamñ_texto
 
 from setuptools import Command
 user = getuser()
@@ -43,6 +43,15 @@ class MyEntry(tk.Entry):
         self.parent = parent
         self.changes = [""]
         self.steps = int()
+        self.config(
+            foreground=color_txt_entry,
+            selectforeground=sel_fg_txt,
+            font=_Font_Texto,
+            borderwidth=0,
+            highlightcolor=active_color,
+            insertbackground=active_color,
+            selectbackground=sel_bg_txt,
+            highlightthickness=2,        )
         self.mostrar_menu()
         self.bind('<Control-a>', self.seleccionar_todo)
         self.bind('<Control-f>', self.seleccionar_todo)
@@ -64,66 +73,66 @@ class MyEntry(tk.Entry):
             label="  Deshacer",
             command=self.deshacer,
             accelerator='Ctrl+Z',
-            background=bg_menu, 
-            foreground=fg_menu,
-            activebackground=acfg_menu, 
-            activeforeground=bg_menu,
-            font=_Font_Texto_menucon,
+            background=bg_submenu, 
+            foreground=fg_submenu,
+            activebackground=acbg_menu, 
+            activeforeground=acfg_menu,
+            font=_Font_Menu,
             state='disabled'
         )
         self.menu_opciones.add_command(# --- REHACER
             label="  Rehacer",
             command=self.rehacer,
             accelerator='Ctrl+Y',
-            background=bg_menu,
-            foreground=fg_menu,
-            activebackground=acfg_menu, 
-            activeforeground=bg_menu,
-            font=_Font_Texto_menucon,
+            background=bg_submenu,
+            foreground=fg_submenu,
+            activebackground=acbg_menu, 
+            activeforeground=acfg_menu,
+            font=_Font_Menu,
             state='disabled'
         )
-        self.menu_opciones.add_separator(background=bg_menu)
+        self.menu_opciones.add_separator(background=bg_submenu)
         self.menu_opciones.add_command(# --- CORTAR
             label="  Cortar",
             accelerator='Ctrl+X',
-            background=bg_menu, foreground=fg_menu,
-            activebackground=acfg_menu, activeforeground=bg_menu,
-            font=_Font_Texto_menucon,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu, activeforeground=acfg_menu,
+            font=_Font_Menu,
             state='disabled',
             command=self.cortar
         )
         self.menu_opciones.add_command(# --- COPIAR
             label="  Copiar",
             accelerator='Ctrl+C',
-            background=bg_menu, 
-            foreground=fg_menu,
-            activebackground=acfg_menu, 
-            activeforeground=bg_menu,
-            font=_Font_Texto_menucon,
+            background=bg_submenu, 
+            foreground=fg_submenu,
+            activebackground=acbg_menu, 
+            activeforeground=acfg_menu,
+            font=_Font_Menu,
             state='disable',
             command=self.copiar
         )
         self.menu_opciones.add_command(# --- PEGAR
             label="  Pegar",
             accelerator='Ctrl+V',
-            background=bg_menu,
-            foreground=fg_menu,
-            activebackground=acfg_menu,
-            activeforeground=bg_menu,
-            font=_Font_Texto_menucon,
+            background=bg_submenu,
+            foreground=fg_submenu,
+            activebackground=acbg_menu,
+            activeforeground=acfg_menu,
+            font=_Font_Menu,
             command=self.pegar
         )
-        self.menu_opciones.add_separator(background=bg_menu)
+        self.menu_opciones.add_separator(background=bg_submenu)
         self.menu_opciones.add_command(# --- SELECT ALL
             label="  Selecionar todo",
             command=self.seleccionar_todo,
             accelerator='Ctrl+A',
             compound=tk.LEFT,
-            background=bg_menu, 
-            foreground=fg_menu,
-            activebackground=acfg_menu, 
-            activeforeground=bg_menu,
-            font=_Font_Texto_menucon,
+            background=bg_submenu, 
+            foreground=fg_submenu,
+            activebackground=acbg_menu, 
+            activeforeground=acfg_menu,
+            font=_Font_Menu,
         )
         
     def _display_menu_(self, event=None):
@@ -241,7 +250,7 @@ class Extracion(ttk.Frame):
     def menu(self):
         self.frame1 = tk.Frame(
             self,
-            background="gold",
+            background=bg_menu,
             width=self.wd
         )
         self.frame1.grid_propagate(False)
@@ -271,7 +280,7 @@ class Extracion(ttk.Frame):
         self.treeview.tag_configure(
             "folder",
             font=(_Font_Texto, 14),
-            foreground="#533e85"
+            foreground='#533e85'
         )
         self.treeview.heading("#0", text="FICHEROS de EXTRACIONES", anchor="center")
         self.treeview.grid(row=1, column=0, sticky="nsew")
@@ -465,8 +474,8 @@ class Extracion(ttk.Frame):
             #? COLOR CONTESTAR NO
             self.txt.tag_config(
                 'found3',
-                background="#FFE6E6",
-                foreground="#FF2626",
+                background='#FFE6E6',
+                foreground='#FF2626',
                 font=(fuente_texto, tamñ_texto, font.BOLD)
             )
         if line4:
@@ -482,8 +491,8 @@ class Extracion(ttk.Frame):
             #? COLOR CONTESTAR N/A            
             self.txt.tag_config(
                 'found4',
-                background="#FFCB91",
-                foreground="#FF5F00",
+                background='#FFCB91',
+                foreground='#FF5F00',
                 font=(fuente_texto, tamñ_texto, font.BOLD)
             )
 
@@ -531,8 +540,8 @@ class Extracion(ttk.Frame):
         #? COLOR CONTESTAR YES
         self.txt.tag_config(
             'found2',
-            background="#000000",
-            foreground="#357C3C",
+            background='#000000',
+            foreground='#357C3C',
             font=(fuente_texto, tamñ_texto, font.BOLD)
         )
 
@@ -555,7 +564,7 @@ class Extracion(ttk.Frame):
         
         self.txt = st.ScrolledText(
             self.frame2,
-            font=(fuente_texto, tamñ_texto),
+            font=_Font_Texto,
         )
 
         self.txt.config(
@@ -566,6 +575,7 @@ class Extracion(ttk.Frame):
             highlightthickness=3,
             insertbackground=active_color,
             selectbackground=sel_bg_txt,
+            selectforeground=sel_fg_txt,
             state='normal'
         )
         self.txt.grid(row=0, column=0, sticky="nsew")
@@ -587,47 +597,47 @@ class Extracion(ttk.Frame):
         self.menu_Contextual.add_command(
             label="  Buscar",
             accelerator='Ctrl+F',
-            background=bg_menu, foreground=fg_menu,
-            activebackground=acfg_menu, activeforeground=bg_menu,
-            font=_Font_Texto_menucon,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu, activeforeground=acfg_menu,
+            font=_Font_Menu,
             command=lambda e=self.txt: self.panel_buscar(e)
         )
-        self.menu_Contextual.add_separator(background=bg_menu)
+        self.menu_Contextual.add_separator(background=bg_submenu)
         self.menu_Contextual.add_command(
             label="  Copiar",
             accelerator='Ctrl+C',
-            background=bg_menu, foreground=fg_menu,
-            activebackground=acfg_menu, activeforeground=bg_menu,
-            font=_Font_Texto_menucon,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu, activeforeground=acfg_menu,
+            font=_Font_Menu,
             state="disabled",
             command=self.copiar_texto_seleccionado
         )
-        self.menu_Contextual.add_separator(background=bg_menu)
+        self.menu_Contextual.add_separator(background=bg_submenu)
         self.menu_Contextual.add_command(
             label="  Seleccionar todo",
             accelerator='Ctrl+A',
-            background=bg_menu, foreground=fg_menu,
-            activebackground=acfg_menu, activeforeground=bg_menu,
-            font=_Font_Texto_menucon,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu, activeforeground=acfg_menu,
+            font=_Font_Menu,
             command=self.seleccionar_todo
         )
         self.menu_Contextual.add_command(
             label="  Limpiar Busqueda",
             accelerator='Ctrl+X',
-            background=bg_menu, foreground=fg_menu,
-            activebackground=acfg_menu, activeforeground=bg_menu,
-            font=_Font_Texto_menucon,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu, activeforeground=acfg_menu,
+            font=_Font_Menu,
             state="disabled",
             command=self.limpiar_busqueda
         )
-        self.menu_Contextual.add_separator(background=bg_menu)
+        self.menu_Contextual.add_separator(background=bg_submenu)
         self.menu_Contextual.add_command(
             label="  Ocultar Panel",
             accelerator='Ctrl+L',
             compound=tk.LEFT,
-            background=bg_menu, foreground=fg_menu,
-            activebackground=acfg_menu, activeforeground=bg_menu,
-            font=_Font_Texto_menucon,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu, activeforeground=acfg_menu,
+            font=_Font_Menu,
             command=self.hide
         )
         self.menu_Contextual.add_command(
@@ -635,18 +645,18 @@ class Extracion(ttk.Frame):
             state="disabled",
             accelerator='Ctrl+L',
             compound=tk.LEFT,
-            background=bg_menu, foreground=fg_menu,
-            activebackground=acfg_menu, activeforeground=bg_menu,
-            font=_Font_Texto_menucon,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu, activeforeground=acfg_menu,
+            font=_Font_Menu,
             command=self.hide
         )
-        self.menu_Contextual.add_separator(background=bg_menu)
+        self.menu_Contextual.add_separator(background=bg_submenu)
         self.menu_Contextual.add_command(
             label="  Cerrar pestaña",
             compound=tk.LEFT,
-            background=bg_menu, foreground=fg_menu,
-            activebackground=acfg_menu, activeforeground=bg_menu,
-            font=_Font_Texto_menucon,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu, activeforeground=acfg_menu,
+            font=_Font_Menu,
             command=self.cerrar_vtn_desviacion
         )
 

@@ -25,7 +25,7 @@ path_config = mypath+"Compliance/.conf/{}.json"
 
 # * COLORES INICIALES
 # ? -------------------------------------------------------------
-color_bd_fr = 'black'
+color_bd_fr = '#383838'
 colour_fr_pie = '#C65D7B'
 colour_fr_tittle = '#F68989'
 cl_btn_actbg = '#8FBDD3'
@@ -50,9 +50,7 @@ class FramesPoliticas(ttk.Frame):
         self.fr_md2.pack(
             fill=tk.BOTH,
             side='left',
-           # self.lb_frame_sistemas.config(
-        #     borderwidth=3,
-        # )         expand=0,
+            padx=(10,0)
         )
 
         self.fr_md2.config(
@@ -90,13 +88,13 @@ class FramesPoliticas(ttk.Frame):
             fill=tk.BOTH,
             side=tk.LEFT,
             expand=0,
-            padx=5,
+            pady=10
         )
 
         self.h.pack(
             side=tk.RIGHT, 
             fill=tk.Y,
-            pady=(15,0)
+            pady=(20,0)
         )
 
         self.canvas.bind("<Button-5>", self.OnVsb_down)
@@ -203,6 +201,7 @@ class FramesScripts(ttk.Frame):
             fill=tk.BOTH,
             side=tk.LEFT,
             expand=1,
+            padx=10
         )
 
         self.fr_md3.config(
@@ -239,13 +238,13 @@ class FramesScripts(ttk.Frame):
             fill=tk.BOTH,
             side=tk.LEFT,
             expand=1,
-            padx=5,
+            pady=10
         )
 
         self.scr3.pack(
             side=tk.RIGHT, 
             fill=tk.Y,
-            pady=(15,0)
+            pady=(20,0),
         )
 
         def ceildiv(dividendo, divisor):
@@ -266,7 +265,7 @@ class FramesScripts(ttk.Frame):
 
             for widget in widgets:
                 # ubicamos el widget en la esquina noroeste de la celda.
-                widget.grid(row=row, column=column, sticky="nw")
+                widget.grid(row=row, column=column, sticky="nw", padx=10, pady=10)
 
                 # el siguiente widget será ubicado en la siguiente columna.
                 column += 1
@@ -467,17 +466,15 @@ class Automatizar(ttk.Frame):
             fill=tk.BOTH,
             side='left',
             expand=0,
+            pady=10,
+            padx=(5,0)
         )
         
         h.pack(
             side=tk.RIGHT, 
             fill=tk.Y,
-            pady=(15,0)
+            pady=(20,0)
         )
-        
-        # self.lb_frame_menu.config(
-        #     borderwidth=1,
-        # )
 
         self.canvas.bind("<Button-5>", self._On_canvas_down)
         self.canvas.bind("<Button-4>", self._On_canvas_up)
@@ -520,7 +517,8 @@ class Automatizar(ttk.Frame):
             side='left',
             fill=tk.BOTH,
             expand=0,
-            padx=5
+            padx=5,
+            pady=10
         )
 #TODO ----------------------------------------------------
 #------------------------------------------------------
@@ -533,7 +531,8 @@ class Automatizar(ttk.Frame):
             side=tk.RIGHT,
             fill=tk.BOTH,
             expand=1,
-            padx=5,
+            padx=(0,5),
+            pady=10
         )
         # self.lb_frame_scripts.config(
         #     borderwidth=3,

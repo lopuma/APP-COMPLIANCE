@@ -8,7 +8,8 @@ from tkinter import scrolledtext as st
 from tkinter import messagebox as mb
 from tkinter import font as font
 from PIL import Image, ImageTk
-from Compliance import fondo_app, bg_menu, acfg_menu, fg_menu, color_titulos, _Font_Texto, color_fg_list, sel_bg_txt, sel_fg_txt, active_color, _Font_Menu, oddrow, evenrow
+from Compliance import fondo_app, acfg_menu, acbg_menu, bg_submenu, color_txt_entry, fuente_texto, fg_submenu, acfg_menu, fg_menu, color_titulos, _Font_Texto, color_fg_list, sel_bg_txt, sel_fg_txt, active_color, _Font_Menu, oddrow, evenrow
+from Extraciones import MyEntry
 user = getuser()
 mypath = os.path.expanduser("~/")
 path_icon = mypath+"Compliance/image/"
@@ -112,7 +113,7 @@ class Ventana(ttk.Frame):
         entry = self.var_ent_buscar.get()
         if entry == "Buscar Directories / File ...":
             text_widget.config(
-                foreground="black", 
+                foreground=color_txt_entry,
                 font=_Font_Texto
             )
             self.var_ent_buscar.set("")
@@ -325,17 +326,17 @@ class Ventana(ttk.Frame):
         self.menu_Contextual.add_command(
             label="  Buscar", 
             accelerator='Ctrl+F',
-            background=bg_menu, foreground=fg_menu,
-            activebackground=acfg_menu,activeforeground=bg_menu,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu,activeforeground=acfg_menu,
             font=_Font_Menu,
             command=self.act_buscar,
         )
-        self.menu_Contextual.add_separator(background=bg_menu)
+        self.menu_Contextual.add_separator(background=bg_submenu)
         self.menu_Contextual.add_command(
             label="  Copiar", 
             accelerator='Ctrl+C',
-            background=bg_menu, foreground=fg_menu,
-            activebackground=acfg_menu,activeforeground=bg_menu,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu,activeforeground=acfg_menu,
             font=_Font_Menu,
             command=self.copiar,
             state='normal',
@@ -343,17 +344,17 @@ class Ventana(ttk.Frame):
         self.menu_Contextual.add_command(
             label="  Pegar", 
             accelerator='Ctrl+V',
-            background=bg_menu, foreground=fg_menu,
-            activebackground=acfg_menu,activeforeground=bg_menu,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu,activeforeground=acfg_menu,
             font=_Font_Menu,
             command=self.pegar,
         )
-        self.menu_Contextual.add_separator(background=bg_menu)
+        self.menu_Contextual.add_separator(background=bg_submenu)
         self.menu_Contextual.add_command(
             label="  Seleccionar todo", 
             accelerator='Ctrl+A',
-            background=bg_menu, foreground=fg_menu,
-            activebackground=acfg_menu,activeforeground=bg_menu,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu,activeforeground=acfg_menu,
             font=_Font_Menu,
             command=self.seleccionar_todo,
             state='normal',
@@ -361,18 +362,18 @@ class Ventana(ttk.Frame):
         self.menu_Contextual.add_command(
             label="  Limpiar", 
             accelerator='Ctrl+X',
-            background=bg_menu, foreground=fg_menu,
-            activebackground=acfg_menu,activeforeground=bg_menu,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu,activeforeground=acfg_menu,
             font=_Font_Menu,
             command=self.limpiar_bsq2,
             state='disabled',
         )
-        self.menu_Contextual.add_separator(background=bg_menu)
+        self.menu_Contextual.add_separator(background=bg_submenu)
         self.menu_Contextual.add_command(label="  Cerrar pestaña", 
                                 #image=self.cerrar_icon,
                                 compound=tk.LEFT,
-                                background=bg_menu, foreground=fg_menu,
-                                activebackground=acfg_menu,activeforeground=bg_menu,
+                                background=bg_submenu, foreground=fg_submenu,
+                                activebackground=acbg_menu,activeforeground=acfg_menu,
                                 font=_Font_Menu,
                                 command=self.cerrar_vtn
                                 )
@@ -418,18 +419,18 @@ class Ventana(ttk.Frame):
         self.menuLis_Contextual.add_command(
             label="  Buscar",
             accelerator='Ctrl+F',
-            background=bg_menu, foreground=fg_menu,
-            activebackground=acfg_menu,activeforeground=bg_menu,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu,activeforeground=acfg_menu,
             font=_Font_Menu,
             command=self.act_buscar,
         )
-        self.menuLis_Contextual.add_separator(background=bg_menu)
+        self.menuLis_Contextual.add_separator(background=bg_submenu)
         ## Copiar
         self.menuLis_Contextual.add_command(
             label="  Copiar", 
             accelerator='Ctrl+C',
-            background=bg_menu, foreground=fg_menu,
-            activebackground=acfg_menu,activeforeground=bg_menu,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu,activeforeground=acfg_menu,
             font=_Font_Menu,
             command=lambda e=self.listServer:self.copiar_optionLis(e),
             state='disabled',
@@ -438,18 +439,18 @@ class Ventana(ttk.Frame):
         self.menuLis_Contextual.add_command(
             label="  Pegar", 
             accelerator='Ctrl+V',
-            background=bg_menu, foreground=fg_menu,
-            activebackground=acfg_menu,activeforeground=bg_menu,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu,activeforeground=acfg_menu,
             font=_Font_Menu,
             state='disabled',
         )
-        self.menuLis_Contextual.add_separator(background=bg_menu)
+        self.menuLis_Contextual.add_separator(background=bg_submenu)
         ## Selecionar todo
         self.menuLis_Contextual.add_command(
             label="  Seleccionar todo", 
             accelerator='Ctrl+A',
-            background=bg_menu, foreground=fg_menu,
-            activebackground=acfg_menu,activeforeground=bg_menu,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu,activeforeground=acfg_menu,
             font=_Font_Menu,
             command=lambda e=self.listServer:self.selALL_optionLis(e),
             state='normal',
@@ -458,19 +459,19 @@ class Ventana(ttk.Frame):
         self.menuLis_Contextual.add_command(
             label="  Limpiar", 
             accelerator='Ctrl+X',
-            background=bg_menu, foreground=fg_menu,
-            activebackground=acfg_menu,activeforeground=bg_menu,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu,activeforeground=acfg_menu,
             font=_Font_Menu,
             state='disabled',
         )
-        self.menuLis_Contextual.add_separator(background=bg_menu)
+        self.menuLis_Contextual.add_separator(background=bg_submenu)
         ## Cerrar pestñaa
         self.menuLis_Contextual.add_command(
             label="  Cerrar pestaña", 
             #image=self.cerrar_icon,
             compound=tk.LEFT,
-            background=bg_menu, foreground=fg_menu,
-            activebackground=acfg_menu,activeforeground=bg_menu,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu,activeforeground=acfg_menu,
             font=_Font_Menu,
             command=self.cerrar_vtn
         )
@@ -518,16 +519,26 @@ class Ventana(ttk.Frame):
     
     def widgets_ventanas(self):
         self.var_ent_buscar = tk.StringVar(self)
-        self.textBuscar = ttk.Entry(
+        self.textBuscar = MyEntry(
             self.vtn_ventanas,
             textvariable=self.var_ent_buscar,
-            justify='left',
-            width=40,
-            foreground="gray75",
-            font=_Font_Texto,
+            #justify='left',
+            #width=40,
+            #
+            #font=_Font_Texto,
         )
         self.var_ent_buscar.set("Buscar Directories / File ...")
         self.textBuscar.grid(row=0, column=0, padx=10, pady=5, sticky='nsew')
+
+        self.textBuscar.config(
+            foreground="gray75",
+            width=40,
+            highlightcolor=active_color,
+            insertbackground=active_color,
+            selectbackground=sel_bg_txt,
+            highlightthickness=2,
+            font=(fuente_texto, 14)
+        )
 
         self.btnBuscar = ttk.Button(
             self.vtn_ventanas,
@@ -652,6 +663,7 @@ class Ventana(ttk.Frame):
             borderwidth=0, 
             highlightthickness=3,
             insertbackground=active_color,
+            selectforeground=sel_fg_txt,
             selectbackground=sel_bg_txt,
         )
 
@@ -683,6 +695,7 @@ class Ventana(ttk.Frame):
             borderwidth=0, 
             highlightthickness=3,
             insertbackground=active_color,
+            selectforeground=sel_fg_txt,
             selectbackground=sel_bg_txt,
         )
 
@@ -734,6 +747,7 @@ class Ventana(ttk.Frame):
             borderwidth=0, 
             highlightthickness=2,
             insertbackground=active_color,
+            selectforeground=sel_fg_txt,
             selectbackground=sel_bg_txt,
         )
 

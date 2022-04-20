@@ -119,7 +119,7 @@ class ScrollableNotebook(ttk.Frame):
         self._active = None
     
     def _initialize(self):
-        from Compliance import _Font_pestañas, bg_menu
+        from Compliance import _Font_pestañas, bg_submenu, bg_menu
         self.style = ttk.Style()
         self.images = (
         tk.PhotoImage("img1", data='''
@@ -191,16 +191,16 @@ class ScrollableNotebook(ttk.Frame):
         #     #self._leftSlide()
 
     def _bottomMenu(self,event):
-        from Compliance import _Font_Texto, bg_menu, fg_menu, acfg_menu
+        from Compliance import _Font_Texto, bg_submenu, fg_submenu, fg_menu, acfg_menu, acbg_menu
         tabListMenu = tk.Menu(self, tearoff = 0)
         for tab in self.notebookTab.tabs():
             tabListMenu.add_command(label=self.notebookTab.tab(tab, option="text"),
                                     command= lambda temp=tab: self.select(temp),
-                                    background=bg_menu, 
-                                    foreground=fg_menu,
+                                    background=bg_submenu, 
+                                    foreground=fg_submenu,
                                     font=_Font_Texto,
-                                    activebackground=acfg_menu,
-                                    activeforeground=bg_menu)
+                                    activebackground=acbg_menu,
+                                    activeforeground=acfg_menu)
         tabListMenu.entryconfig('WorkSpace  ', 
                                 accelerator="ALT+W",
                                 image=self.WorkSpac_icon, 
@@ -212,30 +212,30 @@ class ScrollableNotebook(ttk.Frame):
             pass
 
     def _bottomMenu_novo(self,event):
-        from Compliance import _Font_Texto, fg_menu, bg_menu, acfg_menu
+        from Compliance import _Font_Texto, fg_submenu, acbg_menu, bg_submenu, bg_menu, acfg_menu
         self.tabListMenu = tk.Menu(self, tearoff = 0)
         self.tabListMenu.add_command(
             label="  Desviaciones", 
             #accelerator='Ctrl+F',
             command=self._abrir_issuesDESV,
-            background=bg_menu, foreground=fg_menu,
-            activebackground=acfg_menu,activeforeground=bg_menu,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu,activeforeground=acfg_menu,
             font=_Font_Texto,
         )
         self.tabListMenu.add_command(
             label="  Extraciones", 
             #accelerator='Ctrl+F',
             command=self._abrir_issuesEXT,
-            background=bg_menu, foreground=fg_menu,
-            activebackground=acfg_menu,activeforeground=bg_menu,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu,activeforeground=acfg_menu,
             font=_Font_Texto,
         )
         self.tabListMenu.add_command(
             label="  Automatizacion", 
             #accelerator='Ctrl+F',
             #command=self._abrir_issuesEXT,
-            background=bg_menu, foreground=fg_menu,
-            activebackground=acfg_menu,activeforeground=bg_menu,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu,activeforeground=acfg_menu,
             font=_Font_Texto,
         )
         self.tabListMenu.tk_popup(event.x_root, event.y_root)

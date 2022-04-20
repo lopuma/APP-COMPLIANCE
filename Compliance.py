@@ -9,13 +9,16 @@ from tkinter import ttk
 from getpass import getuser
 from tkinter import scrolledtext as st
 from tkinter import messagebox as mb
-from tkinter import font as font
+from tkinter import font
+import tkinter as tk
 from PIL import Image, ImageTk
 from tkinter.ttk import Style
 from threading import Thread
 from ScrollableNotebook  import *
 from configparser import ConfigParser
 #-----------------------------------------------------------#
+
+
 user = getuser()
 mypath = os.path.expanduser("~/")
 path_icon = mypath+"Compliance/image/"
@@ -66,42 +69,62 @@ evd = ""
 #* Configuracion de APARIENCIA INICIAL
 parse = ConfigParser()
 parse.read(path_config_ini.format("apariencia.ini"))
+
 bg_menu = parse.get('menu', 'background')
 fg_menu = parse.get('menu', 'foreground')
 acbg_menu = parse.get('menu', 'activebackground')
 acfg_menu = parse.get('menu', 'activeforeground')
 fg_submenu = parse.get('menu', 'foreground_submenu')
 bg_submenu = parse.get('menu', 'background_submenu')
-oddrow = '#CEE5D0'
-evenrow = '#F3F0D7'
-fondo_app = '#FBF8F1'
-color_titulos = '#FF8080'
-sel_bg_txt = 'lightblue'
-sel_fg_txt = 'black'
-active_color = '#297F87'
-color_fg_list =  '#334257'
+
+color_bg_boton = parse.get('boton', 'background')
+color_fg_boton = parse.get('boton', 'foreground')
+color_acbg_boton = parse.get('boton', 'activebackground')
+color_acfg_boton = parse.get('boton', 'activeforeground')
+
+oddrow = parse.get('treeview', 'oddrow')
+evenrow = parse.get('treeview', 'evenrow')
+
+#COLOR FONDO APP
+fondo_app = parse.get('app', 'fondo')
+
+#COLOR TEXT
+color_titulos = parse.get('app', 'titulo')
+color_txt_entry = parse.get('app', 'colour_text')
+sel_bg_txt = parse.get('app', 'select_bg_text')
+sel_fg_txt = parse.get('app', 'select_fg_text')
+active_color = parse.get('app', 'colour_wd_activo')
+color_fg_list =  color_txt_entry
+
 bg_panel_buscar = '#A2D5AB'
 acbg_panel_buscar = '#39AEA9'
-fuente_titulos = 'Open Sanz'
-fuente_texto = 'Consolas'
-fuente_menu = 'Consolas'
-fuente_boton = 'Open Sanz'
-fuente_pestañas = 'Sans-Serif'
+
+#fuente_titulos = parse.get('app', 'fuente_titulo')
+fuente_titulos = 'Helvetica'
+#tamñ_titulo = parse.get('app', 'tamano_titulo')
 tamñ_titulo = 14
-tamñ_texto = 14
-tamñ_texto_menucon = 13
-tamñ_boton = 14
-tamñ_menu = 14
-tamñ_texto_exp = 16
-tamñ_pestaña = 12
-_Font_Menu = (fuente_menu, tamñ_menu, font.BOLD)
+weight_titulo = 'bold'
+fuente_texto = parse.get('app', 'fuente_texto')
+tamñ_texto = parse.get('app', 'tamano_texto')
+fuente_menu = parse.get('menu', 'fuente_menu')
+tamñ_menu = parse.get('menu', 'tamano_menu')
+fuente_boton = parse.get('boton', 'fuente_boton')
+tamñ_boton = parse.get('boton', 'tamano_boton')
+
+tamñ_texto_exp = parse.get('expand', 'tamano_text_expand')
+
+tamñ_pestaña = parse.get('pestana', 'tamano_pestana')
+fuente_pestañas = parse.get('pestana', 'fuente_pestana')
+
+_Font_Menu = (fuente_menu, tamñ_menu)
+_Font_Menu_bold = (fuente_menu, tamñ_menu, font.BOLD)
 _Font_Texto = (fuente_texto, tamñ_texto)
-_Font_Texto_menucon = (fuente_texto, tamñ_texto_menucon)
 _Font_Boton = (fuente_boton, tamñ_boton, font.BOLD)
-_Font_Titulo_bold = (fuente_titulos, tamñ_titulo, font.BOLD)
+#_Font_Titulo_bold = ""
+#_Font_Titulo_bold = (fuente_titulos, tamñ_titulo, weight_titulo)
 _Font_pestañas = (fuente_pestañas, tamñ_pestaña, font.BOLD)
 _Font_txt_exp = (fuente_texto, tamñ_texto_exp)
-_Font_tt_exp = (fuente_titulos, tamñ_texto_exp, font.BOLD)
+_Font_text_exp_bold = (fuente_titulos, tamñ_texto_exp, font.BOLD)
 
 def beep_error(f):
     '''
@@ -181,28 +204,28 @@ class Expandir(ttk.Frame):
         self.menu_Contextual.add_command(
             label="  Copiar", 
             compound=tk.LEFT,
-            background=bg_menu, foreground=fg_menu,
-            activebackground=acfg_menu,activeforeground=bg_menu,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu,activeforeground=acfg_menu,
             font=_Font_Menu,
             command= desviacion.copiar_texto_seleccionado,
             state="disabled"
         )
-        self.menu_Contextual.add_separator(background=bg_menu)
+        self.menu_Contextual.add_separator(background=bg_submenu)
         self.menu_Contextual.add_command(
             label="  Seleccionar todo", 
             compound=tk.LEFT,
-            background=bg_menu, foreground=fg_menu,
-            activebackground=acfg_menu,activeforeground=bg_menu,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu,activeforeground=acfg_menu,
             font=_Font_Menu,
             command=lambda : desviacion.seleccionar_todo(event=None),
         )
-        self.menu_Contextual.add_separator(background=bg_menu)
+        self.menu_Contextual.add_separator(background=bg_submenu)
         self.menu_Contextual.add_command(
             label="  Cerrar pestaña", 
             #image=self.cerrar_icon,
             compound=tk.LEFT,
-            background=bg_menu, foreground=fg_menu,
-            activebackground=acfg_menu,activeforeground=bg_menu,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu,activeforeground=acfg_menu,
             font=_Font_Menu,
             command=self.cerrar_vtn_expandir
         )
@@ -483,7 +506,7 @@ class Expandir(ttk.Frame):
             self.vtn_expandir, 
             text=self.titulo,
             foreground=color_titulos,
-            font=_Font_tt_exp,
+            font=_Font_text_exp_bold,
         )
         self.EXP_lblWidget.grid(row=0, column=0, padx=5, pady=5,sticky='w')
         self.EXP_srcExpandir = st.ScrolledText(
@@ -497,6 +520,7 @@ class Expandir(ttk.Frame):
             highlightthickness=3,
             insertbackground=active_color,
             selectbackground=sel_bg_txt,
+            selectforeground=sel_fg_txt,
         )
         ## Inserta el TEXT DEL SRC RECIBIO
         self.EXP_srcExpandir.insert('1.0',self.txt_Expan)
@@ -637,7 +661,7 @@ class Expandir(ttk.Frame):
                 self.EXP_srcExpandir.tag_config(
                 'found1', 
                 foreground='dodgerblue',
-                font=(fuente_texto, 16, font.BOLD)
+                font=_Font_text_exp_bold
                 )
 
 class TextSimilar(ttk.Frame):
@@ -672,7 +696,7 @@ class TextSimilar(ttk.Frame):
         self.titulo = ttk.Label(
             self.frame1,
             text=self.titulo,
-            font=_Font_Titulo_bold,
+            font=self._Font_Titulo_bold,
         )
         self.titulo.pack()
 
@@ -1137,18 +1161,18 @@ class Desviacion(ttk.Frame):
         self.menu_Contextual.add_command(
             label="  Buscar", 
             accelerator='Ctrl+F',
-            background=bg_menu, foreground=fg_menu,
-            activebackground=acfg_menu,activeforeground=bg_menu,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu,activeforeground=acfg_menu,
             font=_Font_Menu,
             command=lambda e=self.DESVfr1_entModulo:self._buscar(e),
             state='disabled',
         )
-        self.menu_Contextual.add_separator(background=bg_menu)
+        self.menu_Contextual.add_separator(background=bg_submenu)
         self.menu_Contextual.add_command(
             label="  Copiar", 
             accelerator='Ctrl+C',
-            background=bg_menu, foreground=fg_menu,
-            activebackground=acfg_menu,activeforeground=bg_menu,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu,activeforeground=acfg_menu,
             font=_Font_Menu,
             command=self.copiar_texto_seleccionado,
             state='disabled',
@@ -1157,19 +1181,19 @@ class Desviacion(ttk.Frame):
         self.menu_Contextual.add_command(
             label="  Pegar", 
             accelerator='Ctrl+V',
-            background=bg_menu, foreground=fg_menu,
-            activebackground=acfg_menu,activeforeground=bg_menu,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu,activeforeground=acfg_menu,
             font=_Font_Menu,
             command=lambda e=self.DESVfr1_entModulo:self.pegar_texto_seleccionado(e),
         )
         
-        self.menu_Contextual.add_separator(background=bg_menu)
+        self.menu_Contextual.add_separator(background=bg_submenu)
         
         self.menu_Contextual.add_command(
             label="  Seleccionar todo", 
             accelerator='Ctrl+A',
-            background=bg_menu, foreground=fg_menu,
-            activebackground=acfg_menu,activeforeground=bg_menu,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu,activeforeground=acfg_menu,
             font=_Font_Menu,
             command=lambda : self.seleccionar_todo(event=None),
             state='disabled',
@@ -1177,18 +1201,18 @@ class Desviacion(ttk.Frame):
         self.menu_Contextual.add_command(
             label="  Limpiar", 
             accelerator='Ctrl+X',
-            background=bg_menu, foreground=fg_menu,
-            activebackground=acfg_menu,activeforeground=bg_menu,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu,activeforeground=acfg_menu,
             font=_Font_Menu,
             command=lambda e=None:self._clear_busqueda(e),
             state='disabled',
         )
-        self.menu_Contextual.add_separator(background=bg_menu)
+        self.menu_Contextual.add_separator(background=bg_submenu)
         self.menu_Contextual.add_command(
             label="  Cerrar pestaña", 
             compound=tk.LEFT,
-            background=bg_menu, foreground=fg_menu,
-            activebackground=acfg_menu,activeforeground=bg_menu,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu,activeforeground=acfg_menu,
             font=_Font_Menu,
             command=app.cerrar_vtn_desviacion
         )
@@ -1710,14 +1734,14 @@ class Desviacion(ttk.Frame):
                 infile_servihabitat = path_modulo.format("SERVIHABITAT")
 
 ## --- ABRIR TODOS LOS JSON DE LOS CLIENTES
-                with open(infile_afb, 'r') as infileAFB, open(infile_asisa, 'r') as infileASISA, open(infile_cesce, 'r') as infileCESCE, open(infile_ctti, 'r') as infileCTTI, open(infile_enel, 'r') as infileENEL, open(infile_eurofred, 'r') as infileEUROFRED, open(infile_ft, 'r') as tk.infitk.LEFT,  open(infile_infra, 'r') as infileINFRA, open(infile_lbk, 'r') as infileLBK, open(infile_planeta, 'r') as infilePLANETA, open(infile_servihabitat, 'r') as infileSERVIHABITAT:           
+                with open(infile_afb, 'r') as infileAFB, open(infile_asisa, 'r') as infileASISA, open(infile_cesce, 'r') as infileCESCE, open(infile_ctti, 'r') as infileCTTI, open(infile_enel, 'r') as infileENEL, open(infile_eurofred, 'r') as infileEUROFRED, open(infile_ft, 'r') as infileFT,  open(infile_infra, 'r') as infileINFRA, open(infile_lbk, 'r') as infileLBK, open(infile_planeta, 'r') as infilePLANETA, open(infile_servihabitat, 'r') as infileSERVIHABITAT:           
                     fileAFB_data = json.load(infileAFB)
                     fileASISA_data = json.load(infileASISA)
                     fileCESCE_data = json.load(infileCESCE)
                     fileCTTI_data = json.load(infileCTTI)
                     fileENEL_data = json.load(infileENEL)
                     fileEUROFRED_data = json.load(infileEUROFRED)
-                    tk.fitk.LEFT_data = json.load(tk.infitk.LEFT)
+                    fileFT_data = json.load(infileFT)
                     fileINFRA_data = json.load(infileINFRA)
                     fileLBK_data = json.load(infileLBK)
                     filePLANETA_data = json.load(infilePLANETA)
@@ -1758,7 +1782,7 @@ class Desviacion(ttk.Frame):
                         _md_Buscado = [n for n in lis_md_enct if md_a_buscar.strip().replace("\\","/") in n]
                         self._add_newList_clt(dict_clave_modulo, _md_Buscado, ln_eurofred, CUST='EUROFRED')
 ## ---FT    
-                    for ln_ft in tk.fitk.LEFT_data:
+                    for ln_ft in fileFT_data:
                         lis_md_enct.append(ln_ft['modulo'])
                         _md_Buscado = [n for n in lis_md_enct if md_a_buscar.strip().replace("\\","/") in n]
                         self._add_newList_clt(dict_clave_modulo, _md_Buscado, ln_ft, CUST='FT')
@@ -1820,7 +1844,7 @@ class Desviacion(ttk.Frame):
                                 _clv_Buscado = [n for n in lis_clv_enct if clv_a_buscar in n]
                                 self._add_newList_clt_clv(dict_clave_modulo, _clv_Buscado, ln_eurofred, CUST='EUROFRED')## ---FT    
 ## ---FT
-                            for ln_ft in tk.fitk.LEFT_data:
+                            for ln_ft in fileFT_data:
                                 lis_clv_enct.append(ln_ft['clave'])
                                 _clv_Buscado = [n for n in lis_clv_enct if clv_a_buscar in n]
                                 self._add_newList_clt_clv(dict_clave_modulo, _clv_Buscado, ln_ft, CUST='FT')
@@ -2243,18 +2267,18 @@ class Desviacion(ttk.Frame):
         self.DESVfr1_optMn.config(
             background = bg_menu,
             foreground = fg_menu,
-            font=_Font_Titulo_bold,
-            activebackground = acfg_menu,
-            activeforeground = bg_menu,
+            font=app._Font_Titulo_bold,
+            activebackground = acbg_menu,
+            activeforeground = acfg_menu,
             relief="groove",
             borderwidth=2,
             width=20
         )
         self.DESVfr1_optMn["menu"].config(
-            background=bg_menu,
-            activebackground=acfg_menu,
-            activeforeground=bg_menu,
-            foreground=fg_menu,
+            background=bg_submenu,
+            activebackground=acbg_menu,
+            activeforeground=acfg_menu,
+            foreground=fg_submenu,
             font=_Font_Texto,
         )
         self.DESVfr1_optMn.grid(row=0, column=0, padx=5, pady=5, sticky='new', columnspan=2)
@@ -2269,12 +2293,6 @@ class Desviacion(ttk.Frame):
         
         self.DESVfr1_entModulo.configure(
             state='disabled',
-            font=_Font_Texto,
-            borderwidth=0,
-            highlightcolor=active_color,
-            insertbackground=active_color,
-            selectbackground=sel_bg_txt,
-            highlightthickness=2,
         )
         self.DESVfr1_entModulo.grid(row=1, column=0, pady=5, padx=(5,0), sticky='nsew')
         
@@ -2329,16 +2347,16 @@ class Desviacion(ttk.Frame):
             text='',
             font=_Font_Texto,
             width=10, 
-            foreground='gray55'
+            foreground='gray75'
         ) 
         self.DESVfr2_lblDescripcion.grid(row=1, column=0, padx=5, pady=5, sticky='new', columnspan=5)
-
+        
 ## --- Comprobacion---------------------------------------------------------------------------------------------------------
 
         self.DESVfr2_lblComprobacion = ttk.Label(
             self.DESV_frame2, 
             text='COMPROBACIÓN',
-            font=_Font_Titulo_bold
+            font=app._Font_Titulo_bold
         ) 
         self.DESVfr2_lblComprobacion.grid(row=2, column=0, padx=5, pady=5, sticky='w' )
         
@@ -2409,6 +2427,7 @@ class Desviacion(ttk.Frame):
             highlightthickness=2,
             insertbackground=active_color,
             selectbackground=sel_bg_txt,
+            selectforeground=sel_fg_txt,
             state='disabled',
         )
         self.DESVfr2_srcComprobacion.grid(row=3, column=0, padx=5, pady=5, sticky='new', columnspan=5)
@@ -2449,6 +2468,7 @@ class Desviacion(ttk.Frame):
             highlightthickness=2,
             insertbackground=active_color,
             selectbackground=sel_bg_txt,
+            selectforeground=sel_fg_txt,
             state='disabled',
         )
         self.DESVfr2_srcBackup.grid(row=5, column=0, padx=5, pady=5, sticky='new', columnspan=5)
@@ -2478,6 +2498,7 @@ class Desviacion(ttk.Frame):
             highlightthickness=2,
             insertbackground=active_color,
             selectbackground=sel_bg_txt,
+            selectforeground=sel_fg_txt,
             state='disabled',
         )
         self.DESVfr3_srcEditar.grid(row=1, column=0, padx=5, pady=5, sticky='new', columnspan=4)
@@ -2505,6 +2526,7 @@ class Desviacion(ttk.Frame):
             highlightthickness=2,
             insertbackground=active_color,
             selectbackground=sel_bg_txt,
+            selectforeground=sel_fg_txt,
             state='disabled',
         )
         self.DESVfr3_srcRefrescar.grid(row=3, column=0, padx=5, pady=5, sticky='new', columnspan=4)
@@ -2541,6 +2563,7 @@ class Desviacion(ttk.Frame):
             highlightthickness=2,
             insertbackground=active_color,
             selectbackground=sel_bg_txt,
+            selectforeground=sel_fg_txt,
             state='disabled',
         )
         self.DESVfr3_srcEvidencia.grid(row=5, column=0, padx=5, pady=5, sticky='new', columnspan=4)
@@ -2640,7 +2663,9 @@ class Desviacion(ttk.Frame):
 class Aplicacion():
     
     def __init__(self):
+        #global _Font_Titulo_bold
         self.root= tk.Tk()
+        self._Font_Titulo_bold = font.Font(family=fuente_titulos, size=tamñ_titulo)
         self.root.title("CONTINUOUS COMPLIANCE")
         window_width,window_height=1028,768
         screen_width = self.root.winfo_screenwidth()
@@ -2697,8 +2722,6 @@ class Aplicacion():
             Image.open(path_icon+r"clientes.png").resize((30, 30)))
         self.Salir_icon = ImageTk.PhotoImage(
             Image.open(path_icon+r"salir.png").resize((30, 30)))
-        self.SelAllBar_icon = ImageTk.PhotoImage(
-            Image.open(path_icon+r"selall.png").resize((30, 30)))
         self.BuscarBar_icon = ImageTk.PhotoImage(
             Image.open(path_icon+r"buscar1.png").resize((30, 30)))
         self.CopiarBar_icon = ImageTk.PhotoImage(
@@ -2715,13 +2738,13 @@ class Aplicacion():
     def estilos(self):
         self.style = Style()
         self.style.configure('TCombobox',
-            background = bg_menu,
+            background = acbg_menu,
             selectbackground = sel_bg_txt,
             selectforeground = sel_fg_txt, 
         )
         self.style.map('TCombobox',
             background=[
-                ("active", bg_menu)
+                ("active", acfg_menu)
             ]
         )
         
@@ -2741,37 +2764,38 @@ class Aplicacion():
         self.style.configure('TLabelframe.Label',
             background=fondo_app,
             foreground=color_titulos,
-            font=_Font_Titulo_bold,
+            font=self._Font_Titulo_bold,
         )
         # *===============================================================================
         self.style.configure(
             'APP.TButton',
-            background = "#297F87",
-            foreground = "#FFF7AE",
-            font=_Font_Boton,
+            background = color_bg_boton,
+            foreground = color_fg_boton,
+            font=(fuente_boton, 16, font.BOLD),
             padding=20,
             relief='sunke',
             borderwidth=5,
         )
         self.style.map(
             'APP.TButton',
-            background = [("active","#F6D167")],
-            foreground = [("active","#DF2E2E")],
+            background = [("active",color_acbg_boton)],
+            foreground = [("active",color_acfg_boton)],
             padding=[("active",20),("pressed",20)],
             relief=[("active",'ridge'),("pressed",'groove')],
             borderwidth=[("active",5)],
         )
         
         self.style.configure('TButton',
-            background = "#D4ECDD",
+            background = color_bg_boton,
+            foreground = color_fg_boton,
             relief='sunke',
             borderwidth=1,
             padding=6,
             font=_Font_Boton
         )
         self.style.map('TButton',
-            background=[("active","#F6D167")],
-            foreground=[("active","#C64756")],
+            background=[("active",color_acbg_boton)],
+            foreground=[("active",color_acfg_boton)],
             padding=[("active",6),("pressed",6)],
             relief=[("active",'ridge'),("pressed",'groove')],
             borderwidth=[("active",1)],
@@ -2780,24 +2804,13 @@ class Aplicacion():
         self.style.configure('APP.TLabel',
             background = bg_menu,
             foreground = fg_menu,
-            font=(fuente_titulos, 30, font.BOLD)
+            font=(fuente_titulos, 25, font.BOLD)
         )
         
         self.style.configure('TLabel',
             background = fondo_app,
             foreground = "gray17",
-            font=_Font_Titulo_bold
-        )
-        
-        self.style.configure('TEntry',
-            background = fondo_app,
-            foreground = sel_fg_txt,
-            border=2,
-            borderwidth=2,
-            highlightthickness=2,
-            highlightcolor=active_color,
-            selectforeground=sel_fg_txt,
-            selectbackground=sel_bg_txt,
+            font=self._Font_Titulo_bold
         )
 
 ## --- MENU CONTEXTUAL --- ##
@@ -2807,51 +2820,51 @@ class Aplicacion():
         self.menu_Contextual.add_command(
             label="  Buscar", 
             accelerator='Ctrl+F',
-            background=bg_menu, foreground=fg_menu,
-            activebackground=acfg_menu,activeforeground=bg_menu,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu,activeforeground=acfg_menu,
             font=_Font_Menu,
             state='disabled',
         )
-        self.menu_Contextual.add_separator(background=bg_menu)
+        self.menu_Contextual.add_separator(background=bg_submenu)
         self.menu_Contextual.add_command(
             label="  Copiar", 
             accelerator='Ctrl+C',
-            background=bg_menu, foreground=fg_menu,
-            activebackground=acfg_menu,activeforeground=bg_menu,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu,activeforeground=acfg_menu,
             font=_Font_Menu,
             state='disabled',
         )
         self.menu_Contextual.add_command(
             label="  Pegar", 
             accelerator='Ctrl+V',
-            background=bg_menu, foreground=fg_menu,
-            activebackground=acfg_menu,activeforeground=bg_menu,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu,activeforeground=acfg_menu,
             font=_Font_Menu,
             state='disabled',
         )
-        self.menu_Contextual.add_separator(background=bg_menu)
+        self.menu_Contextual.add_separator(background=bg_submenu)
         self.menu_Contextual.add_command(
             label="  Seleccionar todo", 
             accelerator='Ctrl+A',
-            background=bg_menu, foreground=fg_menu,
-            activebackground=acfg_menu,activeforeground=bg_menu,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu,activeforeground=acfg_menu,
             font=_Font_Menu,
             state='disabled',
         )
         self.menu_Contextual.add_command(
             label="  Limpiar", 
             accelerator='Ctrl+X',
-            background=bg_menu, foreground=fg_menu,
-            activebackground=acfg_menu,activeforeground=bg_menu,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu,activeforeground=acfg_menu,
             font=_Font_Menu,
             state='disabled',
         )
-        self.menu_Contextual.add_separator(background=bg_menu)
+        self.menu_Contextual.add_separator(background=bg_submenu)
         self.menu_Contextual.add_command(
             label="  Cerrar pestaña", 
             compound=tk.LEFT,
-            background=bg_menu, foreground=fg_menu,
-            activebackground=acfg_menu,activeforeground=bg_menu,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu,activeforeground=acfg_menu,
             font=_Font_Menu,
             command=self.cerrar_vtn_desviacion
         )
@@ -2860,14 +2873,13 @@ class Aplicacion():
         self.menu_Contextual.tk_popup(event.x_root, event.y_root)
 
     def _menu_clickDerecho_GLS(self):
-        self.text_font = font.Font(family='Courier', size=14, font=font.BOLD)
         self.menu_Contextual_GLS = tk.Menu(self.root, tearoff=0)
         self.menu_Contextual_GLS.add_command(
             label="  Copiar",
             accelerator='Ctrl+C',
-            background=bg_menu, foreground=fg_menu,
-            activebackground=acfg_menu, activeforeground=bg_menu,
-            font=self.text_font,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu, activeforeground=acfg_menu,
+            font=_Font_Menu,
             command=lambda e=self._list_clave : self._copiar_select_GLS_clave(e)
         )
 
@@ -2888,59 +2900,59 @@ class Aplicacion():
         self._menu_Contextual.add_command(
             label="  Buscar", 
             accelerator='Ctrl+F',
-            background=bg_menu, foreground=fg_menu,
-            activebackground=acfg_menu,activeforeground=bg_menu,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu,activeforeground=acfg_menu,
             font=_Font_Menu,
             state='disabled',
         )
-        self._menu_Contextual.add_separator(background=bg_menu)
+        self._menu_Contextual.add_separator(background=bg_submenu)
         self._menu_Contextual.add_command(
             label="  Copiar", 
             accelerator='Ctrl+C',
-            background=bg_menu, foreground=fg_menu,
-            activebackground=acfg_menu,activeforeground=bg_menu,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu,activeforeground=acfg_menu,
             font=_Font_Menu,
             state='disabled',
         )
         self._menu_Contextual.add_command(
             label="  Pegar", 
             accelerator='Ctrl+V',
-            background=bg_menu, foreground=fg_menu,
-            activebackground=acfg_menu,activeforeground=bg_menu,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu,activeforeground=acfg_menu,
             font=_Font_Menu,
             state='disabled',
         )
-        self._menu_Contextual.add_separator(background=bg_menu)
+        self._menu_Contextual.add_separator(background=bg_submenu)
         self._menu_Contextual.add_command(
             label="  Seleccionar todo", 
             accelerator='Ctrl+A',
-            background=bg_menu, foreground=fg_menu,
-            activebackground=acfg_menu,activeforeground=bg_menu,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu,activeforeground=acfg_menu,
             font=_Font_Menu,
             state='disabled',
         )
         self._menu_Contextual.add_command(
             label="  Limpiar", 
             accelerator='Ctrl+X',
-            background=bg_menu, foreground=fg_menu,
-            activebackground=acfg_menu,activeforeground=bg_menu,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu,activeforeground=acfg_menu,
             font=_Font_Menu,
             state='disabled',
         )
-        self._menu_Contextual.add_separator(background=bg_menu)
+        self._menu_Contextual.add_separator(background=bg_submenu)
         self._menu_Contextual.add_command(
             label="  Cerrar pestaña", 
             compound=tk.LEFT,
-            background=bg_menu, foreground=fg_menu,
-            activebackground=acfg_menu,activeforeground=bg_menu,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu,activeforeground=acfg_menu,
             font=_Font_Menu,
             state='disabled'
         )
         self._menu_Contextual.add_command(
             label="  Salir", 
             compound=tk.LEFT,
-            background=bg_menu, foreground=fg_menu,
-            activebackground=acfg_menu,activeforeground=bg_menu,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=acbg_menu,activeforeground=acfg_menu,
             font=_Font_Menu,
             command=self.root.quit
         )
@@ -2980,7 +2992,7 @@ class Aplicacion():
             self.menu_Contextual.entryconfig('  Cerrar pestaña', state='normal')
         if idOpenTab == 1 or idOpenTab == 2 or idOpenTab == 3 or idOpenTab == 4:
             self.cuaderno.rightArrow.configure(foreground=active_color)
-            Thread(target=self.cuaderno._tk.LEFTSlide, daemon=True).start()
+            Thread(target=self.cuaderno._leftSlide, daemon=True).start()
             self.cuaderno._release_callback(e=None)
             self.cuaderno.rightArrow.configure(foreground=active_color)
 ## ---ASIGNAMOS A UNA VARIABLE CADA CLIENTE----------------------------
@@ -3156,6 +3168,7 @@ class Aplicacion():
         self.AcercaDe_txt_frame.pack(fill='both', expand=1, side=tk.LEFT)
         #self.AcercaDe_txt_frame.pack_propagate(False)
 
+        #? FONT ACERCA DE... 
         self.lbl1 = ttk.Label(
             self.AcercaDe_txt_frame, 
             text='CONTINUOUS COMPLIANCE',
@@ -3283,6 +3296,7 @@ class Aplicacion():
         )
         self.frame1.pack(fill='both', side='top', expand=0)
 
+        #? FONt AYUDA
         self.titulo = ttk.Label(
             self.frame1,
             text='PALABRAS CLAVES DESVIACIONES',
@@ -3297,10 +3311,11 @@ class Aplicacion():
         
         self.frame2.rowconfigure(1, weight=1)
 
+        #? FONt AYUDA
         self.titulo_modulo = ttk.Label(
             self.frame2,
             text='MODULO',
-            font=_Font_Titulo_bold,
+            font=self._Font_Titulo_bold,
             anchor='center',
             width=50
         )
@@ -3334,7 +3349,7 @@ class Aplicacion():
         self.titulo_clave = ttk.Label(
             self.frame3,
             text='CLAVE',
-            font=_Font_Titulo_bold,
+            font=self._Font_Titulo_bold,
             anchor='center'
         )
         self.titulo_clave.grid(row=0, column=0, sticky='nsew', pady=5, padx=5, columnspan=2)
@@ -3372,7 +3387,7 @@ class Aplicacion():
             self.menuBar.config(
                 background=bg_menu,
                 foreground=fg_menu,
-                font=_Font_Menu,
+                font=_Font_Menu_bold,
                 activebackground=acbg_menu,
                 activeforeground=acfg_menu,
             )
@@ -3627,7 +3642,7 @@ class Aplicacion():
 
     def _fontchooser(self):
         from Preferencias import SelectFont
-        ventanafont = SelectFont(parent=None, titulo="Ventana")
+        ventanafont = SelectFont(None, "Ventana", app, application=self)
 
         #ventanafont.grab_set()
     
