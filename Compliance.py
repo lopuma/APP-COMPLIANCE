@@ -99,10 +99,10 @@ color_fg_list =  color_txt_entry
 bg_panel_buscar = '#A2D5AB'
 acbg_panel_buscar = '#39AEA9'
 
-#fuente_titulos = parse.get('app', 'fuente_titulo')
-fuente_titulos = 'Helvetica'
-#tamñ_titulo = parse.get('app', 'tamano_titulo')
-tamñ_titulo = 14
+fuente_titulos = parse.get('app', 'fuente_titulo')
+#fuente_titulos = 'Source Sans Pro'
+tamñ_titulo = parse.get('app', 'tamano_titulo')
+#tamñ_titulo = 14
 weight_titulo = 'bold'
 fuente_texto = parse.get('app', 'fuente_texto')
 tamñ_texto = parse.get('app', 'tamano_texto')
@@ -120,8 +120,6 @@ _Font_Menu = (fuente_menu, tamñ_menu)
 _Font_Menu_bold = (fuente_menu, tamñ_menu, font.BOLD)
 _Font_Texto = (fuente_texto, tamñ_texto)
 _Font_Boton = (fuente_boton, tamñ_boton, font.BOLD)
-#_Font_Titulo_bold = ""
-#_Font_Titulo_bold = (fuente_titulos, tamñ_titulo, weight_titulo)
 _Font_pestañas = (fuente_pestañas, tamñ_pestaña, font.BOLD)
 _Font_txt_exp = (fuente_texto, tamñ_texto_exp)
 _Font_text_exp_bold = (fuente_titulos, tamñ_texto_exp, font.BOLD)
@@ -161,7 +159,7 @@ class Expandir(ttk.Frame):
         self.varNum = varNum
         self.vtn_expandir = tk.Toplevel(self)
         self.vtn_expandir.config(background=fondo_app)
-        window_width=1170
+        window_width=1010
         window_height=650
         screen_width = app.root.winfo_x()
         screen_height= app.root.winfo_y()
@@ -239,7 +237,7 @@ class Expandir(ttk.Frame):
             self.menu_Contextual.entryconfig("  Copiar", state="normal")
         else:
             self.menu_Contextual.entryconfig("  Copiar", state="disabled")
-    ## ----------------------------------------------- ##
+
     def copiarALL(self, event):
         event.focus()
         if event:
@@ -506,9 +504,9 @@ class Expandir(ttk.Frame):
             self.vtn_expandir, 
             text=self.titulo,
             foreground=color_titulos,
-            font=_Font_text_exp_bold,
+            font=app._Font_Titulo_bold,
         )
-        self.EXP_lblWidget.grid(row=0, column=0, padx=5, pady=5,sticky='w')
+        self.EXP_lblWidget.grid(row=0, column=0, padx=5, pady=10,sticky='w')
         self.EXP_srcExpandir = st.ScrolledText(
             self.vtn_expandir,
         )
@@ -661,7 +659,7 @@ class Expandir(ttk.Frame):
                 self.EXP_srcExpandir.tag_config(
                 'found1', 
                 foreground='dodgerblue',
-                font=_Font_text_exp_bold
+                font = font.Font(family=_Font_Texto, size=20, weight='bold')
                 )
 
 class TextSimilar(ttk.Frame):
@@ -696,9 +694,9 @@ class TextSimilar(ttk.Frame):
         self.titulo = ttk.Label(
             self.frame1,
             text=self.titulo,
-            font=self._Font_Titulo_bold,
+            font=app._Font_Titulo_bold,
         )
-        self.titulo.pack()
+        self.titulo.pack(pady=10)
 
 ## --- FRAME LISTBOX
         self.frame2 = ttk.Frame(
@@ -1184,7 +1182,7 @@ class Desviacion(ttk.Frame):
             background=bg_submenu, foreground=fg_submenu,
             activebackground=acbg_menu,activeforeground=acfg_menu,
             font=_Font_Menu,
-            command=lambda e=self.DESVfr1_entModulo:self.pegar_texto_seleccionado(e),
+            #command=lambda e=self.DESVfr1_entModulo:self.pegar_texto_seleccionado(e),
         )
         
         self.menu_Contextual.add_separator(background=bg_submenu)
@@ -1253,13 +1251,13 @@ class Desviacion(ttk.Frame):
         scr_Event.tag_add("sel","1.0","end")
         return 'break'
 
-    def pegar_texto_seleccionado(self, event):
-        entModulo_event = event
-        if entModulo_event.select_present():
-            self.var_entry_bsc.set("")
-            self.DESVfr1_btnLimpiar.grid_forget()
-            self.DESVfr1_btnBuscar.grid(row=1, column=1, pady=5, padx=5, sticky='nsw')
-        entModulo_event.event_generate("<<Paste>>")
+    # def pegar_texto_seleccionado(self, event):
+    #     entModulo_event = event
+    #     if entModulo_event.select_present():
+    #         self.var_entry_bsc.set("")
+    #         self.DESVfr1_btnLimpiar.grid_forget()
+    #         self.DESVfr1_btnBuscar.grid(row=1, column=1, pady=5, padx=5, sticky='nsw')
+    #     entModulo_event.event_generate("<<Paste>>")
     
     def copiar_texto_seleccionado(self):
         global txtWidget_focus
@@ -2265,6 +2263,8 @@ class Desviacion(ttk.Frame):
             command=self.cargar_Modulos,
         )
         self.DESVfr1_optMn.config(
+            justify=tk.CENTER,
+            anchor=tk.CENTER,
             background = bg_menu,
             foreground = fg_menu,
             font=app._Font_Titulo_bold,
@@ -2274,6 +2274,7 @@ class Desviacion(ttk.Frame):
             borderwidth=2,
             width=20
         )
+        
         self.DESVfr1_optMn["menu"].config(
             background=bg_submenu,
             activebackground=acbg_menu,
@@ -2281,7 +2282,9 @@ class Desviacion(ttk.Frame):
             foreground=fg_submenu,
             font=_Font_Texto,
         )
+
         self.DESVfr1_optMn.grid(row=0, column=0, padx=5, pady=5, sticky='new', columnspan=2)
+
 # -----------------------------------------------------------------------------#
 ##TODO --- ENTRY DE BUSQUEDA
         self.var_entry_bsc = tk.StringVar(self)
@@ -2431,7 +2434,6 @@ class Desviacion(ttk.Frame):
             state='disabled',
         )
         self.DESVfr2_srcComprobacion.grid(row=3, column=0, padx=5, pady=5, sticky='new', columnspan=5)
-        self.varComprobacion = "COMPROBACION"
         
         self.DESV_btnRiskImpact = ttk.Button(
             self.DESV_frame2,
@@ -2441,6 +2443,7 @@ class Desviacion(ttk.Frame):
         )
         self.DESV_btnRiskImpact.grid(row=2, column=3, padx=(5,10), pady=5, sticky='ne')
 
+        self.varComprobacion = "COMPROBACION"
         self.DESV_btn1Expandir = ttk.Button(
             self.DESV_frame2,
             image=self.Expandir_icon,
@@ -2480,7 +2483,7 @@ class Desviacion(ttk.Frame):
             state='disabled',
             command=lambda x=self.DESVfr2_srcBackup:self.expandir(x, self.varBackup),
         )
-        self.DESV_btn2Expandir.grid(row=4, column=4, padx=(5,20), pady=5, sticky='nse', columnspan=3)
+        self.DESV_btn2Expandir.grid(row=4, column=4, padx=(5,20), pady=5, sticky='ne', columnspan=3)
 ## ======================== FRAME 3 ========================================= ##
 ## --- EDITAR
         self.DESVfr3_lblEditar = ttk.Label(
@@ -2510,7 +2513,7 @@ class Desviacion(ttk.Frame):
             state='disabled',
             command=lambda x=self.DESVfr3_srcEditar:self.expandir(x, self.varEditar),
         )
-        self.DESV_btn3Expandir.grid(row=0, column=1, padx=(5,20), pady=5, sticky='nse', columnspan=4)
+        self.DESV_btn3Expandir.grid(row=0, column=1, padx=(5,20), pady=5, sticky='ne', columnspan=4)
         ## --- REFEESCAR
         self.DESVfr3_lblRefrescar = ttk.Label(
             self.DESV_frame3, 
@@ -2663,9 +2666,8 @@ class Desviacion(ttk.Frame):
 class Aplicacion():
     
     def __init__(self):
-        #global _Font_Titulo_bold
         self.root= tk.Tk()
-        self._Font_Titulo_bold = font.Font(family=fuente_titulos, size=tamñ_titulo)
+        self._Font_Titulo_bold = font.Font(family=fuente_titulos, size=tamñ_titulo, weight=weight_titulo)
         self.root.title("CONTINUOUS COMPLIANCE")
         window_width,window_height=1028,768
         screen_width = self.root.winfo_screenwidth()
@@ -3130,21 +3132,27 @@ class Aplicacion():
     def cerrar_vtn(self):
         self.vtn_acerca_de.destroy()
 
+    def cerrar_vtn_gls(self):
+        self.vtn_glosario.destroy()
+    
     def _acerca_de(self):
         self.vtn_acerca_de = tk.Toplevel(self.root)
         self.vtn_acerca_de.config(background=fondo_app)
-        window_width=780
-        window_height=370
+        window_width=720
+        window_height=380
         screen_width = app.root.winfo_x()
         screen_height= app.root.winfo_y()
         position_top = int(screen_height+70)
         position_right = int(screen_width+150)
         self.vtn_acerca_de.geometry(f'{window_width}x{window_height}+{position_right}+{position_top}')
         self.vtn_acerca_de.tk.call('wm', 'iconphoto', self.vtn_acerca_de._w, tk.PhotoImage(file=path_icon+r'acercaDe.png'))       
-        #self.vtn_acerca_de.transient(self.root)
+        self.vtn_acerca_de.transient(self.root)
         self.vtn_acerca_de.resizable(False,False)
-        self.vtn_acerca_de.title("Continuous Compliance")
+        self.vtn_acerca_de.title("Acerca de")
 
+        self.close_icon = ImageTk.PhotoImage(
+            Image.open(path_icon+r"close1.png").resize((80, 60)))
+        
         self.icono_Acerca_de = ImageTk.PhotoImage(
             Image.open(path_icon+r"img_acerca_de.png").resize((200, 200)))
 
@@ -3170,17 +3178,18 @@ class Aplicacion():
 
         #? FONT ACERCA DE... 
         self.lbl1 = ttk.Label(
-            self.AcercaDe_txt_frame, 
+            self.AcercaDe_txt_frame,
+            foreground=color_titulos,
             text='CONTINUOUS COMPLIANCE',
             anchor='center',
             font=(fuente_titulos, 16, "bold")
         )
-        self.lbl1.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
+        self.lbl1.grid(row=0, column=0, padx=10, pady=20, sticky='nsew')
 
         self.lbl5 = ttk.Label(
             self.AcercaDe_txt_frame,
-            width=20,
-            text='Herramienta para resolucion    de ISSUES Desviaciones / Extraciones',
+            width=40,
+            text='Herramienta para resolucion de ISSUES Desviaciones / Extraciones\n',
             anchor='w',
             font=(fuente_titulos, 13)
         )
@@ -3245,12 +3254,19 @@ class Aplicacion():
         self.lbl8.grid(row=7, column=0, padx=5, pady=5, sticky='nsew')
         #self.lbl8.bind("<Configure>", self.label_resize)
 
-        self.boton = ttk.Button(
+        self.boton = tk.Button(
             self.AcercaDe_txt_frame,
             text='Close',
+            image=self.close_icon,
             command=self.cerrar_vtn
         )
-        self.boton.grid(row=8, column=0, sticky='e', pady=20, padx=10)
+        self.boton.grid(row=8, column=0, sticky='e', pady=10, padx=10)
+        self.boton.config(
+            background=fondo_app,
+            activebackground=fondo_app,
+            borderwidth=0,
+            highlightbackground=fondo_app
+        )
     
     def _cargar_modulo_glosario(self, clt_modulo=None, *args):
         with open(path_modulo_clave.format('GLOSARIO')) as g:
@@ -3279,35 +3295,44 @@ class Aplicacion():
         self.vtn_glosario = tk.Toplevel(self.root)
         self.vtn_glosario.config(background=fondo_app)
         window_width=800
-        window_height=400
+        window_height=500
         screen_width = app.root.winfo_x()
         screen_height= app.root.winfo_y()
         position_top = int(screen_height+70)
         position_right = int(screen_width+150)
         self.vtn_glosario.geometry(f'{window_width}x{window_height}+{position_right}+{position_top}')
         self.vtn_glosario.tk.call('wm', 'iconphoto', self.vtn_glosario._w, tk.PhotoImage(file=path_icon+r'acercaDe.png'))       
-        #self.vtn_acerca_de.transient(self.root)
+        self.vtn_glosario.transient(self.root)
         self.vtn_glosario.resizable(False,False)
-        self.vtn_glosario.title("Continuous Compliance")
+        self.vtn_glosario.title("Ayuda")
         
-        self.frame1 = ttk.Frame(
+        self.close_icon_gls = ImageTk.PhotoImage(
+            Image.open(path_icon+r"close1.png").resize((80, 60)))
+        
+        self.fr1_gls = ttk.Frame(
             self.vtn_glosario,
-            height=40,
+            height=20,
         )
-        self.frame1.pack(fill='both', side='top', expand=0)
+        self.fr1_gls.pack(fill='both', side='top', expand=0)
+
 
         #? FONt AYUDA
         self.titulo = ttk.Label(
-            self.frame1,
+            self.fr1_gls,
             text='PALABRAS CLAVES DESVIACIONES',
             font=(fuente_titulos, 20, font.BOLD),
         )
-        self.titulo.pack(expand=1)
+        self.titulo.pack(expand=1, pady=10)
 
-        self.frame2 = ttk.Frame(
+        self.fr2_gls = ttk.Frame(
             self.vtn_glosario,
         )
-        self.frame2.pack(fill='both', side=tk.LEFT, expand=0, pady=10)
+        self.fr2_gls.pack(fill='both', side=tk.TOP, expand=1)
+
+        self.frame2 = ttk.Frame(
+            self.fr2_gls,
+        )
+        self.frame2.pack(fill='both', side=tk.LEFT, expand=1, pady=10)
         
         self.frame2.rowconfigure(1, weight=1)
 
@@ -3315,11 +3340,12 @@ class Aplicacion():
         self.titulo_modulo = ttk.Label(
             self.frame2,
             text='MODULO',
-            font=self._Font_Titulo_bold,
+            foreground=color_titulos,
+            font=font.Font(family=fuente_titulos, size=16, weight='bold'),
             anchor='center',
-            width=50
+            width=45
         )
-        self.titulo_modulo.grid(row=0, column=0, sticky='nsew', pady=5, padx=5)
+        self.titulo_modulo.grid(row=0, column=0, sticky='nsew', pady=10, padx=5)
 
         self.ListModulo_yScroll = tk.Scrollbar(self.frame2, orient=tk.VERTICAL)
         
@@ -3335,24 +3361,25 @@ class Aplicacion():
             highlightcolor = active_color,
             yscrollcommand=self.ListModulo_yScroll.set,
         )
-        self._list_modulo.grid(row=1, column=0, sticky='nsew', pady=10)
+        self._list_modulo.grid(row=1, column=0, sticky='nsew', pady=10, padx=(10,0))
         listbox_list.append(self._list_modulo)
         
         self.frame3 = ttk.Frame(
-            self.vtn_glosario,
-            width=40
+            self.fr2_gls,
+            width=30
         )
-        self.frame3.pack(fill='both', side='right', expand=1, pady=10,padx=10)
+        self.frame3.pack(fill='both', side='right', expand=1, pady=10, padx=10)
         self.frame3.columnconfigure(0, weight=1)
         self.frame3.rowconfigure(1, weight=1)
 
         self.titulo_clave = ttk.Label(
             self.frame3,
             text='CLAVE',
-            font=self._Font_Titulo_bold,
+            foreground=color_titulos,
+            font=font.Font(family=fuente_titulos, size=16, weight='bold'),
             anchor='center'
         )
-        self.titulo_clave.grid(row=0, column=0, sticky='nsew', pady=5, padx=5, columnspan=2)
+        self.titulo_clave.grid(row=0, column=0, sticky='nsew', pady=10, padx=5, columnspan=2)
 
         self.ListClave_yScroll = tk.Scrollbar(self.frame3, orient=tk.VERTICAL)
         
@@ -3369,6 +3396,27 @@ class Aplicacion():
             yscrollcommand=self.ListClave_yScroll.set,
         )
         self._list_clave.grid(row=1, column=0, sticky='nsew', pady=10,)
+        
+        self.fr3_gls = ttk.Frame(
+            self.vtn_glosario,
+            height=30
+        )
+        self.fr3_gls.pack(fill='both', side=tk.BOTTOM, expand=0, padx=10)
+
+        self.boton_gls = tk.Button(
+            self.fr3_gls,
+            text='Close',
+            image=self.close_icon_gls,
+            command=self.cerrar_vtn_gls
+        )
+        self.boton_gls.pack(side=tk.RIGHT, padx=20, pady=10)
+        self.boton_gls.config(
+            background=fondo_app,
+            activebackground=fondo_app,
+            borderwidth=0,
+            highlightbackground=fondo_app
+        )
+
         listbox_list.append(self._list_clave)
 
         self.ListClave_yScroll.grid(row=1, column=1, pady=10, sticky='nse')
@@ -3643,8 +3691,6 @@ class Aplicacion():
     def _fontchooser(self):
         from Preferencias import SelectFont
         ventanafont = SelectFont(None, "Ventana", app, application=self)
-
-        #ventanafont.grab_set()
     
     def mainloop(self):
         self.root.mainloop()

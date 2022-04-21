@@ -124,8 +124,14 @@ class SelectFont(tk.Toplevel):
         list_family = font.families()
         list_family = list(list_family)
         list_family.sort()
+        result = []
         for f in list_family:
-            self.list_familia.insert(tk.END, f)
+            if f not in result:
+                result.append(f)
+        
+        for fuente in result:
+            self.list_familia.insert(tk.END, fuente)
+        print(result)
         
         self.list_familia.pack(
             expand=0, 
@@ -201,7 +207,7 @@ class SelectFont(tk.Toplevel):
             highlightthickness=2,
         )
 
-        self.fr2 =  ttk.Frame(
+        self.fr2 = ttk.Frame(
             self,
             #height=210
         )
