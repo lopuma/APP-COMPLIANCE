@@ -24,6 +24,7 @@ class Ventana(ttk.Frame):
         self.path_ventanas = mypath+path
         self.tt_vtn = name_vtn
         self.vtn_ventanas = tk.Toplevel(self)
+        self.vtn_ventanas.bind('<Motion>', self.app.act_botones)
         self.vtn_ventanas.config(
             background=fondo_app
         )
@@ -91,7 +92,7 @@ class Ventana(ttk.Frame):
         self.cerrar_icon = ImageTk.PhotoImage(
                     Image.open(path_icon+r"reduce.png").resize((25, 25)))
         self.copiar_icon = ImageTk.PhotoImage(
-                    Image.open(path_icon+r"copiarALL_evd.png").resize((20, 20)))
+                    Image.open(path_icon+r"copiarALL.png").resize((20, 20)))
         self.limpiar_icon = ImageTk.PhotoImage(
                     Image.open(path_icon+r"limpiar.png").resize((25, 25)))
     

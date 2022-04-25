@@ -1,16 +1,14 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) Muhammet Emin TURGUT 2020
 # For license see LICENSE
-from posixpath import commonpath
+
 import tkinter as tk
-import tkinter.font as tkFont
 from tkinter import font
 import os
 import time
 from tkinter import ttk
 from threading import Thread
 from PIL import Image, ImageTk
-from numpy import size
 from Compliance import _Font_Texto, fg_submenu, acbg_menu, bg_menu, acfg_menu, bg_submenu,fondo_app, _Font_pestañas 
 release = True
 path = os.path.expanduser("~/")
@@ -18,11 +16,12 @@ path_icon = path+"Compliance/image/"
 count = 0
 color_btn_tab = '#297F87'
 color_out_bg_pestaña = '#FDD2BF'
-color_sel_bg_pestaña = '#B61919'
-color_act_bg_pestaña = '#FF6B6B'
+#color_sel_bg_pestaña = '#B61919'
+color_sel_bg_pestaña = fondo_app
+color_act_bg_pestaña = '#B61919'
 color_out_fg_pestaña = '#012443'
-color_sel_fg_pestaña = '#ffffff'
-color_act_fg_pestaña = '#012443'
+color_sel_fg_pestaña = '#012443'
+color_act_fg_pestaña = 'white'
 class ScrollableNotebook(ttk.Frame):
     _initialized = False
     def __init__(self,parent,wheelscroll=False,tabmenu=False, application=None,*args,**kwargs):
@@ -40,33 +39,35 @@ class ScrollableNotebook(ttk.Frame):
         self.notebookContent.pack(fill="both", expand=True)
         self.notebookTab = ttk.Notebook(self,**kwargs)
         self.notebookTab.bind("<<NotebookTabChanged>>",lambda e:self._tabChanger(e))
-        if wheelscroll==True: 
-            self.notebookTab.bind("<MouseWheel>", self._wheelscroll)
-            self.notebookTab.bind("<Button-4>", self._wheelscroll)
-            self.notebookTab.bind("<Button-5>", self._wheelscroll)
+        # if wheelscroll==True: 
+        #     self.notebookTab.bind("<MouseWheel>", self._wheelscroll)
+        #     self.notebookTab.bind("<Button-4>", self._wheelscroll)
+        #     self.notebookTab.bind("<Button-5>", self._wheelscroll)
         slideFrame = ttk.Frame(self)
         slideFrame.config(
             border=0,
             borderwidth=0,
-            padding=2
         )
-        
         slideFrame.place(x=0, y=0, anchor='ne', relx=1.0)
         
         self.menuSpace=30
         if tabmenu==True:
             self.menuSpace=50
 
-            self.bottomTab = tk.Label(slideFrame, 
+            self.bottomTab = tk.Button(slideFrame, 
                                 text="  \u2630  ",
-                                background=fondo_app,
+                                background=color_out_bg_pestaña,
                                 foreground=color_btn_tab,
-                                justify='center',
-                                anchor='center',
-                                font = font.Font(family='Helvetica', size=17, weight='bold')
+                                activebackground=color_act_bg_pestaña,
+                                activeforeground=color_act_fg_pestaña,
+                                border=0,
+                                borderwidth=0,
+                                #justify='center',
+                                #anchor='center',
+                                font = font.Font(family=_Font_Texto, size=17, weight='bold')
                                 )
             self.bottomTab.bind("<1>",self._bottomMenu)
-            self.bottomTab.pack(side=tk.RIGHT, pady=5, padx=5)
+            self.bottomTab.pack(expand=1, fill=tk.BOTH ,side=tk.RIGHT)
 
         self.bottomTab_novo = tk.Label(slideFrame, 
                                 image=self.novo,
@@ -100,7 +101,6 @@ class ScrollableNotebook(ttk.Frame):
                                 anchor='center',
                                 font = font.Font(family='Helvetica', size=15, weight='bold')
                                 )
-        #rightArrow.bind("<1>",self._rightSlide)
         self.rightArrow.bind("<Button-1>",lambda e: Thread(target=self._rightSlide, daemon=True).start())
         self.rightArrow.bind("<ButtonRelease-1>", self._release_callback)
         self.rightArrow.pack(side=tk.RIGHT, pady=5)
@@ -139,13 +139,12 @@ class ScrollableNotebook(ttk.Frame):
         self._active = None
     
     def _initialize(self):
-        #from Compliance import _Font_pestañas, bg_submenu, bg_menu
         self.style = ttk.Style()
         self.images = (
         tk.PhotoImage("img1", data='''
             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
         ''' ),
-            tk.PhotoImage("img3", data="""
+        tk.PhotoImage("img3", data="""
             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
         """)
         )
@@ -153,18 +152,18 @@ class ScrollableNotebook(ttk.Frame):
                             #("active", "pressed", "!disabled", "img2"), 
                             ("active", "!disabled", "img3"), border=15, sticky=''
         )
-        self.style.layout("ScrollableNotebook", [("ScrollableNotebook.client", {"sticky": "nswe"})])
+        self.style.layout("ScrollableNotebook", [("ScrollableNotebook.client", {"sticky": "nsew"})])
         self.style.layout("ScrollableNotebook.Tab", [
             ("ScrollableNotebook.tab", {
-                "sticky": "nswe", 
+                "sticky": "", 
                 "children": [
                     ("ScrollableNotebook.padding", {
                         "side": "top", 
-                        "sticky": "nswe",
+                        "sticky": "",
                         "children": [
                             ("ScrollableNotebook.focus", {
                                 "side": "top", 
-                                "sticky": "nswe",
+                                "sticky": "",
                                 "children": [
                                     ("ScrollableNotebook.label", {"side": "left", "sticky": 'nsew'}),
                                     ("ScrollableNotebook.tab_btn_close", {"side": "left", "sticky": 'nsew'}),
@@ -175,43 +174,34 @@ class ScrollableNotebook(ttk.Frame):
                 ]
             })
         ])
+        #? color fondo pestañas
         self.style.configure('ScrollableNotebook',
                             background=bg_menu,
-                            borderwith=2,
-                            highlightcolor='red'
         )
+
         self.style.configure("ScrollableNotebook.Tab",
             background=color_out_bg_pestaña,
             foreground=color_out_fg_pestaña,
-            padding=[2, 2],
-            anchor="center",
+            padding=[10, 2],
+            anchor="w",
             justify="center",
             font=_Font_pestañas
         )         
-        self.style.map('ScrollableNotebook.Tab', background = [("selected", color_sel_bg_pestaña),
-                                                    ("active", color_act_bg_pestaña)],
-                                        foreground = [("selected", color_sel_fg_pestaña),
-                                                    ("active", color_act_fg_pestaña)]
-                                                    )
+        self.style.map('ScrollableNotebook.Tab', 
+            background = [
+                            ("selected", color_sel_bg_pestaña),
+                            ("active", color_act_bg_pestaña)
+                        ],
+            foreground = [
+                            ("selected", color_sel_fg_pestaña),
+                            ("active", color_act_fg_pestaña)
+                        ]
+        )
     
     def _wheelscroll(self, event):
-        # if event.delta > 0:
-        #     Thread(target=self._leftSlide, daemon=True).start()
-        # else:
-        #     Thread(target=self._rightSlide, daemon=True).start()
-        global count
-        # # respond to Linux or Windows wheel event
-        # if event.num == 5 or event.delta == -120:
-        #     count -= 1
-        #     Thread(target=self._leftSlide, daemon=True).start()
-        #     #self._rightSlide()
-        # if event.num == 4 or event.delta == 120:
-        #     count += 1
-        #     Thread(target=self._rightSlide, daemon=True).start()
-        #     #self._leftSlide()
+        pass
 
     def _bottomMenu(self,event):
-        #from Compliance import _Font_Texto, bg_submenu, fg_submenu, fg_menu, acfg_menu, acbg_menu
         tabListMenu = tk.Menu(self, tearoff = 0)
         for tab in self.notebookTab.tabs():
             tabListMenu.add_command(label=self.notebookTab.tab(tab, option="text"),
@@ -232,7 +222,6 @@ class ScrollableNotebook(ttk.Frame):
             pass
 
     def _bottomMenu_novo(self,event):
-        #from Compliance import _Font_Texto, fg_submenu, acbg_menu, bg_submenu, bg_menu, acfg_menu
         self.tabListMenu = tk.Menu(self, tearoff = 0)
         self.tabListMenu.add_command(
             label="  Desviaciones", 
@@ -276,7 +265,6 @@ class ScrollableNotebook(ttk.Frame):
         except: pass
 
     def _rightSlide(self):
-        #from Compliance import bg_menu
         global release
         release = False
         self.rightArrow.configure(foreground=bg_menu)
@@ -290,7 +278,6 @@ class ScrollableNotebook(ttk.Frame):
                     self._release_callback(e=None)
     
     def _leftSlide(self):
-        #from Compliance import bg_menu
         global release
         release = False
         self.leftArrow.configure(foreground=bg_menu)
@@ -317,11 +304,9 @@ class ScrollableNotebook(ttk.Frame):
         self.notebookTab.select(id_tab)
 
     def forget(self,tab_id):
-        #self.notebookContent.forget(self.__ContentTabID(tab_id))
         self.notebookTab.forget(tab_id)
 
     def hide(self,tab_id):
-        #self.notebookContent.hide(self.__ContentTabID(tab_id))
         self.notebookTab.hide(tab_id)
 
     def identify(self,x, y):
@@ -329,13 +314,11 @@ class ScrollableNotebook(ttk.Frame):
 
     def index(self,tab_id):
         return self.notebookTab.index(tab_id)
-        #return self.notebookTab.index(self.notebookTab.select('current'))
 
     def __ContentTabID(self,tab_id):
         return self.notebookContent.tabs()[self.notebookTab.tabs().index(tab_id)]
 
     def insert(self,pos,frame, **kwargs):
-        #self.notebookContent.insert(pos,frame, **kwargs)
         self.notebookTab.insert(pos,frame,**kwargs)
 
     def select(self,tab_id):

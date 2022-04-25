@@ -345,6 +345,8 @@ class BtnScripts(tk.Button):
         BtnScripts.configure(self,
             background=cl_btn_bg,
             foreground=cl_btn_fg,
+            justify=tk.RIGHT,
+            anchor='w',
             font=_Font_Boton,
             relief='ridge',
             activeforeground=cl_btn_actbg,
@@ -488,7 +490,7 @@ class Automatizar(ttk.Frame):
                 self.buttons_clientes = BtnScripts(
                     self.lb_frame_menu,
                     text=clt,
-                    compound='left',                    
+                    compound='left',
                     image=self.goclient_ico,
                 )
                 
