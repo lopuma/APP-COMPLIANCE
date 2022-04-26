@@ -27,7 +27,7 @@ color_bd_fr = '#383838'
 colour_fr_pie = '#C65D7B'
 colour_fr_tittle = '#F68989'
 cl_btn_actbg = '#8FBDD3'
-cl_btn_actfg = '#125B50'
+cl_btn_actfg = '#FE7E6D'
 cl_btn_bg = '#F4FCD9'
 cl_btn_fg = '#534340'
 # ? -------------------------------------------------------------
