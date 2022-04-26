@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import json
 import os
+from textwrap import fill
 import time
 import functools
 import subprocess, sys
@@ -16,6 +17,7 @@ from tkinter.ttk import Style
 from threading import Thread
 from ScrollableNotebook  import *
 from configparser import ConfigParser
+from RadioBotton import RadioButton, RadioButton_venta
 #-----------------------------------------------------------#
 
 
@@ -65,7 +67,9 @@ bak = ""
 edi = ""
 res = ""
 evd = ""
-
+act_rbtn_auto = False
+act_rbtn_desv = False
+act_rbtn_ext = False
 #* Configuracion de APARIENCIA INICIAL
 parse = ConfigParser()
 parse.read(path_config_ini.format("apariencia.ini"))
@@ -81,6 +85,7 @@ color_bg_boton = parse.get('boton', 'background')
 color_fg_boton = parse.get('boton', 'foreground')
 color_acbg_boton = parse.get('boton', 'activebackground')
 color_acfg_boton = parse.get('boton', 'activeforeground')
+color_outline = parse.get('boton', 'outline')
 
 oddrow = parse.get('treeview', 'oddrow')
 evenrow = parse.get('treeview', 'evenrow')
@@ -91,18 +96,19 @@ fondo_app = parse.get('app', 'fondo')
 #COLOR TEXT
 color_titulos = parse.get('app', 'titulo')
 color_txt_entry = parse.get('app', 'colour_text')
-sel_bg_txt = parse.get('app', 'select_bg_text')
-sel_fg_txt = parse.get('app', 'select_fg_text')
+sel_bg_txt = acbg_menu
+sel_fg_txt = acfg_menu
+#sel_fg_txt = parse.get('app', 'select_fg_text')
 active_color = parse.get('app', 'colour_wd_activo')
 color_fg_list =  color_txt_entry
 
 bg_panel_buscar = '#A2D5AB'
 acbg_panel_buscar = '#39AEA9'
 
-#fuente_titulos = parse.get('app', 'fuente_titulo')
-fuente_titulos = 'Helvetica'
-#tamñ_titulo = parse.get('app', 'tamano_titulo')
-tamñ_titulo = 14
+fuente_titulos = parse.get('app', 'fuente_titulo')
+#fuente_titulos = 'Source Sans Pro'
+tamñ_titulo = parse.get('app', 'tamano_titulo')
+#tamñ_titulo = 14
 weight_titulo = 'bold'
 fuente_texto = parse.get('app', 'fuente_texto')
 tamñ_texto = parse.get('app', 'tamano_texto')
@@ -117,12 +123,10 @@ tamñ_pestaña = parse.get('pestana', 'tamano_pestana')
 fuente_pestañas = parse.get('pestana', 'fuente_pestana')
 
 _Font_Menu = (fuente_menu, tamñ_menu)
-_Font_Menu_bold = (fuente_menu, tamñ_menu, font.BOLD)
+_Font_Menu_bold = (fuente_menu, tamñ_menu)
 _Font_Texto = (fuente_texto, tamñ_texto)
 _Font_Boton = (fuente_boton, tamñ_boton, font.BOLD)
-#_Font_Titulo_bold = ""
-#_Font_Titulo_bold = (fuente_titulos, tamñ_titulo, weight_titulo)
-_Font_pestañas = (fuente_pestañas, tamñ_pestaña, font.BOLD)
+_Font_pestañas = (fuente_pestañas, tamñ_pestaña)
 _Font_txt_exp = (fuente_texto, tamñ_texto_exp)
 _Font_text_exp_bold = (fuente_titulos, tamñ_texto_exp, font.BOLD)
 
@@ -161,14 +165,14 @@ class Expandir(ttk.Frame):
         self.varNum = varNum
         self.vtn_expandir = tk.Toplevel(self)
         self.vtn_expandir.config(background=fondo_app)
-        window_width=1170
+        window_width=1010
         window_height=650
         screen_width = app.root.winfo_x()
         screen_height= app.root.winfo_y()
         position_top = int(screen_height+70)
         position_right = int(screen_width+150)
         self.vtn_expandir.geometry(f'{window_width}x{window_height}+{position_right}+{position_top}')
-        self.vtn_expandir.tk.call('wm', 'iconphoto', self.vtn_expandir._w, tk.PhotoImage(file=path_icon+r'expandir1.png'))       
+        #self.vtn_expandir.tk.call('wm', 'iconphoto', self.vtn_expandir._w, tk.PhotoImage(file=path_icon+r'expandir1.png'))       
         self.vtn_expandir.transient(self.parent)
         self.vtn_expandir.title("DESVIACIONES : {} - {}".format(self.customer,self.so))
         self.vtn_expandir.columnconfigure(0, weight=1)
@@ -239,7 +243,7 @@ class Expandir(ttk.Frame):
             self.menu_Contextual.entryconfig("  Copiar", state="normal")
         else:
             self.menu_Contextual.entryconfig("  Copiar", state="disabled")
-    ## ----------------------------------------------- ##
+
     def copiarALL(self, event):
         event.focus()
         if event:
@@ -506,9 +510,9 @@ class Expandir(ttk.Frame):
             self.vtn_expandir, 
             text=self.titulo,
             foreground=color_titulos,
-            font=_Font_text_exp_bold,
+            font=app._Font_Titulo_bold,
         )
-        self.EXP_lblWidget.grid(row=0, column=0, padx=5, pady=5,sticky='w')
+        self.EXP_lblWidget.grid(row=0, column=0, padx=5, pady=10,sticky='w')
         self.EXP_srcExpandir = st.ScrolledText(
             self.vtn_expandir,
         )
@@ -661,7 +665,7 @@ class Expandir(ttk.Frame):
                 self.EXP_srcExpandir.tag_config(
                 'found1', 
                 foreground='dodgerblue',
-                font=_Font_text_exp_bold
+                font = font.Font(family=_Font_Texto, size=20, weight='bold')
                 )
 
 class TextSimilar(ttk.Frame):
@@ -696,9 +700,9 @@ class TextSimilar(ttk.Frame):
         self.titulo = ttk.Label(
             self.frame1,
             text=self.titulo,
-            font=self._Font_Titulo_bold,
+            font=app._Font_Titulo_bold,
         )
-        self.titulo.pack()
+        self.titulo.pack(pady=10)
 
 ## --- FRAME LISTBOX
         self.frame2 = ttk.Frame(
@@ -1184,7 +1188,7 @@ class Desviacion(ttk.Frame):
             background=bg_submenu, foreground=fg_submenu,
             activebackground=acbg_menu,activeforeground=acfg_menu,
             font=_Font_Menu,
-            command=lambda e=self.DESVfr1_entModulo:self.pegar_texto_seleccionado(e),
+            #command=lambda e=self.DESVfr1_entModulo:self.pegar_texto_seleccionado(e),
         )
         
         self.menu_Contextual.add_separator(background=bg_submenu)
@@ -1253,13 +1257,13 @@ class Desviacion(ttk.Frame):
         scr_Event.tag_add("sel","1.0","end")
         return 'break'
 
-    def pegar_texto_seleccionado(self, event):
-        entModulo_event = event
-        if entModulo_event.select_present():
-            self.var_entry_bsc.set("")
-            self.DESVfr1_btnLimpiar.grid_forget()
-            self.DESVfr1_btnBuscar.grid(row=1, column=1, pady=5, padx=5, sticky='nsw')
-        entModulo_event.event_generate("<<Paste>>")
+    # def pegar_texto_seleccionado(self, event):
+    #     entModulo_event = event
+    #     if entModulo_event.select_present():
+    #         self.var_entry_bsc.set("")
+    #         self.DESVfr1_btnLimpiar.grid_forget()
+    #         self.DESVfr1_btnBuscar.grid(row=1, column=1, pady=5, padx=5, sticky='nsw')
+    #     entModulo_event.event_generate("<<Paste>>")
     
     def copiar_texto_seleccionado(self):
         global txtWidget_focus
@@ -1474,7 +1478,7 @@ class Desviacion(ttk.Frame):
             PST_DESV.DESV_btnCommand.grid_forget()
             PST_DESV.DESV_btnIdrsa.grid_forget()
             PST_DESV.DESV_btnRecortar.grid_forget()
-            PST_DESV.DESV_btnDirectory.grid(row=2, column=1, padx=5, pady=5, sticky='ne')
+            PST_DESV.DESV_btnDirectory.grid(row=2, column=1, padx=5)
 # --- AUTHORIZED
         elif str(modulo_selecionado) == "Password Requirements/Private Key File Restriction" or str(modulo_selecionado) == "Identify and Authenticate Users/Public Key Authentication" or str(modulo_selecionado) == "AV.1.1.6 Password Requirements" or str(modulo_selecionado) == "Identify and Authenticate Users/Public Key Label" or str(modulo_selecionado) == "AV.1.1.7 Password Requirements":
             self._btnDir = False
@@ -1489,7 +1493,7 @@ class Desviacion(ttk.Frame):
             PST_DESV.DESV_btnCommand.grid_forget()
             PST_DESV.DESV_btnIdrsa.grid_forget()
             PST_DESV.DESV_btnRecortar.grid_forget()
-            PST_DESV.DESV_btnAuthorized.grid(row=2, column=1, padx=5, pady=5, sticky='ne')    
+            PST_DESV.DESV_btnAuthorized.grid(row=2, column=1, padx=5)    
 # --- SERVICE
         elif str(modulo_selecionado) == "Network Settings/Ensure LDAP Server is not enabled" or str(modulo_selecionado) == "Network Settings/NFS root restrictions" or str(modulo_selecionado) == "E.1.5.22.3 Network Settings" or str(modulo_selecionado) == "Password Requirements/SSH PermitRootLogin Restriction" or str(modulo_selecionado) == "Network Settings/Prohibited Processes" or str(modulo_selecionado) == "Identify and Authenticate Users/PermitRootLogin Restriction" or str(modulo_selecionado) == "Network Settings/Disable NFS server":
             self._btnDir = False
@@ -1504,7 +1508,7 @@ class Desviacion(ttk.Frame):
             PST_DESV.DESV_btnCommand.grid_forget()
             PST_DESV.DESV_btnIdrsa.grid_forget()
             PST_DESV.DESV_btnRecortar.grid_forget()
-            PST_DESV.DESV_btnService.grid(row=2, column=1, padx=5, pady=5, sticky='ne')    
+            PST_DESV.DESV_btnService.grid(row=2, column=1, padx=5)    
 # --- ACCOUNT
         elif str(modulo_selecionado) == "Password Requirements/Password MAX Age /etc/shadow" or str(modulo_selecionado) == "Password Requirements/Password MAX Age /etc/shadow - Linux" or str(modulo_selecionado) == "Password Requirements/Password MAX Age /etc/shadow - Aix" or str(modulo_selecionado) == "Password Requirements/Password MAX Age" or str(modulo_selecionado) == "AD.1.1.1.2 Password Requirements":
             self._btnDir = False
@@ -1519,8 +1523,8 @@ class Desviacion(ttk.Frame):
             PST_DESV.DESV_btnService.grid_forget()
             PST_DESV.DESV_btnCommand.grid_forget()
             PST_DESV.DESV_btnIdrsa.grid_forget()
-            PST_DESV.DESV_btnAccount.grid(row=2, column=1, padx=5, pady=5, sticky='ne')  
-            PST_DESV.DESV_btnRecortar.grid(row=2, column=2, padx=5, pady=5, sticky='ne')  
+            PST_DESV.DESV_btnAccount.grid(row=2, column=1, padx=5)  
+            PST_DESV.DESV_btnRecortar.grid(row=2, column=2, padx=5, pady=15, sticky='ne')  
 # --- COMMAND
         elif str(modulo_selecionado) == "protecting Resources-OSRs/SUDO Command WW Permissions":
             self._btnDir = False
@@ -1535,7 +1539,7 @@ class Desviacion(ttk.Frame):
             PST_DESV.DESV_btnAccount.grid_forget()
             PST_DESV.DESV_btnIdrsa.grid_forget()
             PST_DESV.DESV_btnRecortar.grid_forget()
-            PST_DESV.DESV_btnCommand.grid(row=2, column=1, padx=5, pady=5, sticky='ne')
+            PST_DESV.DESV_btnCommand.grid(row=2, column=1, padx=5)
 # --- ID RSA
         elif str(modulo_selecionado) == "Password Requirements/NULL Passphrase" or str(modulo_selecionado) == "Password Requirements/Private Key Passphrase":
             self._btnDir = False
@@ -1550,7 +1554,7 @@ class Desviacion(ttk.Frame):
             PST_DESV.DESV_btnAccount.grid_forget()
             PST_DESV.DESV_btnCommand.grid_forget()
             PST_DESV.DESV_btnRecortar.grid_forget()
-            PST_DESV.DESV_btnIdrsa.grid(row=2, column=1, padx=5, pady=5, sticky='ne')
+            PST_DESV.DESV_btnIdrsa.grid(row=2, column=1, padx=5)
 # --- MINAGE
         elif str(modulo_selecionado) == "Password Requirements/Password MIN Age Shadow":
             self._btnDir = False
@@ -1565,7 +1569,7 @@ class Desviacion(ttk.Frame):
             PST_DESV.DESV_btnAccount.grid_forget()
             PST_DESV.DESV_btnCommand.grid_forget()
             PST_DESV.DESV_btnIdrsa.grid_forget()
-            PST_DESV.DESV_btnRecortar.grid(row=2, column=2, padx=5, pady=5, sticky='ne')  
+            PST_DESV.DESV_btnRecortar.grid(row=2, column=2, padx=5, pady=15, sticky='ne')  
 # --- DISABLED ALL
         else:
             self._disabled_buttons() 
@@ -1586,7 +1590,7 @@ class Desviacion(ttk.Frame):
             PST_DESV.DESV_btnCommand.grid_forget() 
             PST_DESV.DESV_btnIdrsa.grid_forget()
             PST_DESV.DESV_btnRecortar.grid_forget()
-            PST_DESV.DESV_btnDirectory.grid(row=2, column=1, padx=5, pady=5, sticky='ne')
+            PST_DESV.DESV_btnDirectory.grid(row=2, column=1, padx=5)
 # --- COMMAND
         elif clave_Buscado == "COMMAND":
             self._btnDir = False
@@ -1601,7 +1605,7 @@ class Desviacion(ttk.Frame):
             PST_DESV.DESV_btnDirectory.grid_forget()
             PST_DESV.DESV_btnIdrsa.grid_forget()
             PST_DESV.DESV_btnRecortar.grid_forget()
-            PST_DESV.DESV_btnCommand.grid(row=2, column=1, padx=5, pady=5, sticky='ne')
+            PST_DESV.DESV_btnCommand.grid(row=2, column=1, padx=5)
 # --- ID RSA
         elif clave_Buscado == "IDRSA" or clave_Buscado == "NOT PASSPHRASE":
             self._btnDir = False
@@ -1616,7 +1620,7 @@ class Desviacion(ttk.Frame):
             PST_DESV.DESV_btnAccount.grid_forget()
             PST_DESV.DESV_btnDirectory.grid_forget()
             PST_DESV.DESV_btnRecortar.grid_forget()
-            PST_DESV.DESV_btnIdrsa.grid(row=2, column=1, padx=5, pady=5, sticky='ne')
+            PST_DESV.DESV_btnIdrsa.grid(row=2, column=1, padx=5)
 # --- SERVICE
         elif clave_Buscado == "PERMITROOTLOGIN" or clave_Buscado == "LDAP" or clave_Buscado == "PROCESSES" or clave_Buscado == "NFS":
             self._btnDir = False
@@ -1631,7 +1635,7 @@ class Desviacion(ttk.Frame):
             PST_DESV.DESV_btnAccount.grid_forget()
             PST_DESV.DESV_btnDirectory.grid_forget()
             PST_DESV.DESV_btnRecortar.grid_forget()
-            PST_DESV.DESV_btnService.grid(row=2, column=1, padx=5, pady=5, sticky='ne')
+            PST_DESV.DESV_btnService.grid(row=2, column=1, padx=5)
 # --- AUTHORIZED
         elif clave_Buscado == "AUTHORIZED_KEY" or clave_Buscado == "PUBLICKEY" or clave_Buscado == "LABEL":
             self._btnDir = False
@@ -1646,7 +1650,7 @@ class Desviacion(ttk.Frame):
             PST_DESV.DESV_btnCommand.grid_forget()
             PST_DESV.DESV_btnIdrsa.grid_forget()
             PST_DESV.DESV_btnRecortar.grid_forget()
-            PST_DESV.DESV_btnAuthorized.grid(row=2, column=1, padx=5, pady=5, sticky='ne')    
+            PST_DESV.DESV_btnAuthorized.grid(row=2, column=1, padx=5)    
 # --- MAXAGE
         elif clave_Buscado == "MAXAGE":
             self._btnDir = False
@@ -1660,8 +1664,8 @@ class Desviacion(ttk.Frame):
             PST_DESV.DESV_btnService.grid_forget()
             PST_DESV.DESV_btnCommand.grid_forget()
             PST_DESV.DESV_btnIdrsa.grid_forget()
-            PST_DESV.DESV_btnAccount.grid(row=2, column=1, padx=5, pady=5, sticky='ne')  
-            PST_DESV.DESV_btnRecortar.grid(row=2, column=2, padx=5, pady=5, sticky='ne')
+            PST_DESV.DESV_btnAccount.grid(row=2, column=1, padx=5)  
+            PST_DESV.DESV_btnRecortar.grid(row=2, column=2, padx=5, pady=15, sticky='ne')
 # --- MINAGE
         elif clave_Buscado == "MINAGE":
             self._btnDir = False
@@ -1676,7 +1680,7 @@ class Desviacion(ttk.Frame):
             PST_DESV.DESV_btnCommand.grid_forget()
             PST_DESV.DESV_btnIdrsa.grid_forget()
             PST_DESV.DESV_btnAccount.grid_forget() 
-            self.DESV_btnRecortar.grid(row=2, column=2, padx=5, pady=5, sticky='ne')  
+            self.DESV_btnRecortar.grid(row=2, column=2, padx=5, pady=15, sticky='ne')  
 # --- DISABLED ALL
         else:
             self._disabled_buttons()   
@@ -2037,7 +2041,7 @@ class Desviacion(ttk.Frame):
         self.DESV_btnScreamEvidencia.config(state='normal')
         self.DESV_btnCopyALL.config(state='normal')
         self.DESV_btn1CopyALL.config(state='normal')
-        self.DESV_btnDirectory.config(state='normal')
+        #self.DESV_btnDirectory.config(state='normal')
 
     def cargar_Modulos(self, clt_modulo=None, *args):
         global asigne_Cliente
@@ -2265,6 +2269,8 @@ class Desviacion(ttk.Frame):
             command=self.cargar_Modulos,
         )
         self.DESVfr1_optMn.config(
+            justify=tk.CENTER,
+            anchor=tk.CENTER,
             background = bg_menu,
             foreground = fg_menu,
             font=app._Font_Titulo_bold,
@@ -2274,6 +2280,7 @@ class Desviacion(ttk.Frame):
             borderwidth=2,
             width=20
         )
+        
         self.DESVfr1_optMn["menu"].config(
             background=bg_submenu,
             activebackground=acbg_menu,
@@ -2281,7 +2288,9 @@ class Desviacion(ttk.Frame):
             foreground=fg_submenu,
             font=_Font_Texto,
         )
+
         self.DESVfr1_optMn.grid(row=0, column=0, padx=5, pady=5, sticky='new', columnspan=2)
+
 # -----------------------------------------------------------------------------#
 ##TODO --- ENTRY DE BUSQUEDA
         self.var_entry_bsc = tk.StringVar(self)
@@ -2360,30 +2369,65 @@ class Desviacion(ttk.Frame):
         ) 
         self.DESVfr2_lblComprobacion.grid(row=2, column=0, padx=5, pady=5, sticky='w' )
         
-        self.DESV_btnDirectory = ttk.Button(
+        self.DESV_frame2.bind('<Motion>', app.act_botones)
+        
+        self.DESV_btnDirectory = RadioButton_venta(
             self.DESV_frame2,
-            text='Permissions',
+        )
+        self._btnDir_ = ttk.Button(
+            self.DESV_btnDirectory,
+            text='  Permissions',
             compound=tk.LEFT,
             image=self.Expandir_icon,
-            state='disabled',
+            style='APP.TButton',
             command=self.abrir_DIRECTORY,
         )
-        self.DESV_btnService = ttk.Button(
+        self._btnDir_.place(
+                x=10, 
+                y=12,
+                height=30,
+                width=137
+                )
+        self._btnDir_.bind('<Motion>', app.active_RB_Btn)
+
+        self.DESV_btnService = RadioButton_venta(
             self.DESV_frame2,
-            text='Service',
+        )
+        self._btnSer_ = ttk.Button(
+            self.DESV_btnService,
+            text='  Service',
             compound=tk.LEFT,
             image=self.Expandir_icon,
-            state='enabled',
+            style='APP.TButton',
             command=self.abrir_SERVICE,
         )
-        self.DESV_btnAuthorized = ttk.Button(
+        self._btnSer_.place(
+                x=10, 
+                y=12,
+                height=30,
+                width=137
+                )
+        self._btnSer_.bind('<Motion>', app.active_RB_Btn)
+        
+        self.DESV_btnAuthorized = RadioButton_venta(
             self.DESV_frame2,
-            text='Authorized',
+        )
+        self._btnAuth_ = ttk.Button(
+            self.DESV_btnAuthorized,
+            text='  Authorized',
             compound=tk.LEFT,
             image=self.Expandir_icon,
-            state='enabled',
+            style='APP.TButton',
             command=self.abrir_AUTHORIZED,
         )
+        self._btnAuth_.place(
+                x=10, 
+                y=12,
+                height=30,
+                width=137
+                )
+        self._btnAuth_.bind('<Motion>', app.active_RB_Btn)
+                
         self.DESV_btnRecortar = ttk.Button(
             self.DESV_frame2,
             text='Recortar',
@@ -2391,33 +2435,64 @@ class Desviacion(ttk.Frame):
             state='enabled',
             command=self.RecortarMinMax,
         )
-        self.DESV_btnAccount = ttk.Button(
+        
+        self.DESV_btnAccount = RadioButton_venta(
             self.DESV_frame2,
-            text='Account',
+        )
+        self._btnAcc_ = ttk.Button(
+            self.DESV_btnAccount,
+            text='  Account',
             compound=tk.LEFT,
             image=self.Expandir_icon,
-            state='enabled',
+            style='APP.TButton',
             command=self.abrir_ACCOUNT,
         )
+        self._btnAcc_.place(
+                x=10, 
+                y=12,
+                height=30,
+                width=137
+                )
+        self._btnAcc_.bind('<Motion>', app.active_RB_Btn)
 
-        self.DESV_btnCommand = ttk.Button(
+        self.DESV_btnCommand = RadioButton_venta(
             self.DESV_frame2,
+        )
+        self._btnComm_ = ttk.Button(
+            self.DESV_btnCommand,
             text='Command',
             compound=tk.LEFT,
             image=self.Expandir_icon,
-            state='enabled',
+            style='APP.TButton',
             command=self.abrir_COMMAND,
         )
+        self._btnComm_.place(
+                x=10, 
+                y=12,
+                height=30,
+                width=137
+                )
+        self._btnComm_.bind('<Motion>', app.active_RB_Btn)
 
-        self.DESV_btnIdrsa = ttk.Button(
+        self.DESV_btnIdrsa = RadioButton_venta(
             self.DESV_frame2,
+        )
+        self._btnIdr_ = ttk.Button(
+            self.DESV_btnIdrsa,
             text='Id_Rsa',
             compound=tk.LEFT,
             image=self.Expandir_icon,
-            state='enabled',
+            style='APP.TButton',
             command=self.abrir_IDRSA,
         )
-        
+        self._btnIdr_.place(
+                x=10, 
+                y=12,
+                height=30,
+                width=137
+                )
+        self._btnIdr_.bind('<Motion>', app.active_RB_Btn)
+
         self.DESVfr2_srcComprobacion = st.ScrolledText(self.DESV_frame2)
         self.DESVfr2_srcComprobacion.config(
             font=_Font_Texto,
@@ -2431,7 +2506,6 @@ class Desviacion(ttk.Frame):
             state='disabled',
         )
         self.DESVfr2_srcComprobacion.grid(row=3, column=0, padx=5, pady=5, sticky='new', columnspan=5)
-        self.varComprobacion = "COMPROBACION"
         
         self.DESV_btnRiskImpact = ttk.Button(
             self.DESV_frame2,
@@ -2439,15 +2513,16 @@ class Desviacion(ttk.Frame):
             state='disabled',
             command=self.Risk_Impact,
         )
-        self.DESV_btnRiskImpact.grid(row=2, column=3, padx=(5,10), pady=5, sticky='ne')
+        self.DESV_btnRiskImpact.grid(row=2, column=3, padx=(5,10), pady=15, sticky='ne')
 
+        self.varComprobacion = "COMPROBACION"
         self.DESV_btn1Expandir = ttk.Button(
             self.DESV_frame2,
             image=self.Expandir_icon,
             state='disabled',
             command=lambda x=self.DESVfr2_srcComprobacion:self.expandir(x, self.varComprobacion),
         )
-        self.DESV_btn1Expandir.grid(row=2, column=4, padx=(5,20), pady=5, sticky='ne')
+        self.DESV_btn1Expandir.grid(row=2, column=4, padx=(5,20), pady=15, sticky='ne')
 
 
 ## --- BACKUP ----------------------------------------------------------------------------------------------------
@@ -2480,7 +2555,7 @@ class Desviacion(ttk.Frame):
             state='disabled',
             command=lambda x=self.DESVfr2_srcBackup:self.expandir(x, self.varBackup),
         )
-        self.DESV_btn2Expandir.grid(row=4, column=4, padx=(5,20), pady=5, sticky='nse', columnspan=3)
+        self.DESV_btn2Expandir.grid(row=4, column=4, padx=(5,20), pady=5, sticky='ne', columnspan=3)
 ## ======================== FRAME 3 ========================================= ##
 ## --- EDITAR
         self.DESVfr3_lblEditar = ttk.Label(
@@ -2510,7 +2585,7 @@ class Desviacion(ttk.Frame):
             state='disabled',
             command=lambda x=self.DESVfr3_srcEditar:self.expandir(x, self.varEditar),
         )
-        self.DESV_btn3Expandir.grid(row=0, column=1, padx=(5,20), pady=5, sticky='nse', columnspan=4)
+        self.DESV_btn3Expandir.grid(row=0, column=1, padx=(5,20), pady=5, sticky='ne', columnspan=4)
         ## --- REFEESCAR
         self.DESVfr3_lblRefrescar = ttk.Label(
             self.DESV_frame3, 
@@ -2661,11 +2736,9 @@ class Desviacion(ttk.Frame):
         app.cuaderno.notebookContent.tab(idOpenTab, option=None, text='DESVIACIONES : {} '.format(customer))
 
 class Aplicacion():
-    
     def __init__(self):
-        #global _Font_Titulo_bold
         self.root= tk.Tk()
-        self._Font_Titulo_bold = font.Font(family=fuente_titulos, size=tamñ_titulo)
+        self._Font_Titulo_bold = font.Font(family=fuente_titulos, size=tamñ_titulo, weight=weight_titulo)
         self.root.title("CONTINUOUS COMPLIANCE")
         window_width,window_height=1028,768
         screen_width = self.root.winfo_screenwidth()
@@ -2677,8 +2750,12 @@ class Aplicacion():
         self.root.tk.call('wm', 'iconphoto', self.root._w, tk.PhotoImage(file=path_icon+r'compliance.png'))
         self.open_client()
         self.iconos()
-        self.cuaderno = ScrollableNotebook(self.root,wheelscroll=False,tabmenu=True, application=self)
-        self.contenedor= ttk.Frame(self.cuaderno)
+        self.cuaderno = ScrollableNotebook(self.root, wheelscroll=False, tabmenu=True, application=self)
+        self.contenedor = ttk.Frame(self.cuaderno)
+        self.contenedor.config(
+            borderwidth=1, 
+            border=1,   
+        )
         self.contenedor.columnconfigure(1, weight=1)
         self.contenedor.rowconfigure(1, weight=1)
         self.cuaderno.add(self.contenedor, text='WorkSpace  ', underline=0, image=self.WorkSpace_icon, compound=tk.LEFT)
@@ -2689,6 +2766,7 @@ class Aplicacion():
         self.contenedor.bind("<Button-3>", self._display_menu_clickDerecho)
         self.root.bind_all("<Control-l>", lambda x : self.ocultar())
         self.root.focus_set()
+        self.contenedor.bind('<Motion>', self.act_botones)
         # Fuente MENU CLICK DERECHO APP
         # ----------------------------------------------------------
         self.sizegrid = ttk.Sizegrip(
@@ -2700,6 +2778,25 @@ class Aplicacion():
         self.menu_clickDerecho()
         self._menu_clickDerecho()
         self.widgets_APP()
+    
+    def act_botones(self, e):
+        global act_rbtn_auto
+        global act_rbtn_desv
+        global act_rbtn_ext
+        act_rbtn_auto = False
+        act_rbtn_desv = False
+        act_rbtn_ext = False
+        if act_rbtn_auto == False or act_rbtn_desv == False or act_rbtn_ext == False:
+            self.btn_AbrirAuto.canvas.itemconfig(1, fill=color_bg_boton, outline=color_outline)
+            self.btn_AbrirExt.canvas.itemconfig(1, fill=color_bg_boton, outline=color_outline)
+            self.btn_AbrirDesv.canvas.itemconfig(1, fill=color_bg_boton, outline=color_outline)
+        if 'desviacion' in globals():
+            desviacion.DESV_btnDirectory.canvas.itemconfig(1, fill=color_bg_boton, outline=color_outline)
+            desviacion.DESV_btnService.canvas.itemconfig(1, fill=color_bg_boton, outline=color_outline)
+            desviacion.DESV_btnAuthorized.canvas.itemconfig(1, fill=color_bg_boton, outline=color_outline)
+            desviacion.DESV_btnAccount.canvas.itemconfig(1, fill=color_bg_boton, outline=color_outline)
+            desviacion.DESV_btnCommand.canvas.itemconfig(1, fill=color_bg_boton, outline=color_outline)
+            desviacion.DESV_btnIdrsa.canvas.itemconfig(1, fill=color_bg_boton, outline=color_outline)
 
     def open_client(self):
         global list_client
@@ -2724,8 +2821,6 @@ class Aplicacion():
             Image.open(path_icon+r"salir.png").resize((30, 30)))
         self.BuscarBar_icon = ImageTk.PhotoImage(
             Image.open(path_icon+r"buscar1.png").resize((30, 30)))
-        self.CopiarBar_icon = ImageTk.PhotoImage(
-            Image.open(path_icon+r"copiarBarra.png").resize((30, 30)))
         self.PegarBar_icon = ImageTk.PhotoImage(
             Image.open(path_icon+r"pegarBarra.png").resize((30, 30)))
         self.Ayuda_icon = ImageTk.PhotoImage(
@@ -2771,18 +2866,14 @@ class Aplicacion():
             'APP.TButton',
             background = color_bg_boton,
             foreground = color_fg_boton,
-            font=(fuente_boton, 16, font.BOLD),
-            padding=20,
-            relief='sunke',
-            borderwidth=5,
+            font=(fuente_boton, 12, font.BOLD),
+            borderwidth=0,
         )
         self.style.map(
             'APP.TButton',
             background = [("active",color_acbg_boton)],
-            foreground = [("active",color_acfg_boton)],
-            padding=[("active",20),("pressed",20)],
-            relief=[("active",'ridge'),("pressed",'groove')],
-            borderwidth=[("active",5)],
+            foreground = [("active",color_fg_boton)],
+            borderwidth=[("active",0)],
         )
         
         self.style.configure('TButton',
@@ -2977,7 +3068,6 @@ class Aplicacion():
         # global automatizar
         # if automatizar in globals():
         #     automatizar.btn_lis_cli = []
-        #     print("LISTA AL cambiar ", automatizar.btn_lis_cli)
         idOpenTab = event.widget.index('current')
         tab = event.widget.tab(idOpenTab)['text']
         self.root.update()
@@ -2997,6 +3087,19 @@ class Aplicacion():
             self.cuaderno.rightArrow.configure(foreground=active_color)
 ## ---ASIGNAMOS A UNA VARIABLE CADA CLIENTE----------------------------
         if tab == 'WorkSpace  ':
+            global act_rbtn_auto
+            global act_rbtn_desv
+            global act_rbtn_ext
+            act_rbtn_auto = False
+            act_rbtn_desv = False
+            act_rbtn_ext = False
+
+            if act_rbtn_auto == False or act_rbtn_desv == False or act_rbtn_ext == False:
+                self.btn_AbrirAuto.canvas.itemconfig(1, fill=color_bg_boton, outline=color_outline)
+                self.btn_AbrirExt.canvas.itemconfig(1, fill=color_bg_boton, outline=color_outline)
+                self.btn_AbrirDesv.canvas.itemconfig(1, fill=color_bg_boton, outline=color_outline)
+
+
             asigne_Cliente = ""
             self.fileMenu.entryconfig('  Clientes', state='disabled')
             self.menu_Contextual.entryconfig('  Buscar', state='disabled')
@@ -3130,21 +3233,27 @@ class Aplicacion():
     def cerrar_vtn(self):
         self.vtn_acerca_de.destroy()
 
+    def cerrar_vtn_gls(self):
+        self.vtn_glosario.destroy()
+    
     def _acerca_de(self):
         self.vtn_acerca_de = tk.Toplevel(self.root)
         self.vtn_acerca_de.config(background=fondo_app)
-        window_width=780
-        window_height=370
+        window_width=720
+        window_height=380
         screen_width = app.root.winfo_x()
         screen_height= app.root.winfo_y()
         position_top = int(screen_height+70)
         position_right = int(screen_width+150)
         self.vtn_acerca_de.geometry(f'{window_width}x{window_height}+{position_right}+{position_top}')
         self.vtn_acerca_de.tk.call('wm', 'iconphoto', self.vtn_acerca_de._w, tk.PhotoImage(file=path_icon+r'acercaDe.png'))       
-        #self.vtn_acerca_de.transient(self.root)
+        self.vtn_acerca_de.transient(self.root)
         self.vtn_acerca_de.resizable(False,False)
-        self.vtn_acerca_de.title("Continuous Compliance")
+        self.vtn_acerca_de.title("Acerca de")
 
+        self.close_icon = ImageTk.PhotoImage(
+            Image.open(path_icon+r"close1.png").resize((80, 60)))
+        
         self.icono_Acerca_de = ImageTk.PhotoImage(
             Image.open(path_icon+r"img_acerca_de.png").resize((200, 200)))
 
@@ -3170,17 +3279,18 @@ class Aplicacion():
 
         #? FONT ACERCA DE... 
         self.lbl1 = ttk.Label(
-            self.AcercaDe_txt_frame, 
+            self.AcercaDe_txt_frame,
+            foreground=color_titulos,
             text='CONTINUOUS COMPLIANCE',
             anchor='center',
             font=(fuente_titulos, 16, "bold")
         )
-        self.lbl1.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
+        self.lbl1.grid(row=0, column=0, padx=10, pady=20, sticky='nsew')
 
         self.lbl5 = ttk.Label(
             self.AcercaDe_txt_frame,
-            width=20,
-            text='Herramienta para resolucion    de ISSUES Desviaciones / Extraciones',
+            width=40,
+            text='Herramienta para resolucion de ISSUES Desviaciones / Extraciones\n',
             anchor='w',
             font=(fuente_titulos, 13)
         )
@@ -3245,12 +3355,19 @@ class Aplicacion():
         self.lbl8.grid(row=7, column=0, padx=5, pady=5, sticky='nsew')
         #self.lbl8.bind("<Configure>", self.label_resize)
 
-        self.boton = ttk.Button(
+        self.boton = tk.Button(
             self.AcercaDe_txt_frame,
             text='Close',
+            image=self.close_icon,
             command=self.cerrar_vtn
         )
-        self.boton.grid(row=8, column=0, sticky='e', pady=20, padx=10)
+        self.boton.grid(row=8, column=0, sticky='e', pady=10, padx=10)
+        self.boton.config(
+            background=fondo_app,
+            activebackground=fondo_app,
+            borderwidth=0,
+            highlightbackground=fondo_app
+        )
     
     def _cargar_modulo_glosario(self, clt_modulo=None, *args):
         with open(path_modulo_clave.format('GLOSARIO')) as g:
@@ -3279,35 +3396,44 @@ class Aplicacion():
         self.vtn_glosario = tk.Toplevel(self.root)
         self.vtn_glosario.config(background=fondo_app)
         window_width=800
-        window_height=400
+        window_height=500
         screen_width = app.root.winfo_x()
         screen_height= app.root.winfo_y()
         position_top = int(screen_height+70)
         position_right = int(screen_width+150)
         self.vtn_glosario.geometry(f'{window_width}x{window_height}+{position_right}+{position_top}')
         self.vtn_glosario.tk.call('wm', 'iconphoto', self.vtn_glosario._w, tk.PhotoImage(file=path_icon+r'acercaDe.png'))       
-        #self.vtn_acerca_de.transient(self.root)
+        self.vtn_glosario.transient(self.root)
         self.vtn_glosario.resizable(False,False)
-        self.vtn_glosario.title("Continuous Compliance")
+        self.vtn_glosario.title("Ayuda")
         
-        self.frame1 = ttk.Frame(
+        self.close_icon_gls = ImageTk.PhotoImage(
+            Image.open(path_icon+r"close1.png").resize((80, 60)))
+        
+        self.fr1_gls = ttk.Frame(
             self.vtn_glosario,
-            height=40,
+            height=20,
         )
-        self.frame1.pack(fill='both', side='top', expand=0)
+        self.fr1_gls.pack(fill='both', side='top', expand=0)
+
 
         #? FONt AYUDA
         self.titulo = ttk.Label(
-            self.frame1,
+            self.fr1_gls,
             text='PALABRAS CLAVES DESVIACIONES',
             font=(fuente_titulos, 20, font.BOLD),
         )
-        self.titulo.pack(expand=1)
+        self.titulo.pack(expand=1, pady=10)
 
-        self.frame2 = ttk.Frame(
+        self.fr2_gls = ttk.Frame(
             self.vtn_glosario,
         )
-        self.frame2.pack(fill='both', side=tk.LEFT, expand=0, pady=10)
+        self.fr2_gls.pack(fill='both', side=tk.TOP, expand=1)
+
+        self.frame2 = ttk.Frame(
+            self.fr2_gls,
+        )
+        self.frame2.pack(fill='both', side=tk.LEFT, expand=1, pady=10)
         
         self.frame2.rowconfigure(1, weight=1)
 
@@ -3315,11 +3441,12 @@ class Aplicacion():
         self.titulo_modulo = ttk.Label(
             self.frame2,
             text='MODULO',
-            font=self._Font_Titulo_bold,
+            foreground=color_titulos,
+            font=font.Font(family=fuente_titulos, size=16, weight='bold'),
             anchor='center',
-            width=50
+            width=45
         )
-        self.titulo_modulo.grid(row=0, column=0, sticky='nsew', pady=5, padx=5)
+        self.titulo_modulo.grid(row=0, column=0, sticky='nsew', pady=10, padx=5)
 
         self.ListModulo_yScroll = tk.Scrollbar(self.frame2, orient=tk.VERTICAL)
         
@@ -3335,24 +3462,25 @@ class Aplicacion():
             highlightcolor = active_color,
             yscrollcommand=self.ListModulo_yScroll.set,
         )
-        self._list_modulo.grid(row=1, column=0, sticky='nsew', pady=10)
+        self._list_modulo.grid(row=1, column=0, sticky='nsew', pady=10, padx=(10,0))
         listbox_list.append(self._list_modulo)
         
         self.frame3 = ttk.Frame(
-            self.vtn_glosario,
-            width=40
+            self.fr2_gls,
+            width=30
         )
-        self.frame3.pack(fill='both', side='right', expand=1, pady=10,padx=10)
+        self.frame3.pack(fill='both', side='right', expand=1, pady=10, padx=10)
         self.frame3.columnconfigure(0, weight=1)
         self.frame3.rowconfigure(1, weight=1)
 
         self.titulo_clave = ttk.Label(
             self.frame3,
             text='CLAVE',
-            font=self._Font_Titulo_bold,
+            foreground=color_titulos,
+            font=font.Font(family=fuente_titulos, size=16, weight='bold'),
             anchor='center'
         )
-        self.titulo_clave.grid(row=0, column=0, sticky='nsew', pady=5, padx=5, columnspan=2)
+        self.titulo_clave.grid(row=0, column=0, sticky='nsew', pady=10, padx=5, columnspan=2)
 
         self.ListClave_yScroll = tk.Scrollbar(self.frame3, orient=tk.VERTICAL)
         
@@ -3369,6 +3497,27 @@ class Aplicacion():
             yscrollcommand=self.ListClave_yScroll.set,
         )
         self._list_clave.grid(row=1, column=0, sticky='nsew', pady=10,)
+        
+        self.fr3_gls = ttk.Frame(
+            self.vtn_glosario,
+            height=30
+        )
+        self.fr3_gls.pack(fill='both', side=tk.BOTTOM, expand=0, padx=10)
+
+        self.boton_gls = tk.Button(
+            self.fr3_gls,
+            text='Close',
+            image=self.close_icon_gls,
+            command=self.cerrar_vtn_gls
+        )
+        self.boton_gls.pack(side=tk.RIGHT, padx=20, pady=10)
+        self.boton_gls.config(
+            background=fondo_app,
+            activebackground=fondo_app,
+            borderwidth=0,
+            highlightbackground=fondo_app
+        )
+
         listbox_list.append(self._list_clave)
 
         self.ListClave_yScroll.grid(row=1, column=1, pady=10, sticky='nse')
@@ -3516,106 +3665,103 @@ class Aplicacion():
             self.menuBar.add_cascade(label=" Editar ", menu=self.editMenu)
             self.menuBar.add_cascade(label=" Ayuda ", menu=self.helpMenu)
 
-# TODO BOTON DESVIACION
+# # TODO FRAMES BUTTONS
 
-            self.frameButton = ttk.Frame(
-                self.contenedor, 
+            self.frameButtons = ttk.Frame(
+                self.contenedor,
+            )
+            self.frameButtons.grid(row=0, column=0, pady=5, padx=5
             )
 
-            self.frameButton.grid(row=0, column=0, sticky='nsew', pady=5, padx=5
-            )
-            
-            self.btn_AbrirDesv = ttk.Button(
-                self.frameButton, 
-                text='DESVIACIONES',
-                width=14,
-                style='APP.TButton',
-                image=self.Desviaciones_icon,
-                compound='top',
-                command=self.abrir_issuesDesviacion
+#TODO BOTON DESVIACION
+            self.btn_AbrirDesv = RadioButton(
+                self.frameButtons, 
             )
             self.btn_AbrirDesv.grid(
-                padx=30, 
-                pady=30, 
                 row=0, 
-                column=0, 
-                ipady=20, 
+                column=0,
+                padx=20,
+                pady=10
             )
+            self.btn_Desv = ttk.Button(
+                self.btn_AbrirDesv, 
+                text='\nDESVIACIONES',
+                width=14,
+                style='APP.TButton',
+                image=self.Automatizar_icon,
+                compound='top',
+                command=self.abrir_issuesDesviacion,
+            )
+            self.btn_Desv.place(
+                x=17, 
+                y=30,
+                height=150,
+                width=150
+                )
 
-# TODO BOTON EXTRACION
-
-            self.btn_AbrirExt = ttk.Button(
-                self.frameButton, 
-                text='EXTRACIONES',
+#TODO BOTON EXTRACION
+            self.btn_AbrirExt = RadioButton(
+                self.frameButtons, 
+                        )
+            self.btn_AbrirExt.grid(
+                row=0, 
+                column=1,
+                padx=20,
+                pady=10
+            )
+            self.btn_Ext = ttk.Button(
+                self.btn_AbrirExt, 
+                text='\nEXTRACIONES',
                 width=14,
                 style='APP.TButton',
                 image=self.Extracion_icon,
                 compound='top',
-                command=self.abrir_issuesExtracion
+                command=self.abrir_issuesExtracion,
             )
-            self.btn_AbrirExt.grid(
-                pady=30,
-                padx=(0,30),
+            self.btn_Ext.place(
+                x=17, 
+                y=30,
+                height=150,
+                width=150
+                )
+
+#TODO BOTON AUTOMATIZAR
+            self.btn_AbrirAuto = RadioButton(
+                self.frameButtons, 
+            )
+            self.btn_AbrirAuto.grid(
                 row=0, 
-                column=1, 
-                ipady=20, 
+                column=2,
+                padx=20,
+                pady=10 
             )
-
-# TODO BOTON AUTOMATIZAR
-
-            self.btn_AbrirExt = ttk.Button(
-                self.frameButton, 
-                text='AUTOMATIZAR',
-                width=14,
+            self.btn_Auto = ttk.Button(
+                self.btn_AbrirAuto, 
+                text='\nAUTOMATIZACION',
                 style='APP.TButton',
                 image=self.Automatizar_icon,
                 compound='top',
                 command=self.abrir_scripts,
             )
+            self.btn_Auto.place(
+                x=12, 
+                y=25,
+                height=155,
+                width=160
+                )
+            
+            ##Aqui activamos los colores por defecto del radio button
+            ##Tambien hay que llamar a la funcion en ='WorkSpace'            
+            self.frameButtons.bind('<Motion>', self.act_botones)
+            self.btn_AbrirAuto.canvas.bind('<Motion>', self.act_botones)
+            self.btn_AbrirDesv.canvas.bind('<Motion>', self.act_botones)
+            self.btn_AbrirExt.canvas.bind('<Motion>', self.act_botones)
 
-            self.btn_AbrirExt.grid(
-                pady=30,
-                padx=(0,30),
-                ipady=20,
-                row=0, 
-                column=2, 
-            )
-
-# TODO RESTO BOTONES
-
-            # self.btn_AbrirExt = ttk.Button(
-            #     self.frameButton, 
-            #     text='AUTOMATIZACION',
-            #     width=14,
-            #     style='APP.TButton',
-            #     image=self.Automatizar_icon,
-            #     compound='top',
-            #     command=self.abrir_issuesExtracion,
-            # )
-            # self.btn_AbrirExt.grid(
-            #     pady=30,
-            #     padx=(0,30),
-            #     ipady=20,
-            #     row=0, 
-            #     column=3, 
-            # )
-
-            # self.btn_AbrirExt = ttk.Button(
-            #     self.frameButton, 
-            #     text='AUTOMATIZACION',
-            #     width=14,
-            #     style='APP.TButton',
-            #     image=self.Automatizar_icon,
-            #     compound='top',
-            #     command=self.abrir_issuesExtracion,
-            # )
-            # self.btn_AbrirExt.grid(
-            #     pady=30,
-            #     padx=(0,30),
-            #     ipady=20,
-            #     row=0, 
-            #     column=4, 
-            # )
+            ##Aqui activamos el color activo
+            self.btn_Auto.bind('<Motion>', self.active_RB_Auto)
+            self.btn_Desv.bind('<Motion>', self.active_RB_Desv)
+            self.btn_Ext.bind('<Motion>', self.active_RB_Ext)
+            
 
 # TODO BIENVANIDA
             
@@ -3623,7 +3769,7 @@ class Aplicacion():
                 self.contenedor, 
             )
 
-            self.frameLabel.grid(row=1, column=0, sticky='sew', pady=5, padx=5, columnspan=2)
+            self.frameLabel.grid(row=1, column=0, sticky='sew', columnspan=2)
             
             self.frameLabel.columnconfigure(0, weight=1)
             self.frameLabel.rowconfigure(0, weight=1)
@@ -3631,20 +3777,52 @@ class Aplicacion():
             self.lbl_Bienvenido = ttk.Label(
                 self.frameLabel,
                 style='APP.TLabel',
-                text='Bienvenido : '+user,
+                text='Bienvenido : '+user.upper(),
                 anchor='center',
             )
             self.lbl_Bienvenido.grid(
                 row=0, 
                 column=0, 
-                sticky='nsew'
+                sticky='nsew',
+                ipady=20
             )
+
+    def active_RB_Auto(self, e):
+        global act_rbtn_auto
+        act_rbtn_auto = True
+        if act_rbtn_auto == True:
+            self.btn_AbrirAuto.canvas.itemconfig(1, fill=color_acbg_boton, outline=color_acfg_boton)
+            self.btn_AbrirExt.canvas.itemconfig(1, fill=color_bg_boton, outline=color_outline)
+            self.btn_AbrirDesv.canvas.itemconfig(1, fill=color_bg_boton, outline=color_outline)
+
+    def active_RB_Desv(self, e):
+        global act_rbtn_desv
+        act_rbtn_desv = True
+        if act_rbtn_desv == True:
+            self.btn_AbrirDesv.canvas.itemconfig(1, fill=color_acbg_boton, outline=color_acfg_boton)
+            self.btn_AbrirAuto.canvas.itemconfig(1, fill=color_bg_boton, outline=color_outline)
+            self.btn_AbrirExt.canvas.itemconfig(1, fill=color_bg_boton, outline=color_outline)
+
+    def active_RB_Ext(self, e):
+        global act_rbtn_ext
+        act_rbtn_ext = True
+        if act_rbtn_ext == True:
+            self.btn_AbrirExt.canvas.itemconfig(1, fill=color_acbg_boton, outline=color_acfg_boton)
+            self.btn_AbrirAuto.canvas.itemconfig(1, fill=color_bg_boton, outline=color_outline)
+            self.btn_AbrirDesv.canvas.itemconfig(1, fill=color_bg_boton, outline=color_outline)
+
+    def active_RB_Btn(self, e):
+        if 'desviacion' in globals():
+            desviacion.DESV_btnDirectory.canvas.itemconfig(1, fill=color_acbg_boton, outline=color_acfg_boton)
+            desviacion.DESV_btnService.canvas.itemconfig(1, fill=color_acbg_boton, outline=color_acfg_boton)
+            desviacion.DESV_btnAuthorized.canvas.itemconfig(1, fill=color_acbg_boton, outline=color_acfg_boton)
+            desviacion.DESV_btnAccount.canvas.itemconfig(1, fill=color_acbg_boton, outline=color_acfg_boton)
+            desviacion.DESV_btnCommand.canvas.itemconfig(1, fill=color_acbg_boton, outline=color_acfg_boton)
+            desviacion.DESV_btnIdrsa.canvas.itemconfig(1, fill=color_acbg_boton, outline=color_acfg_boton)
 
     def _fontchooser(self):
         from Preferencias import SelectFont
         ventanafont = SelectFont(None, "Ventana", app, application=self)
-
-        #ventanafont.grab_set()
     
     def mainloop(self):
         self.root.mainloop()

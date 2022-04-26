@@ -8,11 +8,20 @@ from tkinter import scrolledtext as st
 from tkinter import messagebox as mb
 from tkinter import font as font
 from PIL import Image, ImageTk
+from configparser import ConfigParser
 from Compliance import fondo_app, acfg_menu, acbg_menu, bg_submenu, color_txt_entry, fuente_texto, fg_submenu, acfg_menu, fg_menu, color_titulos, _Font_Texto, color_fg_list, sel_bg_txt, sel_fg_txt, active_color, _Font_Menu, oddrow, evenrow
 from Extraciones import MyEntry
 user = getuser()
 mypath = os.path.expanduser("~/")
 path_icon = mypath+"Compliance/image/"
+path_config_ini = mypath+"Compliance/.conf/{}"
+
+parse = ConfigParser()
+parse.read(path_config_ini.format("apariencia.ini"))
+
+window_width = parse.get('medidas_ventana', 'width')
+window_height = parse.get('medidas_ventana', 'height')
+
 class Ventana(ttk.Frame):
     
     def __init__(self, parent, name_vtn, customer, app, desviacion, path, *args, **kwargs):
@@ -23,25 +32,30 @@ class Ventana(ttk.Frame):
         self.desviacion = desviacion
         self.path_ventanas = mypath+path
         self.tt_vtn = name_vtn
+        self.click = True
+        print("llega : ", self.click)
+
         self.vtn_ventanas = tk.Toplevel(self)
+        self.vtn_ventanas.bind('<Motion>', self.app.act_botones)
         self.vtn_ventanas.config(
             background=fondo_app
         )
-        window_width=1170
-        window_height=720
         screen_width = self.app.root.winfo_x()
         screen_height= self.app.root.winfo_y()
         position_top = int(screen_height)
         position_right = int(screen_width+150)
         self.vtn_ventanas.geometry(f'{window_width}x{window_height}+{position_right}+{position_top}')
         self.vtn_ventanas.resizable(0,0)
+
         self.vtn_ventanas.title('{} for client {}'.format(self.tt_vtn, self.customer))
         self.vtn_ventanas.tk.call('wm', 'iconphoto', self.vtn_ventanas._w, tk.PhotoImage(file=path_icon+r'ventanas.png'))       
 
         #self.vtn_ventanas.transient(self)
         #self.vtn_ventanas.grab_set()
         self.vtn_ventanas.columnconfigure(0, weight=1)
-        self.vtn_ventanas.rowconfigure(2, weight=5)
+        self.vtn_ventanas.rowconfigure(1, weight=1)
+        self.vtn_ventanas.rowconfigure(2, weight=1)
+
         self.iconos()
         self.widgets_ventanas()
         self.menu_clickDerecho()
@@ -84,19 +98,20 @@ class Ventana(ttk.Frame):
         self.srcVariable.bind("<Control-f>",self.act_buscar)
         self.listServer.bind("<Control-f>",self.act_buscar)
         self.tree.bind("<Control-f>",self.act_buscar)
-    
+
     def iconos(self):
         self.buscar_icon = ImageTk.PhotoImage(
                     Image.open(path_icon+r"buscar.png").resize((25, 25)))
         self.cerrar_icon = ImageTk.PhotoImage(
                     Image.open(path_icon+r"reduce.png").resize((25, 25)))
         self.copiar_icon = ImageTk.PhotoImage(
-                    Image.open(path_icon+r"copiarALL_evd.png").resize((20, 20)))
+                    Image.open(path_icon+r"copiarALL.png").resize((20, 20)))
         self.limpiar_icon = ImageTk.PhotoImage(
                     Image.open(path_icon+r"limpiar.png").resize((25, 25)))
     
     def cerrar_vtn(self):
         self.vtn_ventanas.destroy()
+    
     ## BUSCAR ventanas / FILE
     def clear_bsq_buttom(self, event):
         text_widget = event.widget
@@ -260,6 +275,7 @@ class Ventana(ttk.Frame):
         self.srcImpact.delete('1.0',tk.END)
         self.cbxUser.option_clear()
         self.srcVariable.delete('1.0',tk.END)
+    
     ## --- MENU CONTEXTUAL
     def act_elemt_text(self, event):
         event.widget.focus()
@@ -505,7 +521,7 @@ class Ventana(ttk.Frame):
             dir_selecionado = tree_event.item(index, 'values')
             dir = dir_selecionado[0]
             self.cargar_elemt_seleccionado(dir)
-    ## =============================================
+
     def copiarALL(self, event):
         event.focus()
         if event:
@@ -517,22 +533,72 @@ class Ventana(ttk.Frame):
         else:
             event.tag_remove("sel","1.0","end")
     
+    def resizable(self, e):
+        self.click = False
+        if self.click == False:
+            self.vtn_ventanas.resizable(1,1)
+        
+
+    def _release_callback(self, e):
+        global window_width
+        global window_height
+        self.click = True
+        self.vtn_ventanas.resizable(0, 0)
+        alto = self.vtn_ventanas.winfo_height()
+        ancho = self.vtn_ventanas.winfo_width()
+        window_width = ancho
+        window_height = alto
+        window_width = str(window_width)
+        window_height = str(window_height)
+        
+        parse.set('medidas_ventana', 'width', window_width)
+        parse.set('medidas_ventana', 'height', window_height)
+        with open(path_config_ini.format("apariencia.ini"), 'w') as configfile:
+            parse.write(configfile)
+
     def widgets_ventanas(self):
+        self.buscador = ttk.Frame(
+            self.vtn_ventanas,
+        )
+        self.buscador.grid(column=0, row=0, sticky='nsew', padx=10, pady=5)
+
+        self.datos = ttk.Frame(
+            self.vtn_ventanas,
+        )
+        self.datos.grid(column=0, row=1, sticky='nsew', padx=10, pady=5)
+
+        self.otros_datos = ttk.Frame(
+            self.vtn_ventanas,
+        )
+        self.otros_datos.grid(column=0, row=2, sticky='nsew', padx=10, pady=5)
+        
+        self.sizegrid = ttk.Sizegrip(
+            self.vtn_ventanas,
+        )
+        self.sizegrid.grid(row=3, column=0, sticky='nsew')
+        self.sizegrid.bind(
+            '<Button-1>', self.resizable
+        )
+
+        self.sizegrid.bind("<ButtonRelease-1>", self._release_callback)
+
+        self.buscador.columnconfigure(0, weight=1)
+        self.datos.columnconfigure(0, weight=1)
+        self.otros_datos.columnconfigure(0, weight=1)
+        self.buscador.rowconfigure(0, weight=1)
+        self.datos.rowconfigure(0, weight=1)
+        self.otros_datos.rowconfigure(0, weight=1)
+
         self.var_ent_buscar = tk.StringVar(self)
         self.textBuscar = MyEntry(
-            self.vtn_ventanas,
+            self.buscador,
             textvariable=self.var_ent_buscar,
-            #justify='left',
-            #width=40,
-            #
-            #font=_Font_Texto,
         )
         self.var_ent_buscar.set("Buscar Directories / File ...")
-        self.textBuscar.grid(row=0, column=0, padx=10, pady=5, sticky='nsew')
+        self.textBuscar.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
 
         self.textBuscar.config(
             foreground="gray75",
-            width=40,
             highlightcolor=active_color,
             insertbackground=active_color,
             selectbackground=sel_bg_txt,
@@ -541,60 +607,61 @@ class Ventana(ttk.Frame):
         )
 
         self.btnBuscar = ttk.Button(
-            self.vtn_ventanas,
+            self.buscador,
             text='Buscar',
             image=self.buscar_icon,
             command=lambda:self._buscar(self.textBuscar)
         )
-        self.btnBuscar.grid(row=0, column=1, sticky=tk.W)
+        self.btnBuscar.grid(row=0, column=1, pady=10, sticky=tk.W)
 
         self.btnLimpiar = ttk.Button(
-            self.vtn_ventanas,
+            self.buscador,
             text='Limpiar',
             image=self.limpiar_icon,
             command= self.limpiar_bsq,            
         )
-        #self.btnLimpiar.grid(row=0, column=1, sticky=tk.W)
+        self.btnLimpiar.grid(row=0, column=1, pady=10, sticky=tk.W)
 
         self.btnCerrar = ttk.Button(
-            self.vtn_ventanas, 
+            self.buscador,
             text='Cerrar',
             image=self.cerrar_icon,
             command=self.cerrar_vtn
         )
-        self.btnCerrar.grid(row=0, column=2, padx=10, pady=5, sticky=tk.E)
+        self.btnCerrar.grid(row=0, column=2, padx=10, pady=10, sticky=tk.E)
         
-        ## ====================================================================================
-        ## --- CREAMOS EL PRIMER LABEL FRAME
+        # ## ====================================================================================
+        # ## --- CREAMOS EL PRIMER LABEL FRAME
         self.labelframe1=ttk.LabelFrame(
-            self.vtn_ventanas, 
+            self.datos, 
             text="DATOS",
         )
-        self.labelframe1.grid(column=0, row=1, padx=10, pady=5, columnspan=3, sticky='nsew')
+        self.labelframe1.grid(column=0, row=0, padx=10, pady=10, sticky='nsew')
+        
+        #Expandir lo que esta dentro del frame
         self.labelframe1.columnconfigure(0, weight=1)
+        self.labelframe1.rowconfigure(0, weight=1)
         
-        ## --- creamos el scrollbar
+        # ## --- creamos el scrollbar
         self.tree_scrollbar=tk.Scrollbar(self.labelframe1, orient=tk.VERTICAL)
-        self.tree_scrollbar.grid(column=1, row=0, sticky=tk.N+tk.S,padx=(0,5), pady=10)
         
-        ## ---creamos el treeview
+        # ## ---creamos el treeview
         self.tree = ttk.Treeview(
             self.labelframe1, 
             yscrollcommand=self.tree_scrollbar.set,
-            height=10,
         )
-        ## ---configuramos el scroll al trieview
+        # ## ---configuramos el scroll al trieview
         self.tree_scrollbar.config(command=self.tree.yview)
-        ## ---creamos las columnas
+        # ## ---creamos las columnas
         self.tree['columns'] = ("NAME","OWNER","TIPO","OWNERGROUP","CODE")
-        ## --- formato a las columnas
+        # ## --- formato a las columnas
         self.tree.column("#0", width=0, stretch=tk.NO)
         self.tree.column("NAME", anchor=tk.W, width=350)
         self.tree.column("OWNER", anchor=tk.CENTER, width=150)
         self.tree.column("TIPO", anchor=tk.CENTER, width=100)
         self.tree.column("OWNERGROUP", anchor=tk.CENTER, width=150)
         self.tree.column("CODE", anchor=tk.CENTER, width=100)
-        ## --- indicar cabecera
+        # ## --- indicar cabecera
         self.tree.heading("#0", text="", anchor=tk.W)
         self.tree.heading("#1", text="NAME", anchor=tk.W)
         self.tree.heading("#2", text="OWNER", anchor=tk.CENTER)
@@ -603,25 +670,30 @@ class Ventana(ttk.Frame):
         self.tree.heading("#5", text="CODE", anchor=tk.CENTER)
         self.tree.tag_configure('oddrow', background=oddrow, font=_Font_Texto)
         self.tree.tag_configure('evenrow', background=evenrow, font=_Font_Texto)
-        self.tree.grid(column=0, row=0, pady=10, padx=(5,0), sticky=tk.E+tk.W)
-        ## ====================================================================================
-        ## --- CREAMOS EL SEGUNDO LABEL FRAME
+        
+        # Mostramo por pantalla.
+        self.tree.grid(column=0, row=0, pady=10, padx=(5,0), sticky='nsew')
+        self.tree_scrollbar.grid(column=1, row=0, sticky=tk.N+tk.S,padx=(0,5), pady=10)
+
+        # ## ====================================================================================
+        # ## --- CREAMOS EL SEGUNDO LABEL FRAME
         self.labelframe2=ttk.LabelFrame(
-            self.vtn_ventanas, 
+            self.otros_datos, 
             text="OTROS DATOS",
         )
-        self.labelframe2.grid(column=0, row=2, padx=10, pady=5, columnspan=3, sticky='nsew')
+        self.labelframe2.grid(column=0, row=0, padx=10, pady=10, sticky='nsew')
+        
         self.labelframe2.rowconfigure(1, weight=1)
         self.labelframe2.rowconfigure(3, weight=1)
         self.labelframe2.columnconfigure(2, weight=1)
         self.labelframe2.columnconfigure(4, weight=1)
 
-        ## --- SERVERs
+        # ## --- SERVERs
         self.lbl1 = ttk.Label(
             self.labelframe2,
             text='SERVER',
         )
-        self.lbl1.grid(row=0, column=0, pady=5, padx=5, columnspan=2)
+        self.lbl1.grid(row=0, column=0, pady=10, padx=10, columnspan=2)
         
         self.listServer = tk.Listbox(
             self.labelframe2, 
@@ -637,20 +709,19 @@ class Ventana(ttk.Frame):
             highlightcolor = active_color,
             borderwidth=0, 
             highlightthickness=2,
-            height=8,
-            width=15,
+            width=20,
             yscrollcommand=self.fr2_scroll1.set
         )
         self.fr2_scroll1.config(command=self.listServer.yview)
-        self.listServer.grid(column=0, row=1, padx=(5,0), pady=5, sticky="nsw", rowspan=3)
-        self.fr2_scroll1.grid(column=1, row=1, sticky='ns', pady=5, rowspan=3)
+        self.listServer.grid(column=0, row=1, padx=(5,0), pady=10, sticky="nsew", rowspan=3)
+        self.fr2_scroll1.grid(column=1, row=1, sticky='ns', pady=10, rowspan=3)
         
         ## --- RISK
         self.lbl2 = ttk.Label(
             self.labelframe2, 
             text='RISK',
         )
-        self.lbl2.grid(row=0, column=2, pady=5, padx=5, sticky='W')
+        self.lbl2.grid(row=0, column=2, pady=10, padx=10, sticky='W')
         
         self.srcRisk = st.ScrolledText(
             self.labelframe2,
@@ -673,16 +744,16 @@ class Ventana(ttk.Frame):
             image=self.copiar_icon,
             command=lambda e=self.srcRisk:self.copiarALL(e),
         )
-        self.btnCpRisk.grid(row=0, column=3, padx=20, pady=5, sticky=tk.E)
+        self.btnCpRisk.grid(row=0, column=3, padx=20, pady=10, sticky=tk.E)
         
-        self.srcRisk.grid(row=1, column=2, pady=5, padx=5, sticky='new', columnspan=2)
+        self.srcRisk.grid(row=1, column=2, pady=(5,10), padx=10, sticky='nsew', columnspan=2)
         
         ## --- IMPACT
         self.lbl3 = ttk.Label(
             self.labelframe2,
             text='IMPACT',
         )
-        self.lbl3.grid(row=0, column=4, pady=5, padx=5, sticky='W')
+        self.lbl3.grid(row=0, column=4, pady=10, padx=10, sticky='W')
         
         self.srcImpact = st.ScrolledText(
             self.labelframe2,
@@ -705,9 +776,9 @@ class Ventana(ttk.Frame):
             image=self.copiar_icon,
             command=lambda e=self.srcImpact:self.copiarALL(e),
         )
-        self.btnCpImp.grid(row=0, column=5, padx=20, pady=5, sticky=tk.E)   
+        self.btnCpImp.grid(row=0, column=5, padx=20, pady=10, sticky=tk.E)   
         
-        self.srcImpact.grid(row=1, column=4, pady=5, padx=5, sticky='new', columnspan=2)
+        self.srcImpact.grid(row=1, column=4, pady=(5,10), padx=10, sticky='nsew', columnspan=2)
         
         ## --- SO
         self.lbl_SO = ttk.Label(
@@ -716,7 +787,7 @@ class Ventana(ttk.Frame):
             foreground=color_titulos,
             justify='center',
         )
-        self.lbl_SO.grid(row=2, column=2, pady=5, padx=10, sticky='w')
+        self.lbl_SO.grid(row=2, column=2, pady=10, padx=10, sticky='w')
         
         ## --- USER
         self.cbxUser = ttk.Combobox(
@@ -727,14 +798,14 @@ class Ventana(ttk.Frame):
             justify='center',
         )
         self.cbxUser.set('CONTACTOS')
-        self.cbxUser.grid(row=3, column=2, padx=5, pady=5, ipady=7, sticky='new')
+        self.cbxUser.grid(row=3, column=2, padx=10, pady=10, ipady=7, sticky='new')
 
         ## --- VARIABLE
         self.lbl4 = ttk.Label(
             self.labelframe2,
             text='VARIABLES',
         )
-        self.lbl4.grid(row=2, column=3, pady=5, padx=5, sticky='W')
+        self.lbl4.grid(row=2, column=3, pady=10, padx=10, sticky='W')
 
         self.srcVariable = st.ScrolledText(
             self.labelframe2,
@@ -757,6 +828,6 @@ class Ventana(ttk.Frame):
             image=self.copiar_icon,
             command=lambda e=self.srcVariable:self.copiarALL(e),
         )
-        self.btnCpVariable.grid(row=2, column=5, padx=20, pady=5, sticky=tk.E)
+        self.btnCpVariable.grid(row=2, column=5, padx=20, pady=10, sticky=tk.E)
 
-        self.srcVariable.grid(row=3, column=3, pady=5, padx=5, sticky='new', columnspan=3)
+        self.srcVariable.grid(row=3, column=3, pady=(5,10), padx=10, sticky='nsew', columnspan=3)
