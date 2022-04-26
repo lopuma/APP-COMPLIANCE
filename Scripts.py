@@ -6,12 +6,10 @@ from tkinter import ttk
 from PIL import Image, ImageTk
 from getpass import getuser
 import subprocess
-from jsonpath_ng.ext import parse
 from functools import partial
 from ScrollableNotebook  import *
 from Compliance import fondo_app, color_outline, color_fg_boton, _Font_Boton, color_bg_boton
 from RadioBotton import RB_Automatizacion_clt
-act_rbtn_auto = False
 #* variable para actualizar la ventana
 PST_AUT = ""
 FR_POL = ""
@@ -29,7 +27,7 @@ color_bd_fr = '#383838'
 colour_fr_pie = '#C65D7B'
 colour_fr_tittle = '#F68989'
 cl_btn_actbg = '#8FBDD3'
-cl_btn_actfg = '#A97155'
+cl_btn_actfg = '#125B50'
 cl_btn_bg = '#F4FCD9'
 cl_btn_fg = '#534340'
 # ? -------------------------------------------------------------
@@ -106,7 +104,7 @@ class FramesPoliticas(ttk.Frame):
         url = path_icon+"{}".format("icon_sys.png")
         self.gopolitica_ico = ImageTk.PhotoImage(
             Image.open(url).resize((20, 20)))
-        with open('/home/esy9d7l1/Compliance/.conf/clientes.json') as op:
+        with open(path_config.format('clientes')) as op:
             data = json.load(op)
             for clt in data[cliente]:
                 for pol in clt['politica']:
@@ -282,7 +280,7 @@ class FramesScripts(ttk.Frame):
             for column in range(columns-1):
                 frame.columnconfigure(column, pad=spacey)
 
-        with open('/home/esy9d7l1/Compliance/.conf/clientes.json') as op:
+        with open(path_config.format('clientes')) as op:
             data = json.load(op)
             for elemt in data[self.cliente]:
                 for pol in list(elemt['politica']):
