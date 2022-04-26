@@ -62,8 +62,6 @@ class ScrollableNotebook(ttk.Frame):
                                 activeforeground=color_act_fg_pestaña,
                                 border=0,
                                 borderwidth=0,
-                                #justify='center',
-                                #anchor='center',
                                 font = font.Font(family=_Font_Texto, size=17, weight='bold')
                                 )
             self.bottomTab.bind("<1>",self._bottomMenu)

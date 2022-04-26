@@ -2234,7 +2234,7 @@ class Desviacion(ttk.Frame):
             relief='sunken'
         )
         self.DESV_frame2.grid_propagate(False)
-        self.DESV_frame2.grid(column=1, row=0, padx=10, sticky='nsew')
+        self.DESV_frame2.grid(column=1, row=0, padx=10, pady=10, sticky='nsew')
         
         self.DESV_frame3=ttk.LabelFrame(
             self, 

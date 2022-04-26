@@ -8,12 +8,20 @@ from tkinter import scrolledtext as st
 from tkinter import messagebox as mb
 from tkinter import font as font
 from PIL import Image, ImageTk
-from numpy import pad
+from configparser import ConfigParser
 from Compliance import fondo_app, acfg_menu, acbg_menu, bg_submenu, color_txt_entry, fuente_texto, fg_submenu, acfg_menu, fg_menu, color_titulos, _Font_Texto, color_fg_list, sel_bg_txt, sel_fg_txt, active_color, _Font_Menu, oddrow, evenrow
 from Extraciones import MyEntry
 user = getuser()
 mypath = os.path.expanduser("~/")
 path_icon = mypath+"Compliance/image/"
+path_config_ini = mypath+"Compliance/.conf/{}"
+
+parse = ConfigParser()
+parse.read(path_config_ini.format("apariencia.ini"))
+
+window_width = parse.get('medidas_ventana', 'width')
+window_height = parse.get('medidas_ventana', 'height')
+
 class Ventana(ttk.Frame):
     
     def __init__(self, parent, name_vtn, customer, app, desviacion, path, *args, **kwargs):
@@ -24,19 +32,21 @@ class Ventana(ttk.Frame):
         self.desviacion = desviacion
         self.path_ventanas = mypath+path
         self.tt_vtn = name_vtn
+        self.click = True
+        print("llega : ", self.click)
+
         self.vtn_ventanas = tk.Toplevel(self)
         self.vtn_ventanas.bind('<Motion>', self.app.act_botones)
         self.vtn_ventanas.config(
             background=fondo_app
         )
-        window_width=1170
-        window_height=720
         screen_width = self.app.root.winfo_x()
         screen_height= self.app.root.winfo_y()
         position_top = int(screen_height)
         position_right = int(screen_width+150)
         self.vtn_ventanas.geometry(f'{window_width}x{window_height}+{position_right}+{position_top}')
         self.vtn_ventanas.resizable(0,0)
+
         self.vtn_ventanas.title('{} for client {}'.format(self.tt_vtn, self.customer))
         self.vtn_ventanas.tk.call('wm', 'iconphoto', self.vtn_ventanas._w, tk.PhotoImage(file=path_icon+r'ventanas.png'))       
 
@@ -45,6 +55,7 @@ class Ventana(ttk.Frame):
         self.vtn_ventanas.columnconfigure(0, weight=1)
         self.vtn_ventanas.rowconfigure(1, weight=1)
         self.vtn_ventanas.rowconfigure(2, weight=1)
+
         self.iconos()
         self.widgets_ventanas()
         self.menu_clickDerecho()
@@ -87,7 +98,7 @@ class Ventana(ttk.Frame):
         self.srcVariable.bind("<Control-f>",self.act_buscar)
         self.listServer.bind("<Control-f>",self.act_buscar)
         self.tree.bind("<Control-f>",self.act_buscar)
-    
+
     def iconos(self):
         self.buscar_icon = ImageTk.PhotoImage(
                     Image.open(path_icon+r"buscar.png").resize((25, 25)))
@@ -100,6 +111,7 @@ class Ventana(ttk.Frame):
     
     def cerrar_vtn(self):
         self.vtn_ventanas.destroy()
+    
     ## BUSCAR ventanas / FILE
     def clear_bsq_buttom(self, event):
         text_widget = event.widget
@@ -263,6 +275,7 @@ class Ventana(ttk.Frame):
         self.srcImpact.delete('1.0',tk.END)
         self.cbxUser.option_clear()
         self.srcVariable.delete('1.0',tk.END)
+    
     ## --- MENU CONTEXTUAL
     def act_elemt_text(self, event):
         event.widget.focus()
@@ -520,6 +533,29 @@ class Ventana(ttk.Frame):
         else:
             event.tag_remove("sel","1.0","end")
     
+    def resizable(self, e):
+        self.click = False
+        if self.click == False:
+            self.vtn_ventanas.resizable(1,1)
+        
+
+    def _release_callback(self, e):
+        global window_width
+        global window_height
+        self.click = True
+        self.vtn_ventanas.resizable(0, 0)
+        alto = self.vtn_ventanas.winfo_height()
+        ancho = self.vtn_ventanas.winfo_width()
+        window_width = ancho
+        window_height = alto
+        window_width = str(window_width)
+        window_height = str(window_height)
+        
+        parse.set('medidas_ventana', 'width', window_width)
+        parse.set('medidas_ventana', 'height', window_height)
+        with open(path_config_ini.format("apariencia.ini"), 'w') as configfile:
+            parse.write(configfile)
+
     def widgets_ventanas(self):
         self.buscador = ttk.Frame(
             self.vtn_ventanas,
@@ -535,6 +571,16 @@ class Ventana(ttk.Frame):
             self.vtn_ventanas,
         )
         self.otros_datos.grid(column=0, row=2, sticky='nsew', padx=10, pady=5)
+        
+        self.sizegrid = ttk.Sizegrip(
+            self.vtn_ventanas,
+        )
+        self.sizegrid.grid(row=3, column=0, sticky='nsew')
+        self.sizegrid.bind(
+            '<Button-1>', self.resizable
+        )
+
+        self.sizegrid.bind("<ButtonRelease-1>", self._release_callback)
 
         self.buscador.columnconfigure(0, weight=1)
         self.datos.columnconfigure(0, weight=1)
