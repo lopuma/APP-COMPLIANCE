@@ -17,9 +17,7 @@ from tkinter.ttk import Style
 from threading import Thread
 from ScrollableNotebook  import *
 from configparser import ConfigParser
-from RadioBotton import RadioButton
-from RadioBotton_VTN import RadioButton_venta
-
+from RadioBotton import RadioButton, RadioButton_venta
 #-----------------------------------------------------------#
 
 
@@ -2800,7 +2798,6 @@ class Aplicacion():
             desviacion.DESV_btnCommand.canvas.itemconfig(1, fill=color_bg_boton, outline=color_outline)
             desviacion.DESV_btnIdrsa.canvas.itemconfig(1, fill=color_bg_boton, outline=color_outline)
 
-
     def open_client(self):
         global list_client
         list_client = []
@@ -2868,17 +2865,14 @@ class Aplicacion():
         self.style.configure(
             'APP.TButton',
             background = color_bg_boton,
-            foreground = '#2C3333',
+            foreground = color_fg_boton,
             font=(fuente_boton, 12, font.BOLD),
-            #relief='sunke',
             borderwidth=0,
         )
         self.style.map(
             'APP.TButton',
             background = [("active",color_acbg_boton)],
-            foreground = [("active",'#2C3333')],
-            #padding=[("active",10),("pressed",10)],
-            #relief=[("active",'ridge'),("pressed",'groove')],
+            foreground = [("active",color_fg_boton)],
             borderwidth=[("active",0)],
         )
         

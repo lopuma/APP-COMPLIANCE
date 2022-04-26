@@ -3,15 +3,15 @@ import os
 import json
 import tkinter as tk
 from tkinter import ttk
-from tkinter import font
 from PIL import Image, ImageTk
 from getpass import getuser
 import subprocess
 from jsonpath_ng.ext import parse
 from functools import partial
 from ScrollableNotebook  import *
-from Compliance import fondo_app, _Font_Boton
-
+from Compliance import fondo_app, color_outline, color_fg_boton, _Font_Boton, color_bg_boton
+from RadioBotton import RB_Automatizacion_clt
+act_rbtn_auto = False
 #* variable para actualizar la ventana
 PST_AUT = ""
 FR_POL = ""
@@ -157,11 +157,9 @@ class FramesPoliticas(ttk.Frame):
         if type(framescript) == str:
             self.framescript = FramesScripts(self, cliente, frame, politica)
             framescript =  self.framescript
-            print("\n(1) FRAME __{}__\n".format(self.framescript))
         else:
             self.framescript.borrar_script()
             self.framescript = FramesScripts(self, cliente, self.frame, politica)
-            print("(2) FRAME __{}__\n".format(self.framescript))
 
     def OnVsb_down(self, event):
         self.canvas.yview_scroll(1, "units")
@@ -192,7 +190,6 @@ class FramesScripts(ttk.Frame):
         self.cliente = cliente
         self.politica = politica
         global framescript
-        print("\n** FRAME QUE LLEGA ** :: ", framescript)
         self.fr_md3 = ttk.Frame(
             self.frame,
         )
@@ -321,7 +318,6 @@ class FramesScripts(ttk.Frame):
         return scripts
 
     def borrar_script(self):
-        print(" si BORRA FRAME SCRIPTS SELF ***--{}--***".format(framescript))
         self.canvas3.destroy()
         self.canvas3.pack_forget()
         self.scr3.destroy()
@@ -361,6 +357,7 @@ class Automatizar(ttk.Frame):
         ttk.Frame.__init__(self, parent, *args, **kwargs)
         global PST_AUT
         self.btn_lis_cli = []
+        self.bfr_rb_list = []
         self.click = True
         self.cont = 0
         PST_AUT = self
@@ -372,7 +369,6 @@ class Automatizar(ttk.Frame):
     def AUT_motion(self, event):
         global PST_AUT
         PST_AUT = event.widget
-        #print(PST_AUT)
     
     def iconos(self):
         self.close_icon = ImageTk.PhotoImage(
@@ -487,28 +483,48 @@ class Automatizar(ttk.Frame):
         with open(path_config.format("clientes")) as op:
             data = json.load(op)
             for clt in data:
-                self.buttons_clientes = BtnScripts(
+                self.buttons_clientes = RB_Automatizacion_clt(
                     self.lb_frame_menu,
-                    text=clt,
-                    compound='left',
-                    image=self.goclient_ico,
                 )
-                
-                self.buttons_clientes["command"] = partial(self.abrir_frames_politicas_,self.buttons_clientes, clt)
-
                 self.buttons_clientes.pack(
                     expand=0,
                     padx=15,
-                    pady=10,
-                    ipady=15,
+                    pady=5,
                     fill='both',
                 )
-                #self.buttons_clientes.bind("<Button-1>", self._OnVsb_down)
+                self.btn_clientes = tk.Button(
+                    self.buttons_clientes,
+                    text=" "+clt,
+                    compound='left',
+                    image=self.goclient_ico,
+                )
+                self.btn_clientes.config(
+                    background=color_bg_boton,
+                    foreground=color_fg_boton,
+                    justify=tk.RIGHT,
+                    anchor='w',
+                    font=_Font_Boton,
+                    activeforeground=cl_btn_actfg,
+                    activebackground=color_bg_boton,
+                    border=0,
+                    highlightthickness=0,
+                )
+                self.btn_clientes["command"] = partial(self.abrir_frames_politicas_,self.btn_clientes, clt, self.buttons_clientes)
+                
+                self.btn_clientes.place(
+                    x=45, 
+                    y=15,
+                    height=55,
+                    width=175
+                )
+
+                self.btn_clientes.bind("<Button-5>", self._On_canvas_down)
+                self.btn_clientes.bind("<Button-4>", self._On_canvas_up)
                 self.buttons_clientes.bind("<Button-5>", self._On_canvas_down)
                 self.buttons_clientes.bind("<Button-4>", self._On_canvas_up)
-                self.buttons_clientes.bind("<Button-1>", partial(self.on_enter, self.buttons_clientes))
-                #self.buttons_clientes.bind("<FocusOut>", self.buttons_clientes.on_leave)
-# ********************************************************
+                self.btn_clientes.bind("<Button-1>", partial(self.on_enter, self.btn_clientes, self.buttons_clientes))
+
+ # ********************************************************
 #TODO ----------- LABEL FRAME POLITICA -------------------
         self.lb_frame_sistemas = ttk.LabelFrame(
             self.frame_medio,
@@ -536,9 +552,6 @@ class Automatizar(ttk.Frame):
             padx=(0,5),
             pady=10
         )
-        # self.lb_frame_scripts.config(
-        #     borderwidth=3,
-        # )
 #TODO -------------------------------------------------
 #-----------------------------------------------------
 # TODO ------------- FRAME PIE ----------------------
@@ -583,40 +596,41 @@ class Automatizar(ttk.Frame):
         #list_event = event.widget
         PST_AUT.canvas.yview_scroll(-1, "units")
 
-    def abrir_frames_politicas_(self, btn, cliente):
+    def abrir_frames_politicas_(self, btn, cliente, btn_rb):
         global PST_AUT
         global framescript
+        self.bfr_rb_list = []
+        self.bfr_rb_list.append(btn_rb)
         btn.focus_set()
 
+        ## Al hacer click se cambiar de color.
         if btn:
             btn.configure(
-                bg=cl_btn_actbg,
-                fg=cl_btn_actfg
+                #bg=cl_btn_actbg,
+                fg=cl_btn_actfg                
             )
+        for rb in self.bfr_rb_list:
+            rb.canvas.itemconfig(1, fill=color_bg_boton, outline=cl_btn_actfg)
+
         self.lb_frame_sistemas.pack_forget()
         self.lb_frame_scripts.pack_forget()
-        #framescript = ""
         if type(self.fr_clt) == str:
-            print("1")
             framescript = ""
             self.fr_clt = FramesPoliticas(self, cliente, self.frame_medio)
         else:
-            print("2")
             self.fr_clt.borrar()
             if type(framescript) is not str:
-                print("DISTINTO")
                 self.fr_clt.framescript.borrar_script()
             self.fr_clt = FramesPoliticas(self, cliente, self.frame_medio)
             framescript = ""
 
-    def on_enter(self, btn, *arg):
+    def on_enter(self, btn, btn_rb, *arg):
         global PST_AUT
+        self.bfr_rb_list.append(btn_rb)
         self.btn_lis_cli.append(btn)
         for i in self.btn_lis_cli:
+            i['background']=color_bg_boton
+            i['foreground']=color_fg_boton
 
-            i['background']=cl_btn_bg
-            i['foreground']=cl_btn_fg
-
-        if btn.focus_set:
-            btn['background']=cl_btn_actbg
-            btn['foreground']=cl_btn_actfg
+        for rb in self.bfr_rb_list:
+            rb.canvas.itemconfig(1, fill=color_bg_boton, outline=color_outline)
