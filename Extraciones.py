@@ -490,7 +490,6 @@ class Extracion(ttk.Frame):
                 foreground='#FF5F00',
                 font=(fuente_texto, tamñ_texto, font.BOLD)
             )
-
         if line5:
             while True:
                 indx5 = self.txt.search(
