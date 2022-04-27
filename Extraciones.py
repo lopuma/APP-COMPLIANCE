@@ -13,8 +13,6 @@ from tkinter.ttk import Style
 from threading import Thread
 import time
 from Compliance import bg_panel_buscar, bg_submenu, color_txt_entry, bg_menu, fg_submenu, acbg_panel_buscar, _Font_Menu, _Font_Texto, sel_bg_txt, sel_fg_txt, fondo_app, active_color, acbg_menu, acfg_menu, fuente_texto, tamñ_texto
-
-from setuptools import Command
 user = getuser()
 mypath = os.path.expanduser("~/")
 path_extracion = mypath+"Compliance/extracion/"
@@ -24,11 +22,8 @@ parar = False
 _estado_actual = False
 PST_EXT = ""
 HIDDEN = 0
+
 def beep_error(f):
-    '''
-    Decorador que permite emitir un beep cuando un método de instancia
-    decorado de un widget produce una excepción
-    '''
     def applicator(*args, **kwargs):
         try:
             f(*args, **kwargs)
@@ -810,26 +805,30 @@ class Extracion(ttk.Frame):
         global _estado_actual
         if not _estado_actual:
             self.busca_top = tk.Toplevel(self.frame2)
-            self.busca_top.attributes('-type', 'splash')
-            window_width = 710
+            #self.busca_top.attributes('-type', 'splash')
+            
+            self._w = 0
+            self._y = 0
+            window_width = 787
             window_height = 100
             bus_reem_top_msg_w = 240
+            self.busca_top.overrideredirect(True)
             screen_width = (self.app.root.winfo_x() + 640)
             screen_height = (self.app.root.winfo_y()+40)
             position_top = int(screen_height)
             position_right = int(screen_width)
             self.busca_top.geometry(
                 f'{window_width}x{window_height}+{position_right}+{position_top}')
-            self.busca_top.transient(self)
+            #self.busca_top.transient(self)
             
             self.busca_top.config(
                 bg=fondo_app, 
                 padx=5, 
                 pady=5
             )
-            self.busca_top.resizable(0, 0)
+             #self.busca_top.resizable(0, 0)
 
-            self.busca_frm_tit = ttk.Frame(
+            self.busca_frm_tit = tk.Frame(
                 self.busca_top,
             )
             self.busca_frm_tit.pack(fill='x', expand=1)
@@ -846,20 +845,24 @@ class Extracion(ttk.Frame):
             self.bus_reem_num_results = tk.StringVar()
             self.bus_reem_num_results.set('~ {} ~'.format('No hay resultados'))
 
-            buscar_01_msg = tk.Message(
+            self.buscar_01_msg = tk.Message(
                 self.busca_frm_tit,
                 textvariable=self.bus_reem_num_results,
                 padx=10,
                 pady=0
             )
-            buscar_01_msg.pack(fill='both', expand=1)
-            buscar_01_msg.config(
+            self.buscar_01_msg.pack(fill='both', expand=1)
+            self.buscar_01_msg.config(
                 width=bus_reem_top_msg_w,
                 background=acbg_panel_buscar,
                 foreground="black",
                 justify='center',
                 font=(fuente_texto, 14, 'bold')
             )
+            
+            self.buscar_01_msg.bind("<ButtonPress-1>", self.start_move)
+            self.buscar_01_msg.bind("<ButtonRelease-1>", self.stop_move)
+            self.buscar_01_msg.bind("<B1-Motion>", self.on_move)
 
             self.var_entry_bsc = tk.StringVar(self)
             
@@ -966,6 +969,24 @@ class Extracion(ttk.Frame):
 ## --- Activa el motion en cada widget del panel
         self.busca_top.bind("<Motion>", lambda e: self._activar_Focus(e))
 
+    def start_move(self, event):
+        self._x = event.x
+        self._y = event.y
+        print('starnive')
+
+    def stop_move(self, event):
+        self._x = None
+        self._y = None
+        print('stop')
+
+    def on_move(self, event):
+        deltax = event.x - self._x
+        deltay = event.y - self._y
+        new_pos = "+{}+{}".format(self.busca_top.winfo_x() + deltax, self.busca_top.winfo_y() + deltay)
+        print('stiop')
+        #self.app.root.geometry(new_pos)
+        self.busca_top.geometry(new_pos)
+    
     def _buscar_focus(self, event):
         MyEntry.seleccionar_todo(event)
 
