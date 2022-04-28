@@ -133,7 +133,10 @@ _Font_text_exp_bold = (fuente_titulos, tamñ_texto_exp, font.BOLD)
 
 
 def beep_error(f):
-
+    '''
+    Decorador que permite emitir un beep cuando un método de instancia
+    decorado de un widget produce una excepción
+    '''
     def applicator(*args, **kwargs):
         try:
             f(*args, **kwargs)
@@ -721,17 +724,17 @@ class Expandir(ttk.Frame):
                 # generamos el indice que indica el final de la linea.
                 # linea.end significa el final de la linea.
                 endline = f"{line}.end"
-            
 
                 PST_EXP.EXP_srcExpandir.tag_add(
                     "codigo", startline, endline)
-            
+
             if (PST_EXP.EXP_srcExpandir.search("+-", startline, stopindex=f"{line}.1")):
                 # generamos el indice que indica el final de la linea.
                 # linea.end significa el final de la linea.
                 endline = f"{line}.end"
                 PST_EXP.EXP_srcExpandir.tag_add(
                     "line", startline, endline)
+
 
 class TextSimilar(ttk.Frame):
     def __init__(self, parent, titulo, modulo_clave, cliente, *args, **kwargs):
