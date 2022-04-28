@@ -133,10 +133,7 @@ _Font_text_exp_bold = (fuente_titulos, tamñ_texto_exp, font.BOLD)
 
 
 def beep_error(f):
-    '''
-    Decorador que permite emitir un beep cuando un método de instancia
-    decorado de un widget produce una excepción
-    '''
+
     def applicator(*args, **kwargs):
         try:
             f(*args, **kwargs)
