@@ -3,6 +3,7 @@ import os
 import json
 import tkinter as tk
 from tkinter import ttk
+from unittest.result import failfast
 from PIL import Image, ImageTk
 from getpass import getuser
 import subprocess
@@ -20,7 +21,7 @@ user = getuser()
 mypath = os.path.expanduser("~/")
 path_icon = mypath+"Compliance/image/"
 path_config = mypath+"Compliance/.conf/{}.json"
-
+btn_cerrar = ""
 # * COLORES INICIALES
 # ? -------------------------------------------------------------
 color_bd_fr = '#383838'
@@ -104,30 +105,89 @@ class FramesPoliticas(ttk.Frame):
         url = path_icon+"{}".format("icon_sys.png")
         self.gopolitica_ico = ImageTk.PhotoImage(
             Image.open(url).resize((20, 20)))
-        with open(path_config.format('clientes')) as op:
-            data = json.load(op)
-            for clt in data[cliente]:
-                for pol in clt['politica']:
-                    for sis_pol in pol:
-                        self.botones_politica = BtnScripts(
-                            self.lb_frame_politica,
-                            text=sis_pol,
-                            compound='left',
-                            image=self.gopolitica_ico,
-                        )
-                        self.botones_politica.pack(
-                            expand=0,
-                            padx=15,
-                            pady=10,
-                            ipady=15,
-                            fill='both',
-                        )
-                        self.botones_politica["command"] = partial(self.abrir_frames_scripts_,self.botones_politica, self.cliente, sis_pol, self.frame)
+        self.prueba(cliente)
+        # with open(path_config.format('clientes')) as op:
+        #     data = json.load(op)
+        #     for clt in data[cliente]:
+        #         for pol in clt['politica']:
+        #             for sis_pol in pol:
+        #                 self.botones_politica = BtnScripts(
+        #                     self.lb_frame_politica,
+        #                     text=sis_pol,
+        #                     compound='left',
+        #                     image=self.gopolitica_ico,
+        #                 )
+        #                 self.botones_politica.pack(
+        #                     expand=0,
+        #                     padx=15,
+        #                     pady=10,
+        #                     ipady=15,
+        #                     fill='both',
+        #                 )
+        #                 self.botones_politica["command"] = partial(self.abrir_frames_scripts_,self.botones_politica, self.cliente, sis_pol, self.frame)
                         
-                        self.botones_politica.bind("<Button-5>", self.OnVsb_down)
-                        self.botones_politica.bind("<Button-4>", self.OnVsb_up)
-                        self.botones_politica.bind("<Button-1>", partial(self.on_enter, self.botones_politica))
+        #                 self.botones_politica.bind("<Button-5>", self.OnVsb_down)
+        #                 self.botones_politica.bind("<Button-4>", self.OnVsb_up)
+        #                 self.botones_politica.bind("<Button-1>", partial(self.on_enter, self.botones_politica))
 
+    def format_response(self, data):
+        list_script = []
+        # try:
+        #     name = data['name']
+        #     cod = data['cod']
+        #     for pl in data['politica']:
+        #         politica_name = pl['main']
+        #         politica_icon = pl['icon']
+        #         for pl_scr in pl['script']:
+        #             print(pl_scr)
+        #         politica_script = pl['script']
+        #         final_srt = 'Name: %s \nCodigo: %s \nPolitica:: %s \n\t\t[Script: %s] \n\t\t[Icon: %s]' % (
+        #                 name, cod, politica_name, politica_script, politica_icon)
+        #         print(final_srt)
+        
+        # except:
+        #     final_srt = "No existe ese cliente"
+        
+        # return final_srt
+
+        url = path_icon+"{}"
+        
+        name = data['name']
+        cod = data['cod']
+        for pl in data['politica']:
+            politica_name = pl['main']
+            politica_icon = pl['icon']
+            self.gopolitica_ico = ImageTk.PhotoImage(
+                Image.open(url.format(politica_icon)).resize((80, 60)))
+            self.botones_politica = BtnScripts(
+                self.lb_frame_politica,
+                text=pl['main'],
+                compound='left',
+                #image=self.goclient_ico,
+            )
+            self.botones_politica.pack(
+                expand=0,
+                padx=15,
+                pady=10,
+                ipady=15,
+                fill='both',
+            )
+            #for pl_scr in pl['script']:
+            list_script.append(pl)
+            self.botones_politica["command"] = partial(
+                self.abrir_frames_scripts_, self.botones_politica, self.cliente, data, self.frame, self.gopolitica_ico)
+            self.botones_politica.bind("<Button-5>", self.OnVsb_down)
+            self.botones_politica.bind("<Button-4>", self.OnVsb_up)
+            self.botones_politica.bind("<Button-1>", partial(self.on_enter, self.botones_politica))
+           
+
+    def prueba(self, name):
+        with open(path_config.format('clientes')) as pr_clt:
+            data = json.load(pr_clt)
+            for dt in data:
+                if dt['name'] == name:
+                    self.format_response(dt)
+    
     def FR_POL_motion(self, event):
         global FR_POL
         FR_POL = event.widget
@@ -142,22 +202,46 @@ class FramesPoliticas(ttk.Frame):
         self.fr_md2.pack_forget()
         self.fr_md2.destroy()
     
-    def abrir_frames_scripts_(self, btn, cliente, politica, frame):
+    # def abrir_frames_scripts_(self, btn, cliente, politica, frame):
+    #     global framescript
+    #     btn.focus_set()
+    #     self.frame = frame
+    #     politica = politica
+    #     if btn:
+    #         btn.configure(
+    #             bg=cl_btn_actbg,
+    #             fg=cl_btn_actfg
+    #         )
+    #     if type(framescript) == str:
+    #         self.framescript = FramesScripts(self, cliente, frame, politica)
+    #         framescript =  self.framescript
+    #     else:
+    #         self.framescript.borrar_script()
+    #         self.framescript = FramesScripts(self, cliente, self.frame, politica)
+
+    # de prueba
+    def abrir_frames_scripts_(self, btn, cliente, data, frame, icon):
         global framescript
+        global btn_cerrar
+        lt_scr = ""
+        list_scripts = []
         btn.focus_set()
-        self.frame = frame
-        politica = politica
-        if btn:
-            btn.configure(
-                bg=cl_btn_actbg,
-                fg=cl_btn_actfg
-            )
+        self.frame =  frame
+        btn_cerrar['image'] = icon
+        scr_pol = btn['text']
+        for pl in data['politica']:
+            if scr_pol in pl['main']:
+                list_scripts.append(pl['script'])
+                lt_scr = pl['script']
+
         if type(framescript) == str:
-            self.framescript = FramesScripts(self, cliente, frame, politica)
+            self.framescript = FramesScripts(
+                self, cliente, self.frame, lt_scr, scr_pol)
             framescript =  self.framescript
         else:
             self.framescript.borrar_script()
-            self.framescript = FramesScripts(self, cliente, self.frame, politica)
+            self.framescript = FramesScripts(
+                self, cliente, self.frame, lt_scr, scr_pol)
 
     def OnVsb_down(self, event):
         self.canvas.yview_scroll(1, "units")
@@ -181,13 +265,12 @@ class FramesPoliticas(ttk.Frame):
         widget['foreground']=cl_btn_fg
 
 class FramesScripts(ttk.Frame):
-    def __init__(self, parent, cliente, frame, politica, *args, **kwargs):
+    def __init__(self, parent, cliente, frame, lt_scr, scr_pol, * args, **kwargs):
         ttk.Frame.__init__(self, parent, *args, **kwargs)
         global PST_AUT
+        global framescript
         self.frame = frame
         self.cliente = cliente
-        self.politica = politica
-        global framescript
         self.fr_md3 = ttk.Frame(
             self.frame,
         )
@@ -220,7 +303,7 @@ class FramesScripts(ttk.Frame):
 
         self.lb_frame_script = ttk.LabelFrame(
             self.canvas3,
-            text='{} - SCRIPTS - {}'.format(cliente, politica),
+            text='{} - SCRIPTS - {}'.format(cliente, scr_pol),
         )
 
         self.lb_frame_script.bind("<Configure>", lambda e:self.canvas3.configure(scrollregion=self.canvas3.bbox("all")))
@@ -280,40 +363,36 @@ class FramesScripts(ttk.Frame):
             for column in range(columns-1):
                 frame.columnconfigure(column, pad=spacey)
 
-        with open(path_config.format('clientes')) as op:
-            data = json.load(op)
-            for elemt in data[self.cliente]:
-                for pol in list(elemt['politica']):
-                    for k, v in pol.items():
-                        if self.politica == k:
-                            for i in v:
-                                self.btn_scr = BtnScripts(
-                                    self.lb_frame_script,
-                                    text=i,
-                                    width=10,
-                                    height=4,
-                                )
-        grid_by_column(self.lb_frame_script, 4)
+        # with open(path_config.format('clientes')) as op:
+        #     data = json.load(op)
+        #     for elemt in data[self.cliente]:
+        #         for pol in list(elemt['politica']):
+        #             for k, v in pol.items():
+        #                 if self.politica == k:
+        #                     for i in v:
+        #                         self.btn_scr = BtnScripts(
+        #                             self.lb_frame_script,
+        #                             text=i,
+        #                             width=10,
+        #                             height=4,
+        # 
+        #                         )
+        for l in lt_scr:
+            # print(l)
+        # for pol in list_scripts:
+        #     print(list_scripts[pol])
+            self.btn_scr = BtnScripts(
+                self.lb_frame_script,
+                text=l,
+                width=10,
+                height=4,
+            )
+            grid_by_column(self.lb_frame_script, 5)
 
         self.canvas3.bind("<Button-5>", self.OnVsb_down)
         self.canvas3.bind("<Button-4>", self.OnVsb_up)
         self.lb_frame_script.bind("<Button-5>", self.OnVsb_up)
         self.lb_frame_script.bind("<Button-4>", self.OnVsb_down)
-
-    def añadir_btn_scrips(self):
-        self.btn_scr = BtnScripts(
-            self.lb_frame_script,
-            text="sudo_preg4",
-            width=10,
-            height=4,
-        #command=self.src_sudo
-        )
-        self.btn_scr.grid(row=0, column=0, padx=10, pady=10)
-
-    def icons_and_scripts(self, politica, data):
-        busca_scripts = parse(f"{politica}..scripts")
-        scripts = [e.value for e in busca_scripts.find(data)]
-        return scripts
 
     def borrar_script(self):
         self.canvas3.destroy()
@@ -492,7 +571,7 @@ class Automatizar(ttk.Frame):
                 )
                 self.btn_clientes = tk.Button(
                     self.buttons_clientes,
-                    text=" "+clt,
+                    text=" "+clt['name'],
                     compound='left',
                     image=self.goclient_ico,
                 )
@@ -507,7 +586,7 @@ class Automatizar(ttk.Frame):
                     border=0,
                     highlightthickness=0,
                 )
-                self.btn_clientes["command"] = partial(self.abrir_frames_politicas_,self.btn_clientes, clt, self.buttons_clientes)
+                self.btn_clientes["command"] = partial(self.abrir_frames_politicas_,self.btn_clientes, clt['name'], self.buttons_clientes)
                 
                 self.btn_clientes.place(
                     x=45, 
@@ -569,17 +648,19 @@ class Automatizar(ttk.Frame):
             highlightbackground=color_bd_fr,
             highlightthickness=2
         )
+
 # TODO ------------- BOTON CERRAR, FRAME PIE
-        self.btn_cerrar = tk.Button(
+        global btn_cerrar
+        btn_cerrar = tk.Button(
             self.frame_pie,
             image=self.close_icon,
         )
-        self.btn_cerrar.pack(
+        btn_cerrar.pack(
             side=tk.RIGHT,
             padx=20,
             pady=5
         )
-        self.btn_cerrar.config(
+        btn_cerrar.config(
             background=colour_fr_pie,
             activebackground=colour_fr_pie,
             borderwidth=0,
@@ -621,7 +702,7 @@ class Automatizar(ttk.Frame):
                 self.fr_clt.framescript.borrar_script()
             self.fr_clt = FramesPoliticas(self, cliente, self.frame_medio)
             framescript = ""
-
+        
     def on_enter(self, btn, btn_rb, *arg):
         global PST_AUT
         self.bfr_rb_list.append(btn_rb)
@@ -632,3 +713,8 @@ class Automatizar(ttk.Frame):
 
         for rb in self.bfr_rb_list:
             rb.canvas.itemconfig(1, fill=color_bg_boton, outline=color_outline)
+    
+    
+
+
+

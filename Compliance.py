@@ -111,6 +111,7 @@ tamñ_titulo = parse.get('app', 'tamano_titulo')
 #tamñ_titulo = 14
 weight_titulo = 'bold'
 fuente_texto = parse.get('app', 'fuente_texto')
+fuente_texto_cdg = 'Monospace'
 tamñ_texto = parse.get('app', 'tamano_texto')
 fuente_menu = parse.get('menu', 'fuente_menu')
 tamñ_menu = parse.get('menu', 'tamano_menu')
@@ -125,10 +126,12 @@ fuente_pestañas = parse.get('pestana', 'fuente_pestana')
 _Font_Menu = (fuente_menu, tamñ_menu)
 _Font_Menu_bold = (fuente_menu, tamñ_menu)
 _Font_Texto = (fuente_texto, tamñ_texto)
+_Font_Texto_codigo = (fuente_texto_cdg, tamñ_texto)
 _Font_Texto_bold = (fuente_texto, tamñ_texto, font.BOLD)
 _Font_Boton = (fuente_boton, tamñ_boton, font.BOLD)
 _Font_pestañas = (fuente_pestañas, tamñ_pestaña)
 _Font_txt_exp = (fuente_texto, tamñ_texto_exp)
+_Font_txt_exp_cdg = (fuente_texto_cdg, tamñ_texto_exp)
 _Font_text_exp_bold = (fuente_titulos, tamñ_texto_exp, font.BOLD)
 
 
@@ -694,7 +697,7 @@ class Expandir(ttk.Frame):
             foreground="#990033",
             selectbackground=sel_bg_txt,
             selectforeground=sel_fg_txt,
-            font=_Font_txt_exp
+            font=_Font_txt_exp_cdg
         )
 
         PST_EXP.EXP_srcExpandir.tag_configure(
@@ -2258,32 +2261,13 @@ class Desviacion(ttk.Frame):
         self.cambiar_NamePestaña(customer)
 
     def colour_line_com(self):
-        global PST_DESV
-
-        # indx = '1.0'
-        # line1 = "+-------------------------------------------------------------------------------------+"
-        # if line1:
-        #     while True:
-        #         indx = PST_DESV.DESVfr2_srcComprobacion.search(
-        #             line1, indx, nocase=1, stopindex=tk.END)
-        #         if not indx:  # or not indx1 or not indx2 or not indx3 or not indx4:
-        #             break
-        #         lastidx = '%s+%dc' % (indx, len(line1))
-        #         PST_DESV.DESVfr2_srcComprobacion.tag_add(
-        #             'found1', indx, lastidx)
-        #         indx = lastidx
-        #         PST_DESV.DESVfr2_srcComprobacion.tag_config(
-        #             'found1',
-        #             foreground='dodgerblue',
-        #             font=_Font_Texto
-        #         )
         PST_DESV.DESVfr2_srcComprobacion.tag_configure(
             "codigo",
             background="#FDEFF4",
             foreground="#990033",
             selectbackground=sel_bg_txt,
             selectforeground=sel_fg_txt,
-            font=_Font_Texto
+            font=_Font_Texto_codigo
         )
 
         PST_DESV.DESVfr2_srcComprobacion.tag_configure(
@@ -2316,6 +2300,7 @@ class Desviacion(ttk.Frame):
 
                 PST_DESV.DESVfr2_srcComprobacion.tag_add(
                     "codigo", startline, endline)
+ 
 
             if (PST_DESV.DESVfr2_srcComprobacion.search("+-", startline, stopindex=f"{line}.1")):
                 # generamos el indice que indica el final de la linea.
@@ -2325,22 +2310,52 @@ class Desviacion(ttk.Frame):
                     "line", startline, endline)
 
     def colour_line_bak(self):
-        indx1 = '1.0'
-        line1 = "+-------------------------------------------------------------------------------------+"
-        if line1:
-            while True:
-                indx1 = PST_DESV.DESVfr2_srcBackup.search(
-                    line1, indx1, nocase=1, stopindex=tk.END)
-                if not indx1:  # or not indx2 or not indx3 or not indx4:
-                    break
-                lastidx1 = '%s+%dc' % (indx1, len(line1))
-                PST_DESV.DESVfr2_srcBackup.tag_add('found1', indx1, lastidx1)
-                indx1 = lastidx1
-                PST_DESV.DESVfr2_srcBackup.tag_config(
-                    'found1',
-                    foreground='dodgerblue',
-                    font=_Font_Texto
-                )
+        PST_DESV.DESVfr2_srcBackup.tag_configure(
+            "codigo",
+            background="#FDEFF4",
+            foreground="#990033",
+            selectbackground=sel_bg_txt,
+            selectforeground=sel_fg_txt,
+            font=_Font_Texto_codigo
+        )
+
+        PST_DESV.DESVfr2_srcBackup.tag_configure(
+            "line",
+            background="white",
+            foreground="dodgerblue",
+            selectbackground=sel_bg_txt,
+            selectforeground=sel_fg_txt,
+            font=_Font_Texto_bold
+        )
+        # obtenemos la posición del ultimo caracter en formato 'linea.columna'
+        end = PST_DESV.DESVfr2_srcBackup.index("end")
+
+        # obtenemos el numero de linea y lo convertimos en entero
+        line_count = int(end.split(".", 1)[0])
+
+        # Iteramos desde 1 hasta la ultima linea más 1.
+        for line in range(1, line_count+1):
+            # Creamos el indice que nos indicará el principio de la linea.
+            # Esto obtiene la posición del primer caracter en la linea especificada.
+            startline = f"{line}.0"
+
+            # si se encuentra en el rango 'linea.0' y 'linea.1' el caracter "#".
+            # Esto devuelve la posición de la cadena encontrada si tiene exito
+            # y si no devuelve una cadena vacía.
+            if not (PST_DESV.DESVfr2_srcBackup.search("##", startline, stopindex=f"{line}.1")) or not (PST_DESV.DESVfr2_srcBackup.search("##", startline, stopindex=f"{line}.1")):
+                # generamos el indice que indica el final de la linea.
+                # linea.end significa el final de la linea.
+                endline = f"{line}.end"
+
+                PST_DESV.DESVfr2_srcBackup.tag_add(
+                    "codigo", startline, endline)
+
+            if (PST_DESV.DESVfr2_srcBackup.search("+-", startline, stopindex=f"{line}.1")):
+                # generamos el indice que indica el final de la linea.
+                # linea.end significa el final de la linea.
+                endline = f"{line}.end"
+                PST_DESV.DESVfr2_srcBackup.tag_add(
+                    "line", startline, endline)
 
     def colour_line_ref(self):
         indx3 = '1.0'
@@ -3099,7 +3114,7 @@ class Aplicacion():
         with open(path_config.format("clientes")) as op:
             data = json.load(op)
             for clt in data:
-                list_client.append(clt)
+                list_client.append(clt['name'])
 
     def iconos(self):
         self.Desviaciones_icon = ImageTk.PhotoImage(
