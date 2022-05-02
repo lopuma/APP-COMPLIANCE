@@ -5,14 +5,13 @@
 import tkinter as tk
 from tkinter import ttk
 
-class RadioButton(ttk.Frame):
-    def __init__(self, *args, **kwargs):
-        ttk.Frame.__init__(self, *args, **kwargs)
+class _RadioButton_(ttk.Frame):
+    def __init__(self, parent, alto, ancho, radio, *args, **kwargs):
+        super().__init__(parent,  *args, **kwargs)
         from Compliance import fondo_app, color_bg_boton, color_outline
-        self.btn_frame = ttk.Frame(self)
         self.canvas = tk.Canvas(self, 
-        height=185, 
-        width=185
+        height=alto, 
+        width=ancho,
         )
         self.canvas.pack( pady=10)
         self.canvas.configure(
@@ -21,61 +20,26 @@ class RadioButton(ttk.Frame):
             borderwidth=0,
             highlightthickness=0
         )
-        self.btn_frame.pack(side=tk.LEFT)
-
         
-        def round_rectangle(obj, x1, y1, x2, y2, r=50, border=2, **kwargs):    
+
+        def round_rectangle(obj, x1, y1, x2, y2, r=radio, border=2, **kwargs):    
             points = (x1+r, y1, x1+r, y1, x2-r, y1, x2-r, y1, x2, y1, x2, y1+r, x2, y1+r, x2, y2-r, x2, y2-r, x2, y2, x2-r, y2, x2-r, y2, x1+r, y2, x1+r, y2, x1, y2, x1, y2-r, x1, y2-r, x1, y1+r, x1, y1+r, x1, y1)
             return obj.create_polygon(points, **kwargs, smooth=True)
         
-        round_rectangle(self.canvas, 5, 5, 180, 180, 50, outline=color_outline, width=3, fill=color_bg_boton, activewidth=3,  activefill=color_bg_boton, activeoutline=color_outline,)
-
-class RB_Automatizacion_clt(ttk.Frame):
+        round_rectangle(self.canvas, 5, 5, ancho-5,alto-5, radio, outline=color_outline, width=3, fill=color_bg_boton, activewidth=3,  activefill=color_bg_boton, activeoutline=color_outline,)
+    
+class BtnScripts(tk.Button):
     def __init__(self, *args, **kwargs):
-        ttk.Frame.__init__(self, *args, **kwargs)
-        from Compliance import fondo_app, color_bg_boton, color_outline
-        self.btn_frame = ttk.Frame(self)
-        self.canvas = tk.Canvas(self, 
-        height=75, 
-        width=205
-        )
-        self.canvas.pack(pady=5)
-        self.canvas.configure(
-            background=fondo_app,
+        tk.Button.__init__(self, *args, **kwargs)
+        from Compliance import color_fg_boton, _Font_Boton, color_bg_boton, color_btn_actfg
+        ttk.Button.configure(self,
+            background=color_bg_boton,
+            foreground=color_fg_boton,
+            justify=tk.RIGHT,
+            anchor='w',
+            font=_Font_Boton,
+            activeforeground=color_btn_actfg,
+            activebackground=color_bg_boton,
             border=0,
-            borderwidth=0,
-            highlightthickness=0
+            highlightthickness=0,
         )
-        self.btn_frame.pack(side=tk.LEFT)
-
-        
-        def round_rectangle(obj, x1, y1, x2, y2, r=25, border=2, **kwargs):    
-            points = (x1+r, y1, x1+r, y1, x2-r, y1, x2-r, y1, x2, y1, x2, y1+r, x2, y1+r, x2, y2-r, x2, y2-r, x2, y2, x2-r, y2, x2-r, y2, x1+r, y2, x1+r, y2, x1, y2, x1, y2-r, x1, y2-r, x1, y1+r, x1, y1+r, x1, y1)
-            return obj.create_polygon(points, **kwargs, smooth=True)
-        
-        round_rectangle(self.canvas, 5, 5, 200, 70, 25, outline=color_outline, width=3, fill=color_bg_boton, activewidth=3,  activefill=color_bg_boton, activeoutline=color_outline,)
-
-class RadioButton_venta(ttk.Frame):
-    def __init__(self, *args, **kwargs):
-        ttk.Frame.__init__(self, *args, **kwargs)
-        from Compliance import fondo_app, color_bg_boton, color_outline
-        self.btn_frame = ttk.Frame(self)
-        self.canvas = tk.Canvas(self, 
-        height=55,
-        width=155
-        )
-        self.canvas.pack()
-        self.canvas.configure(
-            background=fondo_app,
-            border=0,
-            borderwidth=0,
-            highlightthickness=0
-        )
-        self.btn_frame.pack(side=tk.LEFT)
-
-        
-        def round_rectangle(obj, x1, y1, x2, y2, r=20, border=2, **kwargs):    
-            points = (x1+r, y1, x1+r, y1, x2-r, y1, x2-r, y1, x2, y1, x2, y1+r, x2, y1+r, x2, y2-r, x2, y2-r, x2, y2, x2-r, y2, x2-r, y2, x1+r, y2, x1+r, y2, x1, y2, x1, y2-r, x1, y2-r, x1, y1+r, x1, y1+r, x1, y1)
-            return obj.create_polygon(points, **kwargs, smooth=True)
-        
-        round_rectangle(self.canvas, 5, 5, 150, 50, 20, outline=color_outline, width=3, fill=color_bg_boton, activewidth=3,  activefill=color_bg_boton, activeoutline=color_outline,)

@@ -1,18 +1,17 @@
 # -*- coding: utf-8 -*-
 import os
 import tkinter as tk
-from os import listdir, path, sep, stat
+from os import listdir
 from os.path import isdir, join, abspath
 from getpass import getuser
-from tkinter import Button, ttk
+from tkinter import ttk
 from tkinter import scrolledtext as st
 from tkinter import messagebox as mb
 from tkinter import font
 from PIL import Image, ImageTk
-from tkinter.ttk import Style
 from threading import Thread
 import time
-from Compliance import bg_panel_buscar, bg_submenu, color_txt_entry, bg_menu, fg_submenu, acbg_panel_buscar, _Font_Menu, _Font_Texto, sel_bg_txt, sel_fg_txt, fondo_app, active_color, acbg_menu, acfg_menu, fuente_texto, tamñ_texto
+from Compliance import bg_panel_buscar, bg_submenu, color_txt_entry, bg_menu, fg_submenu, acbg_panel_buscar, _Font_Menu, _Font_Texto, sel_bg_txt, sel_fg_txt, fondo_app, active_color, acbg_menu, acfg_menu, fuente_texto, tamñ_texto, _Font_Texto_bold, _Font_Texto_codigo
 user = getuser()
 mypath = os.path.expanduser("~/")
 path_extracion = mypath+"Compliance/extracion/"
@@ -49,6 +48,7 @@ class MyEntry(tk.Entry):
             highlightthickness=2,        )
         self.mostrar_menu()
         self.bind('<Control-a>', self.seleccionar_todo)
+        self.bind('<Control-A>', self.seleccionar_todo)
         self.bind('<Control-f>', self.seleccionar_todo)
         self.bind('<Control-F>', self.seleccionar_todo)
         self.bind('<Control-x>', self.cortar)
@@ -58,7 +58,9 @@ class MyEntry(tk.Entry):
         self.bind('<Control-v>', self.pegar)
         self.bind('<Control-V>', self.pegar)
         self.bind('<Control-z>', self.deshacer)
+        self.bind('<Control-Z>', self.deshacer)
         self.bind('<Control-y>', self.rehacer)
+        self.bind('<Control-Y>', self.rehacer)
         self.bind("<Button-3><ButtonRelease-3>", self._display_menu_)
         self.bind("<Key>", self.add_changes)
 
@@ -216,6 +218,7 @@ class Extracion(ttk.Frame):
         self.txt.bind('<Control-c>', lambda x: self._copiar_texto_seleccionado(x))
         self.txt.bind('<Control-C>', lambda x: self._copiar_texto_seleccionado(x))
         self.txt.bind('<Control-a>', lambda e: self._seleccionar_todo(e))
+        self.txt.bind('<Control-A>', lambda e: self._seleccionar_todo(e))
         self.txt.bind('<Control-x>', lambda e: self._limpiar_busqueda(e))
         self._ocurrencias_encontradas = []
         self._numero_ocurrencia_actual = None
@@ -351,7 +354,6 @@ class Extracion(ttk.Frame):
             for md in data:
                 self.txt.insert(tk.END, md)
 
-
     def listdir(self, path):
         try:
             return listdir(path)
@@ -366,10 +368,6 @@ class Extracion(ttk.Frame):
         return self.folder_image if isdir(path) else self.file_image
 
     def insert_item(self, name, path, parent=""):
-        """
-        Añade un archivo o carpeta a la lista y retorna el identificador
-        del ítem.
-        """
         iid = self.treeview.insert(parent, 
             tk.END, text=name, 
             tags=("fstag",)+(("folder",) if isdir(path) else ()),
@@ -379,10 +377,6 @@ class Extracion(ttk.Frame):
         return iid
 
     def load_tree(self, path, parent=""):
-        """
-        Carga el contenido del directorio especificado y lo añade
-        a la lista como ítemes hijos del ítem "parent".
-        """
         for fsobj in listdir(path):
             fullpath = join(path, fsobj)
             child = self.insert_item(fsobj, fullpath, parent)
@@ -392,20 +386,12 @@ class Extracion(ttk.Frame):
                                      child)
 
     def load_subitems(self, iid):
-        """
-        Cargar el contenido de todas las carpetas hijas del directorio
-        que se corresponde con el ítem especificado.
-        """
-
         for child_iid in self.treeview.get_children(iid):
             if isdir(self.fsobjects[child_iid]):
                 self.load_tree(self.fsobjects[child_iid],
                                parent=child_iid)
 
     def item_opened(self, event):
-        """
-        Evento invocado cuando el contenido de una carpeta es abierto.
-        """
         iid = self.treeview.selection()[0]
         self.load_subitems(iid)
 
@@ -441,8 +427,6 @@ class Extracion(ttk.Frame):
         line1 = "+-------------------------------------------------------------------------------------+"
         line3 = "CONTESTAR NO"
         line4 = "CONTESTAR N/A"
-        line5 = "---AD"
-        line6 = "---IZ"
         if line1:
             while True:
                 indx = self.txt.search(line1, indx, nocase=1, stopindex=tk.END)
@@ -490,35 +474,63 @@ class Extracion(ttk.Frame):
                 foreground='#FF5F00',
                 font=(fuente_texto, tamñ_texto, font.BOLD)
             )
-        if line5:
-            while True:
-                indx5 = self.txt.search(
-                    line5, indx5, nocase=1, stopindex=tk.END)
-                if not indx5:
-                    break
-                lastidx5 = '%s+%dc' % (indx5, len(line5)+27)
-                self.txt.tag_add('found5', indx5, lastidx5)
-                indx5 = lastidx5
-            
-            self.txt.tag_config(
-                'found5',
-                font=(fuente_texto, tamñ_texto, font.BOLD)
-            )
+        
+        PST_EXT.txt.tag_configure(
+            "titulo",
+            background="#EDEDED",
+            # foreground="#990033",
+            selectbackground=sel_bg_txt,
+            selectforeground=sel_fg_txt,
+            font=_Font_Texto_bold
+        )
 
-        if line6:
-            while True:
-                indx6 = self.txt.search(
-                    line6, indx6, nocase=1, stopindex=tk.END)
-                if not indx6:
-                    break
-                lastidx6 = '%s+%dc' % (indx6, len(line6)+27)
-                self.txt.tag_add('found6', indx6, lastidx6)
-                indx6 = lastidx6
-            
-            self.txt.tag_config(
-                'found6',
-                font=(fuente_texto, tamñ_texto, font.BOLD)
-            )
+        PST_EXT.txt.tag_configure(
+            "coment",
+            #background="#E9D5DA",
+            foreground="#ECB365",
+            selectbackground=sel_bg_txt,
+            selectforeground=sel_fg_txt,
+            font=_Font_Texto_bold
+        )
+
+        PST_EXT.txt.tag_configure(
+            "coment2",
+            #background="#E9D5DA",
+            foreground="#064663",
+            selectbackground=sel_bg_txt,
+            selectforeground=sel_fg_txt,
+            font=_Font_Texto_bold
+        )
+
+        PST_EXT.txt.tag_configure(
+            "codigo",
+            background="#FDEFF4",
+            foreground="#990033",
+            selectbackground=sel_bg_txt,
+            selectforeground=sel_fg_txt,
+            font=_Font_Texto_codigo
+        )
+        
+        end = PST_EXT.txt.index("end")
+        line_count = int(end.split(".", 1)[0])
+        for line in range(1, line_count+1):
+            startline = f"{line}.0"
+            # if not (PST_EXT.txt.search("#", startline, stopindex=f"{line}.1")) and not(PST_EXT.txt.search("//", startline, stopindex=f"{line}.1")) and not (PST_EXT.txt.search("\"", startline, stopindex=f"{line}.1")) and not (PST_EXT.txt.search("---", startline, stopindex=f"{line}.1")) and not (PST_EXT.txt.search("/*", startline, stopindex=f"{line}.1")) and not (PST_EXT.txt.search("+-", startline, stopindex=f"{line}.1")):
+            #     endline = f"{line}.end"
+            #     PST_EXT.txt.tag_add(
+            #         "codigo", startline, endline)
+            if (PST_EXT.txt.search("---", startline, stopindex=f"{line}.1")):
+                endline = f"{line}.end"
+                PST_EXT.txt.tag_add(
+                    "titulo", startline, endline)
+            if (PST_EXT.txt.search("\"", startline, stopindex=f"{line}.1")):
+                endline = f"{line}.end"
+                PST_EXT.txt.tag_add(
+                    "coment", startline, endline)
+            if (PST_EXT.txt.search("//", startline, stopindex=f"{line}.1")):
+                endline = f"{line}.end"
+                PST_EXT.txt.tag_add(
+                    "coment2", startline, endline)
 
     def colour_line2(self):
         indx2 = '1.0'
@@ -567,6 +579,7 @@ class Extracion(ttk.Frame):
             highlightcolor=active_color,
             borderwidth=0,
             highlightthickness=3,
+            #background='#1B1A17',
             insertbackground=active_color,
             selectbackground=sel_bg_txt,
             selectforeground=sel_fg_txt,

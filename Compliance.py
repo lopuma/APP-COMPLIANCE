@@ -6,7 +6,7 @@ import time
 import functools
 import subprocess
 import sys
-from tkinter import ttk
+from tkinter import N, ttk
 from getpass import getuser
 from tkinter import scrolledtext as st
 from tkinter import messagebox as mb
@@ -17,7 +17,9 @@ from tkinter.ttk import Style
 from threading import Thread
 from ScrollableNotebook import *
 from configparser import ConfigParser
-from RadioBotton import RadioButton, RadioButton_venta
+from RadioBotton import _RadioButton_
+from functools import partial
+
 #-----------------------------------------------------------#
 
 
@@ -67,9 +69,11 @@ bak = ""
 edi = ""
 res = ""
 evd = ""
+act_rbtn_ = False
 act_rbtn_auto = False
 act_rbtn_desv = False
 act_rbtn_ext = False
+act_rbtn_new = False
 # * Configuracion de APARIENCIA INICIAL
 parse = ConfigParser()
 parse.read(path_config_ini.format("apariencia.ini"))
@@ -104,6 +108,7 @@ color_fg_list = color_txt_entry
 
 bg_panel_buscar = '#A2D5AB'
 acbg_panel_buscar = '#39AEA9'
+color_btn_actfg = '#FE7E6D'
 
 fuente_titulos = parse.get('app', 'fuente_titulo')
 #fuente_titulos = 'Source Sans Pro'
@@ -111,7 +116,7 @@ tamñ_titulo = parse.get('app', 'tamano_titulo')
 #tamñ_titulo = 14
 weight_titulo = 'bold'
 fuente_texto = parse.get('app', 'fuente_texto')
-fuente_texto_cdg = 'Monospace'
+fuente_texto_cdg = 'Courier New'
 tamñ_texto = parse.get('app', 'tamano_texto')
 fuente_menu = parse.get('menu', 'fuente_menu')
 tamñ_menu = parse.get('menu', 'tamano_menu')
@@ -136,10 +141,6 @@ _Font_text_exp_bold = (fuente_titulos, tamñ_texto_exp, font.BOLD)
 
 
 def beep_error(f):
-    '''
-    Decorador que permite emitir un beep cuando un método de instancia
-    decorado de un widget produce una excepción
-    '''
     def applicator(*args, **kwargs):
         try:
             f(*args, **kwargs)
@@ -147,7 +148,6 @@ def beep_error(f):
             if args and isinstance(args[0], tk.Widget):
                 args[0].bell()
     return applicator
-
 
 class Expandir(ttk.Frame):
     def __init__(self, parent, text_EXP, widget_EXP, customer, titulo, so, st_btnDIR, st_btnAUTH, st_btnSER, st_btnACC, st_btnCMD, st_btnIDR, varNum, *args, **kwargs):
@@ -200,6 +200,8 @@ class Expandir(ttk.Frame):
             "<Key>", lambda e: desviacion.widgets_SoloLectura(e))
         self.EXP_srcExpandir.bind(
             '<Control-c>', lambda e: self._copiar_texto_seleccionado(e))
+        self.EXP_srcExpandir.bind(
+            '<Control-C>', lambda e: self._copiar_texto_seleccionado(e))
     ## --- MENU CONTEXTUAL --------------------------- ##
 
     def EXP_motion(self, event):
@@ -533,6 +535,7 @@ class Expandir(ttk.Frame):
             font=app._Font_Titulo_bold,
         )
         self.EXP_lblWidget.grid(row=0, column=0, padx=5, pady=10, sticky='w')
+
         self.EXP_srcExpandir = st.ScrolledText(
             self.vtn_expandir,
         )
@@ -738,7 +741,6 @@ class Expandir(ttk.Frame):
                 PST_EXP.EXP_srcExpandir.tag_add(
                     "line", startline, endline)
 
-
 class TextSimilar(ttk.Frame):
     def __init__(self, parent, titulo, modulo_clave, cliente, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -751,6 +753,7 @@ class TextSimilar(ttk.Frame):
         window_width = 1000
         window_height = 300
         screen_width = app.root.winfo_x()
+        print(screen_width)
         screen_height = app.root.winfo_y()
         position_top = int(screen_height)
         position_right = int(screen_width+150)
@@ -998,7 +1001,6 @@ class TextSimilar(ttk.Frame):
         self.vtn_modulos.destroy()
         desviacion._cargar_elemt_selected(value)
 
-
 class Desviacion(ttk.Frame):
     def __init__(self, parent, *args, **kwargs):
         ttk.Frame.__init__(self, parent, *args)
@@ -1099,7 +1101,10 @@ class Desviacion(ttk.Frame):
             '<Control-c>', lambda e: self._copiar_texto_seleccionado(e))
         self.DESVfr2_srcBackup.bind(
             '<Control-c>', lambda e: self._copiar_texto_seleccionado(e))
-
+        self.DESVfr2_srcComprobacion.bind(
+            '<Control-C>', lambda e: self._copiar_texto_seleccionado(e))
+        self.DESVfr2_srcBackup.bind(
+            '<Control-C>', lambda e: self._copiar_texto_seleccionado(e))
         self.DESVfr3_srcEditar.bind(
             '<Control-a>', lambda e: self._seleccionar_todo(e))
         self.DESVfr3_srcRefrescar.bind(
@@ -1115,6 +1120,12 @@ class Desviacion(ttk.Frame):
             '<Control-c>', lambda e: self._copiar_texto_seleccionado(e))
         self.DESVfr3_srcEvidencia.bind(
             '<Control-c>', lambda e: self._copiar_texto_seleccionado(e))
+        self.DESVfr3_srcEditar.bind(
+            '<Control-C>', lambda e: self._copiar_texto_seleccionado(e))
+        self.DESVfr3_srcRefrescar.bind(
+            '<Control-C>', lambda e: self._copiar_texto_seleccionado(e))
+        self.DESVfr3_srcEvidencia.bind(
+            '<Control-C>', lambda e: self._copiar_texto_seleccionado(e))
         self.DESVfr3_srcEditar.bind('<Control-f>', lambda e: self.buscar(e))
         self.DESVfr3_srcRefrescar.bind('<Control-f>', lambda e: self.buscar(e))
         self.DESVfr3_srcEvidencia.bind('<Control-f>', lambda e: self.buscar(e))
@@ -1371,14 +1382,6 @@ class Desviacion(ttk.Frame):
         scr_Event = event.widget
         scr_Event.tag_add("sel", "1.0", "end")
         return 'break'
-
-    # def pegar_texto_seleccionado(self, event):
-    #     entModulo_event = event
-    #     if entModulo_event.select_present():
-    #         self.var_entry_bsc.set("")
-    #         self.DESVfr1_btnLimpiar.grid_forget()
-    #         self.DESVfr1_btnBuscar.grid(row=1, column=1, pady=5, padx=5, sticky='nsw')
-    #     entModulo_event.event_generate("<<Paste>>")
 
     def copiar_texto_seleccionado(self):
         global txtWidget_focus
@@ -1833,10 +1836,7 @@ class Desviacion(ttk.Frame):
         self.enabled_Widgets()
 # --------- OBTENER MODULO POR CLAVE O MODULO -------------- ## //TODO "definir si buscar por clave o modulo"
 # TODO --- SI NO EXISTE, MODULO O CLAVE
-        print("clave :: ", len(clave_Buscado))
-        print("modulo :: ", len(modulo_Buscado))
         if len(clave_Buscado) == 0 and len(modulo_Buscado) == 0:
-            print("1")
             self.DESVfr1_listbox.select_clear(tk.ANCHOR)
             self.DESVfr1_entModulo.focus()
             self._disabled_buttons()
@@ -2056,7 +2056,6 @@ class Desviacion(ttk.Frame):
             return 'break'
 # TODO --- POR CLAVE UNICA
         elif len(clave_Buscado) == 1 and len(modulo_Buscado) == 0:
-            print("2")
             data = []
             no_exist = False
             clave_Buscado = str(clave_Buscado).replace(
@@ -2077,7 +2076,6 @@ class Desviacion(ttk.Frame):
                 return 'break'
 # TODO --- SI EXISTEN MAS DE UNA CLAVE
         elif len(clave_Buscado) > 1 and len(modulo_Buscado) == 0:
-            print("3")
             data = []
             no_exist = False
             self.DESVfr1_listbox.selection_clear(0, tk.END)
@@ -2095,7 +2093,6 @@ class Desviacion(ttk.Frame):
                 return 'break'
 # TODO --- SI ES MODULO UNICO
         elif len(modulo_Buscado) == 1 and len(clave_Buscado) == 0:
-            print("4")
             data = []
             no_exist = False
             modulo_Buscado = str(modulo_Buscado).replace(
@@ -2114,7 +2111,6 @@ class Desviacion(ttk.Frame):
                 return 'break'
 # TODO --- SI HAY MAS DE UN MODULO
         elif len(modulo_Buscado) > 1 and len(clave_Buscado) == 0:
-            print("5")
             data = []
             no_exist = False
             self.DESVfr1_listbox.selection_clear(0, tk.END)
@@ -2132,7 +2128,6 @@ class Desviacion(ttk.Frame):
                 return 'break'
 # TODO --- SI EXISTE UN MODULO Y UNA CLAVE
         else:
-            print("6")
             data = []
             no_exist = False
             self.DESVfr1_listbox.selection_clear(0, tk.END)
@@ -2228,7 +2223,6 @@ class Desviacion(ttk.Frame):
         self.DESV_btnScreamEvidencia.config(state='normal')
         self.DESV_btnCopyALL.config(state='normal')
         self.DESV_btn1CopyALL.config(state='normal')
-        # self.DESV_btnDirectory.config(state='normal')
 
     def cargar_Modulos(self, clt_modulo=None, *args):
         global asigne_Cliente
@@ -2278,33 +2272,15 @@ class Desviacion(ttk.Frame):
             selectforeground=sel_fg_txt,
             font=_Font_Texto_bold
         )
-        # obtenemos la posición del ultimo caracter en formato 'linea.columna'
         end = PST_DESV.DESVfr2_srcComprobacion.index("end")
-
-        # obtenemos el numero de linea y lo convertimos en entero
         line_count = int(end.split(".", 1)[0])
-
-        # Iteramos desde 1 hasta la ultima linea más 1.
         for line in range(1, line_count+1):
-            # Creamos el indice que nos indicará el principio de la linea.
-            # Esto obtiene la posición del primer caracter en la linea especificada.
             startline = f"{line}.0"
-
-            # si se encuentra en el rango 'linea.0' y 'linea.1' el caracter "#".
-            # Esto devuelve la posición de la cadena encontrada si tiene exito
-            # y si no devuelve una cadena vacía.
             if not (PST_DESV.DESVfr2_srcComprobacion.search("##", startline, stopindex=f"{line}.1")):
-                # generamos el indice que indica el final de la linea.
-                # linea.end significa el final de la linea.
                 endline = f"{line}.end"
-
                 PST_DESV.DESVfr2_srcComprobacion.tag_add(
                     "codigo", startline, endline)
- 
-
             if (PST_DESV.DESVfr2_srcComprobacion.search("+-", startline, stopindex=f"{line}.1")):
-                # generamos el indice que indica el final de la linea.
-                # linea.end significa el final de la linea.
                 endline = f"{line}.end"
                 PST_DESV.DESVfr2_srcComprobacion.tag_add(
                     "line", startline, endline)
@@ -2327,92 +2303,113 @@ class Desviacion(ttk.Frame):
             selectforeground=sel_fg_txt,
             font=_Font_Texto_bold
         )
-        # obtenemos la posición del ultimo caracter en formato 'linea.columna'
         end = PST_DESV.DESVfr2_srcBackup.index("end")
-
-        # obtenemos el numero de linea y lo convertimos en entero
         line_count = int(end.split(".", 1)[0])
-
-        # Iteramos desde 1 hasta la ultima linea más 1.
         for line in range(1, line_count+1):
-            # Creamos el indice que nos indicará el principio de la linea.
-            # Esto obtiene la posición del primer caracter en la linea especificada.
             startline = f"{line}.0"
-
-            # si se encuentra en el rango 'linea.0' y 'linea.1' el caracter "#".
-            # Esto devuelve la posición de la cadena encontrada si tiene exito
-            # y si no devuelve una cadena vacía.
             if not (PST_DESV.DESVfr2_srcBackup.search("##", startline, stopindex=f"{line}.1")) or not (PST_DESV.DESVfr2_srcBackup.search("##", startline, stopindex=f"{line}.1")):
-                # generamos el indice que indica el final de la linea.
-                # linea.end significa el final de la linea.
                 endline = f"{line}.end"
 
                 PST_DESV.DESVfr2_srcBackup.tag_add(
                     "codigo", startline, endline)
 
             if (PST_DESV.DESVfr2_srcBackup.search("+-", startline, stopindex=f"{line}.1")):
-                # generamos el indice que indica el final de la linea.
-                # linea.end significa el final de la linea.
                 endline = f"{line}.end"
                 PST_DESV.DESVfr2_srcBackup.tag_add(
                     "line", startline, endline)
 
     def colour_line_ref(self):
-        indx3 = '1.0'
-        line1 = "+-------------------------------------------------------------------------------------+"
-        if line1:
-            while True:
-                indx3 = PST_DESV.DESVfr3_srcRefrescar.search(
-                    line1, indx3, nocase=1, stopindex=tk.END)
-                if not indx3:  # or not indx4:
-                    break
-                lastidx3 = '%s+%dc' % (indx3, len(line1))
+        PST_DESV.DESVfr3_srcRefrescar.tag_configure(
+            "codigo",
+            background="#FDEFF4",
+            foreground="#990033",
+            selectbackground=sel_bg_txt,
+            selectforeground=sel_fg_txt,
+            font=_Font_Texto_codigo
+        )
+
+        PST_DESV.DESVfr3_srcRefrescar.tag_configure(
+            "line",
+            background="white",
+            foreground="dodgerblue",
+            selectbackground=sel_bg_txt,
+            selectforeground=sel_fg_txt,
+            font=_Font_Texto_bold
+        )
+        end = PST_DESV.DESVfr3_srcRefrescar.index("end")
+        line_count = int(end.split(".", 1)[0])
+        for line in range(1, line_count+1):
+            startline = f"{line}.0"
+            if not (PST_DESV.DESVfr3_srcRefrescar.search("##", startline, stopindex=f"{line}.1")):
+                endline = f"{line}.end"
                 PST_DESV.DESVfr3_srcRefrescar.tag_add(
-                    'found1', indx3, lastidx3)
-                indx3 = lastidx3
-                PST_DESV.DESVfr3_srcRefrescar.tag_config(
-                    'found1',
-                    foreground='dodgerblue',
-                    font=_Font_Texto
-                )
+                    "codigo", startline, endline)
+            if (PST_DESV.DESVfr3_srcRefrescar.search("+-", startline, stopindex=f"{line}.1")):
+                endline = f"{line}.end"
+                PST_DESV.DESVfr3_srcRefrescar.tag_add(
+                    "line", startline, endline)
 
     def colour_line_edi(self):
-        indx2 = '1.0'
-        # indx4 = '1.0'
-        line1 = "+-------------------------------------------------------------------------------------+"
-        if line1:
-            while True:
-                indx2 = PST_DESV.DESVfr3_srcEditar.search(
-                    line1, indx2, nocase=1, stopindex=tk.END)
-                if not indx2:
-                    break
-                lastidx2 = '%s+%dc' % (indx2, len(line1))
-                PST_DESV.DESVfr3_srcEditar.tag_add('found1', indx2, lastidx2)
-                indx2 = lastidx2
-                PST_DESV.DESVfr3_srcEditar.tag_config(
-                    'found1',
-                    foreground='dodgerblue',
-                    font=_Font_Texto
-                )
+        PST_DESV.DESVfr3_srcEditar.tag_configure(
+            "codigo",
+            background="#FDEFF4",
+            foreground="#990033",
+            selectbackground=sel_bg_txt,
+            selectforeground=sel_fg_txt,
+            font=_Font_Texto_codigo
+        )
+
+        PST_DESV.DESVfr3_srcEditar.tag_configure(
+            "line",
+            background="white",
+            foreground="dodgerblue",
+            selectbackground=sel_bg_txt,
+            selectforeground=sel_fg_txt,
+            font=_Font_Texto_bold
+        )
+        end = PST_DESV.DESVfr3_srcEditar.index("end")
+        line_count = int(end.split(".", 1)[0])
+        for line in range(1, line_count+1):
+            startline = f"{line}.0"
+            if not (PST_DESV.DESVfr3_srcEditar.search("##", startline, stopindex=f"{line}.1")):
+                endline = f"{line}.end"
+                PST_DESV.DESVfr3_srcEditar.tag_add(
+                    "codigo", startline, endline)
+            if (PST_DESV.DESVfr3_srcEditar.search("+-", startline, stopindex=f"{line}.1")):
+                endline = f"{line}.end"
+                PST_DESV.DESVfr3_srcEditar.tag_add(
+                    "line", startline, endline)
 
     def colour_line_evi(self):
-        indx4 = '1.0'
-        line1 = "+-------------------------------------------------------------------------------------+"
-        if line1:
-            while True:
-                indx4 = PST_DESV.DESVfr3_srcEvidencia.search(
-                    line1, indx4, nocase=1, stopindex=tk.END)
-                if not indx4:
-                    break
-                lastidx4 = '%s+%dc' % (indx4, len(line1))
+        PST_DESV.DESVfr3_srcEvidencia.tag_configure(
+            "codigo",
+            background="#FDEFF4",
+            foreground="#990033",
+            selectbackground=sel_bg_txt,
+            selectforeground=sel_fg_txt,
+            font=_Font_Texto_codigo
+        )
+
+        PST_DESV.DESVfr3_srcEvidencia.tag_configure(
+            "line",
+            background="white",
+            foreground="dodgerblue",
+            selectbackground=sel_bg_txt,
+            selectforeground=sel_fg_txt,
+            font=_Font_Texto_bold
+        )
+        end = PST_DESV.DESVfr3_srcEvidencia.index("end")
+        line_count = int(end.split(".", 1)[0])
+        for line in range(1, line_count+1):
+            startline = f"{line}.0"
+            if not (PST_DESV.DESVfr3_srcEvidencia.search("##", startline, stopindex=f"{line}.1")):
+                endline = f"{line}.end"
                 PST_DESV.DESVfr3_srcEvidencia.tag_add(
-                    'found1', indx4, lastidx4)
-                indx4 = lastidx4
-                PST_DESV.DESVfr3_srcEvidencia.tag_config(
-                    'found1',
-                    foreground='dodgerblue',
-                    font=_Font_Texto
-                )
+                    "codigo", startline, endline)
+            if (PST_DESV.DESVfr3_srcEvidencia.search("+-", startline, stopindex=f"{line}.1")):
+                endline = f"{line}.end"
+                PST_DESV.DESVfr3_srcEvidencia.tag_add(
+                    "line", startline, endline)
 
     def _disabled_buttons(self):
         global PST_DESV
@@ -2635,8 +2632,11 @@ class Desviacion(ttk.Frame):
 
         self.DESV_frame2.bind('<Motion>', app.act_botones)
 
-        self.DESV_btnDirectory = RadioButton_venta(
+        self.DESV_btnDirectory = _RadioButton_(
             self.DESV_frame2,
+            alto=55,
+            ancho=155,
+            radio=25
         )
         self._btnDir_ = ttk.Button(
             self.DESV_btnDirectory,
@@ -2652,10 +2652,13 @@ class Desviacion(ttk.Frame):
             height=30,
             width=137
         )
-        self._btnDir_.bind('<Motion>', app.active_RB_Btn)
+        self._btnDir_.bind('<Motion>', partial(app.active_radio_botton, self.DESV_btnDirectory, self._btnDir_))
 
-        self.DESV_btnService = RadioButton_venta(
+        self.DESV_btnService = _RadioButton_(
             self.DESV_frame2,
+            alto=55,
+            ancho=155,
+            radio=25
         )
         self._btnSer_ = ttk.Button(
             self.DESV_btnService,
@@ -2671,10 +2674,13 @@ class Desviacion(ttk.Frame):
             height=30,
             width=137
         )
-        self._btnSer_.bind('<Motion>', app.active_RB_Btn)
+        self._btnSer_.bind('<Motion>', partial(app.active_radio_botton, self.DESV_btnService, self._btnSer_))
 
-        self.DESV_btnAuthorized = RadioButton_venta(
+        self.DESV_btnAuthorized = _RadioButton_(
             self.DESV_frame2,
+            alto=55,
+            ancho=155,
+            radio=25
         )
         self._btnAuth_ = ttk.Button(
             self.DESV_btnAuthorized,
@@ -2690,7 +2696,7 @@ class Desviacion(ttk.Frame):
             height=30,
             width=137
         )
-        self._btnAuth_.bind('<Motion>', app.active_RB_Btn)
+        self._btnAuth_.bind('<Motion>', partial(app.active_radio_botton, self.DESV_btnAuthorized, self._btnAuth_))
 
         self.DESV_btnRecortar = ttk.Button(
             self.DESV_frame2,
@@ -2700,8 +2706,11 @@ class Desviacion(ttk.Frame):
             command=self.RecortarMinMax,
         )
 
-        self.DESV_btnAccount = RadioButton_venta(
+        self.DESV_btnAccount = _RadioButton_(
             self.DESV_frame2,
+            alto=55,
+            ancho=155,
+            radio=25
         )
         self._btnAcc_ = ttk.Button(
             self.DESV_btnAccount,
@@ -2717,10 +2726,13 @@ class Desviacion(ttk.Frame):
             height=30,
             width=137
         )
-        self._btnAcc_.bind('<Motion>', app.active_RB_Btn)
+        self._btnAcc_.bind('<Motion>', partial(app.active_radio_botton, self.DESV_btnAccount, self._btnAcc_))
 
-        self.DESV_btnCommand = RadioButton_venta(
+        self.DESV_btnCommand = _RadioButton_(
             self.DESV_frame2,
+            alto=55,
+            ancho=155,
+            radio=25
         )
         self._btnComm_ = ttk.Button(
             self.DESV_btnCommand,
@@ -2736,10 +2748,13 @@ class Desviacion(ttk.Frame):
             height=30,
             width=137
         )
-        self._btnComm_.bind('<Motion>', app.active_RB_Btn)
+        self._btnComm_.bind('<Motion>', partial(app.active_radio_botton, self.DESV_btnCommand, self._btnComm_))
 
-        self.DESV_btnIdrsa = RadioButton_venta(
+        self.DESV_btnIdrsa = _RadioButton_(
             self.DESV_frame2,
+            alto=55,
+            ancho=155,
+            radio=25
         )
         self._btnIdr_ = ttk.Button(
             self.DESV_btnIdrsa,
@@ -2755,7 +2770,7 @@ class Desviacion(ttk.Frame):
             height=30,
             width=137
         )
-        self._btnIdr_.bind('<Motion>', app.active_RB_Btn)
+        self._btnIdr_.bind('<Motion>', partial(app.active_radio_botton, self.DESV_btnIdrsa, self._btnIdr_))
 
         self.DESVfr2_srcComprobacion = st.ScrolledText(self.DESV_frame2)
         self.DESVfr2_srcComprobacion.config(
@@ -2951,7 +2966,6 @@ class Desviacion(ttk.Frame):
         )
         self.DESV_btn5Expandir.grid(
             row=4, column=3, padx=(5, 20), pady=5, sticky='ne')
-
 ## --- FUNCIONES PARA ABRIR VENTANAS EMERGENTE --------------- #
     def _QuitarSeleccion_(self):
         global list_motion
@@ -3028,7 +3042,6 @@ class Desviacion(ttk.Frame):
         app.cuaderno.notebookContent.tab(
             idOpenTab, option=None, text='DESVIACIONES : {} '.format(customer))
 
-
 class Aplicacion():
     def __init__(self):
         self.root = tk.Tk()
@@ -3056,6 +3069,9 @@ class Aplicacion():
         )
         self.contenedor.columnconfigure(1, weight=1)
         self.contenedor.rowconfigure(1, weight=1)
+
+        
+        
         self.cuaderno.add(self.contenedor, text='WorkSpace  ',
                           underline=0, image=self.WorkSpace_icon, compound=tk.LEFT)
         self.cuaderno.pack(fill="both", expand=True)
@@ -3067,7 +3083,7 @@ class Aplicacion():
         self.contenedor.bind("<Button-3>", self._display_menu_clickDerecho)
         self.root.bind_all("<Control-l>", lambda x: self.ocultar())
         self.root.focus_set()
-        self.contenedor.bind('<Motion>', self.act_botones)
+        #self.contenedor.bind('<Motion>', self.act_botones)
         # Fuente MENU CLICK DERECHO APP
         # ----------------------------------------------------------
         self.sizegrid = ttk.Sizegrip(
@@ -3081,19 +3097,15 @@ class Aplicacion():
         self.widgets_APP()
 
     def act_botones(self, e):
-        global act_rbtn_auto
-        global act_rbtn_desv
-        global act_rbtn_ext
-        act_rbtn_auto = False
-        act_rbtn_desv = False
-        act_rbtn_ext = False
-        if act_rbtn_auto == False or act_rbtn_desv == False or act_rbtn_ext == False:
+        act_rbtn_ = False
+        if not act_rbtn_auto:
             self.btn_AbrirAuto.canvas.itemconfig(
                 1, fill=color_bg_boton, outline=color_outline)
             self.btn_AbrirExt.canvas.itemconfig(
                 1, fill=color_bg_boton, outline=color_outline)
             self.btn_AbrirDesv.canvas.itemconfig(
                 1, fill=color_bg_boton, outline=color_outline)
+        
         if 'desviacion' in globals():
             desviacion.DESV_btnDirectory.canvas.itemconfig(
                 1, fill=color_bg_boton, outline=color_outline)
@@ -3402,21 +3414,7 @@ class Aplicacion():
             self.cuaderno.rightArrow.configure(foreground=active_color)
 # ---ASIGNAMOS A UNA VARIABLE CADA CLIENTE----------------------------
         if tab == 'WorkSpace  ':
-            global act_rbtn_auto
-            global act_rbtn_desv
-            global act_rbtn_ext
-            act_rbtn_auto = False
-            act_rbtn_desv = False
-            act_rbtn_ext = False
-
-            if act_rbtn_auto == False or act_rbtn_desv == False or act_rbtn_ext == False:
-                self.btn_AbrirAuto.canvas.itemconfig(
-                    1, fill=color_bg_boton, outline=color_outline)
-                self.btn_AbrirExt.canvas.itemconfig(
-                    1, fill=color_bg_boton, outline=color_outline)
-                self.btn_AbrirDesv.canvas.itemconfig(
-                    1, fill=color_bg_boton, outline=color_outline)
-
+            self.act_botones(e=None)
             asigne_Cliente = ""
             self.fileMenu.entryconfig('  Clientes', state='disabled')
             self.menu_Contextual.entryconfig('  Buscar', state='disabled')
@@ -3993,17 +3991,25 @@ class Aplicacion():
         self.menuBar.add_cascade(label=" Editar ", menu=self.editMenu)
         self.menuBar.add_cascade(label=" Ayuda ", menu=self.helpMenu)
 
-# # TODO FRAMES BUTTONS
+# #TODO FRAME PARA BUTTONS
 
         self.frameButtons = ttk.Frame(
             self.contenedor,
         )
         self.frameButtons.grid(row=0, column=0, pady=5, padx=5
-                               )
-
+        )
+        y_alto_btn = 185
+        x_ancho_btn = 185
+        pos_y_a = int(y_alto_btn/4 - 20)
+        pos_x_a = int(x_ancho_btn/4 - 33)
+        hg_btn = int(y_alto_btn - 30)
+        wd_btn = int(x_ancho_btn - 25)
 # TODO BOTON DESVIACION
-        self.btn_AbrirDesv = RadioButton(
+        self.btn_AbrirDesv = _RadioButton_(
             self.frameButtons,
+            alto=y_alto_btn,
+            ancho=x_ancho_btn,
+            radio=50
         )
         self.btn_AbrirDesv.grid(
             row=0,
@@ -4021,15 +4027,18 @@ class Aplicacion():
             command=self.abrir_issuesDesviacion,
         )
         self.btn_Desv.place(
-            x=17,
-            y=30,
-            height=150,
-            width=150
+            x=pos_x_a,
+            y=pos_y_a,
+            height=hg_btn,
+            width=wd_btn
         )
 
 # TODO BOTON EXTRACION
-        self.btn_AbrirExt = RadioButton(
+        self.btn_AbrirExt = _RadioButton_(
             self.frameButtons,
+            alto=y_alto_btn,
+            ancho=x_ancho_btn,
+            radio=50
         )
         self.btn_AbrirExt.grid(
             row=0,
@@ -4047,15 +4056,18 @@ class Aplicacion():
             command=self.abrir_issuesExtracion,
         )
         self.btn_Ext.place(
-            x=17,
-            y=30,
-            height=150,
-            width=150
+            x=pos_x_a,
+            y=pos_y_a,
+            height=hg_btn,
+            width=wd_btn
         )
 
-# TODO BOTON AUTOMATIZAR
-        self.btn_AbrirAuto = RadioButton(
+#TODO BOTON AUTOMATIZAR
+        self.btn_AbrirAuto = _RadioButton_(
             self.frameButtons,
+            alto=y_alto_btn,
+            ancho=x_ancho_btn,
+            radio=50
         )
         self.btn_AbrirAuto.grid(
             row=0,
@@ -4072,23 +4084,26 @@ class Aplicacion():
             command=self.abrir_scripts,
         )
         self.btn_Auto.place(
-            x=12,
-            y=25,
-            height=155,
-            width=160
+            x=pos_x_a,
+            y=pos_y_a,
+            height=hg_btn,
+            width=wd_btn
         )
 
         # Aqui activamos los colores por defecto del radio button
         # Tambien hay que llamar a la funcion en ='WorkSpace'
         self.frameButtons.bind('<Motion>', self.act_botones)
-        self.btn_AbrirAuto.canvas.bind('<Motion>', self.act_botones)
         self.btn_AbrirDesv.canvas.bind('<Motion>', self.act_botones)
         self.btn_AbrirExt.canvas.bind('<Motion>', self.act_botones)
+        self.btn_AbrirAuto.canvas.bind('<Motion>', self.act_botones)
+        self.contenedor.bind("<Motion>", self.act_botones)
+        self.menuBar.bind("<Motion>", self.act_botones)
 
         # Aqui activamos el color activo
-        self.btn_Auto.bind('<Motion>', self.active_RB_Auto)
-        self.btn_Desv.bind('<Motion>', self.active_RB_Desv)
-        self.btn_Ext.bind('<Motion>', self.active_RB_Ext)
+        #? Definir motion para cada boton creado
+        self.btn_Auto.bind('<Motion>', partial(self.active_radio_botton, self.btn_AbrirAuto, self.btn_Auto))
+        self.btn_Desv.bind('<Motion>', partial(self.active_radio_botton, self.btn_AbrirDesv, self.btn_Desv))
+        self.btn_Ext.bind('<Motion>', partial(self.active_radio_botton, self.btn_AbrirExt, self.btn_Ext))
 
 
 # TODO BIENVANIDA
@@ -4115,61 +4130,22 @@ class Aplicacion():
             ipady=20
         )
 
-    def active_RB_Auto(self, e):
-        global act_rbtn_auto
-        act_rbtn_auto = True
-        if act_rbtn_auto == True:
-            self.btn_AbrirAuto.canvas.itemconfig(
-                1, fill=color_acbg_boton, outline=color_acfg_boton)
-            self.btn_AbrirExt.canvas.itemconfig(
-                1, fill=color_bg_boton, outline=color_outline)
-            self.btn_AbrirDesv.canvas.itemconfig(
-                1, fill=color_bg_boton, outline=color_outline)
-
-    def active_RB_Desv(self, e):
-        global act_rbtn_desv
-        act_rbtn_desv = True
-        if act_rbtn_desv == True:
-            self.btn_AbrirDesv.canvas.itemconfig(
-                1, fill=color_acbg_boton, outline=color_acfg_boton)
-            self.btn_AbrirAuto.canvas.itemconfig(
-                1, fill=color_bg_boton, outline=color_outline)
-            self.btn_AbrirExt.canvas.itemconfig(
-                1, fill=color_bg_boton, outline=color_outline)
-
-    def active_RB_Ext(self, e):
-        global act_rbtn_ext
-        act_rbtn_ext = True
-        if act_rbtn_ext == True:
-            self.btn_AbrirExt.canvas.itemconfig(
-                1, fill=color_acbg_boton, outline=color_acfg_boton)
-            self.btn_AbrirAuto.canvas.itemconfig(
-                1, fill=color_bg_boton, outline=color_outline)
-            self.btn_AbrirDesv.canvas.itemconfig(
-                1, fill=color_bg_boton, outline=color_outline)
-
-    def active_RB_Btn(self, e):
-        if 'desviacion' in globals():
-            desviacion.DESV_btnDirectory.canvas.itemconfig(
-                1, fill=color_acbg_boton, outline=color_acfg_boton)
-            desviacion.DESV_btnService.canvas.itemconfig(
-                1, fill=color_acbg_boton, outline=color_acfg_boton)
-            desviacion.DESV_btnAuthorized.canvas.itemconfig(
-                1, fill=color_acbg_boton, outline=color_acfg_boton)
-            desviacion.DESV_btnAccount.canvas.itemconfig(
-                1, fill=color_acbg_boton, outline=color_acfg_boton)
-            desviacion.DESV_btnCommand.canvas.itemconfig(
-                1, fill=color_acbg_boton, outline=color_acfg_boton)
-            desviacion.DESV_btnIdrsa.canvas.itemconfig(
-                1, fill=color_acbg_boton, outline=color_acfg_boton)
-
+    def active_radio_botton(self, canvas, button, *args):
+        global act_rbtn_
+        self.btn_activo  = canvas
+        self.btn = button
+        act_rbtn_ = True
+        if act_rbtn_:
+            self.btn_activo.canvas.itemconfig(
+                1, fill=color_acbg_boton, outline=color_outline)
+            act_rbtn_ = False
+    
     def _fontchooser(self):
         from Preferencias import SelectFont
         ventanafont = SelectFont(None, "Ventana", app, application=self)
 
     def mainloop(self):
         self.root.mainloop()
-
 
 if __name__ == "__main__":
     app = Aplicacion()

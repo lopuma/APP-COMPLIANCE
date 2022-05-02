@@ -22,6 +22,15 @@ parse.read(path_config_ini.format("apariencia.ini"))
 window_width = parse.get('medidas_ventana', 'width')
 window_height = parse.get('medidas_ventana', 'height')
 
+def beep_error(f):
+    def applicator(*args, **kwargs):
+        try:
+            f(*args, **kwargs)
+        except:
+            if args and isinstance(args[0], tk.Widget):
+                args[0].bell()
+    return applicator
+
 class Ventana(ttk.Frame):
     
     def __init__(self, parent, name_vtn, customer, app, desviacion, path, *args, **kwargs):
@@ -83,21 +92,37 @@ class Ventana(ttk.Frame):
         self.textBuscar.bind("<FocusOut>", lambda e: self.clear_bsq(e))    
         self.textBuscar.bind("<KeyPress>", lambda e: self.clear_bsq_buttom(e))    
         self.textBuscar.bind("<Control-v>",lambda e:self.sel_text(e))
+        self.textBuscar.bind("<Control-V>",lambda e:self.sel_text(e))
         ## --- Selecionar elemento hacia abajo
         self.tree.bind("<Down>", lambda e:self.TreeDown(e))
         self.tree.bind("<Up>", lambda e:self.TreeUp(e))
         self.textBuscar.bind("<Control-x>",self.limpiar_bsq2)
+        self.textBuscar.bind("<Control-X>",self.limpiar_bsq2)
         self.textBuscar.bind("<Control-f>",self._buscar_focus)        
         self.textBuscar.bind("<Control-F>",self._buscar_focus)              
         self.srcRisk.bind("<Control-a>",lambda e:self._seleccionar_todo(e))
         self.srcImpact.bind("<Control-a>",lambda e:self._seleccionar_todo(e))
         self.srcVariable.bind("<Control-a>",lambda e:self._seleccionar_todo(e))
         self.listServer.bind("<Control-a>",lambda e:self._selALL_optionLis(e))
+        self.srcRisk.bind("<Control-A>",lambda e:self._seleccionar_todo(e))
+        self.srcImpact.bind("<Control-A>",lambda e:self._seleccionar_todo(e))
+        self.srcVariable.bind("<Control-A>",lambda e:self._seleccionar_todo(e))
+        self.listServer.bind("<Control-A>",lambda e:self._selALL_optionLis(e))
         self.srcRisk.bind("<Control-f>",self.act_buscar)
         self.srcImpact.bind("<Control-f>",self.act_buscar)
         self.srcVariable.bind("<Control-f>",self.act_buscar)
         self.listServer.bind("<Control-f>",self.act_buscar)
         self.tree.bind("<Control-f>",self.act_buscar)
+        self.srcRisk.bind("<Control-F>",self.act_buscar)
+        self.srcImpact.bind("<Control-F>",self.act_buscar)
+        self.srcVariable.bind("<Control-F>",self.act_buscar)
+        self.listServer.bind("<Control-F>",self.act_buscar)
+        self.tree.bind("<Control-F>",self.act_buscar)
+        self.srcRisk.bind("<Control-C>",self.copiar_env)
+        self.srcImpact.bind("<Control-C>",self.copiar_env)
+        self.srcVariable.bind("<Control-C>",self.copiar_env)
+        self.listServer.bind("<Control-C>",self.copiar_env)
+        self.cbxUser.bind("<Control-C>",self.copiar_env)
 
     def iconos(self):
         self.buscar_icon = ImageTk.PhotoImage(
@@ -325,6 +350,16 @@ class Ventana(ttk.Frame):
             self.srcEvent.tag_remove("sel","1.0","end")
             return 'break'
     
+    @beep_error
+    def copiar_env(self, event):
+        wd_evn = event.widget
+        seleccion = wd_evn.tag_ranges(tk.SEL)
+        if seleccion:
+            self.app.root.clipboard_clear()
+            self.app.root.clipboard_append(wd_evn.get(*seleccion).strip())
+            wd_evn.tag_remove("sel","1.0","end")
+            return 'break'
+    
     def sel_text(self, event):
         if event.widget.select_present():
             self.var_ent_buscar.set("")
@@ -538,7 +573,6 @@ class Ventana(ttk.Frame):
         if self.click == False:
             self.vtn_ventanas.resizable(1,1)
         
-
     def _release_callback(self, e):
         global window_width
         global window_height
