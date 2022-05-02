@@ -5,7 +5,7 @@
 import tkinter as tk
 from tkinter import ttk
 
-class _RadioButton_(ttk.Frame):
+class RadioButton(ttk.Frame):
     def __init__(self, parent, alto, ancho, radio, *args, **kwargs):
         super().__init__(parent,  *args, **kwargs)
         from Compliance import fondo_app, color_bg_boton, color_outline

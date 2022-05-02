@@ -9,7 +9,7 @@ import subprocess
 from functools import partial
 from ScrollableNotebook  import *
 from Compliance import fondo_app, color_outline, color_fg_boton, _Font_Boton, color_bg_boton, color_btn_actfg
-from RadioBotton import _RadioButton_, BtnScripts
+from RadioBotton import RadioButton, BtnScripts
 #* variable para actualizar la ventana
 PST_AUT = ""
 FR_POL = ""
@@ -507,7 +507,7 @@ class Automatizar(ttk.Frame):
         with open(path_config.format("clientes")) as op:
             data = json.load(op)
             for clt in data:
-                self.buttons_clientes = _RadioButton_(
+                self.buttons_clientes = RadioButton(
                     self.lb_frame_menu,
                     alto=y_alto_btn,
                     ancho=x_ancho_btn,

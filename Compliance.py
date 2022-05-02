@@ -17,7 +17,7 @@ from tkinter.ttk import Style
 from threading import Thread
 from ScrollableNotebook import *
 from configparser import ConfigParser
-from RadioBotton import _RadioButton_
+from RadioBotton import RadioButton
 from functools import partial
 
 #-----------------------------------------------------------#
@@ -2632,7 +2632,7 @@ class Desviacion(ttk.Frame):
 
         self.DESV_frame2.bind('<Motion>', app.act_botones)
 
-        self.DESV_btnDirectory = _RadioButton_(
+        self.DESV_btnDirectory = RadioButton(
             self.DESV_frame2,
             alto=55,
             ancho=155,
@@ -2654,7 +2654,7 @@ class Desviacion(ttk.Frame):
         )
         self._btnDir_.bind('<Motion>', partial(app.active_radio_botton, self.DESV_btnDirectory, self._btnDir_))
 
-        self.DESV_btnService = _RadioButton_(
+        self.DESV_btnService = RadioButton(
             self.DESV_frame2,
             alto=55,
             ancho=155,
@@ -2676,7 +2676,7 @@ class Desviacion(ttk.Frame):
         )
         self._btnSer_.bind('<Motion>', partial(app.active_radio_botton, self.DESV_btnService, self._btnSer_))
 
-        self.DESV_btnAuthorized = _RadioButton_(
+        self.DESV_btnAuthorized = RadioButton(
             self.DESV_frame2,
             alto=55,
             ancho=155,
@@ -2706,7 +2706,7 @@ class Desviacion(ttk.Frame):
             command=self.RecortarMinMax,
         )
 
-        self.DESV_btnAccount = _RadioButton_(
+        self.DESV_btnAccount = RadioButton(
             self.DESV_frame2,
             alto=55,
             ancho=155,
@@ -2728,7 +2728,7 @@ class Desviacion(ttk.Frame):
         )
         self._btnAcc_.bind('<Motion>', partial(app.active_radio_botton, self.DESV_btnAccount, self._btnAcc_))
 
-        self.DESV_btnCommand = _RadioButton_(
+        self.DESV_btnCommand = RadioButton(
             self.DESV_frame2,
             alto=55,
             ancho=155,
@@ -2750,7 +2750,7 @@ class Desviacion(ttk.Frame):
         )
         self._btnComm_.bind('<Motion>', partial(app.active_radio_botton, self.DESV_btnCommand, self._btnComm_))
 
-        self.DESV_btnIdrsa = _RadioButton_(
+        self.DESV_btnIdrsa = RadioButton(
             self.DESV_frame2,
             alto=55,
             ancho=155,
@@ -4005,7 +4005,7 @@ class Aplicacion():
         hg_btn = int(y_alto_btn - 30)
         wd_btn = int(x_ancho_btn - 25)
 # TODO BOTON DESVIACION
-        self.btn_AbrirDesv = _RadioButton_(
+        self.btn_AbrirDesv = RadioButton(
             self.frameButtons,
             alto=y_alto_btn,
             ancho=x_ancho_btn,
@@ -4034,7 +4034,7 @@ class Aplicacion():
         )
 
 # TODO BOTON EXTRACION
-        self.btn_AbrirExt = _RadioButton_(
+        self.btn_AbrirExt = RadioButton(
             self.frameButtons,
             alto=y_alto_btn,
             ancho=x_ancho_btn,
@@ -4063,7 +4063,7 @@ class Aplicacion():
         )
 
 #TODO BOTON AUTOMATIZAR
-        self.btn_AbrirAuto = _RadioButton_(
+        self.btn_AbrirAuto = RadioButton(
             self.frameButtons,
             alto=y_alto_btn,
             ancho=x_ancho_btn,
