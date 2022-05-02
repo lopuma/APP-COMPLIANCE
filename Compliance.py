@@ -149,6 +149,7 @@ def beep_error(f):
                 args[0].bell()
     return applicator
 
+
 class Expandir(ttk.Frame):
     def __init__(self, parent, text_EXP, widget_EXP, customer, titulo, so, st_btnDIR, st_btnAUTH, st_btnSER, st_btnACC, st_btnCMD, st_btnIDR, varNum, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -741,6 +742,7 @@ class Expandir(ttk.Frame):
                 PST_EXP.EXP_srcExpandir.tag_add(
                     "line", startline, endline)
 
+
 class TextSimilar(ttk.Frame):
     def __init__(self, parent, titulo, modulo_clave, cliente, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1000,6 +1002,7 @@ class TextSimilar(ttk.Frame):
         PST_DESV.DESVfr1_listbox.selection_set(indice)
         self.vtn_modulos.destroy()
         desviacion._cargar_elemt_selected(value)
+
 
 class Desviacion(ttk.Frame):
     def __init__(self, parent, *args, **kwargs):
@@ -2652,7 +2655,8 @@ class Desviacion(ttk.Frame):
             height=30,
             width=137
         )
-        self._btnDir_.bind('<Motion>', partial(app.active_radio_botton, self.DESV_btnDirectory, self._btnDir_))
+        self._btnDir_.bind('<Motion>', partial(
+            app.active_radio_botton, self.DESV_btnDirectory, self._btnDir_))
 
         self.DESV_btnService = RadioButton(
             self.DESV_frame2,
@@ -2674,7 +2678,8 @@ class Desviacion(ttk.Frame):
             height=30,
             width=137
         )
-        self._btnSer_.bind('<Motion>', partial(app.active_radio_botton, self.DESV_btnService, self._btnSer_))
+        self._btnSer_.bind('<Motion>', partial(
+            app.active_radio_botton, self.DESV_btnService, self._btnSer_))
 
         self.DESV_btnAuthorized = RadioButton(
             self.DESV_frame2,
@@ -2696,7 +2701,8 @@ class Desviacion(ttk.Frame):
             height=30,
             width=137
         )
-        self._btnAuth_.bind('<Motion>', partial(app.active_radio_botton, self.DESV_btnAuthorized, self._btnAuth_))
+        self._btnAuth_.bind('<Motion>', partial(
+            app.active_radio_botton, self.DESV_btnAuthorized, self._btnAuth_))
 
         self.DESV_btnRecortar = ttk.Button(
             self.DESV_frame2,
@@ -2726,7 +2732,8 @@ class Desviacion(ttk.Frame):
             height=30,
             width=137
         )
-        self._btnAcc_.bind('<Motion>', partial(app.active_radio_botton, self.DESV_btnAccount, self._btnAcc_))
+        self._btnAcc_.bind('<Motion>', partial(
+            app.active_radio_botton, self.DESV_btnAccount, self._btnAcc_))
 
         self.DESV_btnCommand = RadioButton(
             self.DESV_frame2,
@@ -2748,7 +2755,8 @@ class Desviacion(ttk.Frame):
             height=30,
             width=137
         )
-        self._btnComm_.bind('<Motion>', partial(app.active_radio_botton, self.DESV_btnCommand, self._btnComm_))
+        self._btnComm_.bind('<Motion>', partial(
+            app.active_radio_botton, self.DESV_btnCommand, self._btnComm_))
 
         self.DESV_btnIdrsa = RadioButton(
             self.DESV_frame2,
@@ -2770,7 +2778,8 @@ class Desviacion(ttk.Frame):
             height=30,
             width=137
         )
-        self._btnIdr_.bind('<Motion>', partial(app.active_radio_botton, self.DESV_btnIdrsa, self._btnIdr_))
+        self._btnIdr_.bind('<Motion>', partial(
+            app.active_radio_botton, self.DESV_btnIdrsa, self._btnIdr_))
 
         self.DESVfr2_srcComprobacion = st.ScrolledText(self.DESV_frame2)
         self.DESVfr2_srcComprobacion.config(
@@ -2967,6 +2976,7 @@ class Desviacion(ttk.Frame):
         self.DESV_btn5Expandir.grid(
             row=4, column=3, padx=(5, 20), pady=5, sticky='ne')
 ## --- FUNCIONES PARA ABRIR VENTANAS EMERGENTE --------------- #
+
     def _QuitarSeleccion_(self):
         global list_motion
         global txtWidget
@@ -3042,6 +3052,7 @@ class Desviacion(ttk.Frame):
         app.cuaderno.notebookContent.tab(
             idOpenTab, option=None, text='DESVIACIONES : {} '.format(customer))
 
+
 class Aplicacion():
     def __init__(self):
         self.root = tk.Tk()
@@ -3070,8 +3081,6 @@ class Aplicacion():
         self.contenedor.columnconfigure(1, weight=1)
         self.contenedor.rowconfigure(1, weight=1)
 
-        
-        
         self.cuaderno.add(self.contenedor, text='WorkSpace  ',
                           underline=0, image=self.WorkSpace_icon, compound=tk.LEFT)
         self.cuaderno.pack(fill="both", expand=True)
@@ -3105,7 +3114,7 @@ class Aplicacion():
                 1, fill=color_bg_boton, outline=color_outline)
             self.btn_AbrirDesv.canvas.itemconfig(
                 1, fill=color_bg_boton, outline=color_outline)
-        
+
         if 'desviacion' in globals():
             desviacion.DESV_btnDirectory.canvas.itemconfig(
                 1, fill=color_bg_boton, outline=color_outline)
@@ -3155,34 +3164,34 @@ class Aplicacion():
     def estilos(self):
         self.style = Style()
         self.style.configure('TCombobox',
-                             background=acbg_menu,
-                             selectbackground=sel_bg_txt,
-                             selectforeground=sel_fg_txt,
-                             )
+        background=acbg_menu,
+        selectbackground=sel_bg_txt,
+        selectforeground=sel_fg_txt,
+        )
         self.style.map('TCombobox',
-                       background=[
-                           ("active", acfg_menu)
-                       ]
-                       )
+        background=[
+            ("active", acfg_menu)
+        ]
+        )
 
         self.style.configure('TSizegrip',
-                             background=fondo_app,
-                             borderwidth=0,
-                             border=0
-                             )
+        background=fondo_app,
+        borderwidth=0,
+        border=0
+        )
 
         self.style.configure('TFrame',
-                             background=fondo_app,
-                             )
+        background=fondo_app,
+        )
 
         self.style.configure('TLabelframe',
-                             background=fondo_app,
-                             )
+        background=fondo_app,
+        )
         self.style.configure('TLabelframe.Label',
-                             background=fondo_app,
-                             foreground=color_titulos,
-                             font=self._Font_Titulo_bold,
-                             )
+        background=fondo_app,
+        foreground=color_titulos,
+        font=self._Font_Titulo_bold,
+        )
         # *===============================================================================
         self.style.configure(
             'APP.TButton',
@@ -3997,13 +4006,13 @@ class Aplicacion():
             self.contenedor,
         )
         self.frameButtons.grid(row=0, column=0, pady=5, padx=5
-        )
-        y_alto_btn = 185
-        x_ancho_btn = 185
-        pos_y_a = int(y_alto_btn/4 - 20)
-        pos_x_a = int(x_ancho_btn/4 - 33)
-        hg_btn = int(y_alto_btn - 30)
-        wd_btn = int(x_ancho_btn - 25)
+                               )
+
+        # * Espesificamos el ancho y alto del boton
+        y_alto_btn = 200
+        x_ancho_btn = 200
+        hg_btn = int(y_alto_btn-25)
+        wd_btn = int(x_ancho_btn-25)
 # TODO BOTON DESVIACION
         self.btn_AbrirDesv = RadioButton(
             self.frameButtons,
@@ -4015,20 +4024,20 @@ class Aplicacion():
             row=0,
             column=0,
             padx=20,
-            pady=10
+            pady=20
         )
         self.btn_Desv = ttk.Button(
             self.btn_AbrirDesv,
             text='\nDESVIACIONES',
-            width=14,
             style='APP.TButton',
             image=self.Automatizar_icon,
             compound='top',
             command=self.abrir_issuesDesviacion,
         )
         self.btn_Desv.place(
-            x=pos_x_a,
-            y=pos_y_a,
+            relx=0.5,
+            rely=0.5,
+            anchor=tk.CENTER,
             height=hg_btn,
             width=wd_btn
         )
@@ -4044,25 +4053,25 @@ class Aplicacion():
             row=0,
             column=1,
             padx=20,
-            pady=10
+            pady=20
         )
         self.btn_Ext = ttk.Button(
             self.btn_AbrirExt,
             text='\nEXTRACIONES',
-            width=14,
             style='APP.TButton',
             image=self.Extracion_icon,
             compound='top',
             command=self.abrir_issuesExtracion,
         )
         self.btn_Ext.place(
-            x=pos_x_a,
-            y=pos_y_a,
+            relx=0.5,
+            rely=0.5,
+            anchor=tk.CENTER,
             height=hg_btn,
             width=wd_btn
         )
 
-#TODO BOTON AUTOMATIZAR
+# TODO BOTON AUTOMATIZAR
         self.btn_AbrirAuto = RadioButton(
             self.frameButtons,
             alto=y_alto_btn,
@@ -4073,7 +4082,7 @@ class Aplicacion():
             row=0,
             column=2,
             padx=20,
-            pady=10
+            pady=20
         )
         self.btn_Auto = ttk.Button(
             self.btn_AbrirAuto,
@@ -4084,8 +4093,9 @@ class Aplicacion():
             command=self.abrir_scripts,
         )
         self.btn_Auto.place(
-            x=pos_x_a,
-            y=pos_y_a,
+            relx=0.5,
+            rely=0.5,
+            anchor=tk.CENTER,
             height=hg_btn,
             width=wd_btn
         )
@@ -4100,10 +4110,13 @@ class Aplicacion():
         self.menuBar.bind("<Motion>", self.act_botones)
 
         # Aqui activamos el color activo
-        #? Definir motion para cada boton creado
-        self.btn_Auto.bind('<Motion>', partial(self.active_radio_botton, self.btn_AbrirAuto, self.btn_Auto))
-        self.btn_Desv.bind('<Motion>', partial(self.active_radio_botton, self.btn_AbrirDesv, self.btn_Desv))
-        self.btn_Ext.bind('<Motion>', partial(self.active_radio_botton, self.btn_AbrirExt, self.btn_Ext))
+        # ? Definir motion para cada boton creado
+        self.btn_Auto.bind('<Motion>', partial(
+            self.active_radio_botton, self.btn_AbrirAuto, self.btn_Auto))
+        self.btn_Desv.bind('<Motion>', partial(
+            self.active_radio_botton, self.btn_AbrirDesv, self.btn_Desv))
+        self.btn_Ext.bind('<Motion>', partial(
+            self.active_radio_botton, self.btn_AbrirExt, self.btn_Ext))
 
 
 # TODO BIENVANIDA
@@ -4132,20 +4145,21 @@ class Aplicacion():
 
     def active_radio_botton(self, canvas, button, *args):
         global act_rbtn_
-        self.btn_activo  = canvas
+        self.btn_activo = canvas
         self.btn = button
         act_rbtn_ = True
         if act_rbtn_:
             self.btn_activo.canvas.itemconfig(
                 1, fill=color_acbg_boton, outline=color_outline)
             act_rbtn_ = False
-    
+
     def _fontchooser(self):
         from Preferencias import SelectFont
         ventanafont = SelectFont(None, "Ventana", app, application=self)
 
     def mainloop(self):
         self.root.mainloop()
+
 
 if __name__ == "__main__":
     app = Aplicacion()

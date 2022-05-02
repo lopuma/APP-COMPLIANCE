@@ -13,6 +13,7 @@ from RadioBotton import RadioButton, BtnScripts
 #* variable para actualizar la ventana
 PST_AUT = ""
 FR_POL = ""
+FR_SCR = ""
 fr_clt = False
 framescript = ""
 #* PATH
@@ -27,19 +28,17 @@ color_bd_fr = '#383838'
 colour_fr_pie = '#C65D7B'
 colour_fr_tittle = '#F68989'
 cl_btn_actbg = '#8FBDD3'
-cl_btn_bg = '#F4FCD9'
-cl_btn_fg = '#534340'
 # ? -------------------------------------------------------------
 class FramesPoliticas(ttk.Frame):
     def __init__(self, parent, cliente, frame, *args, **kwargs):
         ttk.Frame.__init__(self, parent, *args, **kwargs)
-        global PST_AUT
         global FR_POL
         self.btn_lis_pol = []
+        self.btn_rb_pol = []
         self.frame = frame
-        FR_POL = self.frame
+        FR_POL = self
         self.cliente = cliente
-        self.bind_all("<Motion>", self.FR_POL_motion)
+        self.bind("<Motion>", self.FR_POL_motion)
         self.fr_md2 = ttk.Frame(
             self.frame,
         )
@@ -100,46 +99,55 @@ class FramesPoliticas(ttk.Frame):
         self.lb_frame_politica.bind("<Button-4>", self.OnVsb_up)
 
         # * ----------- BOTOTNES DE POLITICAS ------------
-        url = path_icon+"{}".format("icon_sys.png")
-        self.gopolitica_ico = ImageTk.PhotoImage(
-            Image.open(url).resize((20, 20)))
-        self.prueba(cliente)
+        self.asignar_name_clt(cliente)
 
     def format_response(self, data):
-        list_script = []
-        
         url = path_icon+"{}"
-        
-        name = data['name']
-        cod = data['cod']
+        y_alto_btn = 80
+        x_ancho_btn = 300
+        hg_btn = int(y_alto_btn - 22)
+        wd_btn = int(x_ancho_btn - 22)
         for pl in data['politica']:
-            politica_name = pl['main']
             politica_icon = pl['icon']
-            self.gopolitica_ico = ImageTk.PhotoImage(
+            logo_script_ico = ImageTk.PhotoImage(
                 Image.open(url.format(politica_icon)).resize((80, 60)))
-            self.botones_politica = BtnScripts(
+            
+            self.buttons_POLITICA = RadioButton(
                 self.lb_frame_politica,
+                alto=y_alto_btn,
+                ancho=x_ancho_btn,
+                radio=25
+            )
+            self.buttons_POLITICA.pack(
+                expand=0,
+                padx=10,
+                pady=10,
+                fill='both',
+            )
+            self.botones_politica = BtnScripts(
+                self.buttons_POLITICA,
                 text=pl['main'],
                 compound='left',
                 #image=self.goclient_ico,
             )
-            self.botones_politica.pack(
-                expand=0,
-                padx=15,
-                pady=10,
-                ipady=15,
-                fill='both',
-            )
-            #for pl_scr in pl['script']:
-            list_script.append(pl)
+
             self.botones_politica["command"] = partial(
-                self.abrir_frames_scripts_, self.botones_politica, self.cliente, data, self.frame, self.gopolitica_ico)
+                self.abrir_frames_scripts_, self.botones_politica, self.cliente, data, self.frame, logo_script_ico, self.buttons_POLITICA)
+
+            self.botones_politica.place(
+                relx=0.5,
+                rely=0.5,
+                anchor=tk.CENTER,
+                height=hg_btn,
+                width=wd_btn
+            )
+            self.buttons_POLITICA.bind("<Button-5>", self.OnVsb_down)
+            self.buttons_POLITICA.bind("<Button-4>", self.OnVsb_up)
             self.botones_politica.bind("<Button-5>", self.OnVsb_down)
             self.botones_politica.bind("<Button-4>", self.OnVsb_up)
-            self.botones_politica.bind("<Button-1>", partial(self.on_enter, self.botones_politica))
-           
+            self.botones_politica.bind("<Button-1>", partial(self.on_enter_politica, self.botones_politica, self.buttons_POLITICA))
 
-    def prueba(self, name):
+    def asignar_name_clt(self, name):
         with open(path_config.format('clientes')) as pr_clt:
             data = json.load(pr_clt)
             for dt in data:
@@ -159,38 +167,35 @@ class FramesPoliticas(ttk.Frame):
         self.lb_frame_politica.destroy()
         self.fr_md2.pack_forget()
         self.fr_md2.destroy()
-    
-    # def abrir_frames_scripts_(self, btn, cliente, politica, frame):
-    #     global framescript
-    #     btn.focus_set()
-    #     self.frame = frame
-    #     politica = politica
-    #     if btn:
-    #         btn.configure(
-    #             bg=cl_btn_actbg,
-    #             fg=color_btn_actfg
-    #         )
-    #     if type(framescript) == str:
-    #         self.framescript = FramesScripts(self, cliente, frame, politica)
-    #         framescript =  self.framescript
-    #     else:
-    #         self.framescript.borrar_script()
-    #         self.framescript = FramesScripts(self, cliente, self.frame, politica)
 
-    # de prueba
-    def abrir_frames_scripts_(self, btn, cliente, data, frame, icon):
+    def abrir_frames_scripts_(self, btn, cliente, data, frame, icon, canvas):
         global framescript
         global btn_cerrar
         lt_scr = ""
-        list_scripts = []
+        self.lista_scripts = []
+        self.fr_cv_politicas = []
+        self.fr_cv_politicas.append(canvas)
         btn.focus_set()
         self.frame =  frame
         btn_cerrar['image'] = icon
         scr_pol = btn['text']
         for pl in data['politica']:
             if scr_pol in pl['main']:
-                list_scripts.append(pl['script'])
+                self.lista_scripts.append(pl['script'])
                 lt_scr = pl['script']
+
+        ## Al hacer click se cambiar de color.
+        if btn:
+            # #* aqui si quieres poner fondo al boton
+            btn.configure(
+                #bg=cl_btn_actbg,
+                fg=color_btn_actfg
+            )
+
+            # #* aqui si quieres poner fondo al canvas
+            for rb in self.fr_cv_politicas:
+                rb.canvas.itemconfig(1, fill=color_bg_boton, outline=color_btn_actfg)
+
 
         if type(framescript) == str:
             self.framescript = FramesScripts(
@@ -202,33 +207,35 @@ class FramesPoliticas(ttk.Frame):
                 self, cliente, self.frame, lt_scr, scr_pol)
 
     def OnVsb_down(self, event):
-        self.canvas.yview_scroll(1, "units")
+        FR_POL.canvas.yview_scroll(1, "units")
 
     def OnVsb_up(self, event):
-        self.canvas.yview_scroll(-1, "units")
+        FR_POL.canvas.yview_scroll(-1, "units")
 
-    def on_enter(self, btn, *arg):
+    def on_enter_politica(self, btn, canvas, *arg):
+        self.btn_rb_pol.append(canvas)
         self.btn_lis_pol.append(btn)
 
         for i in self.btn_lis_pol:
-            i['background']=cl_btn_bg
-            i['foreground']=cl_btn_fg
-        if btn.focus_set:
-            btn['background']=cl_btn_actbg
-            btn['foreground']=color_btn_actfg
-    
-    def on_leave(self, e):
-        widget = e.widget
-        widget['background']=cl_btn_bg
-        widget['foreground']=cl_btn_fg
+            i['background'] = color_bg_boton
+            i['foreground'] = color_fg_boton
+
+        for rb in self.btn_rb_pol:
+            rb.canvas.itemconfig(1, fill=color_bg_boton, outline=color_outline)
 
 class FramesScripts(ttk.Frame):
     def __init__(self, parent, cliente, frame, lt_scr, scr_pol, * args, **kwargs):
         ttk.Frame.__init__(self, parent, *args, **kwargs)
-        global PST_AUT
+        global FR_SCR
         global framescript
+        self.btn_rb_scr = []
+        self.btn_lis_scr = []
         self.frame = frame
         self.cliente = cliente
+        FR_SCR = self
+        
+        self.bind("<Motion>", self.FR_SCR_motion)
+        
         self.fr_md3 = ttk.Frame(
             self.frame,
         )
@@ -261,6 +268,7 @@ class FramesScripts(ttk.Frame):
 
         self.lb_frame_script = ttk.LabelFrame(
             self.canvas3,
+            borderwidth=0,
             text='{} - SCRIPTS - {}'.format(cliente, scr_pol),
         )
 
@@ -282,7 +290,12 @@ class FramesScripts(ttk.Frame):
             fill=tk.Y,
             pady=(20,0),
         )
+        self.canvas3.bind("<Button-5>", self.OnVsb_down)
+        self.canvas3.bind("<Button-4>", self.OnVsb_up)
+        self.lb_frame_script.bind("<Button-5>", self.OnVsb_down)
+        self.lb_frame_script.bind("<Button-4>", self.OnVsb_up)
 
+        # * ----------- BOTOTNES DE SCRIPTS ------------
         def ceildiv(dividendo, divisor):
             # divmod nos devuelve una tupla con el cociente y el resto, desempaquetamos eso.
             cociente, resto = divmod(dividendo, divisor)
@@ -321,36 +334,48 @@ class FramesScripts(ttk.Frame):
             for column in range(columns-1):
                 frame.columnconfigure(column, pad=spacey)
 
-        # with open(path_config.format('clientes')) as op:
-        #     data = json.load(op)
-        #     for elemt in data[self.cliente]:
-        #         for pol in list(elemt['politica']):
-        #             for k, v in pol.items():
-        #                 if self.politica == k:
-        #                     for i in v:
-        #                         self.btn_scr = BtnScripts(
-        #                             self.lb_frame_script,
-        #                             text=i,
-        #                             width=10,
-        #                             height=4,
-        # 
-        #                         )
-        for l in lt_scr:
-            # print(l)
-        # for pol in list_scripts:
-        #     print(list_scripts[pol])
-            self.btn_scr = BtnScripts(
-                self.lb_frame_script,
-                text=l,
-                width=10,
-                height=4,
-            )
-            grid_by_column(self.lb_frame_script, 5)
+        #* Tmaño de los botones
+        y_alto_btn = 150
+        x_ancho_btn = 150
+        hg_btn = int(y_alto_btn - 22)
+        wd_btn = int(x_ancho_btn - 22)
 
-        self.canvas3.bind("<Button-5>", self.OnVsb_down)
-        self.canvas3.bind("<Button-4>", self.OnVsb_up)
-        self.lb_frame_script.bind("<Button-5>", self.OnVsb_up)
-        self.lb_frame_script.bind("<Button-4>", self.OnVsb_down)
+        for l in lt_scr:
+            self.buttons_SCRIPT = RadioButton(
+                self.lb_frame_script,
+                alto=y_alto_btn,
+                ancho=x_ancho_btn,
+                radio=25
+            )
+
+            grid_by_column(self.lb_frame_script, 4)
+
+            self.btn_scr = BtnScripts(
+                self.buttons_SCRIPT,
+                text=l,
+            )
+
+            self.btn_scr["command"] = partial(
+                self.ejecutar_script, self.btn_scr, self.cliente, l, self.frame, self.buttons_SCRIPT)
+
+            self.btn_scr.place(
+                relx=0.5,
+                rely=0.5,
+                anchor=tk.CENTER,
+                height=hg_btn,
+                width=wd_btn
+            )
+
+            self.buttons_SCRIPT.bind("<Button-5>", self.OnVsb_down)
+            self.buttons_SCRIPT.bind("<Button-4>", self.OnVsb_up)
+            self.btn_scr.bind("<Button-5>", self.OnVsb_down)
+            self.btn_scr.bind("<Button-4>", self.OnVsb_up)
+            self.btn_scr.bind("<Button-1>", partial(self.on_enter_script,
+                        self.btn_scr, self.buttons_SCRIPT))
+
+    def FR_SCR_motion(self, event):
+        global FR_SCR
+        FR_SCR = event.widget
 
     def borrar_script(self):
         self.canvas3.destroy()
@@ -368,6 +393,41 @@ class FramesScripts(ttk.Frame):
 
     def OnVsb_up(self, event):
         self.canvas3.yview_scroll(-1, "units")
+
+    def on_enter_script(self, btn, canvas, *arg):
+        
+        self.btn_rb_scr.append(canvas)
+        self.btn_lis_scr.append(btn)
+
+        for i in self.btn_lis_scr:
+            i['background'] = color_bg_boton
+            i['foreground'] = color_fg_boton
+
+        for rb in self.btn_rb_scr:
+            rb.canvas.itemconfig(1, fill=color_bg_boton, outline=color_outline)
+
+    def ejecutar_script(self, btn, cliente, datos, frame, canvas):
+        print("1 - ", btn)
+        print("1 - ", cliente)
+        print("1 - ", datos)
+        print("1 - ", frame)
+        print("1 - ", canvas)
+        self.fr_cv_scripts = []
+        self.fr_cv_scripts.append(canvas)
+        btn.focus_set()
+
+        ## Al hacer click se cambiar de color.
+        if btn:
+            #* aqui si quieres poner fondo al boton
+            btn.configure(
+                #bg=cl_btn_actbg,
+                fg=color_btn_actfg
+            )
+
+            # #* aqui si quieres poner fondo al canvas
+            for rb in self.fr_cv_scripts:
+                rb.canvas.itemconfig(1, fill=color_bg_boton,
+                                    outline=color_btn_actfg)
 
 class Automatizar(ttk.Frame):
     def __init__(self, parent, app, application=None, *args, **kwargs):
@@ -399,7 +459,7 @@ class Automatizar(ttk.Frame):
         password = "Qk6vzwZM8!wAohw"
         file = '/home/esy9d7l1/Compliance/./remoteexec.sh '+password
         subprocess.Popen(["gnome-terminal", "-e", file, "-t",
-                         tittle, "--geometry", '200x30'])
+                        tittle, "--geometry", '200x30'])
 
     def frames(self):
 # TODO ---------- FRAME ARRIBA --------------
@@ -497,12 +557,11 @@ class Automatizar(ttk.Frame):
         self.lb_frame_menu.bind("<Button-5>", self._On_canvas_down)
         self.lb_frame_menu.bind("<Button-4>", self._On_canvas_up)
 
+        #* Tmaño de los botones
         y_alto_btn = 80
         x_ancho_btn = 200
-        pos_y_a = int(y_alto_btn/4)
-        pos_x_a = int(x_ancho_btn/4 - 5)
-        hg_btn = int(y_alto_btn - 20)
-        wd_btn = int(x_ancho_btn - 23)
+        hg_btn = int(y_alto_btn - 22)
+        wd_btn = int(x_ancho_btn - 22)
 # # * ----------- BOTOTNES DE CLIENTES ------------
         with open(path_config.format("clientes")) as op:
             data = json.load(op)
@@ -515,11 +574,10 @@ class Automatizar(ttk.Frame):
                 )
                 self.buttons_clientes.pack(
                     expand=0,
-                    padx=15,
-                    pady=5,
+                    padx=10,
+                    pady=10,
                     fill='both',
                 )
-                #self.btn_clientes = tk.Button(
                 self.btn_clientes = BtnScripts(
                     self.buttons_clientes,
                     text=" "+clt['name'],
@@ -530,8 +588,9 @@ class Automatizar(ttk.Frame):
                 self.btn_clientes["command"] = partial(self.abrir_frames_politicas_,self.btn_clientes, clt['name'], self.buttons_clientes)
                 
                 self.btn_clientes.place(
-                    x=pos_x_a, 
-                    y=pos_y_a,
+                    relx=0.5,
+                    rely=0.5,
+                    anchor=tk.CENTER,
                     height=hg_btn,
                     width=wd_btn
                 )
@@ -620,18 +679,21 @@ class Automatizar(ttk.Frame):
         global PST_AUT
         global framescript
         self.btn_activo  = canvas
-        self.bfr_rb_list = []
-        self.bfr_rb_list.append(canvas)
+        self.fr_cv_clientes = []
+        self.fr_cv_clientes.append(canvas)
         btn.focus_set()
 
         ## Al hacer click se cambiar de color.
         if btn:
+            # #* aqui si quieres poner fondo al boton
             btn.configure(
                 #bg=cl_btn_actbg,
-                fg=color_btn_actfg                
+                fg=color_btn_actfg
             )
-        for rb in self.bfr_rb_list:
-            rb.canvas.itemconfig(1, fill=color_bg_boton, outline=color_btn_actfg)
+
+            # #* aqui si quieres poner fondo al canvas
+            for rb in self.fr_cv_clientes:
+                rb.canvas.itemconfig(1, fill=color_bg_boton, outline=color_btn_actfg)
 
         self.lb_frame_sistemas.pack_forget()
         self.lb_frame_scripts.pack_forget()
@@ -647,13 +709,13 @@ class Automatizar(ttk.Frame):
         
     def on_enter(self, btn, btn_rb, *arg):
         global PST_AUT
-        self.bfr_rb_list.append(btn_rb)
-        self.btn_lis_cli.append(btn)
-        for i in self.btn_lis_cli:
+        PST_AUT.bfr_rb_list.append(btn_rb)
+        PST_AUT.btn_lis_cli.append(btn)
+        for i in PST_AUT.btn_lis_cli:
             i['background']=color_bg_boton
             i['foreground']=color_fg_boton
 
-        for rb in self.bfr_rb_list:
+        for rb in PST_AUT.bfr_rb_list:
             rb.canvas.itemconfig(1, fill=color_bg_boton, outline=color_outline)
     
     

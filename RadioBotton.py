@@ -26,7 +26,7 @@ class RadioButton(ttk.Frame):
             points = (x1+r, y1, x1+r, y1, x2-r, y1, x2-r, y1, x2, y1, x2, y1+r, x2, y1+r, x2, y2-r, x2, y2-r, x2, y2, x2-r, y2, x2-r, y2, x1+r, y2, x1+r, y2, x1, y2, x1, y2-r, x1, y2-r, x1, y1+r, x1, y1+r, x1, y1)
             return obj.create_polygon(points, **kwargs, smooth=True)
         
-        round_rectangle(self.canvas, 5, 5, ancho-5,alto-5, radio, outline=color_outline, width=3, fill=color_bg_boton, activewidth=3,  activefill=color_bg_boton, activeoutline=color_outline,)
+        round_rectangle(self.canvas, 5, 5, ancho - 5, alto - 5, radio, outline=color_outline, width=3, fill=color_bg_boton, activewidth=3,  activefill=color_bg_boton, activeoutline=color_outline,)
     
 class BtnScripts(tk.Button):
     def __init__(self, *args, **kwargs):
@@ -35,8 +35,6 @@ class BtnScripts(tk.Button):
         ttk.Button.configure(self,
             background=color_bg_boton,
             foreground=color_fg_boton,
-            justify=tk.RIGHT,
-            anchor='w',
             font=_Font_Boton,
             activeforeground=color_btn_actfg,
             activebackground=color_bg_boton,
