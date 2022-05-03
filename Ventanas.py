@@ -9,7 +9,7 @@ from tkinter import messagebox as mb
 from tkinter import font as font
 from PIL import Image, ImageTk
 from configparser import ConfigParser
-from Compliance import fondo_app, acfg_menu, acbg_menu, bg_submenu, color_txt_entry, fuente_texto, fg_submenu, acfg_menu, fg_menu, color_titulos, _Font_Texto, color_fg_list, sel_bg_txt, sel_fg_txt, active_color, _Font_Menu, oddrow, evenrow
+from Compliance import fondo_app, select_fg, select_bg, bg_submenu, color_text, fuente_texto, fg_submenu, select_fg, fg_menu, color_titulos, _Font_Texto, color_text, select_bg, select_fg, active_color, _Font_Menu, oddrow, evenrow
 from Extraciones import MyEntry
 user = getuser()
 mypath = os.path.expanduser("~/")
@@ -153,7 +153,7 @@ class Ventana(ttk.Frame):
         entry = self.var_ent_buscar.get()
         if entry == "Buscar Directories / File ...":
             text_widget.config(
-                foreground=color_txt_entry,
+                foreground=color_text,
                 font=_Font_Texto
             )
             self.var_ent_buscar.set("")
@@ -378,7 +378,7 @@ class Ventana(ttk.Frame):
             label="  Buscar", 
             accelerator='Ctrl+F',
             background=bg_submenu, foreground=fg_submenu,
-            activebackground=acbg_menu,activeforeground=acfg_menu,
+            activebackground=select_bg,activeforeground=select_fg,
             font=_Font_Menu,
             command=self.act_buscar,
         )
@@ -387,7 +387,7 @@ class Ventana(ttk.Frame):
             label="  Copiar", 
             accelerator='Ctrl+C',
             background=bg_submenu, foreground=fg_submenu,
-            activebackground=acbg_menu,activeforeground=acfg_menu,
+            activebackground=select_bg,activeforeground=select_fg,
             font=_Font_Menu,
             command=self.copiar,
             state='normal',
@@ -396,7 +396,7 @@ class Ventana(ttk.Frame):
             label="  Pegar", 
             accelerator='Ctrl+V',
             background=bg_submenu, foreground=fg_submenu,
-            activebackground=acbg_menu,activeforeground=acfg_menu,
+            activebackground=select_bg,activeforeground=select_fg,
             font=_Font_Menu,
             command=self.pegar,
         )
@@ -405,7 +405,7 @@ class Ventana(ttk.Frame):
             label="  Seleccionar todo", 
             accelerator='Ctrl+A',
             background=bg_submenu, foreground=fg_submenu,
-            activebackground=acbg_menu,activeforeground=acfg_menu,
+            activebackground=select_bg,activeforeground=select_fg,
             font=_Font_Menu,
             command=self.seleccionar_todo,
             state='normal',
@@ -414,7 +414,7 @@ class Ventana(ttk.Frame):
             label="  Limpiar", 
             accelerator='Ctrl+X',
             background=bg_submenu, foreground=fg_submenu,
-            activebackground=acbg_menu,activeforeground=acfg_menu,
+            activebackground=select_bg,activeforeground=select_fg,
             font=_Font_Menu,
             command=self.limpiar_bsq2,
             state='disabled',
@@ -424,7 +424,7 @@ class Ventana(ttk.Frame):
                                 #image=self.cerrar_icon,
                                 compound=tk.LEFT,
                                 background=bg_submenu, foreground=fg_submenu,
-                                activebackground=acbg_menu,activeforeground=acfg_menu,
+                                activebackground=select_bg,activeforeground=select_fg,
                                 font=_Font_Menu,
                                 command=self.cerrar_vtn
                                 )
@@ -471,7 +471,7 @@ class Ventana(ttk.Frame):
             label="  Buscar",
             accelerator='Ctrl+F',
             background=bg_submenu, foreground=fg_submenu,
-            activebackground=acbg_menu,activeforeground=acfg_menu,
+            activebackground=select_bg,activeforeground=select_fg,
             font=_Font_Menu,
             command=self.act_buscar,
         )
@@ -481,7 +481,7 @@ class Ventana(ttk.Frame):
             label="  Copiar", 
             accelerator='Ctrl+C',
             background=bg_submenu, foreground=fg_submenu,
-            activebackground=acbg_menu,activeforeground=acfg_menu,
+            activebackground=select_bg,activeforeground=select_fg,
             font=_Font_Menu,
             command=lambda e=self.listServer:self.copiar_optionLis(e),
             state='disabled',
@@ -491,7 +491,7 @@ class Ventana(ttk.Frame):
             label="  Pegar", 
             accelerator='Ctrl+V',
             background=bg_submenu, foreground=fg_submenu,
-            activebackground=acbg_menu,activeforeground=acfg_menu,
+            activebackground=select_bg,activeforeground=select_fg,
             font=_Font_Menu,
             state='disabled',
         )
@@ -501,7 +501,7 @@ class Ventana(ttk.Frame):
             label="  Seleccionar todo", 
             accelerator='Ctrl+A',
             background=bg_submenu, foreground=fg_submenu,
-            activebackground=acbg_menu,activeforeground=acfg_menu,
+            activebackground=select_bg,activeforeground=select_fg,
             font=_Font_Menu,
             command=lambda e=self.listServer:self.selALL_optionLis(e),
             state='normal',
@@ -511,7 +511,7 @@ class Ventana(ttk.Frame):
             label="  Limpiar", 
             accelerator='Ctrl+X',
             background=bg_submenu, foreground=fg_submenu,
-            activebackground=acbg_menu,activeforeground=acfg_menu,
+            activebackground=select_bg,activeforeground=select_fg,
             font=_Font_Menu,
             state='disabled',
         )
@@ -522,7 +522,7 @@ class Ventana(ttk.Frame):
             #image=self.cerrar_icon,
             compound=tk.LEFT,
             background=bg_submenu, foreground=fg_submenu,
-            activebackground=acbg_menu,activeforeground=acfg_menu,
+            activebackground=select_bg,activeforeground=select_fg,
             font=_Font_Menu,
             command=self.cerrar_vtn
         )
@@ -635,7 +635,7 @@ class Ventana(ttk.Frame):
             foreground="gray75",
             highlightcolor=active_color,
             insertbackground=active_color,
-            selectbackground=sel_bg_txt,
+            selectbackground=select_bg,
             highlightthickness=2,
             font=(fuente_texto, 14)
         )
@@ -702,9 +702,8 @@ class Ventana(ttk.Frame):
         self.tree.heading("#3", text="TIPO", anchor=tk.CENTER)
         self.tree.heading("#4", text="OWNER GROUP", anchor=tk.CENTER)
         self.tree.heading("#5", text="CODE", anchor=tk.CENTER)
-        self.tree.tag_configure('oddrow', background=oddrow, font=_Font_Texto)
+        self.tree.tag_configure('oddrow', background=oddrow, font=_Font_Texto,)
         self.tree.tag_configure('evenrow', background=evenrow, font=_Font_Texto)
-        
         # Mostramo por pantalla.
         self.tree.grid(column=0, row=0, pady=10, padx=(5,0), sticky='nsew')
         self.tree_scrollbar.grid(column=1, row=0, sticky=tk.N+tk.S,padx=(0,5), pady=10)
@@ -736,9 +735,9 @@ class Ventana(ttk.Frame):
         self.fr2_scroll1 = tk.Scrollbar(self.labelframe2, orient=tk.VERTICAL)
         self.listServer.config(
             selectmode=tk.EXTENDED,
-            foreground=color_fg_list,
-            selectbackground=sel_bg_txt,
-            selectforeground=sel_fg_txt,
+            foreground=color_text,
+            selectbackground=select_bg,
+            selectforeground=select_fg,
             font=_Font_Texto,
             highlightcolor = active_color,
             borderwidth=0, 
@@ -768,8 +767,8 @@ class Ventana(ttk.Frame):
             borderwidth=0, 
             highlightthickness=3,
             insertbackground=active_color,
-            selectforeground=sel_fg_txt,
-            selectbackground=sel_bg_txt,
+            selectforeground=select_fg,
+            selectbackground=select_bg,
         )
 
         self.btnCpRisk = ttk.Button(
@@ -800,8 +799,8 @@ class Ventana(ttk.Frame):
             borderwidth=0, 
             highlightthickness=3,
             insertbackground=active_color,
-            selectforeground=sel_fg_txt,
-            selectbackground=sel_bg_txt,
+            selectforeground=select_fg,
+            selectbackground=select_bg,
         )
 
         self.btnCpImp = ttk.Button(
@@ -852,8 +851,8 @@ class Ventana(ttk.Frame):
             borderwidth=0, 
             highlightthickness=2,
             insertbackground=active_color,
-            selectforeground=sel_fg_txt,
-            selectbackground=sel_bg_txt,
+            selectforeground=select_fg,
+            selectbackground=select_bg,
         )
 
         self.btnCpVariable = ttk.Button(

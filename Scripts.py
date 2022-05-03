@@ -8,7 +8,7 @@ from getpass import getuser
 import subprocess
 from functools import partial
 from ScrollableNotebook  import *
-from Compliance import fondo_app, color_outline, color_fg_boton, _Font_Boton, color_bg_boton, color_btn_actfg
+from Compliance import fondo_app, color_default_outline, color_default_fgBT, _Font_Boton, color_default_bgBT, color_default_afgBT
 from RadioBotton import RadioButton, BtnScripts
 #* variable para actualizar la ventana
 PST_AUT = ""
@@ -189,12 +189,12 @@ class FramesPoliticas(ttk.Frame):
             # #* aqui si quieres poner fondo al boton
             btn.configure(
                 #bg=cl_btn_actbg,
-                fg=color_btn_actfg
+                fg=color_default_afgBT
             )
 
             # #* aqui si quieres poner fondo al canvas
             for rb in self.fr_cv_politicas:
-                rb.canvas.itemconfig(1, fill=color_bg_boton, outline=color_btn_actfg)
+                rb.canvas.itemconfig(1, fill=color_default_bgBT, outline=color_default_afgBT)
 
 
         if type(framescript) == str:
@@ -217,11 +217,11 @@ class FramesPoliticas(ttk.Frame):
         self.btn_lis_pol.append(btn)
 
         for i in self.btn_lis_pol:
-            i['background'] = color_bg_boton
-            i['foreground'] = color_fg_boton
+            i['background'] = color_default_bgBT
+            i['foreground'] = color_default_fgBT
 
         for rb in self.btn_rb_pol:
-            rb.canvas.itemconfig(1, fill=color_bg_boton, outline=color_outline)
+            rb.canvas.itemconfig(1, fill=color_default_bgBT, outline=color_default_outline)
 
 class FramesScripts(ttk.Frame):
     def __init__(self, parent, cliente, frame, lt_scr, scr_pol, * args, **kwargs):
@@ -400,11 +400,11 @@ class FramesScripts(ttk.Frame):
         self.btn_lis_scr.append(btn)
 
         for i in self.btn_lis_scr:
-            i['background'] = color_bg_boton
-            i['foreground'] = color_fg_boton
+            i['background'] = color_default_bgBT
+            i['foreground'] = color_default_fgBT
 
         for rb in self.btn_rb_scr:
-            rb.canvas.itemconfig(1, fill=color_bg_boton, outline=color_outline)
+            rb.canvas.itemconfig(1, fill=color_default_bgBT, outline=color_default_outline)
 
     def ejecutar_script(self, btn, cliente, datos, frame, canvas):
         print("1 - ", btn)
@@ -421,13 +421,13 @@ class FramesScripts(ttk.Frame):
             #* aqui si quieres poner fondo al boton
             btn.configure(
                 #bg=cl_btn_actbg,
-                fg=color_btn_actfg
+                fg=color_default_afgBT
             )
 
             # #* aqui si quieres poner fondo al canvas
             for rb in self.fr_cv_scripts:
-                rb.canvas.itemconfig(1, fill=color_bg_boton,
-                                    outline=color_btn_actfg)
+                rb.canvas.itemconfig(1, fill=color_default_bgBT,
+                                    outline=color_default_afgBT)
 
 class Automatizar(ttk.Frame):
     def __init__(self, parent, app, application=None, *args, **kwargs):
@@ -688,12 +688,12 @@ class Automatizar(ttk.Frame):
             # #* aqui si quieres poner fondo al boton
             btn.configure(
                 #bg=cl_btn_actbg,
-                fg=color_btn_actfg
+                fg=color_default_afgBT
             )
 
             # #* aqui si quieres poner fondo al canvas
             for rb in self.fr_cv_clientes:
-                rb.canvas.itemconfig(1, fill=color_bg_boton, outline=color_btn_actfg)
+                rb.canvas.itemconfig(1, fill=color_default_bgBT, outline=color_default_afgBT)
 
         self.lb_frame_sistemas.pack_forget()
         self.lb_frame_scripts.pack_forget()
@@ -712,11 +712,11 @@ class Automatizar(ttk.Frame):
         PST_AUT.bfr_rb_list.append(btn_rb)
         PST_AUT.btn_lis_cli.append(btn)
         for i in PST_AUT.btn_lis_cli:
-            i['background']=color_bg_boton
-            i['foreground']=color_fg_boton
+            i['background']=color_default_bgBT
+            i['foreground']=color_default_fgBT
 
         for rb in PST_AUT.bfr_rb_list:
-            rb.canvas.itemconfig(1, fill=color_bg_boton, outline=color_outline)
+            rb.canvas.itemconfig(1, fill=color_default_bgBT, outline=color_default_outline)
     
     
 

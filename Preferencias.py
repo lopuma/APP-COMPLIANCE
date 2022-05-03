@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
-from cgitb import text
-from textwrap import wrap
 import tkinter as tk
-from tkinter import END, StringVar, ttk
+from tkinter import StringVar, ttk
 import os
 from tkinter import font
 from getpass import getuser
-
-from Compliance import _Font_Texto, color_fg_list, sel_bg_txt, sel_fg_txt, active_color
 from Extraciones import MyEntry
+from Compliance import fondo_app
+
 user = getuser()
 mypath = os.path.expanduser("~/")
 path_config = mypath+"Compliance/.conf/"
@@ -21,6 +19,7 @@ class SelectFont(tk.Toplevel):
         self.geometry('700x600')
         self.title("Apariencia para {} ".format(self.titulo))
         self.our_font = font.Font(family='Helvetica', size=32)
+        self.config(background=fondo_app)
         self.widget_preferencia()
 
     def widget_preferencia(self):
@@ -131,22 +130,22 @@ class SelectFont(tk.Toplevel):
         
         for fuente in result:
             self.list_familia.insert(tk.END, fuente)
-        print(result)
         
         self.list_familia.pack(
-            expand=0, 
-            fill=tk.BOTH, 
+            expand=0,
+            fill=tk.BOTH,
             side=tk.TOP,
             padx=10,
             pady=(0, 10)
         )
+
         self.list_familia.config(
-            foreground=color_fg_list,
-            selectbackground=sel_bg_txt,
-            selectforeground=sel_fg_txt,
-            font=_Font_Texto,
-            highlightcolor = active_color,
-            borderwidth=0, 
+            foreground="black",
+            selectbackground="#5584AC",
+            selectforeground="white",
+            font="Helvetica",
+            highlightcolor="#297F87",
+            borderwidth=0,
             highlightthickness=2,
         )
 
@@ -162,22 +161,23 @@ class SelectFont(tk.Toplevel):
             self.list_estilo.insert(tk.END, e)
         
         self.list_estilo.pack(
-            expand=0, 
-            fill=tk.BOTH, 
+            expand=0,
+            fill=tk.BOTH,
             side=tk.TOP,
             padx=10,
             pady=(0, 10)
         )
+
         self.list_estilo.config(
-            foreground=color_fg_list,
-            selectbackground=sel_bg_txt,
-            selectforeground=sel_fg_txt,
-            font=_Font_Texto,
-            highlightcolor = active_color,
+            foreground="black",
+            selectbackground="#5584AC",
+            selectforeground="white",
+            font="Helvetica",
+            highlightcolor = "#297F87",
             borderwidth=0, 
             highlightthickness=2,
         )
-
+        
         self.list_size = tk.Listbox(
             self.frl_tamaño,
             height=12,
@@ -189,20 +189,20 @@ class SelectFont(tk.Toplevel):
         for t in font_size:
             self.list_size.insert(tk.END, t)
 
+
         self.list_size.pack(
-            expand=0, 
-            fill=tk.BOTH, 
+            expand=0,
+            fill=tk.BOTH,
             side=tk.TOP,
             padx=10,
             pady=(0, 10)
         )
-
         self.list_size.config(
-            foreground=color_fg_list,
-            selectbackground=sel_bg_txt,
-            selectforeground=sel_fg_txt,
-            font=_Font_Texto,
-            highlightcolor = active_color,
+            foreground="black",
+            selectbackground="#5584AC",
+            selectforeground="white",
+            font="Helvetica",
+            highlightcolor = "#297F87",
             borderwidth=0, 
             highlightthickness=2,
         )

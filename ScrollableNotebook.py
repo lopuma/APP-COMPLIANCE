@@ -9,7 +9,7 @@ import time
 from tkinter import ttk
 from threading import Thread
 from PIL import Image, ImageTk
-from Compliance import _Font_Texto, fg_submenu, acbg_menu, bg_menu, acfg_menu, bg_submenu,fondo_app, _Font_pestañas 
+from Compliance import _Font_Texto, fg_submenu, select_bg, bg_menu, select_fg, bg_submenu,fondo_app, _Font_pestañas 
 release = True
 path = os.path.expanduser("~/")
 path_icon = path+"Compliance/image/"
@@ -207,8 +207,8 @@ class ScrollableNotebook(ttk.Frame):
                                     background=bg_submenu, 
                                     foreground=fg_submenu,
                                     font=_Font_Texto,
-                                    activebackground=acbg_menu,
-                                    activeforeground=acfg_menu)
+                                    activebackground=select_bg,
+                                    activeforeground=select_fg)
         tabListMenu.entryconfig('WorkSpace  ', 
                                 accelerator="ALT+W",
                                 image=self.WorkSpac_icon, 
@@ -226,7 +226,7 @@ class ScrollableNotebook(ttk.Frame):
             #accelerator='Ctrl+F',
             command=self._abrir_issuesDESV,
             background=bg_submenu, foreground=fg_submenu,
-            activebackground=acbg_menu,activeforeground=acfg_menu,
+            activebackground=select_bg,activeforeground=select_fg,
             font=_Font_Texto,
         )
         self.tabListMenu.add_command(
@@ -234,7 +234,7 @@ class ScrollableNotebook(ttk.Frame):
             #accelerator='Ctrl+F',
             command=self._abrir_issuesEXT,
             background=bg_submenu, foreground=fg_submenu,
-            activebackground=acbg_menu,activeforeground=acfg_menu,
+            activebackground=select_bg,activeforeground=select_fg,
             font=_Font_Texto,
         )
         self.tabListMenu.add_command(
@@ -242,7 +242,7 @@ class ScrollableNotebook(ttk.Frame):
             #accelerator='Ctrl+F',
             #command=self._abrir_issuesEXT,
             background=bg_submenu, foreground=fg_submenu,
-            activebackground=acbg_menu,activeforeground=acfg_menu,
+            activebackground=select_bg,activeforeground=select_fg,
             font=_Font_Texto,
         )
         self.tabListMenu.tk_popup(event.x_root, event.y_root)

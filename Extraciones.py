@@ -11,7 +11,7 @@ from tkinter import font
 from PIL import Image, ImageTk
 from threading import Thread
 import time
-from Compliance import bg_panel_buscar, bg_submenu, color_txt_entry, bg_menu, fg_submenu, acbg_panel_buscar, _Font_Menu, _Font_Texto, sel_bg_txt, sel_fg_txt, fondo_app, active_color, acbg_menu, acfg_menu, fuente_texto, tamñ_texto, _Font_Texto_bold, _Font_Texto_codigo
+from Compliance import bg_panel_buscar, bg_submenu, color_text, bg_menu, fg_submenu, acbg_panel_buscar, _Font_Menu, _Font_Texto, select_bg, select_fg, fondo_app, active_color, select_bg, select_fg, fuente_texto, tamñ_texto, _Font_Texto_bold, _Font_Texto_codigo
 user = getuser()
 mypath = os.path.expanduser("~/")
 path_extracion = mypath+"Compliance/extracion/"
@@ -38,13 +38,13 @@ class MyEntry(tk.Entry):
         self.changes = [""]
         self.steps = int()
         self.config(
-            foreground=color_txt_entry,
-            selectforeground=sel_fg_txt,
+            foreground=color_text,
+            selectforeground=select_fg,
             font=_Font_Texto,
             borderwidth=0,
             highlightcolor=active_color,
             insertbackground=active_color,
-            selectbackground=sel_bg_txt,
+            selectbackground=select_bg,
             highlightthickness=2,        )
         self.mostrar_menu()
         self.bind('<Control-a>', self.seleccionar_todo)
@@ -72,8 +72,8 @@ class MyEntry(tk.Entry):
             accelerator='Ctrl+Z',
             background=bg_submenu, 
             foreground=fg_submenu,
-            activebackground=acbg_menu, 
-            activeforeground=acfg_menu,
+            activebackground=select_bg, 
+            activeforeground=select_fg,
             font=_Font_Menu,
             state='disabled'
         )
@@ -83,8 +83,8 @@ class MyEntry(tk.Entry):
             accelerator='Ctrl+Y',
             background=bg_submenu,
             foreground=fg_submenu,
-            activebackground=acbg_menu, 
-            activeforeground=acfg_menu,
+            activebackground=select_bg, 
+            activeforeground=select_fg,
             font=_Font_Menu,
             state='disabled'
         )
@@ -93,7 +93,7 @@ class MyEntry(tk.Entry):
             label="  Cortar",
             accelerator='Ctrl+X',
             background=bg_submenu, foreground=fg_submenu,
-            activebackground=acbg_menu, activeforeground=acfg_menu,
+            activebackground=select_bg, activeforeground=select_fg,
             font=_Font_Menu,
             state='disabled',
             command=self.cortar
@@ -103,8 +103,8 @@ class MyEntry(tk.Entry):
             accelerator='Ctrl+C',
             background=bg_submenu, 
             foreground=fg_submenu,
-            activebackground=acbg_menu, 
-            activeforeground=acfg_menu,
+            activebackground=select_bg, 
+            activeforeground=select_fg,
             font=_Font_Menu,
             state='disable',
             command=self.copiar
@@ -114,8 +114,8 @@ class MyEntry(tk.Entry):
             accelerator='Ctrl+V',
             background=bg_submenu,
             foreground=fg_submenu,
-            activebackground=acbg_menu,
-            activeforeground=acfg_menu,
+            activebackground=select_bg,
+            activeforeground=select_fg,
             font=_Font_Menu,
             command=self.pegar
         )
@@ -127,8 +127,8 @@ class MyEntry(tk.Entry):
             compound=tk.LEFT,
             background=bg_submenu, 
             foreground=fg_submenu,
-            activebackground=acbg_menu, 
-            activeforeground=acfg_menu,
+            activebackground=select_bg, 
+            activeforeground=select_fg,
             font=_Font_Menu,
         )
         
@@ -479,8 +479,8 @@ class Extracion(ttk.Frame):
             "titulo",
             background="#EDEDED",
             # foreground="#990033",
-            selectbackground=sel_bg_txt,
-            selectforeground=sel_fg_txt,
+            selectbackground=select_bg,
+            selectforeground=select_fg,
             font=_Font_Texto_bold
         )
 
@@ -488,8 +488,8 @@ class Extracion(ttk.Frame):
             "coment",
             #background="#E9D5DA",
             foreground="#ECB365",
-            selectbackground=sel_bg_txt,
-            selectforeground=sel_fg_txt,
+            selectbackground=select_bg,
+            selectforeground=select_fg,
             font=_Font_Texto_bold
         )
 
@@ -497,8 +497,8 @@ class Extracion(ttk.Frame):
             "coment2",
             #background="#E9D5DA",
             foreground="#064663",
-            selectbackground=sel_bg_txt,
-            selectforeground=sel_fg_txt,
+            selectbackground=select_bg,
+            selectforeground=select_fg,
             font=_Font_Texto_bold
         )
 
@@ -506,8 +506,8 @@ class Extracion(ttk.Frame):
             "codigo",
             background="#FDEFF4",
             foreground="#990033",
-            selectbackground=sel_bg_txt,
-            selectforeground=sel_fg_txt,
+            selectbackground=select_bg,
+            selectforeground=select_fg,
             font=_Font_Texto_codigo
         )
         
@@ -581,8 +581,8 @@ class Extracion(ttk.Frame):
             highlightthickness=3,
             #background='#1B1A17',
             insertbackground=active_color,
-            selectbackground=sel_bg_txt,
-            selectforeground=sel_fg_txt,
+            selectbackground=select_bg,
+            selectforeground=select_fg,
             state='normal'
         )
         self.txt.grid(row=0, column=0, sticky="nsew")
@@ -605,7 +605,7 @@ class Extracion(ttk.Frame):
             label="  Buscar",
             accelerator='Ctrl+F',
             background=bg_submenu, foreground=fg_submenu,
-            activebackground=acbg_menu, activeforeground=acfg_menu,
+            activebackground=select_bg, activeforeground=select_fg,
             font=_Font_Menu,
             command=lambda e=self.txt: self.panel_buscar(e)
         )
@@ -614,7 +614,7 @@ class Extracion(ttk.Frame):
             label="  Copiar",
             accelerator='Ctrl+C',
             background=bg_submenu, foreground=fg_submenu,
-            activebackground=acbg_menu, activeforeground=acfg_menu,
+            activebackground=select_bg, activeforeground=select_fg,
             font=_Font_Menu,
             state="disabled",
             command=self.copiar_texto_seleccionado
@@ -624,7 +624,7 @@ class Extracion(ttk.Frame):
             label="  Seleccionar todo",
             accelerator='Ctrl+A',
             background=bg_submenu, foreground=fg_submenu,
-            activebackground=acbg_menu, activeforeground=acfg_menu,
+            activebackground=select_bg, activeforeground=select_fg,
             font=_Font_Menu,
             command=self.seleccionar_todo
         )
@@ -632,7 +632,7 @@ class Extracion(ttk.Frame):
             label="  Limpiar Busqueda",
             accelerator='Ctrl+X',
             background=bg_submenu, foreground=fg_submenu,
-            activebackground=acbg_menu, activeforeground=acfg_menu,
+            activebackground=select_bg, activeforeground=select_fg,
             font=_Font_Menu,
             state="disabled",
             command=self.limpiar_busqueda
@@ -643,7 +643,7 @@ class Extracion(ttk.Frame):
             accelerator='Ctrl+L',
             compound=tk.LEFT,
             background=bg_submenu, foreground=fg_submenu,
-            activebackground=acbg_menu, activeforeground=acfg_menu,
+            activebackground=select_bg, activeforeground=select_fg,
             font=_Font_Menu,
             command=self.hide
         )
@@ -653,7 +653,7 @@ class Extracion(ttk.Frame):
             accelerator='Ctrl+L',
             compound=tk.LEFT,
             background=bg_submenu, foreground=fg_submenu,
-            activebackground=acbg_menu, activeforeground=acfg_menu,
+            activebackground=select_bg, activeforeground=select_fg,
             font=_Font_Menu,
             command=self.hide
         )
@@ -662,7 +662,7 @@ class Extracion(ttk.Frame):
             label="  Cerrar pestaña",
             compound=tk.LEFT,
             background=bg_submenu, foreground=fg_submenu,
-            activebackground=acbg_menu, activeforeground=acfg_menu,
+            activebackground=select_bg, activeforeground=select_fg,
             font=_Font_Menu,
             command=self.cerrar_vtn_desviacion
         )
@@ -888,7 +888,7 @@ class Extracion(ttk.Frame):
                 width=50,
                 highlightcolor=active_color,
                 insertbackground=active_color,
-                selectbackground=sel_bg_txt,
+                selectbackground=select_bg,
                 highlightthickness=2,
                 font=(fuente_texto, 14)
             )
