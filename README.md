@@ -24,4 +24,4 @@
 	sudo mv compliance.png /usr/share/pixmaps/
 	sudo mv screamshot.png /usr/share/pixmaps/
 	```
-![APPCompliance](https://user-images.githubusercontent.com/86171869/159774005-f06ec648-4988-48c9-bebc-e332930437b8.png)
+![img_compliance](https://user-images.githubusercontent.com/86171869/166647737-00522195-5d1d-4c40-a400-d29dab098291.png)
