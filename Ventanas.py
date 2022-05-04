@@ -9,7 +9,7 @@ from tkinter import messagebox as mb
 from tkinter import font as font
 from PIL import Image, ImageTk
 from configparser import ConfigParser
-from Compliance import fondo_app, select_fg, select_bg, bg_submenu, color_text, fuente_texto, fg_submenu, select_fg, fg_menu, color_titulos, _Font_Texto, color_text, select_bg, select_fg, active_color, _Font_Menu, oddrow, evenrow
+from Compliance import fondo_app, select_fg, select_bg, bg_submenu, default_color_text, fuente_texto, fg_submenu, select_fg, fg_menu, color_titulos, _Font_Texto, default_color_text, select_bg, select_fg, active_color, _Font_Menu, oddrow, evenrow
 from Extraciones import MyEntry
 user = getuser()
 mypath = os.path.expanduser("~/")
@@ -153,7 +153,7 @@ class Ventana(ttk.Frame):
         entry = self.var_ent_buscar.get()
         if entry == "Buscar Directories / File ...":
             text_widget.config(
-                foreground=color_text,
+                foreground=default_color_text,
                 font=_Font_Texto
             )
             self.var_ent_buscar.set("")
@@ -635,6 +635,7 @@ class Ventana(ttk.Frame):
             foreground="gray75",
             highlightcolor=active_color,
             insertbackground=active_color,
+            insertwidth=5,
             selectbackground=select_bg,
             highlightthickness=2,
             font=(fuente_texto, 14)
@@ -735,7 +736,7 @@ class Ventana(ttk.Frame):
         self.fr2_scroll1 = tk.Scrollbar(self.labelframe2, orient=tk.VERTICAL)
         self.listServer.config(
             selectmode=tk.EXTENDED,
-            foreground=color_text,
+            foreground=default_color_text,
             selectbackground=select_bg,
             selectforeground=select_fg,
             font=_Font_Texto,
@@ -767,6 +768,7 @@ class Ventana(ttk.Frame):
             borderwidth=0, 
             highlightthickness=3,
             insertbackground=active_color,
+            insertwidth=5,
             selectforeground=select_fg,
             selectbackground=select_bg,
         )
@@ -799,6 +801,7 @@ class Ventana(ttk.Frame):
             borderwidth=0, 
             highlightthickness=3,
             insertbackground=active_color,
+            insertwidth=5,
             selectforeground=select_fg,
             selectbackground=select_bg,
         )
@@ -851,6 +854,7 @@ class Ventana(ttk.Frame):
             borderwidth=0, 
             highlightthickness=2,
             insertbackground=active_color,
+            insertwidth=5,
             selectforeground=select_fg,
             selectbackground=select_bg,
         )

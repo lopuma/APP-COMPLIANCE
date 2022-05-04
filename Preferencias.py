@@ -146,7 +146,7 @@ class SelectFont(tk.Toplevel):
             font="Helvetica",
             highlightcolor="#297F87",
             borderwidth=0,
-            highlightthickness=2,
+            highlightthickness=3,
         )
 
         self.list_estilo = tk.Listbox(
@@ -175,7 +175,7 @@ class SelectFont(tk.Toplevel):
             font="Helvetica",
             highlightcolor = "#297F87",
             borderwidth=0, 
-            highlightthickness=2,
+            highlightthickness=3,
         )
         
         self.list_size = tk.Listbox(
@@ -204,7 +204,7 @@ class SelectFont(tk.Toplevel):
             font="Helvetica",
             highlightcolor = "#297F87",
             borderwidth=0, 
-            highlightthickness=2,
+            highlightthickness=3,
         )
 
         self.fr2 = ttk.Frame(

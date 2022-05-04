@@ -478,7 +478,7 @@ class Automatizar(ttk.Frame):
             background=colour_fr_tittle,
             borderwidth=2,
             highlightbackground=color_bd_fr,
-            highlightthickness=2
+            highlightthickness=3
         )
         # fuente de los titulos de los LABEL FRAMES
 #TODO -------------- FRAME MEDIO-----------------------------
@@ -494,7 +494,7 @@ class Automatizar(ttk.Frame):
             background=fondo_app,
             borderwidth=2,
             highlightbackground=color_bd_fr,
-            highlightthickness=2
+            highlightthickness=3
         )
 #---------------------------------------------------------------------------------------------
 #? ------------- PARTE 1 DE FRAMES MEDIO ------------------------
@@ -646,7 +646,7 @@ class Automatizar(ttk.Frame):
             background=colour_fr_pie,
             borderwidth=2,
             highlightbackground=color_bd_fr,
-            highlightthickness=2
+            highlightthickness=3
         )
 
 # TODO ------------- BOTON CERRAR, FRAME PIE

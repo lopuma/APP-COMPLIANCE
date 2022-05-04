@@ -16,7 +16,6 @@ path_icon = path+"Compliance/image/"
 count = 0
 color_btn_tab = '#297F87'
 color_out_bg_pestaña = '#FDD2BF'
-#color_sel_bg_pestaña = '#B61919'
 color_sel_bg_pestaña = fondo_app
 color_act_bg_pestaña = '#B61919'
 color_out_fg_pestaña = '#012443'

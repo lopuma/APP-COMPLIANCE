@@ -2,11 +2,12 @@
 # -*- coding: utf-8 -*-
 import json
 import os
+from pickle import TRUE
+from re import M
 import time
 import functools
 import subprocess
 import sys
-from tkinter import N, ttk
 from getpass import getuser
 from tkinter import scrolledtext as st
 from tkinter import messagebox as mb
@@ -15,9 +16,11 @@ import tkinter as tk
 from PIL import Image, ImageTk
 from tkinter.ttk import Style
 from threading import Thread
+
+from pytz import NonExistentTimeError
 from ScrollableNotebook import *
 from configparser import ConfigParser
-from RadioBotton import RadioButton
+from RadioBotton import BtnScripts, RadioButton
 from functools import partial
 
 #-----------------------------------------------------------#
@@ -71,9 +74,6 @@ res = ""
 evd = ""
 act_rbtn_ = False
 act_rbtn_auto = False
-act_rbtn_desv = False
-act_rbtn_ext = False
-act_rbtn_new = False
 
 # * Configuracion de APARIENCIA INICIAL
 parse = ConfigParser()
@@ -103,9 +103,9 @@ fondo_app = parse.get('app', 'fondo')
 
 # COLOR TEXT
 color_titulos = parse.get('app', 'titulo')
-color_text = parse.get('app', 'colour_text')
+default_color_text = parse.get('app', 'colour_text')
 active_color = parse.get('app', 'color_widget_activo')
-
+default_bg_text = 'white'
 # COLOR EXTRA, PARA EL PANEL
 bg_panel_buscar = '#A2D5AB'
 acbg_panel_buscar = '#39AEA9'
@@ -137,7 +137,11 @@ _Font_txt_exp = (fuente_texto, tamñ_texto_exp)
 _Font_txt_exp_cdg = (fuente_texto_cdg, tamñ_texto_exp)
 _Font_text_exp_bold = (fuente_titulos, tamñ_texto_exp, weight_DF)
 
-
+#* COLOR PERSONALIZADO
+modo_dark = True
+pers_bg_widget = "gray38"
+pers_fg_widget = "white"
+activar_modo = True
 def beep_error(f):
     def applicator(*args, **kwargs):
         try:
@@ -189,7 +193,7 @@ class Expandir(ttk.Frame):
         self.icono()
         self.menu_clickDerecho()
         self.widgets_EXPANDIR()
-        self.Expan_color_lineas()
+        self.Expan_color_lineas(default_bg_text)
         self.bind("<Motion>", lambda e: self.EXP_motion(e))
         self.EXP_srcExpandir.bind(
             "<Button-3><ButtonRelease-3>", self.display_menu_clickDerecho)
@@ -393,7 +397,7 @@ class Expandir(ttk.Frame):
                             self.EXP_srcExpandir.insert(tk.END, self._txt_Desv)
                             self.varNum = 1
                             self.activar_botones()
-        self.Expan_color_lineas()
+        self.Expan_color_lineas(default_bg_text)
 
     def activar_botones(self):
         global PST_EXP
@@ -524,7 +528,7 @@ class Expandir(ttk.Frame):
                             self.EXP_btnCopyALL.config(state="normal")
                             self.varNum = 1
                             self.activar_botones()
-        self.Expan_color_lineas()
+        self.Expan_color_lineas(default_bg_text)
 
     def widgets_EXPANDIR(self):
         self.EXP_lblWidget = ttk.Label(
@@ -545,6 +549,7 @@ class Expandir(ttk.Frame):
             borderwidth=0,
             highlightthickness=3,
             insertbackground=active_color,
+            insertwidth=5,
             selectbackground=select_bg,
             selectforeground=select_fg,
         )
@@ -676,23 +681,8 @@ class Expandir(ttk.Frame):
         self.EXP_btn_VentanasCMD.grid_forget()
         self.EXP_btn_VentanasIDR.grid_forget()
 
-    def Expan_color_lineas(self):
-        # indx = '1.0'
-        # line1 = "+-------------------------------------------------------------------------------------+"
-        # if line1:
-        #     while True:
-        #         indx = self.EXP_srcExpandir.search(
-        #             line1, indx, nocase=1, stopindex=tk.END)
-        #         if not indx:
-        #             break
-        #         lastidx = '%s+%dc' % (indx, len(line1))
-        #         self.EXP_srcExpandir.tag_add('found1', indx, lastidx)
-        #         indx = lastidx
-        #         self.EXP_srcExpandir.tag_config(
-        #             'found1',
-        #             foreground='dodgerblue',
-        #             font=font.Font(family=_Font_Texto, size=20, weight='bold')
-        #         )
+    def Expan_color_lineas(self, default_bg_text):
+        bg_txt = default_bg_text
         PST_EXP.EXP_srcExpandir.tag_configure(
             "codigo",
             background="#FDEFF4",
@@ -704,7 +694,7 @@ class Expandir(ttk.Frame):
 
         PST_EXP.EXP_srcExpandir.tag_configure(
             "line",
-            background="white",
+            background=bg_txt,
             foreground="dodgerblue",
             selectbackground=select_bg,
             selectforeground=select_fg,
@@ -793,11 +783,11 @@ class TextSimilar(ttk.Frame):
         self._list_modulo = tk.Listbox(
             self.frame2,
             font=_Font_Texto,
-            foreground=color_text,
+            foreground=default_color_text,
             selectbackground=select_bg,
             selectforeground=select_fg,
             exportselection=False,
-            highlightthickness=2,
+            highlightthickness=3,
             highlightcolor=active_color,
         )
 
@@ -818,11 +808,11 @@ class TextSimilar(ttk.Frame):
         self._list_clave = tk.Listbox(
             self.frame3,
             font=_Font_Texto,
-            foreground=color_text,
+            foreground=default_color_text,
             selectbackground=select_bg,
             selectforeground=select_fg,
             exportselection=False,
-            highlightthickness=2,
+            highlightthickness=3,
             highlightcolor=active_color,
             width=18,
             height=18,
@@ -833,11 +823,11 @@ class TextSimilar(ttk.Frame):
         self._list_SO = tk.Listbox(
             self.frame3,
             font=_Font_Texto,
-            foreground=color_text,
+            foreground=default_color_text,
             selectbackground=select_bg,
             selectforeground=select_fg,
             exportselection=False,
-            highlightthickness=2,
+            highlightthickness=3,
             highlightcolor=active_color,
             width=12,
             height=12,
@@ -980,7 +970,7 @@ class TextSimilar(ttk.Frame):
                     # --- LIMPIAR ------------------------------------- ##
                     desviacion.limpiar_Widgets()
                     ## ------------------------------------------------- ##
-                    desviacion.asignarValor_aWidgets(md)
+                    desviacion.asignarValor_aWidgets(md, modo=modo_dark)
             desviacion.mostrar_buttons_modulo(modulo_Buscado)
             desviacion.DESVfr1_listbox.selection_clear(0, tk.END)
             modulo_ListBox = desviacion.DESVfr1_listbox.get(0, tk.END)
@@ -1003,6 +993,11 @@ class TextSimilar(ttk.Frame):
 
 
 class Desviacion(ttk.Frame):
+    y_alto_btn = 55
+    x_ancho_btn = 200
+    hg_btn = int(y_alto_btn-15)
+    wd_btn = int(x_ancho_btn-20)
+
     def __init__(self, parent, *args, **kwargs):
         ttk.Frame.__init__(self, parent, *args)
         global PST_DESV
@@ -1018,7 +1013,7 @@ class Desviacion(ttk.Frame):
         self.iconos()
         self.widgets_DESVIACION()
         self._menu_clickDerecho()
-
+        #app.modo_app()
 ## --- SELECCIONAR ELEMENTO DEL LISTBOX. --- #
         self.DESVfr1_listbox.bind("<<ListboxSelect>>", self.seleccionar_Modulo)
 
@@ -1453,7 +1448,7 @@ class Desviacion(ttk.Frame):
             for md in data:
                 if value_selecionado in md['modulo']:
                     self.limpiar_Widgets()
-                    self._asignarValor_aWidgets(md)
+                    self._asignarValor_aWidgets(md, modo=modo_dark)
                     self.mostrar_buttons_modulo(value_selecionado)
 
     def _cargar_elemt_selected(self, value_selecionado):  # TODO CARGAR MODULO
@@ -1463,12 +1458,13 @@ class Desviacion(ttk.Frame):
             for md in data:
                 if value_selecionado in md['modulo']:
                     self.limpiar_Widgets()
-                    self.asignarValor_aWidgets(md)
+                    self.asignarValor_aWidgets(md, modo=modo_dark)
             self.mostrar_buttons_modulo(value_selecionado)
 
 #  --- ASIGNACION DE VALORES A WIDGETS SRC, AL CAMBIAR DE PESTAÑA
 #  --- Y al buscar mas de un modulo en el mismo cliente
-    def asignarValor_aWidgets(self, md):
+    def asignarValor_aWidgets(self, md, modo):
+        global modo_dark
         global sis_oper
         global PST_DESV
         global sisO
@@ -1526,15 +1522,23 @@ class Desviacion(ttk.Frame):
         else:
             PST_DESV.DESV_btn5Expandir.config(state='disabled')
 
-        PST_DESV.colour_line_com()
-        PST_DESV.colour_line_bak()
-        PST_DESV.colour_line_edi()
-        PST_DESV.colour_line_ref()
-        PST_DESV.colour_line_evi()
+        if modo == False:
+            PST_DESV.colour_line_com(default_bg_text)
+            PST_DESV.colour_line_bak(default_bg_text)
+            PST_DESV.colour_line_edi(default_bg_text)
+            PST_DESV.colour_line_ref(default_bg_text)
+            PST_DESV.colour_line_evi(default_bg_text)
+        else:
+            PST_DESV.colour_line_com(pers_bg_widget)
+            PST_DESV.colour_line_bak(pers_bg_widget)
+            PST_DESV.colour_line_edi(pers_bg_widget)
+            PST_DESV.colour_line_ref(pers_bg_widget)
+            PST_DESV.colour_line_evi(pers_bg_widget)
 
 # --- ASIGANACION DE VALORES A WIDGETS SRC
-    def _asignarValor_aWidgets(self, md):
+    def _asignarValor_aWidgets(self, md, modo):
         global sis_oper
+        global modo_dark
         if md['SO'] is not None:
             sis_oper = md['SO']
             self.DESV_frame2['text'] = md['SO']
@@ -1574,13 +1578,19 @@ class Desviacion(ttk.Frame):
             self.DESV_btn5Expandir.config(state='normal')
         else:
             self.DESV_btn5Expandir.config(state='disabled')
-
-        self.colour_line_com()
-        self.colour_line_bak()
-        self.colour_line_edi()
-        self.colour_line_ref()
-        self.colour_line_evi()
-
+        print("modod primer", modo)
+        if modo == False:
+            PST_DESV.colour_line_com(default_bg_text)
+            PST_DESV.colour_line_bak(default_bg_text)
+            PST_DESV.colour_line_edi(default_bg_text)
+            PST_DESV.colour_line_ref(default_bg_text)
+            PST_DESV.colour_line_evi(default_bg_text)
+        else:
+            PST_DESV.colour_line_com(pers_bg_widget)
+            PST_DESV.colour_line_bak(pers_bg_widget)
+            PST_DESV.colour_line_edi(pers_bg_widget)
+            PST_DESV.colour_line_ref(pers_bg_widget)
+            PST_DESV.colour_line_evi(pers_bg_widget)
     def mostrar_buttons_modulo(self, modulo_selecionado):  # TODO añadir demas botones
         global PST_DESV
 # --- DIRECTORY ---------------------------------
@@ -2068,7 +2078,7 @@ class Desviacion(ttk.Frame):
                         self.limpiar_Widgets()
                         # self.enabled_Widgets()
                         value = md['modulo']
-                        self.asignarValor_aWidgets(md)
+                        self.asignarValor_aWidgets(md, modo=modo_dark)
                         self.mostrar_buttons_clave(clave_Buscado)
                 self.DESVfr1_listbox.selection_clear(0, tk.END)
                 modulo_ListBox = self.DESVfr1_listbox.get(0, tk.END)
@@ -2103,7 +2113,7 @@ class Desviacion(ttk.Frame):
                 for md in data:
                     if modulo_Buscado in md['modulo']:
                         value = md['modulo']
-                        self.asignarValor_aWidgets(md)
+                        self.asignarValor_aWidgets(md, modo=modo_dark)
                 self.mostrar_buttons_modulo(modulo_Buscado)
                 self.DESVfr1_listbox.selection_clear(0, tk.END)
                 modulo_ListBox = self.DESVfr1_listbox.get(0, tk.END)
@@ -2255,10 +2265,11 @@ class Desviacion(ttk.Frame):
         self.DESVfr1_listbox.insert(tk.END, *listModulo)
         self.cambiar_NamePestaña(customer)
 
-    def colour_line_com(self):
+    def colour_line_com(self, default_bg_text):
+        bg_txt = default_bg_text
         PST_DESV.DESVfr2_srcComprobacion.tag_configure(
             "codigo",
-            background="#FDEFF4",
+            background=bg_txt,
             foreground="#990033",
             selectbackground=select_bg,
             selectforeground=select_fg,
@@ -2267,7 +2278,7 @@ class Desviacion(ttk.Frame):
 
         PST_DESV.DESVfr2_srcComprobacion.tag_configure(
             "line",
-            background="white",
+            background=bg_txt,
             foreground="dodgerblue",
             selectbackground=select_bg,
             selectforeground=select_fg,
@@ -2286,7 +2297,8 @@ class Desviacion(ttk.Frame):
                 PST_DESV.DESVfr2_srcComprobacion.tag_add(
                     "line", startline, endline)
 
-    def colour_line_bak(self):
+    def colour_line_bak(self, default_bg_text):
+        bg_txt = default_bg_text
         PST_DESV.DESVfr2_srcBackup.tag_configure(
             "codigo",
             background="#FDEFF4",
@@ -2298,7 +2310,7 @@ class Desviacion(ttk.Frame):
 
         PST_DESV.DESVfr2_srcBackup.tag_configure(
             "line",
-            background="white",
+            background=bg_txt,
             foreground="dodgerblue",
             selectbackground=select_bg,
             selectforeground=select_fg,
@@ -2319,7 +2331,8 @@ class Desviacion(ttk.Frame):
                 PST_DESV.DESVfr2_srcBackup.tag_add(
                     "line", startline, endline)
 
-    def colour_line_ref(self):
+    def colour_line_ref(self, default_bg_text):
+        bg_txt = default_bg_text
         PST_DESV.DESVfr3_srcRefrescar.tag_configure(
             "codigo",
             background="#FDEFF4",
@@ -2331,7 +2344,7 @@ class Desviacion(ttk.Frame):
 
         PST_DESV.DESVfr3_srcRefrescar.tag_configure(
             "line",
-            background="white",
+            background=bg_txt,
             foreground="dodgerblue",
             selectbackground=select_bg,
             selectforeground=select_fg,
@@ -2350,7 +2363,8 @@ class Desviacion(ttk.Frame):
                 PST_DESV.DESVfr3_srcRefrescar.tag_add(
                     "line", startline, endline)
 
-    def colour_line_edi(self):
+    def colour_line_edi(self, default_bg_text):
+        bg_txt = default_bg_text
         PST_DESV.DESVfr3_srcEditar.tag_configure(
             "codigo",
             background="#FDEFF4",
@@ -2362,7 +2376,7 @@ class Desviacion(ttk.Frame):
 
         PST_DESV.DESVfr3_srcEditar.tag_configure(
             "line",
-            background="white",
+            background=bg_txt,
             foreground="dodgerblue",
             selectbackground=select_bg,
             selectforeground=select_fg,
@@ -2381,7 +2395,8 @@ class Desviacion(ttk.Frame):
                 PST_DESV.DESVfr3_srcEditar.tag_add(
                     "line", startline, endline)
 
-    def colour_line_evi(self):
+    def colour_line_evi(self, default_bg_text):
+        bg_txt = default_bg_text
         PST_DESV.DESVfr3_srcEvidencia.tag_configure(
             "codigo",
             background="#FDEFF4",
@@ -2393,7 +2408,7 @@ class Desviacion(ttk.Frame):
 
         PST_DESV.DESVfr3_srcEvidencia.tag_configure(
             "line",
-            background="white",
+            background=bg_txt,
             foreground="dodgerblue",
             selectbackground=select_bg,
             selectforeground=select_fg,
@@ -2468,12 +2483,13 @@ class Desviacion(ttk.Frame):
 
     def widgets_DESVIACION(self):
         from Extraciones import MyEntry
+
 # --- DEFINIMOS LOS LABEL FRAMEs, QUE CONTENDRAN LOS WIDGETS --------------------------#
         self.DESV_frame1 = ttk.LabelFrame(
             self,
             text="CLIENTE / MODULO",
             border=1,
-            relief='sunken'
+            relief='ridge'
         )
         self.DESV_frame1.grid_propagate(False)
         self.DESV_frame1.grid(column=0, row=0, padx=10, pady=10, sticky='nsew')
@@ -2482,7 +2498,7 @@ class Desviacion(ttk.Frame):
             self,
             text="SISTEMA OPERATIVO",
             border=1,
-            relief='sunken'
+            relief='ridge'
         )
         self.DESV_frame2.grid_propagate(False)
         self.DESV_frame2.grid(column=1, row=0, padx=10, pady=10, sticky='nsew')
@@ -2491,7 +2507,7 @@ class Desviacion(ttk.Frame):
             self,
             text="EDITAR / EVIDENCIA",
             border=1,
-            relief='sunken'
+            relief='ridge'
         )
         self.DESV_frame3.grid_propagate(False)
         self.DESV_frame3.grid(column=2, row=0, padx=10, pady=10, sticky='nsew')
@@ -2528,7 +2544,7 @@ class Desviacion(ttk.Frame):
             activebackground=select_bg,
             activeforeground=select_fg,
             relief="groove",
-            borderwidth=2,
+            borderwidth=0,
             width=20
         )
 
@@ -2584,11 +2600,11 @@ class Desviacion(ttk.Frame):
             xscrollcommand=self.DESVlist_xScroll.set,
             yscrollcommand=self.DESVlist_yScroll.set,
             font=_Font_Texto,
-            foreground=color_text,
+            foreground=default_color_text,
             selectbackground=select_bg,
             selectforeground=select_fg,
             exportselection=False,
-            highlightthickness=2,
+            highlightthickness=3,
             highlightcolor=active_color,
         )
         self.DESVfr1_listbox.grid(row=2, column=0, pady=(
@@ -2616,7 +2632,8 @@ class Desviacion(ttk.Frame):
             text='',
             font=_Font_Texto,
             width=10,
-            foreground='gray75'
+            foreground='gray50',
+            background=fondo_app
         )
         self.DESVfr2_lblDescripcion.grid(
             row=1, column=0, padx=5, pady=5, sticky='new', columnspan=5)
@@ -2635,69 +2652,75 @@ class Desviacion(ttk.Frame):
 
         self.DESV_btnDirectory = RadioButton(
             self.DESV_frame2,
-            alto=55,
-            ancho=155,
-            radio=25
+            alto=Desviacion.y_alto_btn,
+            ancho=Desviacion.x_ancho_btn,
+            radio=25,
+            bg_color=fondo_app,
         )
-        self._btnDir_ = ttk.Button(
+        self._btnDir_ = BtnScripts(
             self.DESV_btnDirectory,
-            text='  Permissions',
-            compound=tk.LEFT,
+            text='Permissions  ',
+            compound=tk.RIGHT,
             image=self.Expandir_icon,
-            style='APP.TButton',
+            # style='APP.TButton',
             command=self.abrir_DIRECTORY,
         )
         self._btnDir_.place(
-            x=10,
-            y=12,
-            height=30,
-            width=137
+            relx=0.5,
+            rely=0.5,
+            anchor=tk.CENTER,
+            height=Desviacion.hg_btn,
+            width=Desviacion.wd_btn
         )
         self._btnDir_.bind('<Motion>', partial(
             app.active_radio_botton, self.DESV_btnDirectory, self._btnDir_))
 
         self.DESV_btnService = RadioButton(
             self.DESV_frame2,
-            alto=55,
-            ancho=155,
-            radio=25
+            alto=Desviacion.y_alto_btn,
+            ancho=Desviacion.x_ancho_btn,
+            radio=25,
+            bg_color=fondo_app,
         )
-        self._btnSer_ = ttk.Button(
+        self._btnSer_ = BtnScripts(
             self.DESV_btnService,
-            text='  Service',
-            compound=tk.LEFT,
+            text='Service  ',
+            compound=tk.RIGHT,
             image=self.Expandir_icon,
-            style='APP.TButton',
+            # style='APP.TButton',
             command=self.abrir_SERVICE,
         )
         self._btnSer_.place(
-            x=10,
-            y=12,
-            height=30,
-            width=137
+            relx=0.5,
+            rely=0.5,
+            anchor=tk.CENTER,
+            height=Desviacion.hg_btn,
+            width=Desviacion.wd_btn
         )
         self._btnSer_.bind('<Motion>', partial(
             app.active_radio_botton, self.DESV_btnService, self._btnSer_))
 
         self.DESV_btnAuthorized = RadioButton(
             self.DESV_frame2,
-            alto=55,
-            ancho=155,
-            radio=25
+            alto=Desviacion.y_alto_btn,
+            ancho=Desviacion.x_ancho_btn,
+            radio=25,
+            bg_color=fondo_app,
         )
-        self._btnAuth_ = ttk.Button(
+        self._btnAuth_ = BtnScripts(
             self.DESV_btnAuthorized,
-            text='  Authorized',
-            compound=tk.LEFT,
+            text='Authorized  ',
+            compound=tk.RIGHT,
             image=self.Expandir_icon,
-            style='APP.TButton',
+            # style='APP.TButton',
             command=self.abrir_AUTHORIZED,
         )
         self._btnAuth_.place(
-            x=10,
-            y=12,
-            height=30,
-            width=137
+            relx=0.5,
+            rely=0.5,
+            anchor=tk.CENTER,
+            height=Desviacion.hg_btn,
+            width=Desviacion.wd_btn
         )
         self._btnAuth_.bind('<Motion>', partial(
             app.active_radio_botton, self.DESV_btnAuthorized, self._btnAuth_))
@@ -2712,69 +2735,75 @@ class Desviacion(ttk.Frame):
 
         self.DESV_btnAccount = RadioButton(
             self.DESV_frame2,
-            alto=55,
-            ancho=155,
-            radio=25
+            alto=Desviacion.y_alto_btn,
+            ancho=Desviacion.x_ancho_btn,
+            radio=25,
+            bg_color=fondo_app,
         )
-        self._btnAcc_ = ttk.Button(
+        self._btnAcc_ = BtnScripts(
             self.DESV_btnAccount,
-            text='  Account',
-            compound=tk.LEFT,
+            text='Account',
+            compound=tk.RIGHT,
             image=self.Expandir_icon,
-            style='APP.TButton',
+            # style='APP.TButton',
             command=self.abrir_ACCOUNT,
         )
         self._btnAcc_.place(
-            x=10,
-            y=12,
-            height=30,
-            width=137
+            relx=0.5,
+            rely=0.5,
+            anchor=tk.CENTER,
+            height=Desviacion.hg_btn,
+            width=Desviacion.wd_btn
         )
         self._btnAcc_.bind('<Motion>', partial(
             app.active_radio_botton, self.DESV_btnAccount, self._btnAcc_))
 
         self.DESV_btnCommand = RadioButton(
             self.DESV_frame2,
-            alto=55,
-            ancho=155,
-            radio=25
+            alto=Desviacion.y_alto_btn,
+            ancho=Desviacion.x_ancho_btn,
+            radio=25,
+            bg_color=fondo_app,
         )
-        self._btnComm_ = ttk.Button(
+        self._btnComm_ = BtnScripts(
             self.DESV_btnCommand,
-            text='Command',
-            compound=tk.LEFT,
+            text='Command  ',
+            compound=tk.RIGHT,
             image=self.Expandir_icon,
-            style='APP.TButton',
+            # style='APP.TButton',
             command=self.abrir_COMMAND,
         )
         self._btnComm_.place(
-            x=10,
-            y=12,
-            height=30,
-            width=137
+            relx=0.5,
+            rely=0.5,
+            anchor=tk.CENTER,
+            height=Desviacion.hg_btn,
+            width=Desviacion.wd_btn
         )
         self._btnComm_.bind('<Motion>', partial(
             app.active_radio_botton, self.DESV_btnCommand, self._btnComm_))
 
         self.DESV_btnIdrsa = RadioButton(
             self.DESV_frame2,
-            alto=55,
-            ancho=155,
-            radio=25
+            alto=Desviacion.y_alto_btn,
+            ancho=Desviacion.x_ancho_btn,
+            radio=25,
+            bg_color=None,
         )
-        self._btnIdr_ = ttk.Button(
+        self._btnIdr_ = BtnScripts(
             self.DESV_btnIdrsa,
-            text='Id_Rsa',
-            compound=tk.LEFT,
+            text='Id_Rsa  ',
+            compound=tk.RIGHT,
             image=self.Expandir_icon,
-            style='APP.TButton',
+            # style='APP.TButton',
             command=self.abrir_IDRSA,
         )
         self._btnIdr_.place(
-            x=10,
-            y=12,
-            height=30,
-            width=137
+            relx=0.5,
+            rely=0.5,
+            anchor=tk.CENTER,
+            height=Desviacion.hg_btn,
+            width=Desviacion.wd_btn
         )
         self._btnIdr_.bind('<Motion>', partial(
             app.active_radio_botton, self.DESV_btnIdrsa, self._btnIdr_))
@@ -2785,14 +2814,20 @@ class Desviacion(ttk.Frame):
             wrap=tk.WORD,
             highlightcolor=active_color,
             borderwidth=0,
-            highlightthickness=2,
+            highlightthickness=3,
             insertbackground=active_color,
+            insertwidth=5,
             selectbackground=select_bg,
             selectforeground=select_fg,
+            foreground=default_color_text,
             state='disabled',
         )
         self.DESVfr2_srcComprobacion.grid(
             row=3, column=0, padx=5, pady=5, sticky='new', columnspan=5)
+
+        self.DESVfr2_lblDescripcion.bind('<Motion>', app.act_botones)
+        self.DESVfr2_lblComprobacion.bind('<Motion>', app.act_botones)
+        self.DESVfr2_srcComprobacion.bind('<Motion>', app.act_botones)
 
         self.DESV_btnRiskImpact = ttk.Button(
             self.DESV_frame2,
@@ -2831,8 +2866,9 @@ class Desviacion(ttk.Frame):
             wrap=tk.WORD,
             highlightcolor=active_color,
             borderwidth=0,
-            highlightthickness=2,
+            highlightthickness=3,
             insertbackground=active_color,
+            insertwidth=5,
             selectbackground=select_bg,
             selectforeground=select_fg,
             state='disabled',
@@ -2865,8 +2901,9 @@ class Desviacion(ttk.Frame):
             wrap=tk.WORD,
             highlightcolor=active_color,
             borderwidth=0,
-            highlightthickness=2,
+            highlightthickness=3,
             insertbackground=active_color,
+            insertwidth=5,
             selectbackground=select_bg,
             selectforeground=select_fg,
             state='disabled',
@@ -2897,8 +2934,9 @@ class Desviacion(ttk.Frame):
             wrap=tk.WORD,
             highlightcolor=active_color,
             borderwidth=0,
-            highlightthickness=2,
+            highlightthickness=3,
             insertbackground=active_color,
+            insertwidth=5,
             selectbackground=select_bg,
             selectforeground=select_fg,
             state='disabled',
@@ -2938,8 +2976,9 @@ class Desviacion(ttk.Frame):
             wrap=tk.WORD,
             highlightcolor=active_color,
             borderwidth=0,
-            highlightthickness=2,
+            highlightthickness=3,
             insertbackground=active_color,
+            insertwidth=5,
             selectbackground=select_bg,
             selectforeground=select_fg,
             state='disabled',
@@ -3052,18 +3091,21 @@ class Desviacion(ttk.Frame):
 
 
 class Aplicacion():
+    WIDTH = 1360
+    HEIGHT = 650
+
     def __init__(self):
         self.root = tk.Tk()
         self._Font_Titulo_bold = font.Font(
             family=fuente_titulos, size=tamñ_titulo, weight=weight_DF)
         self.root.title("CONTINUOUS COMPLIANCE")
-        window_width, window_height = 1028, 768
         screen_width = self.root.winfo_screenwidth()
         screen_height = self.root.winfo_screenheight()
-        position_top = int(screen_height/2 - window_height/2)
-        position_right = int(screen_width/2 - window_width/2)
+        position_top = int(screen_height/2 - Aplicacion.HEIGHT/2)
+        position_right = int(screen_width/2 - Aplicacion.WIDTH/2)
         self.root.geometry(
-            f'{window_width}x{window_height}+{position_top}+{position_right}')
+            f'{Aplicacion.WIDTH}x{Aplicacion.HEIGHT}+{position_top}+{position_right}')
+        self.root.minsize(Aplicacion.WIDTH, Aplicacion.HEIGHT)
         self.root.configure(background=fondo_app, borderwidth=0, border=0)
         self.root.tk.call('wm', 'iconphoto', self.root._w,
                           tk.PhotoImage(file=path_icon+r'compliance.png'))
@@ -3115,15 +3157,15 @@ class Aplicacion():
 
         if 'desviacion' in globals():
             desviacion.DESV_btnDirectory.canvas.itemconfig(
-                1, fill=color_default_bgBT, outline=color_default_outline)
+                1, fill=fondo_app, outline=color_default_outline)
             desviacion.DESV_btnService.canvas.itemconfig(
-                1, fill=color_default_bgBT, outline=color_default_outline)
+                1, fill=fondo_app, outline=color_default_outline)
             desviacion.DESV_btnAuthorized.canvas.itemconfig(
-                1, fill=color_default_bgBT, outline=color_default_outline)
+                1, fill=fondo_app, outline=color_default_outline)
             desviacion.DESV_btnAccount.canvas.itemconfig(
-                1, fill=color_default_bgBT, outline=color_default_outline)
+                1, fill=fondo_app, outline=color_default_outline)
             desviacion.DESV_btnCommand.canvas.itemconfig(
-                1, fill=color_default_bgBT, outline=color_default_outline)
+                1, fill=fondo_app, outline=color_default_outline)
             desviacion.DESV_btnIdrsa.canvas.itemconfig(
                 1, fill=color_default_bgBT, outline=color_default_outline)
 
@@ -3162,34 +3204,34 @@ class Aplicacion():
     def estilos(self):
         self.style = Style()
         self.style.configure('TCombobox',
-        background=select_bg,
-        selectbackground=select_bg,
-        selectforeground=select_fg,
-        )
+                             background=select_bg,
+                             selectbackground=select_bg,
+                             selectforeground=select_fg,
+                             )
         self.style.map('TCombobox',
-        background=[
-            ("active", select_fg)
-        ]
-        )
+                       background=[
+                           ("active", select_fg)
+                       ]
+                       )
 
         self.style.configure('TSizegrip',
-        background=fondo_app,
-        borderwidth=0,
-        border=0
-        )
+                             background=fondo_app,
+                             borderwidth=0,
+                             border=0
+                             )
 
         self.style.configure('TFrame',
-        background=fondo_app,
-        )
+                             background=fondo_app,
+                             )
 
         self.style.configure('TLabelframe',
-        background=fondo_app,
-        )
+                             background=fondo_app,
+                             )
         self.style.configure('TLabelframe.Label',
-        background=fondo_app,
-        foreground=color_titulos,
-        font=self._Font_Titulo_bold,
-        )
+                             background=fondo_app,
+                             foreground=color_titulos,
+                             font=self._Font_Titulo_bold,
+                             )
         # *===============================================================================
         self.style.configure(
             'APP.TButton',
@@ -3229,7 +3271,7 @@ class Aplicacion():
 
         self.style.configure('TLabel',
                              background=fondo_app,
-                             foreground="gray17",
+                             foreground="gray30",
                              font=self._Font_Titulo_bold
                              )
 
@@ -3784,11 +3826,11 @@ class Aplicacion():
         self._list_modulo = tk.Listbox(
             self.frame2,
             font=_Font_Texto,
-            foreground=color_text,
+            foreground=default_color_text,
             selectbackground=select_bg,
             selectforeground=select_fg,
             exportselection=False,
-            highlightthickness=2,
+            highlightthickness=3,
             highlightcolor=active_color,
             yscrollcommand=self.ListModulo_yScroll.set,
         )
@@ -3820,11 +3862,11 @@ class Aplicacion():
         self._list_clave = tk.Listbox(
             self.frame3,
             font=_Font_Texto,
-            foreground=color_text,
+            foreground=default_color_text,
             selectbackground=select_bg,
             selectforeground=select_fg,
             exportselection=False,
-            highlightthickness=2,
+            highlightthickness=3,
             highlightcolor=active_color,
             yscrollcommand=self.ListClave_yScroll.set,
         )
@@ -4016,7 +4058,8 @@ class Aplicacion():
             self.frameButtons,
             alto=y_alto_btn,
             ancho=x_ancho_btn,
-            radio=50
+            radio=50,
+            bg_color=None,
         )
         self.btn_AbrirDesv.grid(
             row=0,
@@ -4045,7 +4088,8 @@ class Aplicacion():
             self.frameButtons,
             alto=y_alto_btn,
             ancho=x_ancho_btn,
-            radio=50
+            radio=50,
+            bg_color=None,
         )
         self.btn_AbrirExt.grid(
             row=0,
@@ -4074,7 +4118,8 @@ class Aplicacion():
             self.frameButtons,
             alto=y_alto_btn,
             ancho=x_ancho_btn,
-            radio=50
+            radio=50,
+            bg_color=None,
         )
         self.btn_AbrirAuto.grid(
             row=0,
@@ -4153,7 +4198,186 @@ class Aplicacion():
 
     def _fontchooser(self):
         from Preferencias import SelectFont
-        ventanafont = SelectFont(None, "Ventana", app, application=self)
+        #ventanafont = SelectFont(None, "Ventana", app, application=self)
+        # python = sys.executable
+        # os.execl(python, python, * sys.argv)
+
+        self.activar_modo_noche()
+        
+
+    def activar_modo_noche(self):
+        global activar_modo
+        global modo_dark 
+        if activar_modo:
+            modo_dark = True
+            self.modo_app()
+            activar_modo = False
+        else:
+            modo_dark = False
+            self.modo_app()
+            activar_modo = True
+    #@beep_error
+    def modo_app(self):
+        global modo_dark
+        global fondo_app
+        
+        #parse = ConfigParser()
+        #parse.read(path_config_ini.format("apariencia.ini"))
+        if modo_dark:
+            color_act_bg_pestaña = '#B61919'
+            color_act_fg_pestaña = 'white'
+            perf_fondo_app = 'gray28'
+            perf_menu_bg = 'gray18'
+            print("modo dar esta : ", modo_dark)
+            print("-----------------------")
+            print(fondo_app)
+            print("-----------------------")
+            parse.set('app', 'fondo', perf_fondo_app)
+            parse.set('menu', 'background', perf_menu_bg)
+            with open(path_config_ini.format("apariencia.ini"), 'w') as configfile:
+                parse.write(configfile)
+            self.root.configure(
+                background=perf_fondo_app,
+            )
+            self.menuBar.config(
+                background=perf_menu_bg,
+                foreground='white',
+            )
+            self.style.configure('TFrame',
+                background=perf_fondo_app
+            )
+            self.style.configure('TLabelframe',
+                background=perf_fondo_app
+            )
+            self.style.configure('TLabelframe.Label',
+                background=perf_fondo_app
+            )
+            self.style.configure('APP.TLabel',
+                                background=perf_menu_bg,
+                                foreground='white',
+            )
+            self.style.configure('TLabel',
+                                background=perf_fondo_app,
+                                foreground='white',
+            )
+            self.style.map("ScrollableNotebook.Tab",
+                background = [
+                            ("selected", perf_fondo_app),
+                            ("active", color_act_bg_pestaña)
+                        ],
+                foreground = [
+                            ("selected", 'white'),
+                            ("active", color_act_fg_pestaña)
+                        ]
+            )
+            PST_DESV.DESVfr1_optMn.config(
+                background=perf_menu_bg,
+                foreground='white',
+            )
+
+            PST_DESV.DESVfr2_srcComprobacion.configure(
+                foreground=pers_fg_widget,
+                background=pers_bg_widget,
+            )
+            PST_DESV.DESVfr2_srcBackup.configure(
+                foreground=pers_fg_widget,
+                background=pers_bg_widget,
+            )
+            PST_DESV.DESVfr3_srcEditar.configure(
+                foreground=pers_fg_widget,
+                background=pers_bg_widget,
+            )
+            PST_DESV.DESVfr3_srcEvidencia.configure(
+                foreground=pers_fg_widget,
+                background=pers_bg_widget,
+            )
+            PST_DESV.DESVfr3_srcRefrescar.configure(
+                foreground=pers_fg_widget,
+                background=pers_bg_widget,
+            )
+            PST_DESV.colour_line_com(pers_bg_widget)
+            PST_DESV.colour_line_bak(pers_bg_widget)
+            PST_DESV.colour_line_edi(pers_bg_widget)
+            PST_DESV.colour_line_ref(pers_bg_widget)
+            PST_DESV.colour_line_evi(pers_bg_widget)
+        else:
+            color_act_bg_pestaña = '#B61919'
+            color_act_fg_pestaña = 'white'
+            def_fondo_app = '#F8F3D4'
+            def_menu_bg = '#92BA92'
+            print("modo dar esta : ", modo_dark)
+            print("-----------------------")
+            print(def_fondo_app)
+            print("-----------------------")
+            parse.set('app', 'fondo', def_fondo_app)
+            parse.set('menu', 'background', def_menu_bg)
+            with open(path_config_ini.format("apariencia.ini"), 'w') as configfile:
+                parse.write(configfile)
+            self.root.configure(
+                background=def_fondo_app,
+            )
+            self.style.configure('TFrame',
+                background=def_fondo_app
+            )
+            self.style.configure('TLabelframe',
+                background=def_fondo_app
+            )
+            self.style.configure('TLabelframe.Label',
+                background=def_fondo_app
+            )
+            self.menuBar.config(
+                background=def_menu_bg,
+                foreground="#3A3845"
+            )
+            self.style.configure('APP.TLabel',
+                background=def_menu_bg,
+                foreground="#3A3845"
+            )
+            self.style.configure('TLabel',
+                background=def_fondo_app,
+                                 foreground="#3A3845"
+            )
+            self.style.map("ScrollableNotebook.Tab",
+                background = [
+                            ("selected", def_fondo_app),
+                            ("active", color_act_bg_pestaña)
+                        ],
+                foreground = [
+                            ("selected", 'black'),
+                            ("active", color_act_fg_pestaña)
+                        ]
+            )
+
+            PST_DESV.DESVfr1_optMn.config(
+                background=def_menu_bg,
+                foreground="#3A3845"
+            )
+            PST_DESV.DESVfr2_srcComprobacion.configure(
+                foreground=default_color_text,
+                background=default_bg_text,
+            )
+            PST_DESV.DESVfr2_srcBackup.configure(
+                foreground=default_color_text,
+                background=default_bg_text,
+            )
+            PST_DESV.DESVfr3_srcEditar.configure(
+                foreground=default_color_text,
+                background=default_bg_text,
+            )
+            PST_DESV.DESVfr3_srcEvidencia.configure(
+                foreground=default_color_text,
+                background=default_bg_text,
+            )
+            PST_DESV.DESVfr3_srcRefrescar.configure(
+                foreground=default_color_text,
+                background=default_bg_text,
+            )
+            PST_DESV.colour_line_com(default_bg_text)
+            PST_DESV.colour_line_bak(default_bg_text)
+            PST_DESV.colour_line_edi(default_bg_text)
+            PST_DESV.colour_line_ref(default_bg_text)
+            PST_DESV.colour_line_evi(default_bg_text)
+
 
     def mainloop(self):
         self.root.mainloop()
