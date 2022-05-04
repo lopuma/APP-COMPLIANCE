@@ -1,11 +1,21 @@
 # APP-COMPLIANCE
-Aplicacion de escritorio, para la soluciones de ISSUES compliance.
+## Aplicacion de escritorio, para la soluciones de ISSUES compliance.
 
-- Descargar Compliance.zip
+- Descargar Compliance.zip, desde el repositorio ***Compliance***.
 
-- Descomprimir en /home/
+- Descomprimir en /home/$USER, se debe descomprimir el contenido, dentro de una carpeta llamda Compliance, example : ***/home/$USER/Compliance/***
 
-- Dar permisos de ejecucion al ejecutable Compliance
+> NOTA : $USER, es la variable de tu usuario.
+
+- Redirecionar : 
+```
+	cd /home/$USER/Compliance/  
+```
+
+- Dar permisos de ejecucion al ejecutable `Compliance`
+```
+	chmod +x Compliance
+```
 
 - Mover estos ficheros.
 	```
