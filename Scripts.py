@@ -407,11 +407,6 @@ class FramesScripts(ttk.Frame):
             rb.canvas.itemconfig(1, fill=color_default_bgBT, outline=color_default_outline)
 
     def ejecutar_script(self, btn, cliente, datos, frame, canvas):
-        print("1 - ", btn)
-        print("1 - ", cliente)
-        print("1 - ", datos)
-        print("1 - ", frame)
-        print("1 - ", canvas)
         self.fr_cv_scripts = []
         self.fr_cv_scripts.append(canvas)
         btn.focus_set()
@@ -441,7 +436,6 @@ class Automatizar(ttk.Frame):
         self.iconos()
         self.frames()
         self.app = app
-        print(self.app)
         self.bind("<Motion>", lambda x: self.AUT_motion(x))
     
     def AUT_motion(self, event):

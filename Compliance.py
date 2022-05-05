@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 import json
 import os
-from pickle import TRUE
-from re import M
 import time
 import functools
 import subprocess
@@ -16,8 +14,6 @@ import tkinter as tk
 from PIL import Image, ImageTk
 from tkinter.ttk import Style
 from threading import Thread
-
-from pytz import NonExistentTimeError
 from ScrollableNotebook import *
 from configparser import ConfigParser
 from RadioBotton import BtnScripts, RadioButton
@@ -94,19 +90,28 @@ color_default_abgBT = parse.get('boton', 'activebackground')
 color_default_afgBT = parse.get('boton', 'activeforeground')
 color_default_outline = parse.get('boton', 'outline')
 
-# COLOR TREEVIEW
+#* COLOR TREEVIEW
 oddrow = parse.get('treeview', 'oddrow')
 evenrow = parse.get('treeview', 'evenrow')
 
 # COLOR FONDO APP
 fondo_app = parse.get('app', 'fondo')
 
-# COLOR TEXT
+#* COLOR TAB 
+color_out_bg_pestaña = parse.get('tab', 'tab_OUTselect_bg')
+color_out_fg_pestaña = parse.get('tab', 'tab_OUTselect_fg')
+color_act_bg_pestaña = parse.get('tab', 'tab_ACTselect_bg')
+color_act_fg_pestaña = parse.get('tab', 'tab_ACTselect_fg')
+color_sel_fg_pestaña = parse.get('tab', 'tab_select_fg')
+
+# COLOR WIDGETS / DESV
 color_titulos = parse.get('app', 'titulo')
+color_subtitulos = parse.get('app', 'subtitulo')
 default_color_text = parse.get('app', 'colour_text')
 active_color = parse.get('app', 'color_widget_activo')
-default_bg_text = 'white'
-# COLOR EXTRA, PARA EL PANEL
+default_bg_text = parse.get('app', 'colour_scroll')
+
+#todo COLOR EXTRA, PARA EL PANEL
 bg_panel_buscar = '#A2D5AB'
 acbg_panel_buscar = '#39AEA9'
 
@@ -138,10 +143,11 @@ _Font_txt_exp_cdg = (fuente_texto_cdg, tamñ_texto_exp)
 _Font_text_exp_bold = (fuente_titulos, tamñ_texto_exp, weight_DF)
 
 #* COLOR PERSONALIZADO
-modo_dark = True
-pers_bg_widget = "gray38"
-pers_fg_widget = "white"
-activar_modo = True
+modo_dark = parse.get('dark', 'modo_dark')
+pers_bg_widget = parse.get('dark', 'personalizado_bg_widget')
+pers_fg_widget = parse.get('dark', 'personalizado_fg_widget')
+activar_modo = parse.get('dark', 'activar_modo')
+
 def beep_error(f):
     def applicator(*args, **kwargs):
         try:
@@ -150,7 +156,6 @@ def beep_error(f):
             if args and isinstance(args[0], tk.Widget):
                 args[0].bell()
     return applicator
-
 
 class Expandir(ttk.Frame):
     def __init__(self, parent, text_EXP, widget_EXP, customer, titulo, so, st_btnDIR, st_btnAUTH, st_btnSER, st_btnACC, st_btnCMD, st_btnIDR, varNum, *args, **kwargs):
@@ -730,7 +735,6 @@ class Expandir(ttk.Frame):
                 PST_EXP.EXP_srcExpandir.tag_add(
                     "line", startline, endline)
 
-
 class TextSimilar(ttk.Frame):
     def __init__(self, parent, titulo, modulo_clave, cliente, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -743,7 +747,6 @@ class TextSimilar(ttk.Frame):
         window_width = 1000
         window_height = 300
         screen_width = app.root.winfo_x()
-        print(screen_width)
         screen_height = app.root.winfo_y()
         position_top = int(screen_height)
         position_right = int(screen_width+150)
@@ -991,7 +994,6 @@ class TextSimilar(ttk.Frame):
         self.vtn_modulos.destroy()
         desviacion._cargar_elemt_selected(value)
 
-
 class Desviacion(ttk.Frame):
     y_alto_btn = 55
     x_ancho_btn = 200
@@ -1013,7 +1015,10 @@ class Desviacion(ttk.Frame):
         self.iconos()
         self.widgets_DESVIACION()
         self._menu_clickDerecho()
-        #app.modo_app()
+        if activar_modo:
+            print("---------->act_modo_app ", activar_modo)
+            print("---------->modo_app", modo_dark)
+            app.modo_app()
 ## --- SELECCIONAR ELEMENTO DEL LISTBOX. --- #
         self.DESVfr1_listbox.bind("<<ListboxSelect>>", self.seleccionar_Modulo)
 
@@ -1578,7 +1583,6 @@ class Desviacion(ttk.Frame):
             self.DESV_btn5Expandir.config(state='normal')
         else:
             self.DESV_btn5Expandir.config(state='disabled')
-        print("modod primer", modo)
         if modo == False:
             PST_DESV.colour_line_com(default_bg_text)
             PST_DESV.colour_line_bak(default_bg_text)
@@ -3089,7 +3093,6 @@ class Desviacion(ttk.Frame):
         app.cuaderno.notebookContent.tab(
             idOpenTab, option=None, text='DESVIACIONES : {} '.format(customer))
 
-
 class Aplicacion():
     WIDTH = 1360
     HEIGHT = 650
@@ -3271,7 +3274,7 @@ class Aplicacion():
 
         self.style.configure('TLabel',
                              background=fondo_app,
-                             foreground="gray30",
+                             foreground=color_subtitulos,
                              font=self._Font_Titulo_bold
                              )
 
@@ -4204,7 +4207,6 @@ class Aplicacion():
 
         self.activar_modo_noche()
         
-
     def activar_modo_noche(self):
         global activar_modo
         global modo_dark 
@@ -4212,30 +4214,36 @@ class Aplicacion():
             modo_dark = True
             self.modo_app()
             activar_modo = False
+            parse['dark']={"activar_modo":activar_modo,"modo_dark":modo_dark,"personalizado_bg_widget":"gray38","personalizado_fg_widget":"white"}
+            with open(path_config_ini.format("apariencia.ini"), 'w') as configfile:
+                parse.write(configfile)
         else:
             modo_dark = False
             self.modo_app()
             activar_modo = True
-    #@beep_error
+            parse['dark']={"activar_modo":activar_modo,"modo_dark":modo_dark,"personalizado_bg_widget":"gray38","personalizado_fg_widget":"white"}
+            with open(path_config_ini.format("apariencia.ini"), 'w') as configfile:
+                parse.write(configfile)
+        return activar_modo
+
+    @beep_error
     def modo_app(self):
         global modo_dark
         global fondo_app
-        
+        print("al ejecutar app modo ", modo_dark)
         #parse = ConfigParser()
         #parse.read(path_config_ini.format("apariencia.ini"))
-        if modo_dark:
+        if modo_dark == True:
+            #? VARIABLES
             color_act_bg_pestaña = '#B61919'
             color_act_fg_pestaña = 'white'
+            perf_color_subtitulo = 'white'
+            #? WORKSPACE
             perf_fondo_app = 'gray28'
             perf_menu_bg = 'gray18'
-            print("modo dar esta : ", modo_dark)
-            print("-----------------------")
-            print(fondo_app)
-            print("-----------------------")
             parse.set('app', 'fondo', perf_fondo_app)
             parse.set('menu', 'background', perf_menu_bg)
-            with open(path_config_ini.format("apariencia.ini"), 'w') as configfile:
-                parse.write(configfile)
+            
             self.root.configure(
                 background=perf_fondo_app,
             )
@@ -4243,6 +4251,10 @@ class Aplicacion():
                 background=perf_menu_bg,
                 foreground='white',
             )
+            self.style.configure('ScrollableNotebook',
+                            background=perf_menu_bg,
+            )
+            #? DESVIACIONES
             self.style.configure('TFrame',
                 background=perf_fondo_app
             )
@@ -4258,8 +4270,10 @@ class Aplicacion():
             )
             self.style.configure('TLabel',
                                 background=perf_fondo_app,
-                                foreground='white',
+                                foreground=perf_color_subtitulo,
             )
+            
+            #? PESTAÑAS
             self.style.map("ScrollableNotebook.Tab",
                 background = [
                             ("selected", perf_fondo_app),
@@ -4300,19 +4314,29 @@ class Aplicacion():
             PST_DESV.colour_line_edi(pers_bg_widget)
             PST_DESV.colour_line_ref(pers_bg_widget)
             PST_DESV.colour_line_evi(pers_bg_widget)
-        else:
-            color_act_bg_pestaña = '#B61919'
-            color_act_fg_pestaña = 'white'
-            def_fondo_app = '#F8F3D4'
-            def_menu_bg = '#92BA92'
-            print("modo dar esta : ", modo_dark)
-            print("-----------------------")
-            print(def_fondo_app)
-            print("-----------------------")
-            parse.set('app', 'fondo', def_fondo_app)
-            parse.set('menu', 'background', def_menu_bg)
+
+            #? WIDGET SCROLLBAR
+            default_color_text = parse.set('app', 'colour_text', pers_fg_widget)
+            default_bg_text = parse.set('app', 'colour_scroll', pers_bg_widget)
+            
+            #? GUARDAR datos
             with open(path_config_ini.format("apariencia.ini"), 'w') as configfile:
                 parse.write(configfile)
+        elif modo_dark == False:
+            #*** COLORES POR DEFAULT ****************
+            def_color_subtitulos = 'gray30'
+            def_color_act_bg_pestaña = '#B61919'
+            def_color_act_fg_pestaña = 'white'
+            def_fondo_app = '#F8F3D4'
+            def_menu_bg = '#92BA92'
+            def_color_titulo = '#FF8080'
+            def_color_text = 'black'
+            def_color_scroll = 'white'
+
+            #? GUARDAR DATOS
+            parse.set('app', 'fondo', def_fondo_app)
+            parse.set('menu', 'background', def_menu_bg)
+            
             self.root.configure(
                 background=def_fondo_app,
             )
@@ -4331,20 +4355,20 @@ class Aplicacion():
             )
             self.style.configure('APP.TLabel',
                 background=def_menu_bg,
-                foreground="#3A3845"
+                foreground="#FF8080"
             )
             self.style.configure('TLabel',
                 background=def_fondo_app,
-                                 foreground="#3A3845"
+                foreground=def_color_subtitulos
             )
             self.style.map("ScrollableNotebook.Tab",
                 background = [
                             ("selected", def_fondo_app),
-                            ("active", color_act_bg_pestaña)
+                            ("active", def_color_act_bg_pestaña)
                         ],
                 foreground = [
                             ("selected", 'black'),
-                            ("active", color_act_fg_pestaña)
+                            ("active", def_color_act_fg_pestaña)
                         ]
             )
 
@@ -4353,31 +4377,37 @@ class Aplicacion():
                 foreground="#3A3845"
             )
             PST_DESV.DESVfr2_srcComprobacion.configure(
-                foreground=default_color_text,
-                background=default_bg_text,
+                foreground=def_color_text,
+                background=def_color_scroll,
             )
             PST_DESV.DESVfr2_srcBackup.configure(
-                foreground=default_color_text,
-                background=default_bg_text,
+                foreground=def_color_text,
+                background=def_color_scroll,
             )
             PST_DESV.DESVfr3_srcEditar.configure(
-                foreground=default_color_text,
-                background=default_bg_text,
+                foreground=def_color_text,
+                background=def_color_scroll,
             )
             PST_DESV.DESVfr3_srcEvidencia.configure(
-                foreground=default_color_text,
-                background=default_bg_text,
+                foreground=def_color_text,
+                background=def_color_scroll,
             )
             PST_DESV.DESVfr3_srcRefrescar.configure(
-                foreground=default_color_text,
-                background=default_bg_text,
+                foreground=def_color_text,
+                background=def_color_scroll,
             )
-            PST_DESV.colour_line_com(default_bg_text)
-            PST_DESV.colour_line_bak(default_bg_text)
-            PST_DESV.colour_line_edi(default_bg_text)
-            PST_DESV.colour_line_ref(default_bg_text)
-            PST_DESV.colour_line_evi(default_bg_text)
+            PST_DESV.colour_line_com(def_color_scroll)
+            PST_DESV.colour_line_bak(def_color_scroll)
+            PST_DESV.colour_line_edi(def_color_scroll)
+            PST_DESV.colour_line_ref(def_color_scroll)
+            PST_DESV.colour_line_evi(def_color_scroll)
+            
+            #? WIDGET SCROLLBAR
+            default_color_text = parse.set('app', 'colour_text', def_color_text)
+            default_bg_text = parse.set('app', 'colour_scroll', def_color_scroll)
 
+            with open(path_config_ini.format("apariencia.ini"), 'w') as configfile:
+                parse.write(configfile)
 
     def mainloop(self):
         self.root.mainloop()

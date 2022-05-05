@@ -22,12 +22,8 @@ class RadioButton(ttk.Frame):
         bg_cl =  bg_color
         if bg_cl is None:
             bg_cl = color_default_bgBT
-            print(bg_cl)
         else:
             bg_cl = bg_color
-        
-        print("llega :: ", bg_color)
-        print("sale :: ", bg_cl)
         self.canvas = tk.Canvas(self,
         height=alto, 
         width=ancho,
@@ -51,7 +47,6 @@ class BtnScripts(tk.Button):
     def __init__(self, *args, **kwargs):
         tk.Button.__init__(self, *args, **kwargs)
         from Compliance import color_default_fgBT, _Font_Boton, color_default_abgBT, color_default_afgBT
-        print(bg_cl)        
         ttk.Button.configure(self,
             background=bg_cl,
             foreground=color_default_fgBT,

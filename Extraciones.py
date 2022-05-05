@@ -987,18 +987,15 @@ class Extracion(ttk.Frame):
     def start_move(self, event):
         self._x = event.x
         self._y = event.y
-        print('starnive')
 
     def stop_move(self, event):
         self._x = None
         self._y = None
-        print('stop')
 
     def on_move(self, event):
         deltax = event.x - self._x
         deltay = event.y - self._y
         new_pos = "+{}+{}".format(self.busca_top.winfo_x() + deltax, self.busca_top.winfo_y() + deltay)
-        print('stiop')
         #self.app.root.geometry(new_pos)
         self.busca_top.geometry(new_pos)
     

@@ -42,7 +42,6 @@ class Ventana(ttk.Frame):
         self.path_ventanas = mypath+path
         self.tt_vtn = name_vtn
         self.click = True
-        print("llega : ", self.click)
 
         self.vtn_ventanas = tk.Toplevel(self)
         self.vtn_ventanas.bind('<Motion>', self.app.act_botones)

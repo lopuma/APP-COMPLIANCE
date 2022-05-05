@@ -9,18 +9,13 @@ import time
 from tkinter import ttk
 from threading import Thread
 from PIL import Image, ImageTk
-from Compliance import _Font_Texto, fg_submenu, select_bg, bg_menu, select_fg, bg_submenu,fondo_app, _Font_pestañas 
+from Compliance import _Font_Texto, fg_submenu, select_bg, bg_menu, select_fg, bg_submenu,fondo_app, _Font_pestañas, color_out_bg_pestaña, color_out_fg_pestaña, color_act_bg_pestaña, color_sel_fg_pestaña, color_act_fg_pestaña
+
 release = True
 path = os.path.expanduser("~/")
 path_icon = path+"Compliance/image/"
 count = 0
 color_btn_tab = '#297F87'
-color_out_bg_pestaña = '#FDD2BF'
-color_sel_bg_pestaña = fondo_app
-color_act_bg_pestaña = '#B61919'
-color_out_fg_pestaña = '#012443'
-color_sel_fg_pestaña = '#012443'
-color_act_fg_pestaña = 'white'
 class ScrollableNotebook(ttk.Frame):
     _initialized = False
     def __init__(self,parent,wheelscroll=False,tabmenu=False, application=None,*args,**kwargs):
@@ -186,7 +181,7 @@ class ScrollableNotebook(ttk.Frame):
         )         
         self.style.map('ScrollableNotebook.Tab', 
             background = [
-                            ("selected", color_sel_bg_pestaña),
+                            ("selected", fondo_app),
                             ("active", color_act_bg_pestaña)
                         ],
             foreground = [
