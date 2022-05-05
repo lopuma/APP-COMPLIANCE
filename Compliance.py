@@ -687,7 +687,6 @@ class Expandir(ttk.Frame):
         self.EXP_btn_VentanasIDR.grid_forget()
 
     def Expan_color_lineas(self, default_bg_text):
-        bg_txt = default_bg_text
         PST_EXP.EXP_srcExpandir.tag_configure(
             "codigo",
             background="#FDEFF4",
@@ -699,7 +698,7 @@ class Expandir(ttk.Frame):
 
         PST_EXP.EXP_srcExpandir.tag_configure(
             "line",
-            background=bg_txt,
+            background=default_bg_text,
             foreground="dodgerblue",
             selectbackground=select_bg,
             selectforeground=select_fg,
@@ -1480,6 +1479,7 @@ class Desviacion(ttk.Frame):
         global edi
         global res
         global evd
+        print("*******----***** ", modo_dark)
         sisO = (PST_DESV.DESV_frame2)
         lblMd = (PST_DESV.DESVfr2_lblModulo)
         lblDs = (PST_DESV.DESVfr2_lblDescripcion)
@@ -1499,8 +1499,6 @@ class Desviacion(ttk.Frame):
 
         if md['comprobacion'] is not None:
             com.insert(tk.END, md['comprobacion'])
-            PST_DESV.DESV_btn1Expandir.config(state='normal')
-        else:
             PST_DESV.DESV_btn1Expandir.config(state='disabled')
 
         if md['copia'] is not None:
@@ -1527,13 +1525,15 @@ class Desviacion(ttk.Frame):
         else:
             PST_DESV.DESV_btn5Expandir.config(state='disabled')
 
-        if modo == False:
+        if modo == 'False':
+            print('entramos 3')
             PST_DESV.colour_line_com(default_bg_text)
             PST_DESV.colour_line_bak(default_bg_text)
             PST_DESV.colour_line_edi(default_bg_text)
             PST_DESV.colour_line_ref(default_bg_text)
             PST_DESV.colour_line_evi(default_bg_text)
-        else:
+        elif modo == 'True':
+            print('entramos 4')
             PST_DESV.colour_line_com(pers_bg_widget)
             PST_DESV.colour_line_bak(pers_bg_widget)
             PST_DESV.colour_line_edi(pers_bg_widget)
@@ -1544,6 +1544,7 @@ class Desviacion(ttk.Frame):
     def _asignarValor_aWidgets(self, md, modo):
         global sis_oper
         global modo_dark
+        modo = modo
         if md['SO'] is not None:
             sis_oper = md['SO']
             self.DESV_frame2['text'] = md['SO']
@@ -1583,18 +1584,30 @@ class Desviacion(ttk.Frame):
             self.DESV_btn5Expandir.config(state='normal')
         else:
             self.DESV_btn5Expandir.config(state='disabled')
-        if modo == False:
-            PST_DESV.colour_line_com(default_bg_text)
-            PST_DESV.colour_line_bak(default_bg_text)
-            PST_DESV.colour_line_edi(default_bg_text)
-            PST_DESV.colour_line_ref(default_bg_text)
-            PST_DESV.colour_line_evi(default_bg_text)
-        else:
-            PST_DESV.colour_line_com(pers_bg_widget)
-            PST_DESV.colour_line_bak(pers_bg_widget)
-            PST_DESV.colour_line_edi(pers_bg_widget)
-            PST_DESV.colour_line_ref(pers_bg_widget)
-            PST_DESV.colour_line_evi(pers_bg_widget)
+
+        print("*******--MODO DARK--***** ", modo_dark)
+        print("*******--MODO--***** ", modo)
+        print("**********", default_bg_text)
+
+
+        self.llamada_colores(modo)
+
+    def llamada_colores(self, modo):
+        if modo == 'False':
+            print("entramos 1")
+            self.colour_line_com(default_bg_text)
+            self.colour_line_bak(default_bg_text)
+            self.colour_line_edi(default_bg_text)
+            self.colour_line_ref(default_bg_text)
+            self.colour_line_evi(default_bg_text)
+        elif modo == 'True':
+            print("entramos 2")
+            self.colour_line_com(pers_bg_widget)
+            self.colour_line_bak(pers_bg_widget)
+            self.colour_line_edi(pers_bg_widget)
+            self.colour_line_ref(pers_bg_widget)
+            self.colour_line_evi(pers_bg_widget)
+
     def mostrar_buttons_modulo(self, modulo_selecionado):  # TODO añadir demas botones
         global PST_DESV
 # --- DIRECTORY ---------------------------------
@@ -2269,11 +2282,11 @@ class Desviacion(ttk.Frame):
         self.DESVfr1_listbox.insert(tk.END, *listModulo)
         self.cambiar_NamePestaña(customer)
 
-    def colour_line_com(self, default_bg_text):
-        bg_txt = default_bg_text
+    def colour_line_com(self, bg_tag):
+
         PST_DESV.DESVfr2_srcComprobacion.tag_configure(
             "codigo",
-            background=bg_txt,
+            background=bg_tag,
             foreground="#990033",
             selectbackground=select_bg,
             selectforeground=select_fg,
@@ -2282,17 +2295,27 @@ class Desviacion(ttk.Frame):
 
         PST_DESV.DESVfr2_srcComprobacion.tag_configure(
             "line",
-            background=bg_txt,
+            background=bg_tag,
             foreground="dodgerblue",
             selectbackground=select_bg,
             selectforeground=select_fg,
             font=_Font_Texto_bold
         )
+
+        PST_DESV.DESVfr2_srcComprobacion.tag_configure(
+            "nota",
+            background=bg_tag,
+            foreground="#C8C6C6",
+            selectbackground=select_bg,
+            selectforeground=select_fg,
+            font=_Font_Texto_bold
+        )
+
         end = PST_DESV.DESVfr2_srcComprobacion.index("end")
         line_count = int(end.split(".", 1)[0])
         for line in range(1, line_count+1):
             startline = f"{line}.0"
-            if not (PST_DESV.DESVfr2_srcComprobacion.search("##", startline, stopindex=f"{line}.1")):
+            if not (PST_DESV.DESVfr2_srcComprobacion.search("##", startline, stopindex=f"{line}.1")) and not (PST_DESV.DESVfr2_srcComprobacion.search("// NOTA", startline, stopindex=f"{line}.1")):
                 endline = f"{line}.end"
                 PST_DESV.DESVfr2_srcComprobacion.tag_add(
                     "codigo", startline, endline)
@@ -2300,9 +2323,12 @@ class Desviacion(ttk.Frame):
                 endline = f"{line}.end"
                 PST_DESV.DESVfr2_srcComprobacion.tag_add(
                     "line", startline, endline)
+            if (PST_DESV.DESVfr2_srcComprobacion.search("// NOTA", startline, stopindex=f"{line}.1")):
+                endline = f"{line}.end"
+                PST_DESV.DESVfr2_srcComprobacion.tag_add(
+                    "nota", startline, endline)
 
     def colour_line_bak(self, default_bg_text):
-        bg_txt = default_bg_text
         PST_DESV.DESVfr2_srcBackup.tag_configure(
             "codigo",
             background="#FDEFF4",
@@ -2314,7 +2340,7 @@ class Desviacion(ttk.Frame):
 
         PST_DESV.DESVfr2_srcBackup.tag_configure(
             "line",
-            background=bg_txt,
+            background=default_bg_text,
             foreground="dodgerblue",
             selectbackground=select_bg,
             selectforeground=select_fg,
@@ -2336,7 +2362,6 @@ class Desviacion(ttk.Frame):
                     "line", startline, endline)
 
     def colour_line_ref(self, default_bg_text):
-        bg_txt = default_bg_text
         PST_DESV.DESVfr3_srcRefrescar.tag_configure(
             "codigo",
             background="#FDEFF4",
@@ -2348,7 +2373,7 @@ class Desviacion(ttk.Frame):
 
         PST_DESV.DESVfr3_srcRefrescar.tag_configure(
             "line",
-            background=bg_txt,
+            background=default_bg_text,
             foreground="dodgerblue",
             selectbackground=select_bg,
             selectforeground=select_fg,
@@ -2368,7 +2393,6 @@ class Desviacion(ttk.Frame):
                     "line", startline, endline)
 
     def colour_line_edi(self, default_bg_text):
-        bg_txt = default_bg_text
         PST_DESV.DESVfr3_srcEditar.tag_configure(
             "codigo",
             background="#FDEFF4",
@@ -2380,7 +2404,7 @@ class Desviacion(ttk.Frame):
 
         PST_DESV.DESVfr3_srcEditar.tag_configure(
             "line",
-            background=bg_txt,
+            background=default_bg_text,
             foreground="dodgerblue",
             selectbackground=select_bg,
             selectforeground=select_fg,
@@ -2400,7 +2424,6 @@ class Desviacion(ttk.Frame):
                     "line", startline, endline)
 
     def colour_line_evi(self, default_bg_text):
-        bg_txt = default_bg_text
         PST_DESV.DESVfr3_srcEvidencia.tag_configure(
             "codigo",
             background="#FDEFF4",
@@ -2412,7 +2435,7 @@ class Desviacion(ttk.Frame):
 
         PST_DESV.DESVfr3_srcEvidencia.tag_configure(
             "line",
-            background=bg_txt,
+            background=default_bg_text,
             foreground="dodgerblue",
             selectbackground=select_bg,
             selectforeground=select_fg,
@@ -4284,6 +4307,11 @@ class Aplicacion():
                             ("active", color_act_fg_pestaña)
                         ]
             )
+            PST_DESV.DESVfr1_listbox.config(
+                background=pers_bg_widget,
+                foreground=perf_color_titulo,
+            )
+
             PST_DESV.DESVfr1_optMn.config(
                 background=perf_menu_bg,
                 foreground=perf_color_titulo,
@@ -4309,11 +4337,11 @@ class Aplicacion():
                 foreground=pers_fg_widget,
                 background=pers_bg_widget,
             )
-            PST_DESV.colour_line_com(pers_bg_widget)
-            PST_DESV.colour_line_bak(pers_bg_widget)
-            PST_DESV.colour_line_edi(pers_bg_widget)
-            PST_DESV.colour_line_ref(pers_bg_widget)
-            PST_DESV.colour_line_evi(pers_bg_widget)
+            # PST_DESV.colour_line_com(pers_bg_widget)
+            # PST_DESV.colour_line_bak(pers_bg_widget)
+            # PST_DESV.colour_line_edi(pers_bg_widget)
+            # PST_DESV.colour_line_ref(pers_bg_widget)
+            # PST_DESV.colour_line_evi(pers_bg_widget)
 
             #? WIDGET SCROLLBAR
             parse.set('app', 'fondo', perf_fondo_app)
@@ -4400,11 +4428,11 @@ class Aplicacion():
                 foreground=def_color_text,
                 background=def_color_scroll,
             )
-            PST_DESV.colour_line_com(def_color_scroll)
-            PST_DESV.colour_line_bak(def_color_scroll)
-            PST_DESV.colour_line_edi(def_color_scroll)
-            PST_DESV.colour_line_ref(def_color_scroll)
-            PST_DESV.colour_line_evi(def_color_scroll)
+            # PST_DESV.colour_line_com(def_color_scroll)
+            # PST_DESV.colour_line_bak(def_color_scroll)
+            # PST_DESV.colour_line_edi(def_color_scroll)
+            # PST_DESV.colour_line_ref(def_color_scroll)
+            # PST_DESV.colour_line_evi(def_color_scroll)
             
             #? GUARDAR DATOS
             parse.set('app', 'fondo', def_fondo_app)
