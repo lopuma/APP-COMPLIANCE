@@ -4238,18 +4238,18 @@ class Aplicacion():
             color_act_bg_pestaña = '#B61919'
             color_act_fg_pestaña = 'white'
             perf_color_subtitulo = 'white'
+            perf_color_titulo = 'white'
+
             #? WORKSPACE
             perf_fondo_app = 'gray28'
             perf_menu_bg = 'gray18'
-            parse.set('app', 'fondo', perf_fondo_app)
-            parse.set('menu', 'background', perf_menu_bg)
             
             self.root.configure(
                 background=perf_fondo_app,
             )
             self.menuBar.config(
                 background=perf_menu_bg,
-                foreground='white',
+                foreground=perf_color_titulo,
             )
             self.style.configure('ScrollableNotebook',
                             background=perf_menu_bg,
@@ -4266,13 +4266,13 @@ class Aplicacion():
             )
             self.style.configure('APP.TLabel',
                                 background=perf_menu_bg,
-                                foreground='white',
+                                foreground=perf_color_titulo,
             )
             self.style.configure('TLabel',
                                 background=perf_fondo_app,
                                 foreground=perf_color_subtitulo,
             )
-            
+
             #? PESTAÑAS
             self.style.map("ScrollableNotebook.Tab",
                 background = [
@@ -4286,7 +4286,7 @@ class Aplicacion():
             )
             PST_DESV.DESVfr1_optMn.config(
                 background=perf_menu_bg,
-                foreground='white',
+                foreground=perf_color_titulo,
             )
 
             PST_DESV.DESVfr2_srcComprobacion.configure(
@@ -4316,9 +4316,14 @@ class Aplicacion():
             PST_DESV.colour_line_evi(pers_bg_widget)
 
             #? WIDGET SCROLLBAR
-            default_color_text = parse.set('app', 'colour_text', pers_fg_widget)
-            default_bg_text = parse.set('app', 'colour_scroll', pers_bg_widget)
-            
+            parse.set('app', 'fondo', perf_fondo_app)
+            parse.set('menu', 'background', perf_menu_bg)
+            parse.set('app', 'subtitulo', perf_color_subtitulo)
+            parse.set('app', 'colour_text', pers_fg_widget)
+            parse.set('app', 'colour_scroll', pers_bg_widget)
+            parse.set('app','titulo', perf_color_titulo)
+            parse.set('app','foreground', perf_color_titulo)
+                        
             #? GUARDAR datos
             with open(path_config_ini.format("apariencia.ini"), 'w') as configfile:
                 parse.write(configfile)
@@ -4332,11 +4337,9 @@ class Aplicacion():
             def_color_titulo = '#FF8080'
             def_color_text = 'black'
             def_color_scroll = 'white'
+            def_color_titulo = '#FF8080'
+            def_color_menu_fg = '#3A3845'
 
-            #? GUARDAR DATOS
-            parse.set('app', 'fondo', def_fondo_app)
-            parse.set('menu', 'background', def_menu_bg)
-            
             self.root.configure(
                 background=def_fondo_app,
             )
@@ -4361,6 +4364,7 @@ class Aplicacion():
                 background=def_fondo_app,
                 foreground=def_color_subtitulos
             )
+
             self.style.map("ScrollableNotebook.Tab",
                 background = [
                             ("selected", def_fondo_app),
@@ -4402,9 +4406,16 @@ class Aplicacion():
             PST_DESV.colour_line_ref(def_color_scroll)
             PST_DESV.colour_line_evi(def_color_scroll)
             
-            #? WIDGET SCROLLBAR
-            default_color_text = parse.set('app', 'colour_text', def_color_text)
-            default_bg_text = parse.set('app', 'colour_scroll', def_color_scroll)
+            #? GUARDAR DATOS
+            parse.set('app', 'fondo', def_fondo_app)
+            parse.set('app', 'titulo', def_color_titulo)
+            parse.set('menu', 'background', def_menu_bg)
+            parse.set('menu', 'foreground', def_color_menu_fg)
+
+            #? WIDGET SCROLLBAR / DESV
+            parse.set('app', 'subtitulo', def_color_subtitulos)
+            parse.set('app', 'colour_text', def_color_text)
+            parse.set('app', 'colour_scroll', def_color_scroll)
 
             with open(path_config_ini.format("apariencia.ini"), 'w') as configfile:
                 parse.write(configfile)
