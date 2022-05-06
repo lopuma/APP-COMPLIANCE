@@ -1479,7 +1479,7 @@ class Desviacion(ttk.Frame):
         global edi
         global res
         global evd
-        print("*******----***** ", modo_dark)
+        print("*******----***** ", PST_DESV)
         sisO = (PST_DESV.DESV_frame2)
         lblMd = (PST_DESV.DESVfr2_lblModulo)
         lblDs = (PST_DESV.DESVfr2_lblDescripcion)
@@ -1499,8 +1499,10 @@ class Desviacion(ttk.Frame):
 
         if md['comprobacion'] is not None:
             com.insert(tk.END, md['comprobacion'])
-            PST_DESV.DESV_btn1Expandir.config(state='disabled')
-
+            PST_DESV.DESV_btn1Expandir.config(state='normal')
+        else:
+            PST_DESV.DESV_btn1Expandir.config(state='disabled')        
+        
         if md['copia'] is not None:
             bak.insert(tk.END, md['copia'])
             PST_DESV.DESV_btn2Expandir.config(state='normal')
@@ -1859,9 +1861,11 @@ class Desviacion(ttk.Frame):
         self.DESVfr1_btnBuscar.grid_forget()
         self.DESVfr1_btnLimpiar.grid(
             row=1, column=1, pady=5, padx=5, sticky='nsw')
+
 ## --- LIMPIAR ------------------------------------- ##
         self.limpiar_Widgets()
         self.enabled_Widgets()
+        print("BUSCA [{}] --- [{}]".format(modulo_Buscado,clave_Buscado))
 # --------- OBTENER MODULO POR CLAVE O MODULO -------------- ## //TODO "definir si buscar por clave o modulo"
 # TODO --- SI NO EXISTE, MODULO O CLAVE
         if len(clave_Buscado) == 0 and len(modulo_Buscado) == 0:
@@ -2122,6 +2126,7 @@ class Desviacion(ttk.Frame):
 # TODO --- SI ES MODULO UNICO
         elif len(modulo_Buscado) == 1 and len(clave_Buscado) == 0:
             data = []
+            print("ES EL CASO ", len(modulo_Buscado))
             no_exist = False
             modulo_Buscado = str(modulo_Buscado).replace(
                 "[", "").replace("]", "").replace("'", "")
@@ -3131,7 +3136,7 @@ class Aplicacion():
         position_right = int(screen_width/2 - Aplicacion.WIDTH/2)
         self.root.geometry(
             f'{Aplicacion.WIDTH}x{Aplicacion.HEIGHT}+{position_top}+{position_right}')
-        self.root.minsize(Aplicacion.WIDTH, Aplicacion.HEIGHT)
+        #self.root.minsize(Aplicacion.WIDTH, Aplicacion.HEIGHT)
         self.root.configure(background=fondo_app, borderwidth=0, border=0)
         self.root.tk.call('wm', 'iconphoto', self.root._w,
                           tk.PhotoImage(file=path_icon+r'compliance.png'))

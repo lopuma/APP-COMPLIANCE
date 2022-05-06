@@ -820,8 +820,8 @@ class Extracion(ttk.Frame):
         if not _estado_actual:
             self.busca_top = tk.Toplevel(self.frame2)
             #self.busca_top.grab_set()
-            self.busca_top.transient()
-            self.busca_top.attributes('-type', 'splash')
+            #self.busca_top.transient()
+            #self.busca_top.attributes('-type', 'splash')
             
             self._w = 0
             self._y = 0
