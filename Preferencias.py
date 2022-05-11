@@ -5,7 +5,7 @@ import os
 from tkinter import font
 from getpass import getuser
 from Extraciones import MyEntry
-from Compliance import fondo_app
+from Compliance import fondo_app, hhtk
 
 user = getuser()
 mypath = os.path.expanduser("~/")
@@ -39,6 +39,7 @@ class SelectFont(tk.Toplevel):
             self.fr1,
             text="Familia:",
             height=250,
+            relief='groove'
         )
         self.frl_familia.pack(
             #expand=1,
@@ -52,7 +53,8 @@ class SelectFont(tk.Toplevel):
 
         self.frl_estilo = ttk.LabelFrame(
             self.fr1,
-            text="Estilo:"
+            text="Estilo:",
+            relief='groove'
         )
         self.frl_estilo.pack(
             #expand=1,
@@ -64,7 +66,8 @@ class SelectFont(tk.Toplevel):
 
         self.frl_tamaño = ttk.LabelFrame(
             self.fr1,
-            text="Tamaño:"
+            text="Tamaño:",
+            relief='groove'
         )
         self.frl_tamaño.pack(
             #expand=1,
@@ -146,7 +149,7 @@ class SelectFont(tk.Toplevel):
             font="Helvetica",
             highlightcolor="#297F87",
             borderwidth=0,
-            highlightthickness=3,
+            highlightthickness=hhtk,
         )
 
         self.list_estilo = tk.Listbox(
@@ -175,7 +178,7 @@ class SelectFont(tk.Toplevel):
             font="Helvetica",
             highlightcolor = "#297F87",
             borderwidth=0, 
-            highlightthickness=3,
+            highlightthickness=hhtk,
         )
         
         self.list_size = tk.Listbox(
@@ -204,7 +207,7 @@ class SelectFont(tk.Toplevel):
             font="Helvetica",
             highlightcolor = "#297F87",
             borderwidth=0, 
-            highlightthickness=3,
+            highlightthickness=hhtk,
         )
 
         self.fr2 = ttk.Frame(
@@ -249,7 +252,6 @@ class SelectFont(tk.Toplevel):
         self.result.bind("<Configure>", self.label_resize)
     
     def font_family_chooser(self, e):
-        from Compliance import Aplicacion
         self.our_font.config(
             family=self.list_familia.get(self.list_familia.curselection())
         )

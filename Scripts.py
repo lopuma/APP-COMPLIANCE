@@ -8,7 +8,7 @@ from getpass import getuser
 import subprocess
 from functools import partial
 from ScrollableNotebook  import *
-from Compliance import fondo_app, color_default_outline, color_default_fgBT, _Font_Boton, color_default_bgBT, color_default_afgBT
+from Compliance import fondo_app, default_outline, color_default_afgBT, color_default_fgBT, hhtk, color_default_bgBT
 from RadioBotton import RadioButton, BtnScripts
 #* variable para actualizar la ventana
 PST_AUT = ""
@@ -71,7 +71,8 @@ class FramesPoliticas(ttk.Frame):
 
         self.lb_frame_politica = ttk.LabelFrame(
             self.canvas,
-            text='POLICY : {}'.format(cliente)
+            text='POLICY : {}'.format(cliente),
+            relief='groove'
         )
 
         self.lb_frame_politica.bind("<Configure>", lambda e:self.canvas.configure(scrollregion=self.canvas.bbox("all")))
@@ -116,7 +117,8 @@ class FramesPoliticas(ttk.Frame):
                 self.lb_frame_politica,
                 alto=y_alto_btn,
                 ancho=x_ancho_btn,
-                radio=25
+                radio=25,
+                bg_color=fondo_app
             )
             self.buttons_POLITICA.pack(
                 expand=0,
@@ -221,7 +223,7 @@ class FramesPoliticas(ttk.Frame):
             i['foreground'] = color_default_fgBT
 
         for rb in self.btn_rb_pol:
-            rb.canvas.itemconfig(1, fill=color_default_bgBT, outline=color_default_outline)
+            rb.canvas.itemconfig(1, fill=color_default_bgBT, outline=default_outline)
 
 class FramesScripts(ttk.Frame):
     def __init__(self, parent, cliente, frame, lt_scr, scr_pol, * args, **kwargs):
@@ -268,8 +270,8 @@ class FramesScripts(ttk.Frame):
 
         self.lb_frame_script = ttk.LabelFrame(
             self.canvas3,
-            borderwidth=0,
             text='{} - SCRIPTS - {}'.format(cliente, scr_pol),
+            relief='groove'
         )
 
         self.lb_frame_script.bind("<Configure>", lambda e:self.canvas3.configure(scrollregion=self.canvas3.bbox("all")))
@@ -345,7 +347,8 @@ class FramesScripts(ttk.Frame):
                 self.lb_frame_script,
                 alto=y_alto_btn,
                 ancho=x_ancho_btn,
-                radio=25
+                radio=25,
+                bg_color=fondo_app
             )
 
             grid_by_column(self.lb_frame_script, 4)
@@ -404,7 +407,7 @@ class FramesScripts(ttk.Frame):
             i['foreground'] = color_default_fgBT
 
         for rb in self.btn_rb_scr:
-            rb.canvas.itemconfig(1, fill=color_default_bgBT, outline=color_default_outline)
+            rb.canvas.itemconfig(1, fill=color_default_bgBT, outline=default_outline)
 
     def ejecutar_script(self, btn, cliente, datos, frame, canvas):
         self.fr_cv_scripts = []
@@ -472,7 +475,7 @@ class Automatizar(ttk.Frame):
             background=colour_fr_tittle,
             borderwidth=2,
             highlightbackground=color_bd_fr,
-            highlightthickness=3
+            highlightthickness=hhtk
         )
         # fuente de los titulos de los LABEL FRAMES
 #TODO -------------- FRAME MEDIO-----------------------------
@@ -488,7 +491,7 @@ class Automatizar(ttk.Frame):
             background=fondo_app,
             borderwidth=2,
             highlightbackground=color_bd_fr,
-            highlightthickness=3
+            highlightthickness=hhtk
         )
 #---------------------------------------------------------------------------------------------
 #? ------------- PARTE 1 DE FRAMES MEDIO ------------------------
@@ -524,6 +527,7 @@ class Automatizar(ttk.Frame):
         self.lb_frame_menu =  ttk.LabelFrame(
             self.canvas,
             text='CLIENTS',
+            relief='groove'
         )
         
         self.lb_frame_menu.bind("<Configure>", lambda e:self.canvas.configure(scrollregion=self.canvas.bbox("all")))
@@ -564,7 +568,8 @@ class Automatizar(ttk.Frame):
                     self.lb_frame_menu,
                     alto=y_alto_btn,
                     ancho=x_ancho_btn,
-                    radio = 25
+                    radio = 25,
+                    bg_color=fondo_app
                 )
                 self.buttons_clientes.pack(
                     expand=0,
@@ -600,7 +605,7 @@ class Automatizar(ttk.Frame):
         self.lb_frame_sistemas = ttk.LabelFrame(
             self.frame_medio,
             text='POLICY',
-            width=400
+            relief='groove'
         )
         self.lb_frame_sistemas.pack(
             side='left',
@@ -615,6 +620,7 @@ class Automatizar(ttk.Frame):
         self.lb_frame_scripts = ttk.LabelFrame(
             self.frame_medio,
             text="SCRIPTS",
+            relief='groove'
             )
         self.lb_frame_scripts.pack(
             side=tk.RIGHT,
@@ -640,7 +646,7 @@ class Automatizar(ttk.Frame):
             background=colour_fr_pie,
             borderwidth=2,
             highlightbackground=color_bd_fr,
-            highlightthickness=3
+            highlightthickness=hhtk
         )
 
 # TODO ------------- BOTON CERRAR, FRAME PIE
@@ -710,7 +716,7 @@ class Automatizar(ttk.Frame):
             i['foreground']=color_default_fgBT
 
         for rb in PST_AUT.bfr_rb_list:
-            rb.canvas.itemconfig(1, fill=color_default_bgBT, outline=color_default_outline)
+            rb.canvas.itemconfig(1, fill=color_default_bgBT, outline=default_outline)
     
     
 

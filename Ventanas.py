@@ -9,7 +9,7 @@ from tkinter import messagebox as mb
 from tkinter import font as font
 from PIL import Image, ImageTk
 from configparser import ConfigParser
-from Compliance import fondo_app, select_fg, select_bg, bg_submenu, default_color_text, fuente_texto, fg_submenu, select_fg, fg_menu, color_titulos, _Font_Texto, default_color_text, select_bg, select_fg, active_color, _Font_Menu, oddrow, evenrow
+from Compliance import hlh_def, hhtk, fondo_app, select_fg, select_bg, bg_submenu, default_color_text, fuente_texto, fg_submenu, select_fg, fg_menu, color_titulos, _Font_Texto, default_color_text, select_bg, select_fg, active_color, _Font_Menu, oddrow, evenrow
 from Extraciones import MyEntry
 user = getuser()
 mypath = os.path.expanduser("~/")
@@ -44,7 +44,7 @@ class Ventana(ttk.Frame):
         self.click = True
 
         self.vtn_ventanas = tk.Toplevel(self)
-        self.vtn_ventanas.bind('<Motion>', self.app.act_botones)
+        self.vtn_ventanas.bind('<Motion>', self.app.activar_default)
         self.vtn_ventanas.config(
             background=fondo_app
         )
@@ -634,9 +634,9 @@ class Ventana(ttk.Frame):
             foreground="gray75",
             highlightcolor=active_color,
             insertbackground=active_color,
-            insertwidth=5,
+            insertwidth=hlh_def,
             selectbackground=select_bg,
-            highlightthickness=2,
+            highlightthickness=hhtk,
             font=(fuente_texto, 14)
         )
 
@@ -669,6 +669,7 @@ class Ventana(ttk.Frame):
         self.labelframe1=ttk.LabelFrame(
             self.datos, 
             text="DATOS",
+            relief='groove'
         )
         self.labelframe1.grid(column=0, row=0, padx=10, pady=10, sticky='nsew')
         
@@ -713,6 +714,7 @@ class Ventana(ttk.Frame):
         self.labelframe2=ttk.LabelFrame(
             self.otros_datos, 
             text="OTROS DATOS",
+            relief='groove'
         )
         self.labelframe2.grid(column=0, row=0, padx=10, pady=10, sticky='nsew')
         
@@ -741,7 +743,7 @@ class Ventana(ttk.Frame):
             font=_Font_Texto,
             highlightcolor = active_color,
             borderwidth=0, 
-            highlightthickness=2,
+            highlightthickness=hhtk,
             width=20,
             yscrollcommand=self.fr2_scroll1.set
         )
@@ -765,9 +767,9 @@ class Ventana(ttk.Frame):
             wrap=tk.WORD,
             highlightcolor=active_color,
             borderwidth=0, 
-            highlightthickness=3,
+            highlightthickness=hhtk,
             insertbackground=active_color,
-            insertwidth=5,
+            insertwidth=hlh_def,
             selectforeground=select_fg,
             selectbackground=select_bg,
         )
@@ -798,9 +800,9 @@ class Ventana(ttk.Frame):
             wrap=tk.WORD,
             highlightcolor=active_color,
             borderwidth=0, 
-            highlightthickness=3,
+            highlightthickness=hhtk,
             insertbackground=active_color,
-            insertwidth=5,
+            insertwidth=hlh_def,
             selectforeground=select_fg,
             selectbackground=select_bg,
         )
@@ -851,9 +853,9 @@ class Ventana(ttk.Frame):
             wrap=tk.WORD,
             highlightcolor=active_color,
             borderwidth=0, 
-            highlightthickness=2,
+            highlightthickness=hhtk,
             insertbackground=active_color,
-            insertwidth=5,
+            insertwidth=hlh_def,
             selectforeground=select_fg,
             selectbackground=select_bg,
         )

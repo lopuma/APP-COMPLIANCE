@@ -11,7 +11,7 @@ from tkinter import font
 from PIL import Image, ImageTk
 from threading import Thread
 import time
-from Compliance import bg_panel_buscar, bg_submenu, default_color_text, bg_menu, fg_submenu, acbg_panel_buscar, _Font_Menu, _Font_Texto, select_bg, select_fg, fondo_app, active_color, select_bg, select_fg, fuente_texto, tamñ_texto, _Font_Texto_bold, _Font_Texto_codigo
+from Compliance import hlh_def, hhtk, bg_panel_buscar, bg_submenu, default_color_text, bg_menu, fg_submenu, acbg_panel_buscar, _Font_Menu, _Font_Texto, select_bg, select_fg, fondo_app, active_color, select_bg, select_fg, fuente_texto, tamñ_texto, _Font_Texto_bold, _Font_Texto_codigo
 user = getuser()
 mypath = os.path.expanduser("~/")
 path_extracion = mypath+"Compliance/extracion/"
@@ -44,9 +44,9 @@ class MyEntry(tk.Entry):
             borderwidth=0,
             highlightcolor=active_color,
             insertbackground=active_color,
-            insertwidth=5,
+            insertwidth=hlh_def,
             selectbackground=select_bg,
-            highlightthickness=3,        )
+            highlightthickness=hhtk,        )
         self.mostrar_menu()
         self.bind('<Control-a>', self.seleccionar_todo)
         self.bind('<Control-A>', self.seleccionar_todo)
@@ -579,7 +579,7 @@ class Extracion(ttk.Frame):
             wrap=tk.WORD,
             highlightcolor=active_color,
             borderwidth=0,
-            highlightthickness=3,
+            highlightthickness=hhtk,
             #background='#1B1A17',
             insertbackground=active_color,
             insertwidth=5,
@@ -894,7 +894,7 @@ class Extracion(ttk.Frame):
                 insertbackground=active_color,
                 insertwidth=5,
                 selectbackground=select_bg,
-                highlightthickness=3,
+                highlightthickness=hhtk,
                 font=(fuente_texto, 14)
             )
 
@@ -1034,12 +1034,12 @@ class Extracion(ttk.Frame):
             self.bus_reem_num_results.set('~ {} de {} ~'.format(
                 self.numero_ocurrencia_actual, self.numero_ocurrencias))
             self.entr_str.configure(
-                highlightthickness=3,
+                highlightthickness=hhtk,
                 highlightcolor='blue')
         else:
             self.bus_reem_num_results.set('~ {} ~'.format('No hay resultados'))
             self.entr_str.configure(
-                highlightthickness=3,
+                highlightthickness=hhtk,
                 highlightcolor='red')
 
     def buscar_todo(self, txt_buscar=None):
@@ -1084,12 +1084,12 @@ class Extracion(ttk.Frame):
             self.bus_reem_num_results.set('~ {} de {} ~'.format(
                 self.numero_ocurrencia_actual, self.numero_ocurrencias))
             self.entr_str.configure(
-                highlightthickness=3,
+                highlightthickness=hhtk,
                 highlightcolor='blue')
         else:
             self.bus_reem_num_results.set('~ {} ~'.format('No hay resultados'))
             self.entr_str.configure(
-                highlightthickness=3,
+                highlightthickness=hhtk,
                 highlightcolor='red')
 
     def _buscar_anterior(self, event=None):
@@ -1098,10 +1098,10 @@ class Extracion(ttk.Frame):
             self.bus_reem_num_results.set('~ {} de {} ~'.format(
                 self.numero_ocurrencia_actual, self.numero_ocurrencias))
             self.entr_str.configure(
-                highlightthickness=3,
+                highlightthickness=hhtk,
                 highlightcolor='blue')
         else:
             self.bus_reem_num_results.set('~ {} ~'.format('No hay resultados'))
             self.entr_str.configure(
-                highlightthickness=3,
+                highlightthickness=hhtk,
                 highlightcolor='red')
