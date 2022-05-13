@@ -16,13 +16,13 @@ class RadioButton(ttk.Frame):
             **kwargs
         ):
         super().__init__(*args, **kwargs)
-        from Compliance import fondo_app, color_default_bgBT, default_outline
+        from Compliance import default_fondo_app, default_boton_bg, default_outline
         
         global bg_cl
 
         bg_cl =  bg_color
         if bg_cl is None:
-            bg_cl = color_default_bgBT
+            bg_cl = default_boton_bg
         else:
             bg_cl = bg_color
         self.canvas = tk.Canvas(self,
@@ -31,7 +31,7 @@ class RadioButton(ttk.Frame):
         )
         self.canvas.pack( pady=10)
         self.canvas.configure(
-            background=fondo_app,
+            background=default_fondo_app,
             border=0,
             borderwidth=0,
             highlightthickness=0
@@ -48,13 +48,13 @@ class RadioButton(ttk.Frame):
 class BtnScripts(tk.Button):
     def __init__(self, *args, **kwargs):
         tk.Button.__init__(self, *args, **kwargs)
-        from Compliance import color_default_fgBT, _Font_Boton, color_default_abgBT, color_default_afgBT
+        from Compliance import default_boton_fg, _Font_Boton, default_boton_acbg, default_boton_acfg
         tk.Button.configure(self,
             background=bg_cl,
-            foreground=color_default_fgBT,
+            foreground=default_boton_fg,
             font=_Font_Boton,
-            activeforeground=color_default_afgBT,
-            activebackground=color_default_abgBT,
+            activeforeground=default_boton_acfg,
+            activebackground=default_boton_acbg,
             border=0,
             highlightthickness=0,
         )

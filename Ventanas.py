@@ -9,7 +9,7 @@ from tkinter import messagebox as mb
 from tkinter import font as font
 from PIL import Image, ImageTk
 from configparser import ConfigParser
-from Compliance import hlh_def, hhtk, fondo_app, select_fg, select_bg, bg_submenu, default_color_text, fuente_texto, fg_submenu, select_fg, fg_menu, color_titulos, _Font_Texto, default_color_text, select_bg, select_fg, active_color, _Font_Menu, oddrow, evenrow
+from Compliance import hlh_def, pers_color_text, modo_dark, hhtk, default_color_widget_bg, default_fondo_app, select_fg, select_bg, bg_submenu, default_color_widget_fg, fuente_texto, fg_submenu, select_fg, default_color_titulos, _Font_Texto, default_color_widget_fg, select_bg, select_fg, default_color_widget_act, _Font_Menu, oddrow, evenrow
 from Extraciones import MyEntry
 user = getuser()
 mypath = os.path.expanduser("~/")
@@ -46,7 +46,7 @@ class Ventana(ttk.Frame):
         self.vtn_ventanas = tk.Toplevel(self)
         self.vtn_ventanas.bind('<Motion>', self.app.activar_default)
         self.vtn_ventanas.config(
-            background=fondo_app
+            background=default_fondo_app
         )
         screen_width = self.app.root.winfo_x()
         screen_height= self.app.root.winfo_y()
@@ -65,7 +65,7 @@ class Ventana(ttk.Frame):
         self.vtn_ventanas.rowconfigure(2, weight=1)
 
         self.iconos()
-        self.widgets_ventanas()
+        self.WIDGETS_VENTANA()
         self.menu_clickDerecho()
         self.menuList_clickDerecho()
         self.cargar_ventanas()
@@ -150,11 +150,18 @@ class Ventana(ttk.Frame):
     def clear_bsq(self, event):
         text_widget = event.widget
         entry = self.var_ent_buscar.get()
+        print(modo_dark)
         if entry == "Buscar Directories / File ...":
-            text_widget.config(
-                foreground=default_color_text,
-                font=_Font_Texto
-            )
+            if modo_dark == 'True':    
+                text_widget.config(
+                    foreground=pers_color_text,
+                    font=_Font_Texto
+                )
+            else:
+                text_widget.config(
+                    foreground=default_color_widget_fg,
+                    font=_Font_Texto
+                )
             self.var_ent_buscar.set("")
             text_widget.icursor(0)
             self.btnLimpiar.grid_forget()
@@ -589,7 +596,7 @@ class Ventana(ttk.Frame):
         with open(path_config_ini.format("apariencia.ini"), 'w') as configfile:
             parse.write(configfile)
 
-    def widgets_ventanas(self):
+    def WIDGETS_VENTANA(self):
         self.buscador = ttk.Frame(
             self.vtn_ventanas,
         )
@@ -632,11 +639,11 @@ class Ventana(ttk.Frame):
 
         self.textBuscar.config(
             foreground="gray75",
-            highlightcolor=active_color,
-            insertbackground=active_color,
-            insertwidth=hlh_def,
-            selectbackground=select_bg,
-            highlightthickness=hhtk,
+            # highlightcolor=default_color_widget_act,
+            # insertbackground=default_color_widget_act,
+            # insertwidth=hlh_def,
+            # selectbackground=select_bg,
+            # highlightthickness=hhtk,
             font=(fuente_texto, 14)
         )
 
@@ -737,11 +744,12 @@ class Ventana(ttk.Frame):
         self.fr2_scroll1 = tk.Scrollbar(self.labelframe2, orient=tk.VERTICAL)
         self.listServer.config(
             selectmode=tk.EXTENDED,
-            foreground=default_color_text,
+            background=default_color_widget_bg,
+            foreground=default_color_widget_fg,
             selectbackground=select_bg,
             selectforeground=select_fg,
             font=_Font_Texto,
-            highlightcolor = active_color,
+            highlightcolor = default_color_widget_act,
             borderwidth=0, 
             highlightthickness=hhtk,
             width=20,
@@ -765,13 +773,15 @@ class Ventana(ttk.Frame):
             font=_Font_Texto, 
             height=6,
             wrap=tk.WORD,
-            highlightcolor=active_color,
+            highlightcolor=default_color_widget_act,
             borderwidth=0, 
             highlightthickness=hhtk,
-            insertbackground=active_color,
+            insertbackground=default_color_widget_act,
             insertwidth=hlh_def,
             selectforeground=select_fg,
             selectbackground=select_bg,
+            background=default_color_widget_bg,
+            foreground=default_color_widget_fg,
         )
 
         self.btnCpRisk = ttk.Button(
@@ -798,13 +808,15 @@ class Ventana(ttk.Frame):
             font=_Font_Texto, 
             height=6,
             wrap=tk.WORD,
-            highlightcolor=active_color,
+            highlightcolor=default_color_widget_act,
             borderwidth=0, 
             highlightthickness=hhtk,
-            insertbackground=active_color,
+            insertbackground=default_color_widget_act,
             insertwidth=hlh_def,
             selectforeground=select_fg,
             selectbackground=select_bg,
+            background=default_color_widget_bg,
+            foreground=default_color_widget_fg,
         )
 
         self.btnCpImp = ttk.Button(
@@ -821,7 +833,7 @@ class Ventana(ttk.Frame):
         self.lbl_SO = ttk.Label(
             self.labelframe2,
             text='SISTEMAS OPERATIVO',
-            foreground=color_titulos,
+            foreground=default_color_titulos,
             justify='center',
         )
         self.lbl_SO.grid(row=2, column=2, pady=10, padx=10, sticky='w')
@@ -851,10 +863,10 @@ class Ventana(ttk.Frame):
             font=_Font_Texto, 
             height=5,
             wrap=tk.WORD,
-            highlightcolor=active_color,
+            highlightcolor=default_color_widget_act,
             borderwidth=0, 
             highlightthickness=hhtk,
-            insertbackground=active_color,
+            insertbackground=default_color_widget_act,
             insertwidth=hlh_def,
             selectforeground=select_fg,
             selectbackground=select_bg,

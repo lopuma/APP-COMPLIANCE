@@ -11,7 +11,7 @@ from tkinter import font
 from PIL import Image, ImageTk
 from threading import Thread
 import time
-from Compliance import hlh_def, hhtk, bg_panel_buscar, bg_submenu, default_color_text, bg_menu, fg_submenu, acbg_panel_buscar, _Font_Menu, _Font_Texto, select_bg, select_fg, fondo_app, active_color, select_bg, select_fg, fuente_texto, tamñ_texto, _Font_Texto_bold, _Font_Texto_codigo
+from Compliance import hlh_def, hhtk, default_color_widget_bg, bg_panel_buscar, bg_submenu, default_color_widget_fg, default_menu_bg, fg_submenu, acbg_panel_buscar, _Font_Menu, _Font_Texto, select_bg, select_fg, default_fondo_app, default_color_widget_act, select_bg, select_fg, fuente_texto, tamñ_texto, _Font_Texto_bold, _Font_Texto_codigo
 user = getuser()
 mypath = os.path.expanduser("~/")
 path_extracion = mypath+"Compliance/extracion/"
@@ -38,12 +38,13 @@ class MyEntry(tk.Entry):
         self.changes = [""]
         self.steps = int()
         self.config(
-            foreground=default_color_text,
+            background=default_color_widget_bg,
+            foreground=default_color_widget_fg,
             selectforeground=select_fg,
             font=_Font_Texto,
             borderwidth=0,
-            highlightcolor=active_color,
-            insertbackground=active_color,
+            highlightcolor=default_color_widget_act,
+            insertbackground=default_color_widget_act,
             insertwidth=hlh_def,
             selectbackground=select_bg,
             highlightthickness=hhtk,        )
@@ -249,7 +250,7 @@ class Extracion(ttk.Frame):
     def menu(self):
         self.frame1 = tk.Frame(
             self,
-            background=bg_menu,
+            background=default_menu_bg,
             width=self.wd
         )
         self.frame1.grid_propagate(False)
@@ -577,11 +578,11 @@ class Extracion(ttk.Frame):
         self.txt.config(
             font=_Font_Texto, 
             wrap=tk.WORD,
-            highlightcolor=active_color,
+            highlightcolor=default_color_widget_act,
             borderwidth=0,
             highlightthickness=hhtk,
             #background='#1B1A17',
-            insertbackground=active_color,
+            insertbackground=default_color_widget_act,
             insertwidth=5,
             selectbackground=select_bg,
             selectforeground=select_fg,
@@ -838,7 +839,7 @@ class Extracion(ttk.Frame):
             #self.busca_top.transient(self)
             
             self.busca_top.config(
-                bg=fondo_app, 
+                bg=default_fondo_app, 
                 padx=5, 
                 pady=5
             )
@@ -890,8 +891,8 @@ class Extracion(ttk.Frame):
 
             self.entr_str.configure(
                 width=50,
-                highlightcolor=active_color,
-                insertbackground=active_color,
+                highlightcolor=default_color_widget_act,
+                insertbackground=default_color_widget_act,
                 insertwidth=5,
                 selectbackground=select_bg,
                 highlightthickness=hhtk,
@@ -906,7 +907,7 @@ class Extracion(ttk.Frame):
             )
             self.btn_cerrar_buscar.config(
                 background=bg_panel_buscar,
-                highlightcolor=active_color,
+                highlightcolor=default_color_widget_act,
                 activebackground=acbg_panel_buscar,
                 border=0,
                 highlightbackground=bg_panel_buscar,
@@ -923,7 +924,7 @@ class Extracion(ttk.Frame):
             
             self.btn_limpiar.config(
                 background=bg_panel_buscar,
-                highlightcolor=active_color,
+                highlightcolor=default_color_widget_act,
                 activebackground=acbg_panel_buscar,
                 border=0,
                 highlightbackground=bg_panel_buscar,
@@ -942,7 +943,7 @@ class Extracion(ttk.Frame):
 
             self.btn_buscar_prev.config(
                 background=bg_panel_buscar,
-                highlightcolor=active_color,
+                highlightcolor=default_color_widget_act,
                 activebackground=acbg_panel_buscar,
                 border=0,
                 highlightbackground=bg_panel_buscar,
@@ -961,7 +962,7 @@ class Extracion(ttk.Frame):
 
             self.btn_buscar_next.config(
                 background=bg_panel_buscar,
-                highlightcolor=active_color,
+                highlightcolor=default_color_widget_act,
                 activebackground=acbg_panel_buscar,
                 border=0,
                 highlightbackground=bg_panel_buscar,

@@ -9,7 +9,7 @@ import time
 from tkinter import ttk
 from threading import Thread
 from PIL import Image, ImageTk
-from Compliance import _Font_Texto, fg_submenu, select_bg, bg_menu, select_fg, bg_submenu,fondo_app, _Font_pestañas, color_out_bg_pestaña, color_out_fg_pestaña, color_act_bg_pestaña, color_sel_fg_pestaña, color_act_fg_pestaña
+from Compliance import _Font_Texto, fg_submenu, select_bg, default_menu_bg, select_fg, bg_submenu,default_fondo_app, _Font_pestañas, color_out_bg_pestaña, color_out_fg_pestaña, color_act_bg_pestaña, color_sel_fg_pestaña, color_act_fg_pestaña
 
 release = True
 path = os.path.expanduser("~/")
@@ -63,7 +63,7 @@ class ScrollableNotebook(ttk.Frame):
 
         self.bottomTab_novo = tk.Label(slideFrame, 
                                 image=self.novo,
-                                background=fondo_app,
+                                background=default_fondo_app,
                                 foreground=color_btn_tab,
                                 text="Abrir",
                                 justify='center',
@@ -75,7 +75,7 @@ class ScrollableNotebook(ttk.Frame):
 
         self.leftArrow = tk.Label(slideFrame, 
                                 text=" \u276E ",
-                                background=fondo_app,
+                                background=default_fondo_app,
                                 foreground=color_btn_tab,
                                 justify='center',
                                 anchor='center',
@@ -88,7 +88,7 @@ class ScrollableNotebook(ttk.Frame):
         self.rightArrow = tk.Label(slideFrame, 
                                 text=" \u276F ",
                                 foreground=color_btn_tab,
-                                background = fondo_app,
+                                background = default_fondo_app,
                                 justify='center',
                                 anchor='center',
                                 font = font.Font(family='Helvetica', size=15, weight='bold')
@@ -168,7 +168,7 @@ class ScrollableNotebook(ttk.Frame):
         ])
         #? color fondo pestañas
         self.style.configure('ScrollableNotebook',
-                            background=bg_menu,
+                            background=default_menu_bg,
         )
 
         self.style.configure("ScrollableNotebook.Tab",
@@ -181,7 +181,7 @@ class ScrollableNotebook(ttk.Frame):
         )         
         self.style.map('ScrollableNotebook.Tab', 
             background = [
-                            ("selected", fondo_app),
+                            ("selected", default_fondo_app),
                             ("active", color_act_bg_pestaña)
                         ],
             foreground = [
@@ -259,7 +259,7 @@ class ScrollableNotebook(ttk.Frame):
     def _rightSlide(self):
         global release
         release = False
-        self.rightArrow.configure(foreground=bg_menu)
+        self.rightArrow.configure(foreground=default_menu_bg)
         while not release:
             time.sleep(0.01)
             if self.notebookTab.winfo_width()>self.notebookContent.winfo_width()-self.menuSpace:
@@ -272,7 +272,7 @@ class ScrollableNotebook(ttk.Frame):
     def _leftSlide(self):
         global release
         release = False
-        self.leftArrow.configure(foreground=bg_menu)
+        self.leftArrow.configure(foreground=default_menu_bg)
         while not release:
             time.sleep(0.01)
             if not self.notebookTab.winfo_x()== 0:

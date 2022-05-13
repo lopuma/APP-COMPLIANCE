@@ -5,7 +5,7 @@ import os
 from tkinter import font
 from getpass import getuser
 from Extraciones import MyEntry
-from Compliance import fondo_app, hhtk
+from Compliance import default_fondo_app, hhtk
 
 user = getuser()
 mypath = os.path.expanduser("~/")
@@ -19,7 +19,7 @@ class SelectFont(tk.Toplevel):
         self.geometry('700x600')
         self.title("Apariencia para {} ".format(self.titulo))
         self.our_font = font.Font(family='Helvetica', size=32)
-        self.config(background=fondo_app)
+        self.config(background=default_fondo_app)
         self.widget_preferencia()
 
     def widget_preferencia(self):
