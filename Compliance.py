@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# Copyright (c) Jose Alvaro Cedeño 2022
+# For license see LICENSE
 import json
 import os
 import time
@@ -13,12 +15,8 @@ import tkinter as tk
 from PIL import Image, ImageTk
 from tkinter.ttk import Style
 from threading import Thread
-
-from numpy import pad
-from simpleline import App
 from ScrollableNotebook import *
-from configparser import ConfigParser
-from RadioBotton import BtnScripts, RadioButton
+from RadioBotton import RadioButton
 from functools import partial
 
 #-----------------------------------------------------------#
