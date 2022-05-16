@@ -18,7 +18,7 @@ from threading import Thread
 from ScrollableNotebook import *
 from RadioBotton import RadioButton
 from functools import partial
-
+from configparser import ConfigParser
 #-----------------------------------------------------------#
 
 tt = False
@@ -3379,10 +3379,11 @@ class Aplicacion():
         self.cuaderno.enable_traversal()
         self.cuaderno.notebookTab.bind(
             "<Button-3>", self.display_menu_clickDerecho)
-        self.contenedor.bind("<Button-3>", self._display_menu_clickDerecho)
+        self.cuaderno.bind("<Button-3>", self._display_menu_clickDerecho)
+
         self.root.bind_all("<Control-l>", lambda x: self.ocultar())
         self.root.focus_set()
-        #self.contenedor.bind('<Motion>', self.activar_default)
+        self.contenedor.bind('<Motion>', self.activar_default)
         # Fuente MENU CLICK DERECHO APP
         # ----------------------------------------------------------
         self.sizegrid = ttk.Sizegrip(
