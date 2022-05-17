@@ -4562,8 +4562,8 @@ class Aplicacion():
             parse['dark'] = {"activar_modo": activar_modo, "modo_dark": modo_dark}
             with open(path_config_ini.format("apariencia.ini"), 'w') as configfile:
                 parse.write(configfile)
-        
-        desviacion.llamada_colores()
+        if 'desviacion' in globals():
+            desviacion.llamada_colores()
         self.MODE_DARK()
 
     @beep_error
