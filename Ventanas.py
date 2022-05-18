@@ -68,7 +68,8 @@ class Ventana(ttk.Frame):
         self.WIDGETS_VENTANA()
         self.menu_clickDerecho()
         self.menuList_clickDerecho()
-        self.cargar_ventanas()
+        print("AL ABRIR VENTANA ME LLEGA DE CLIENTE, ", self.customer)
+        self.cargar_ventanas(self.customer)
         self.tree.bind("<ButtonRelease-1>", self.selecionar_elemntFile)
         self.tree.bind("<Key>", lambda e: self.desviacion.widgets_SoloLectura(e))
         self.srcRisk.bind("<Key>", lambda e: self.desviacion.widgets_SoloLectura(e))
@@ -236,7 +237,7 @@ class Ventana(ttk.Frame):
             else:
                 pass
 
-    def cargar_ventanas(self):
+    def cargar_ventanas(self, customer):
         #crear una lista vacia
         self.ventanas = []
         #limpiando el arbol de vistas
@@ -245,7 +246,7 @@ class Ventana(ttk.Frame):
         with open(self.path_ventanas) as g:
             data = json.load(g)
             count = 0
-            for md in sorted(data[self.customer], key=lambda md:md['object']):
+            for md in sorted(data[customer], key=lambda md:md['object']):
                 #guardar solo el valor de 'object a una lista'
                 self.ventanas.append(md['object'])
                 if count % 2 == 0:

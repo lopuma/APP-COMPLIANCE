@@ -1031,7 +1031,7 @@ class TextSimilar(ttk.Frame):
             for md in data:
                 listModulo.append(md['modulo'])
         listModulo.sort()
-        desviacion.DESVfr1_listbox.insert(tk.END, *listModulo)
+        desviacion.DESV_ListBox.insert(tk.END, *listModulo)
         data = []
         modulo_Buscado = str(modulo_Buscado).replace(
             "[", "").replace("]", "").replace("'", "")
@@ -1045,10 +1045,10 @@ class TextSimilar(ttk.Frame):
                     ## ------------------------------------------------- ##
                     desviacion.asignarValor_aWidgets(md)
             desviacion.mostrar_buttons_modulo(modulo_Buscado)
-            desviacion.DESVfr1_listbox.selection_clear(0, tk.END)
-            modulo_ListBox = desviacion.DESVfr1_listbox.get(0, tk.END)
+            desviacion.DESV_ListBox.selection_clear(0, tk.END)
+            modulo_ListBox = desviacion.DESV_ListBox.get(0, tk.END)
             indice = modulo_ListBox.index(value)
-            desviacion.DESVfr1_listbox.selection_set(indice)
+            desviacion.DESV_ListBox.selection_set(indice)
         self.vtn_modulos.destroy()
 
     @beep_error
@@ -1058,11 +1058,11 @@ class TextSimilar(ttk.Frame):
         listbox = event.widget
         index = listbox.curselection()
         value = listbox.get(index[0])
-        modulo_ListBox = PST_DESV.DESVfr1_listbox.get(0, tk.END)
+        modulo_ListBox = PST_DESV.DESV_ListBox.get(0, tk.END)
         indice = modulo_ListBox.index(value)
-        PST_DESV.DESVfr1_listbox.selection_set(indice)
+        PST_DESV.DESV_ListBox.selection_set(indice)
         self.vtn_modulos.destroy()
-        desviacion._cargar_elemt_selected(value)
+        desviacion._loadSelectItem(value)
 
 
 class Desviacion(ttk.Frame):
@@ -1094,7 +1094,7 @@ class Desviacion(ttk.Frame):
         if activar_modo == 'True':
             app.MODE_DARK()
 ## --- SELECCIONAR ELEMENTO DEL LISTBOX. --- #
-        self.DESVfr1_listbox.bind("<<ListboxSelect>>", self.seleccionar_Modulo)
+        self.DESV_ListBox.bind("<<ListboxSelect>>", self.selectModule)
 
 ## --- ADJUTAR EL TEXT DE LOS LABEL --- #
         self.DESVfr2_lblModulo.bind("<Configure>", self.label_resize)
@@ -1104,7 +1104,7 @@ class Desviacion(ttk.Frame):
         #self.DESVfr2_lblModulo.bind("<Motion>",lambda e:self.activar_Focus(e))
         #self.DESV_frame2.bind("<Motion>",lambda e:self.activar_Focus(e))
         #self.DESVfr2_lblDescripcion.bind("<Motion>",lambda e:self.activar_Focus(e))
-        self.DESVfr2_srcComprobacion.bind(
+        self.DESV_srcComprobacion.bind(
             "<Motion>", lambda e: self.activar_Focus(e))
         self.DESVfr2_srcBackup.bind(
             "<Motion>", lambda e: self.activar_Focus(e))
@@ -1117,10 +1117,10 @@ class Desviacion(ttk.Frame):
         self.DESVfr1_entModulo.bind(
             "<Motion>", lambda e: self._act_focus_ent(e))
         app.cuaderno.bind("<Motion>", lambda e: self.activar_Focus(e))
-        self.DESVfr1_listbox.bind("<Motion>", lambda e: self._activar_Focus(e))
+        self.DESV_ListBox.bind("<Motion>", lambda e: self._activar_Focus(e))
 
 ## --- MOSTRAR MENU DERECHO  --- ##
-        self.DESVfr2_srcComprobacion.bind(
+        self.DESV_srcComprobacion.bind(
             "<Button-3><ButtonRelease-3>", self._display_menu_clickDerecho)
         self.DESVfr2_srcBackup.bind(
             "<Button-3><ButtonRelease-3>", self._display_menu_clickDerecho)
@@ -1132,7 +1132,7 @@ class Desviacion(ttk.Frame):
             "<Button-3><ButtonRelease-3>", self._display_menu_clickDerecho)
 
 ## --- ACTIVAR MODO SOLO LECTURA --- ##
-        self.DESVfr2_srcComprobacion.bind(
+        self.DESV_srcComprobacion.bind(
             "<Key>", lambda e: self.widgets_SoloLectura(e))
         self.DESVfr2_srcBackup.bind(
             "<Key>", lambda e: self.widgets_SoloLectura(e))
@@ -1145,7 +1145,7 @@ class Desviacion(ttk.Frame):
 
 
 ## --- SELECCIONAR TOD --- ##
-        self.DESVfr2_srcComprobacion.bind(
+        self.DESV_srcComprobacion.bind(
             '<Control-a>', lambda e: self._seleccionar_todo(e))
         self.DESVfr2_srcBackup.bind(
             '<Control-a>', lambda e: self._seleccionar_todo(e))
@@ -1155,10 +1155,10 @@ class Desviacion(ttk.Frame):
             "<Return>", lambda event=None: self.buscar_Modulos(self.DESVfr1_entModulo.get()))
         self.DESVfr1_entModulo.bind(
             "<KeyPress>", lambda e: self.clear_bsq_buttom(e))
-        self.DESVfr1_listbox.bind('<Control-f>', lambda e: self.buscar(e))
-        self.DESVfr1_listbox.bind('<Control-F>', lambda e: self.buscar(e))
-        self.DESVfr1_listbox.bind("<Down>", lambda e: self.ListDown(e))
-        self.DESVfr1_listbox.bind("<Up>", lambda e: self.ListUp(e))
+        self.DESV_ListBox.bind('<Control-f>', lambda e: self.buscar(e))
+        self.DESV_ListBox.bind('<Control-F>', lambda e: self.buscar(e))
+        self.DESV_ListBox.bind("<Down>", lambda e: self.ListDown(e))
+        self.DESV_ListBox.bind("<Up>", lambda e: self.ListUp(e))
         self.DESVfr1_entModulo.bind(
             '<Control-x>', lambda e: self._clear_busqueda(e))
         self.DESVfr1_entModulo.bind(
@@ -1166,17 +1166,17 @@ class Desviacion(ttk.Frame):
         self.DESVfr1_entModulo.bind(
             "<FocusOut>", lambda e: self.clear_busqueda(e))
 
-        self.DESVfr2_srcComprobacion.bind(
+        self.DESV_srcComprobacion.bind(
             '<Control-f>', lambda e: self.buscar(e))
         self.DESVfr2_srcBackup.bind('<Control-f>', lambda e: self.buscar(e))
-        self.DESVfr2_srcComprobacion.bind(
+        self.DESV_srcComprobacion.bind(
             '<Control-F>', lambda e: self.buscar(e))
         self.DESVfr2_srcBackup.bind('<Control-F>', lambda e: self.buscar(e))
-        self.DESVfr2_srcComprobacion.bind(
+        self.DESV_srcComprobacion.bind(
             '<Control-c>', lambda e: self._copiar_texto_seleccionado(e))
         self.DESVfr2_srcBackup.bind(
             '<Control-c>', lambda e: self._copiar_texto_seleccionado(e))
-        self.DESVfr2_srcComprobacion.bind(
+        self.DESV_srcComprobacion.bind(
             '<Control-C>', lambda e: self._copiar_texto_seleccionado(e))
         self.DESVfr2_srcBackup.bind(
             '<Control-C>', lambda e: self._copiar_texto_seleccionado(e))
@@ -1278,7 +1278,7 @@ class Desviacion(ttk.Frame):
         self.txtWidget = event.widget
         # self.txtWidget.select_range(0,tk.END)
         self.txtWidget.focus_set()
-        self.DESVfr2_srcComprobacion.tag_remove("sel", "1.0", "end")
+        self.DESV_srcComprobacion.tag_remove("sel", "1.0", "end")
         self.DESVfr2_srcBackup.tag_remove("sel", "1.0", "end")
         self.DESVfr3_srcEditar.tag_remove("sel", "1.0", "end")
         self.DESVfr3_srcRefrescar.tag_remove("sel", "1.0", "end")
@@ -1292,12 +1292,12 @@ class Desviacion(ttk.Frame):
         txtWidget = event.widget
         if txtWidget == self.DESVfr1_entModulo:
             txtWidget.focus()
-            self.DESVfr2_srcComprobacion.tag_remove("sel", "1.0", "end")
+            self.DESV_srcComprobacion.tag_remove("sel", "1.0", "end")
             self.DESVfr2_srcBackup.tag_remove("sel", "1.0", "end")
             self.DESVfr3_srcEditar.tag_remove("sel", "1.0", "end")
             self.DESVfr3_srcRefrescar.tag_remove("sel", "1.0", "end")
             self.DESVfr3_srcEvidencia.tag_remove("sel", "1.0", "end")
-        elif txtWidget == self.DESVfr2_srcComprobacion:
+        elif txtWidget == self.DESV_srcComprobacion:
             # srcCom = txtWidget
             txtWidget.focus()
             txtWidget_focus = True
@@ -1313,7 +1313,7 @@ class Desviacion(ttk.Frame):
             # srcEdi = txtWidget
             txtWidget.focus()
             txtWidget_focus = True
-            self.DESVfr2_srcComprobacion.tag_remove("sel", "1.0", "end")
+            self.DESV_srcComprobacion.tag_remove("sel", "1.0", "end")
             self.DESVfr2_srcBackup.tag_remove("sel", "1.0", "end")
             self.DESVfr3_srcRefrescar.tag_remove("sel", "1.0", "end")
             self.DESVfr3_srcEvidencia.tag_remove("sel", "1.0", "end")
@@ -1339,7 +1339,6 @@ class Desviacion(ttk.Frame):
 
     def cambiar_icono(self, btn, icono1, *arg):
         btn['image'] = icono1
-        print("icono 2 --- ", arg)
         # if modo_dark == 'True':
         #     btn['image'] = icono2
         # elif modo_dark == 'False':
@@ -1356,8 +1355,8 @@ class Desviacion(ttk.Frame):
         global value
         global PST_DESV
 
-        index = PST_DESV.DESVfr1_listbox.curselection()
-        VALOR_ACTUAL_LIST = PST_DESV.DESVfr1_listbox.get(index[0])
+        index = PST_DESV.DESV_ListBox.curselection()
+        VALOR_ACTUAL_LIST = PST_DESV.DESV_ListBox.get(index[0])
         value = VALOR_ACTUAL_LIST
         self.widget_Expan = event
         tittleExpand = var
@@ -1554,44 +1553,47 @@ class Desviacion(ttk.Frame):
 ## ------------------------------------- ##
 ## --- FUNCIONES AL SELECIONAR MODULO, O BUSCAR MODULO ------- ##
     def limpiar_Widgets(self):
-        #self.DESVfr1_listbox.selection_clear(0, tk.END)
+        #self.DESV_ListBox.selection_clear(0, tk.END)
         self.DESV_frame2['text'] = 'SISTEMA OPERATIVO'
         self.DESVfr2_lblModulo['text'] = 'MODULO'
         self.DESVfr2_lblDescripcion['text'] = ''
-        self.DESVfr2_srcComprobacion.delete('1.0', tk.END)
+        self.DESV_srcComprobacion.delete('1.0', tk.END)
         self.DESVfr2_srcBackup.delete('1.0', tk.END)
         self.DESVfr3_srcEditar.delete('1.0', tk.END)
         self.DESVfr3_srcRefrescar.delete('1.0', tk.END)
         self.DESVfr3_srcEvidencia.delete('1.0', tk.END)
 
 # --- SELECIONA UN ELEMNETO DEL LIST BOX ACTUAL
-    def seleccionar_Modulo(self, event):
+    def selectModule(self, event):
         global value
+        customer = PST_DESV.clientesVar.get()
+        print("CLIENTE AL SELECIONAR", customer)
         list_event = event.widget
         index = list_event.curselection()
         value = list_event.get(index[0])
-        self.cargar_elemt_selected(value)
+        self.loadSelectItem(value, customer)
 
 # --- CARGA ELEMENTO SELECIONADO
-    def cargar_elemt_selected(self, value_selecionado):  # TODO CARGAR MODULO
+    def loadSelectItem(self, selectionValue, customer):  # TODO CARGAR MODULO
         data = []
-        with open(path_modulo.format(asigne_Cliente)) as g:
+        print("CLIENTE QUE LLEGA DESPUE DE SELECIONAR", customer)
+        with open(path_modulo.format(customer)) as g:
             data = json.load(g)
             for md in data:
-                if value_selecionado in md['modulo']:
+                if selectionValue in md['modulo']:
                     self.limpiar_Widgets()
                     self._asignarValor_aWidgets(md)
-                    self.mostrar_buttons_modulo(value_selecionado)
+                    self.mostrar_buttons_modulo(selectionValue)
 
-    def _cargar_elemt_selected(self, value_selecionado):  # TODO CARGAR MODULO
+    def _loadSelectItem(self, selectionValue):  # TODO CARGAR MODULO
         data = []
         with open(path_modulo.format(asigne_Cliente)) as g:
             data = json.load(g)
             for md in data:
-                if value_selecionado in md['modulo']:
+                if selectionValue in md['modulo']:
                     self.limpiar_Widgets()
                     self.asignarValor_aWidgets(md)
-            self.mostrar_buttons_modulo(value_selecionado)
+            self.mostrar_buttons_modulo(selectionValue)
 
 #  --- ASIGNACION DE VALORES A WIDGETS SRC, AL CAMBIAR DE PESTAÑA
 #  --- Y al buscar mas de un modulo en el mismo cliente
@@ -1608,7 +1610,7 @@ class Desviacion(ttk.Frame):
             PST_DESV.DESVfr2_lblDescripcion['text'] = md['descripcion']
 
         if md['comprobacion'] is not None:
-            PST_DESV.DESVfr2_srcComprobacion.insert(tk.END, md['comprobacion'])
+            PST_DESV.DESV_srcComprobacion.insert(tk.END, md['comprobacion'])
             PST_DESV.DESV_btn1Expandir.config(state='normal')
         else:
             PST_DESV.DESV_btn1Expandir.config(state='disabled')
@@ -1643,6 +1645,8 @@ class Desviacion(ttk.Frame):
 # --- ASIGANACION DE VALORES A WIDGETS SRC
     def _asignarValor_aWidgets(self, md):
         global sis_oper
+        print("SELF", self)
+        print("DESV", PST_DESV)
         if md['SO'] is not None:
             sis_oper = md['SO']
             self.DESV_frame2['text'] = md['SO']
@@ -1654,7 +1658,7 @@ class Desviacion(ttk.Frame):
             self.DESVfr2_lblDescripcion['text'] = md['descripcion']
 
         if md['comprobacion'] is not None:
-            self.DESVfr2_srcComprobacion.insert(tk.END, md['comprobacion'])
+            self.DESV_srcComprobacion.insert(tk.END, md['comprobacion'])
             self.DESV_btn1Expandir.config(state='normal')
         else:
             self.DESV_btn1Expandir.config(state='disabled')
@@ -1761,8 +1765,7 @@ class Desviacion(ttk.Frame):
             PST_DESV.DESV_btnCommand.grid_forget()
             PST_DESV.DESV_btnIdrsa.grid_forget()
             PST_DESV.DESV_btnAccount.grid(row=2, column=1, padx=5)
-            PST_DESV.DESV_btnRecortar.grid(
-                row=2, column=2, padx=5, pady=15, sticky='ne')
+            PST_DESV.DESV_btnRecortar.grid(row=2, column=2, padx=5)
 # --- COMMAND
         elif str(modulo_selecionado) == "protecting Resources-OSRs/SUDO Command WW Permissions":
             self._btnDir = False
@@ -1957,11 +1960,11 @@ class Desviacion(ttk.Frame):
 # --------- OBTENER MODULO POR CLAVE O MODULO -------------- ## //TODO "definir si buscar por clave o modulo"
 # TODO --- SI NO EXISTE, MODULO O CLAVE
         if len(clave_Buscado) == 0 and len(modulo_Buscado) == 0:
-            self.DESVfr1_listbox.select_clear(tk.ANCHOR)
+            self.DESV_ListBox.select_clear(tk.ANCHOR)
             self.DESVfr1_entModulo.focus()
             self._disabled_buttons()
             self.disabled_btn_expandir()
-            self.DESVfr1_listbox.selection_clear(0, tk.END)
+            self.DESV_ListBox.selection_clear(0, tk.END)
             lis_md_enct = []
             lis_clv_enct = []
             MsgBox = mb.askyesno(
@@ -2189,16 +2192,16 @@ class Desviacion(ttk.Frame):
                         value = md['modulo']
                         self.asignarValor_aWidgets(md)
                         self.mostrar_buttons_clave(clave_Buscado)
-                self.DESVfr1_listbox.selection_clear(0, tk.END)
-                modulo_ListBox = self.DESVfr1_listbox.get(0, tk.END)
+                self.DESV_ListBox.selection_clear(0, tk.END)
+                modulo_ListBox = self.DESV_ListBox.get(0, tk.END)
                 indice = modulo_ListBox.index(value)
-                self.DESVfr1_listbox.selection_set(indice)
+                self.DESV_ListBox.selection_set(indice)
                 return 'break'
 # TODO --- SI EXISTEN MAS DE UNA CLAVE
         elif len(clave_Buscado) > 1 and len(modulo_Buscado) == 0:
             data = []
             no_exist = False
-            self.DESVfr1_listbox.selection_clear(0, tk.END)
+            self.DESV_ListBox.selection_clear(0, tk.END)
             with open(path_modulo.format(asigne_Cliente)) as g:
                 data = json.load(g)
                 for md in data:
@@ -2224,16 +2227,16 @@ class Desviacion(ttk.Frame):
                         value = md['modulo']
                         self.asignarValor_aWidgets(md)
                 self.mostrar_buttons_modulo(modulo_Buscado)
-                self.DESVfr1_listbox.selection_clear(0, tk.END)
-                modulo_ListBox = self.DESVfr1_listbox.get(0, tk.END)
+                self.DESV_ListBox.selection_clear(0, tk.END)
+                modulo_ListBox = self.DESV_ListBox.get(0, tk.END)
                 indice = modulo_ListBox.index(value)
-                self.DESVfr1_listbox.selection_set(indice)
+                self.DESV_ListBox.selection_set(indice)
                 return 'break'
 # TODO --- SI HAY MAS DE UN MODULO
         elif len(modulo_Buscado) > 1 and len(clave_Buscado) == 0:
             data = []
             no_exist = False
-            self.DESVfr1_listbox.selection_clear(0, tk.END)
+            self.DESV_ListBox.selection_clear(0, tk.END)
             with open(path_modulo.format(asigne_Cliente)) as g:
                 data = json.load(g)
                 for md in data:
@@ -2250,7 +2253,7 @@ class Desviacion(ttk.Frame):
         else:
             data = []
             no_exist = False
-            self.DESVfr1_listbox.selection_clear(0, tk.END)
+            self.DESV_ListBox.selection_clear(0, tk.END)
             with open(path_modulo.format(asigne_Cliente)) as g:
                 data = json.load(g)
                 for md in data:
@@ -2315,21 +2318,21 @@ class Desviacion(ttk.Frame):
         list_event.yview_scroll(1, "units")
         selecion = list_event.curselection()[0]+1
         modulo_selecionado = list_event.get(selecion)
-        self.cargar_elemt_selected(modulo_selecionado)
+        self.loadSelectItem(modulo_selecionado)
 
     def ListUp(self, event):
         list_event = event.widget
         list_event.yview_scroll(-1, "units")
         selecion = list_event.curselection()[0]-1
         modulo_selecionado = list_event.get(selecion)
-        self.cargar_elemt_selected(modulo_selecionado)
+        self.loadSelectItem(modulo_selecionado)
 
     def enabled_Widgets(self):
-        self.DESVfr1_listbox.config(state="normal")
+        self.DESV_ListBox.config(state="normal")
         self.DESVfr1_entModulo.config(state="normal")
         self.DESVfr1_entModulo.focus()
         self.DESVfr1_btnBuscar.config(state="normal")
-        self.DESVfr2_srcComprobacion.config(state="normal")
+        self.DESV_srcComprobacion.config(state="normal")
         self.DESVfr2_srcBackup.config(state="normal")
         self.DESVfr3_srcEditar.config(state="normal")
         self.DESVfr3_srcRefrescar.config(state="normal")
@@ -2344,25 +2347,30 @@ class Desviacion(ttk.Frame):
         self.DESV_btnCopyALL.config(state='normal')
         self.DESV_btn1CopyALL.config(state='normal')
 
-    def cargar_Modulos(self, clt_modulo=None, *args):
+    def loadModule(self, clt_modulo=None, *args):
         global asigne_Cliente
         global listModulo
         global listClave
         self.enabled_Widgets()
-        if clt_modulo is not None:
-            customer = clt_modulo
-            self.clientesVar.set(customer)
-        else:
-            customer = self.clientesVar.get()
+        print("CLT MODULE ", clt_modulo)
+        # if clt_modulo is not None:
+        #     customer = clt_modulo
+        #     self.clientesVar.set(customer)
+        # else:
+        #     customer = self.clientesVar.get()
+        customer = self.clientesVar.get()
+        #asigne_Cliente = customer
+        self.renameNameTab(customer)
         # --- LIMPIAR -----------------------------
         self.DESVfr1_entModulo.delete(0, tk.END)
-        self.DESVfr1_listbox.delete(0, tk.END)
+        self.DESV_ListBox.delete(0, tk.END)
         self.limpiar_Widgets()
         self._disabled_buttons()
         self.disabled_btn_expandir()
-
+        print("CUSTOMER :: ", customer)
+        print("CLIENTE :: ", asigne_Cliente)
         ## ----------------------------------------- ##
-        asigne_Cliente = customer
+        #asigne_Cliente = customer
         with open(path_modulo.format(customer)) as g:
             data = json.load(g)
             listModulo = []
@@ -2371,11 +2379,15 @@ class Desviacion(ttk.Frame):
                 listModulo.append(md['modulo'])
                 listClave.append(md['clave'])
         listModulo.sort()
-        self.DESVfr1_listbox.insert(tk.END, *listModulo)
-        self.cambiar_NamePestaña(customer)
+        self.DESV_ListBox.insert(tk.END, *listModulo)
+
+    def _loadModule(self):
+        idx = app.ClientVar.get()
+        itm = list_client[idx]
+        self.loadModule(clt_modulo=itm)
 
     def colour_line_com(self, bg_color, bg_codigo, fg_codigo, fg_nota):
-        PST_DESV.DESVfr2_srcComprobacion.tag_configure(
+        PST_DESV.DESV_srcComprobacion.tag_configure(
             "codigo",
             background=bg_codigo,
             foreground=fg_codigo,
@@ -2384,7 +2396,7 @@ class Desviacion(ttk.Frame):
             font=_Font_Texto_codigo
         )
 
-        PST_DESV.DESVfr2_srcComprobacion.tag_configure(
+        PST_DESV.DESV_srcComprobacion.tag_configure(
             "line",
             background=bg_color,
             foreground=default_color_line_fg,
@@ -2393,7 +2405,7 @@ class Desviacion(ttk.Frame):
             font=_Font_Texto_bold
         )
 
-        PST_DESV.DESVfr2_srcComprobacion.tag_configure(
+        PST_DESV.DESV_srcComprobacion.tag_configure(
             "nota",
             background=bg_color,
             foreground=fg_nota,
@@ -2402,21 +2414,21 @@ class Desviacion(ttk.Frame):
             font=_Font_Texto_bold
         )
 
-        end = PST_DESV.DESVfr2_srcComprobacion.index("end")
+        end = PST_DESV.DESV_srcComprobacion.index("end")
         line_count = int(end.split(".", 1)[0])
         for line in range(1, line_count+1):
             startline = f"{line}.0"
-            if not (PST_DESV.DESVfr2_srcComprobacion.search("##", startline, stopindex=f"{line}.1")) and not (PST_DESV.DESVfr2_srcComprobacion.search("// NOTA", startline, stopindex=f"{line}.1")):
+            if not (PST_DESV.DESV_srcComprobacion.search("##", startline, stopindex=f"{line}.1")) and not (PST_DESV.DESV_srcComprobacion.search("// NOTA", startline, stopindex=f"{line}.1")):
                 endline = f"{line}.end"
-                PST_DESV.DESVfr2_srcComprobacion.tag_add(
+                PST_DESV.DESV_srcComprobacion.tag_add(
                     "codigo", startline, endline)
-            if (PST_DESV.DESVfr2_srcComprobacion.search("+-", startline, stopindex=f"{line}.1")):
+            if (PST_DESV.DESV_srcComprobacion.search("+-", startline, stopindex=f"{line}.1")):
                 endline = f"{line}.end"
-                PST_DESV.DESVfr2_srcComprobacion.tag_add(
+                PST_DESV.DESV_srcComprobacion.tag_add(
                     "line", startline, endline)
-            if (PST_DESV.DESVfr2_srcComprobacion.search("//", startline, stopindex=f"{line}.1")):
+            if (PST_DESV.DESV_srcComprobacion.search("//", startline, stopindex=f"{line}.1")):
                 endline = f"{line}.end"
-                PST_DESV.DESVfr2_srcComprobacion.tag_add(
+                PST_DESV.DESV_srcComprobacion.tag_add(
                     "nota", startline, endline)
 
     def colour_line_bak(self, bg_color, bg_codigo, fg_codigo):
@@ -2568,11 +2580,6 @@ class Desviacion(ttk.Frame):
         PST_DESV.DESV_btn4Expandir.config(state='disabled')
         PST_DESV.DESV_btn5Expandir.config(state='disabled')
 
-    def _cargar_Modulos(self):
-        idx = app.ClientVar.get()
-        itm = list_client[idx]
-        self.cargar_Modulos(clt_modulo=itm)
-
     def ScreamEvidencia(self):
         app.root.withdraw()
         os.popen('gtk-launch capture.desktop')
@@ -2627,13 +2634,25 @@ class Desviacion(ttk.Frame):
         self.DESV_frame3.grid_propagate(False)
         self.DESV_frame3.grid(column=2, row=0, padx=10, pady=10, sticky='nsew')
 # -----------------------------------------------------------------------------#
-        self.DESV_frame1.columnconfigure(0, weight=1)
         self.DESV_frame2.columnconfigure(0, weight=1)
+        # self.DESV_frame2.columnconfigure(1, weight=1)
+        # self.DESV_frame2.columnconfigure(2, weight=1)
+        # self.DESV_frame2.columnconfigure(3, weight=1)
+        #self.DESV_frame2.columnconfigure(4, weight=1)
+        # self.DESV_frame2.rowconfigure(0, weight=1)
+        # self.DESV_frame2.rowconfigure(1, weight=1)
+        # self.DESV_frame2.rowconfigure(2, weight=1)
+        self.DESV_frame2.rowconfigure(3, weight=1)
+        # self.DESV_frame2.rowconfigure(4, weight=1)
+        self.DESV_frame2.rowconfigure(5, weight=1)
+
+        self.DESV_frame1.columnconfigure(0, weight=1)
+        #self.DESV_frame2.columnconfigure(0, weight=1)
         self.DESV_frame3.columnconfigure(0, weight=1)
 
         self.DESV_frame1.rowconfigure(2, weight=1)
-        self.DESV_frame2.rowconfigure(3, weight=1)
-        self.DESV_frame2.rowconfigure(5, weight=1)
+        #self.DESV_frame2.rowconfigure(3, weight=1)
+        #self.DESV_frame2.rowconfigure(5, weight=1)
 
         self.DESV_frame3.rowconfigure(1, weight=1)
         self.DESV_frame3.rowconfigure(3, weight=1)
@@ -2644,13 +2663,13 @@ class Desviacion(ttk.Frame):
         # -----------------------------------------------------------------------------#
         ## ======================== FRAME 1 ========================================= ##
         # ---------------- OptionMenu, lista de clientes ---------------------------- ##
-        self.DESVfr1_optMn = tk.OptionMenu(
+        self.DESV_OptionMenu = tk.OptionMenu(
             self.DESV_frame1,
             self.clientesVar,
             *list_client,
-            command=self.cargar_Modulos,
+            command=self.loadModule,
         )
-        self.DESVfr1_optMn.config(
+        self.DESV_OptionMenu.config(
             justify=tk.CENTER,
             anchor=tk.CENTER,
             background=default_menu_bg,
@@ -2662,14 +2681,14 @@ class Desviacion(ttk.Frame):
             borderwidth=0,
             width=20
         )
-        self.DESVfr1_optMn["menu"].config(
+        self.DESV_OptionMenu["menu"].config(
             background=bg_submenu,
             activebackground=select_bg,
             activeforeground=select_fg,
             foreground=fg_submenu,
             font=_Font_Texto,
         )
-        self.DESVfr1_optMn.grid(row=0, column=0, padx=5,
+        self.DESV_OptionMenu.grid(row=0, column=0, padx=5,
                                 pady=5, sticky='new', columnspan=2)
 
 # -----------------------------------------------------------------------------#
@@ -2710,7 +2729,7 @@ class Desviacion(ttk.Frame):
         self.DESVlist_xScroll = tk.Scrollbar(
             self.DESV_frame1, orient=tk.HORIZONTAL)
 
-        self.DESVfr1_listbox = tk.Listbox(
+        self.DESV_ListBox = tk.Listbox(
             self.DESV_frame1,
             state='disabled',
             xscrollcommand=self.DESVlist_xScroll.set,
@@ -2724,7 +2743,7 @@ class Desviacion(ttk.Frame):
             highlightthickness=hhtk,
             highlightcolor=default_color_widget_act,
         )
-        self.DESVfr1_listbox.grid(row=2, column=0, pady=(
+        self.DESV_ListBox.grid(row=2, column=0, pady=(
             5, 12), padx=(5, 12), sticky='nsew', columnspan=2)
 
         self.DESVlist_yScroll.grid(row=2, column=0, pady=(
@@ -2732,8 +2751,8 @@ class Desviacion(ttk.Frame):
         self.DESVlist_xScroll.grid(
             row=2, column=0, padx=5, sticky='sew', columnspan=2)
 
-        self.DESVlist_xScroll['command'] = self.DESVfr1_listbox.xview
-        self.DESVlist_yScroll['command'] = self.DESVfr1_listbox.yview
+        self.DESVlist_xScroll['command'] = self.DESV_ListBox.xview
+        self.DESVlist_yScroll['command'] = self.DESV_ListBox.yview
 ## ======================== FRAME 2 ========================================= #
         # --- MODULO ----------------------------------------------------------------------------------------------------
         self.DESVfr2_lblModulo = ttk.Label(
@@ -2741,7 +2760,7 @@ class Desviacion(ttk.Frame):
             text='MODULO',
         )
         self.DESVfr2_lblModulo.grid(
-            row=0, column=0, padx=10, pady=5, sticky='new', columnspan=5)
+            row=0, column=0, padx=10, pady=5, sticky='ew', columnspan=5)
 
         # --- Descripcion ----------------------------------------------------------------------------------------------------
         self.DESVfr2_lblDescripcion = ttk.Label(
@@ -2758,7 +2777,7 @@ class Desviacion(ttk.Frame):
             text='COMPROBACIÓN',
         )
         self.DESVfr2_lblComprobacion.grid(
-            row=2, column=0, padx=5, pady=5, sticky='w')
+            row=2, column=0, padx=5, pady=5, sticky='ew')
 
         self.DESV_btnDirectory = RadioButton(
             self.DESV_frame2,
@@ -2906,8 +2925,8 @@ class Desviacion(ttk.Frame):
             command=self.RecortarMinMax,
         )
 
-        self.DESVfr2_srcComprobacion = st.ScrolledText(self.DESV_frame2)
-        self.DESVfr2_srcComprobacion.config(
+        self.DESV_srcComprobacion = st.ScrolledText(self.DESV_frame2)
+        self.DESV_srcComprobacion.config(
             font=_Font_Texto,
             wrap=tk.WORD,
             highlightcolor=default_color_widget_act,
@@ -2922,7 +2941,7 @@ class Desviacion(ttk.Frame):
             foreground=default_color_widget_fg,
             state='disabled',
         )
-        self.DESVfr2_srcComprobacion.grid(
+        self.DESV_srcComprobacion.grid(
             row=3, column=0, padx=5, pady=5, sticky='new', columnspan=5)
 
         self.DESV_btnRiskImpact = ttk.Button(
@@ -2941,7 +2960,7 @@ class Desviacion(ttk.Frame):
             image=self.icono_expandir,
             style='DESV.TButton',
             state='disabled',
-            command=lambda x=self.DESVfr2_srcComprobacion: self.expandir(
+            command=lambda x=self.DESV_srcComprobacion: self.expandir(
                 x, self.varComprobacion),
         )
         self.DESV_btn1Expandir.grid(
@@ -2953,7 +2972,7 @@ class Desviacion(ttk.Frame):
             text='BACKUP',
         )
         self.DESVfr2_lblBackup.grid(
-            row=4, column=0, padx=5, pady=5, sticky='w')
+            row=4, column=0, padx=5, pady=5, sticky='ew', columnspan=4)
 
         self.DESVfr2_srcBackup = st.ScrolledText(
             self.DESV_frame2,
@@ -2986,7 +3005,7 @@ class Desviacion(ttk.Frame):
                 x, self.varBackup),
         )
         self.DESV_btn2Expandir.grid(row=4, column=4, padx=(
-            5, 20), pady=5, sticky='ne', columnspan=3)
+            5, 20), pady=5)        
 
 
 ## ======================== FRAME 3 ========================================= ##
@@ -3139,7 +3158,7 @@ class Desviacion(ttk.Frame):
         self.DESVfr2_lblDescripcion.bind('<Motion>', app.activar_default)
         self.DESVfr2_lblComprobacion.bind('<Motion>', app.activar_default)
         self.DESVfr2_lblBackup.bind('<Motion>', app.activar_default)
-        self.DESVfr2_srcComprobacion.bind('<Motion>', app.activar_default)
+        self.DESV_srcComprobacion.bind('<Motion>', app.activar_default)
         self.DESVfr2_srcBackup.bind('<Motion>', app.activar_default)
         self.DESVfr3_lblEditar.bind('<Motion>', app.activar_default)
         self.DESVfr3_lblEvidencia.bind('<Motion>', app.activar_default)
@@ -3160,7 +3179,7 @@ class Desviacion(ttk.Frame):
         global txtWidget
         PST_DESV.DESV_frame2['text'] = 'SISTEMA OPERATIVO'
         PST_DESV.DESVfr2_lblDescripcion['text'] = ''
-        PST_DESV.DESVfr2_srcComprobacion.delete('1.0', tk.END)
+        PST_DESV.DESV_srcComprobacion.delete('1.0', tk.END)
         PST_DESV.DESVfr2_srcBackup.delete('1.0', tk.END)
         PST_DESV.DESVfr3_srcEditar.delete('1.0', tk.END)
         PST_DESV.DESVfr3_srcRefrescar.delete('1.0', tk.END)
@@ -3173,7 +3192,6 @@ class Desviacion(ttk.Frame):
 
     def vtn_modo_dark(self):
         if modo_dark == 'True':
-            print('que hace -->', CLS_VENTANA)
             CLS_VENTANA.vtn_ventanas.config(
                 background=pers_default_fondo_app,
             )
@@ -3259,9 +3277,12 @@ class Desviacion(ttk.Frame):
         from Ventanas import Ventana
         global asigne_Cliente
         global CLS_VENTANA
+        customer = PST_DESV.clientesVar.get()
         name_vtn = "ACCOUNT"
         path = "Compliance/file/account.json"
-        CLS_VENTANA = Ventana(self, name_vtn, asigne_Cliente,
+        print("ENVIO ASINE ", asigne_Cliente)
+        print("ENVIO CUSTOMER ", customer)
+        CLS_VENTANA = Ventana(self, name_vtn, customer,
                           app, desviacion, path)
         self.vtn_modo_dark()
 
@@ -3284,11 +3305,9 @@ class Desviacion(ttk.Frame):
         CLS_VENTANA = Ventana(self, name_vtn, asigne_Cliente, app, desviacion, path)
         self.vtn_modo_dark()
 
-    def cambiar_NamePestaña(self, customer):
-        app.cuaderno.tab(idOpenTab, option=None,
-                         text='DESVIACIONES : {} '.format(customer))
-        app.cuaderno.notebookContent.tab(
-            idOpenTab, option=None, text='DESVIACIONES : {} '.format(customer))
+    def renameNameTab(self, customer):
+        app.cuaderno.tab(idOpenTab, option=None, text='DESVIACIONES : {} '.format(customer))
+        app.cuaderno.notebookContent.tab(idOpenTab, option=None, text='DESVIACIONES : {} '.format(customer))
 
     def asignar_iconos(self):
         if modo_dark == 'False':
@@ -3375,7 +3394,7 @@ class Aplicacion():
                           underline=0, image=self.WorkSpace_icon, compound=tk.LEFT)
         self.cuaderno.pack(fill="both", expand=True)
         self.cuaderno.bind_all("<<NotebookTabChanged>>",
-                               lambda e: self.al_cambiar_pestaña(e))
+                               lambda e: self.toChangeTab(e))
         self.cuaderno.enable_traversal()
         self.cuaderno.notebookTab.bind(
             "<Button-3>", self.display_menu_clickDerecho)
@@ -3759,7 +3778,7 @@ class Aplicacion():
             self.cuaderno.notebookContent.forget(idOpenTab)
 
 ## ----------------------- ##
-    def al_cambiar_pestaña(self, event):
+    def toChangeTab(self, event):
         global idOpenTab
         global asigne_Cliente
         global value
@@ -3801,38 +3820,38 @@ class Aplicacion():
                 '  Seleccionar todo', state='disabled')
             self.menu_Contextual.entryconfig(
                 '  Cerrar pestaña', state='disabled')
-        elif tab == 'DESVIACIONES : AFB ':
-            asigne_Cliente = 'AFB'
-            # index = PST_DESV.DESVfr1_listbox.curselection()
-            # VALOR_ACTUAL_LIST = PST_DESV.DESVfr1_listbox.get(index[0])
-        elif tab == 'DESVIACIONES : ASISA ':
-            asigne_Cliente = 'ASISA'
-            # index = PST_DESV.DESVfr1_listbox.curselection()
-            # VALOR_ACTUAL_LIST = PST_DESV.DESVfr1_listbox.get(index[0])
-            # value = VALOR_ACTUAL_LIST
-        elif tab == 'DESVIACIONES : CESCE ':
-            asigne_Cliente = 'CESCE'
-            # index = PST_DESV.DESVfr1_listbox.curselection()
-            # VALOR_ACTUAL_LIST = PST_DESV.DESVfr1_listbox.get(index[0])
-            # value = VALOR_ACTUAL_LIST
-        elif tab == 'DESVIACIONES : CTTI ':
-            asigne_Cliente = 'CTTI'
-        elif tab == 'DESVIACIONES : ENEL ':
-            asigne_Cliente = 'ENEL'
-        elif tab == 'DESVIACIONES : EUROFRED ':
-            asigne_Cliente = 'EUROFRED'
-        elif tab == 'DESVIACIONES : FT ':
-            asigne_Cliente = 'FT'
-        elif tab == 'DESVIACIONES : INFRA ':
-            asigne_Cliente = 'INFRA'
-        elif tab == 'DESVIACIONES : IDISO ':
-            asigne_Cliente = 'IDISO'
-        elif tab == 'DESVIACIONES : LBK ':
-            asigne_Cliente = 'LBK'
-        elif tab == 'DESVIACIONES : PLANETA ':
-            asigne_Cliente = 'PLANETA'
-        elif tab == 'DESVIACIONES : SERVIHABITAT ':
-            asigne_Cliente = 'SERVIHABITAT'
+        # elif tab == 'DESVIACIONES : AFB ':
+        #     asigne_Cliente = 'AFB'
+        #     # index = PST_DESV.DESV_ListBox.curselection()
+        #     # VALOR_ACTUAL_LIST = PST_DESV.DESV_ListBox.get(index[0])
+        # elif tab == 'DESVIACIONES : ASISA ':
+        #     asigne_Cliente = 'ASISA'
+        #     # index = PST_DESV.DESV_ListBox.curselection()
+        #     # VALOR_ACTUAL_LIST = PST_DESV.DESV_ListBox.get(index[0])
+        #     # value = VALOR_ACTUAL_LIST
+        # elif tab == 'DESVIACIONES : CESCE ':
+        #     asigne_Cliente = 'CESCE'
+        #     # index = PST_DESV.DESV_ListBox.curselection()
+        #     # VALOR_ACTUAL_LIST = PST_DESV.DESV_ListBox.get(index[0])
+        #     # value = VALOR_ACTUAL_LIST
+        # elif tab == 'DESVIACIONES : CTTI ':
+        #     asigne_Cliente = 'CTTI'
+        # elif tab == 'DESVIACIONES : ENEL ':
+        #     asigne_Cliente = 'ENEL'
+        # elif tab == 'DESVIACIONES : EUROFRED ':
+        #     asigne_Cliente = 'EUROFRED'
+        # elif tab == 'DESVIACIONES : FT ':
+        #     asigne_Cliente = 'FT'
+        # elif tab == 'DESVIACIONES : INFRA ':
+        #     asigne_Cliente = 'INFRA'
+        # elif tab == 'DESVIACIONES : IDISO ':
+        #     asigne_Cliente = 'IDISO'
+        # elif tab == 'DESVIACIONES : LBK ':
+        #     asigne_Cliente = 'LBK'
+        # elif tab == 'DESVIACIONES : PLANETA ':
+        #     asigne_Cliente = 'PLANETA'
+        # elif tab == 'DESVIACIONES : SERVIHABITAT ':
+        #     asigne_Cliente = 'SERVIHABITAT'
         else:
             self.fileMenu.entryconfig('  Clientes', state='normal')
             self.menu_Contextual.entryconfig('  Copiar', state='disabled')
@@ -3841,23 +3860,24 @@ class Aplicacion():
                 '  Seleccionar todo', state='disabled')
             self.menu_Contextual.entryconfig(
                 '  Cerrar pestaña', state='normal')
-        if 'asigne_Cliente' in globals() and len(asigne_Cliente) != 0:
-            with open(path_modulo.format(asigne_Cliente)) as g:
-                global listClave
-                global listModulo
-                data = json.load(g)
-                listModulo = []
-                listClave = []
-                for md in data:
-                    listModulo.append(md['modulo'])
-                    listClave.append(md['clave'])
+        # if 'asigne_Cliente' in globals() and len(asigne_Cliente) != 0:
+        #     with open(path_modulo.format(asigne_Cliente)) as g:
+        #         global listClave
+        #         global listModulo
+        #         data = json.load(g)
+        #         listModulo = []
+        #         listClave = []
+        #         for md in data:
+        #             listModulo.append(md['modulo'])
+        #             listClave.append(md['clave'])
+        
         if tab == 'Issues EXTRACIONES':
             self.fileMenu.entryconfig('  Clientes', state='disabled')
             self.editMenu.entryconfig('  Buscar', state='normal')
         else:
             self.editMenu.entryconfig('  Buscar', state='disabled')
         try:
-            self.valor_activo_list = desviacion.DESVfr1_listbox.get(tk.ANCHOR)
+            self.valor_activo_list = desviacion.DESV_ListBox.get(tk.ANCHOR)
         except:
             pass
         try:
@@ -3922,7 +3942,7 @@ class Aplicacion():
         extracion.panel_buscar()
 
     def cargar_modulos(self):
-        desviacion._cargar_Modulos()
+        desviacion._loadModule()
 
     def label_resize(self, event):
         event.widget['wraplength'] = event.width
@@ -4571,12 +4591,9 @@ class Aplicacion():
         global modo_dark
         global activar_modo
         global default_fondo_app
-        print("aqui llega activar modo ", activar_modo )
-        print("aqui llega modo ", modo_dark)
 
         #if activar_modo:
         if modo_dark == 'True':
-            print('hace algo ----? ', modo_dark)
             self.root.configure(
                 background=pers_default_fondo_app,
             )
@@ -4705,7 +4722,7 @@ class Aplicacion():
                 insertbackground=pers_hglcolor
             )
 
-            PST_DESV.DESVfr1_listbox.config(
+            PST_DESV.DESV_ListBox.config(
                 background=pers_bg_text,
                 foreground=pers_color_text,
                 highlightbackground=pers_bg_text,
@@ -4713,7 +4730,7 @@ class Aplicacion():
                 highlightthickness=hhtk,
             )
 
-            PST_DESV.DESVfr1_optMn.config(
+            PST_DESV.DESV_OptionMenu.config(
                 background=pers_menu_bg,
                 foreground=pers_color_text,
                 highlightbackground=pers_menu_bg,
@@ -4724,7 +4741,7 @@ class Aplicacion():
                 foreground='gray60',
                 background=pers_bg_text,
             )
-            PST_DESV.DESVfr2_srcComprobacion.configure(
+            PST_DESV.DESV_srcComprobacion.configure(
                 foreground=pers_color_text,
                 background=pers_bg_text,
                 highlightbackground=pers_bg_text,
@@ -4766,7 +4783,6 @@ class Aplicacion():
             )
             PST_DESV.asignar_iconos()
         elif modo_dark == 'False':
-                print('modo dar es :', modo_dark)
                 self.root.configure(
                     background=default_fondo_app,
                 )
@@ -4905,7 +4921,7 @@ class Aplicacion():
                     insertbackground=default_color_widget_act
                 )
 
-                PST_DESV.DESVfr1_listbox.config(
+                PST_DESV.DESV_ListBox.config(
                     background=default_color_widget_bg,
                     foreground=default_color_widget_fg,
                     highlightbackground=defautl_marco_widget,
@@ -4913,7 +4929,7 @@ class Aplicacion():
                     highlightthickness=hhtk,
                 )
 
-                PST_DESV.DESVfr1_optMn.config(
+                PST_DESV.DESV_OptionMenu.config(
                     background=default_menu_bg,
                     foreground=default_color_widget_fg,
                     highlightbackground=defautl_marco_widget,
@@ -4924,7 +4940,7 @@ class Aplicacion():
                     foreground='gray60',
                     background=default_fondo_app,
                 )
-                PST_DESV.DESVfr2_srcComprobacion.configure(
+                PST_DESV.DESV_srcComprobacion.configure(
                     foreground=default_color_widget_fg,
                     background=default_color_widget_bg,
                     highlightbackground=defautl_marco_widget,
