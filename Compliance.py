@@ -174,11 +174,12 @@ class Expandir(ttk.Frame):
     def __init__(self, parent, text_EXP, widget_EXP, customer, titulo, so, st_btnDIR, st_btnAUTH, st_btnSER, st_btnACC, st_btnCMD, st_btnIDR, varNum, *args, **kwargs):
         super().__init__(*args, **kwargs)
         global PST_EXP
+        PST_EXP = self
         self.parent = parent
         self.customer = customer
         self.titulo = titulo
         self.so = so
-        PST_EXP = self
+        print("CUSTOMER EXPAND ", PST_EXP.customer)
         # Recibe el text del SRC a expandir
         self.txt_Expan = text_EXP
         self.widget_EXP = widget_EXP
@@ -308,12 +309,14 @@ class Expandir(ttk.Frame):
         else:
             pass
 
-    def _siguiente(self):
+    def _siguiente(self, customer):
         global _tt_Desv
+        print("CUSTOMER SIGUIENTE ", customer)
+        print("CUSTOMER SIGUIENTE tittle", _tt_Desv)
         self.EXP_btnScreamEvidencia.config(state="disabled")
         self.EXP_btnCopyALL.config(state="disabled")
         if self.varNum == 1:
-            with open(path_modulo.format(asigne_Cliente)) as g:
+            with open(path_modulo.format(customer)) as g:
                 data = json.load(g)
                 for md in data:
                     if value in md['modulo']:
@@ -333,7 +336,7 @@ class Expandir(ttk.Frame):
                             self.varNum = 2
                             self.descativar_botones()
         elif self.varNum == 2:
-            with open(path_modulo.format(asigne_Cliente)) as g:
+            with open(path_modulo.format(customer)) as g:
                 data = json.load(g)
                 for md in data:
                     if value in md['modulo']:
@@ -355,7 +358,7 @@ class Expandir(ttk.Frame):
                             self.varNum = 3
                             self.descativar_botones()
         elif self.varNum == 3:
-            with open(path_modulo.format(asigne_Cliente)) as g:
+            with open(path_modulo.format(customer)) as g:
                 data = json.load(g)
                 for md in data:
                     if value in md['modulo']:
@@ -378,7 +381,7 @@ class Expandir(ttk.Frame):
                             self.EXP_btnCopyALL.config(state="normal")
                             self.varNum = 4
         elif self.varNum == 4:
-            with open(path_modulo.format(asigne_Cliente)) as g:
+            with open(path_modulo.format(customer)) as g:
                 data = json.load(g)
                 for md in data:
                     if value in md['modulo']:
@@ -401,7 +404,7 @@ class Expandir(ttk.Frame):
                             self.varNum = 5
                             self.descativar_botones()
         elif self.varNum == 5:
-            with open(path_modulo.format(asigne_Cliente)) as g:
+            with open(path_modulo.format(customer)) as g:
                 data = json.load(g)
                 for md in data:
                     if value in md['modulo']:
@@ -435,28 +438,12 @@ class Expandir(ttk.Frame):
                 pers_fg_nota
             )
             
-    def activar_botones(self):
-
-        global PST_EXP
-        if PST_EXP.st_btnDIR:
-            PST_EXP.EXP_btn_VentanasDIR.grid(row=0, column=0, padx=20, pady=10, sticky='ne')
-        elif PST_EXP.st_btnAUTH:
-            PST_EXP.EXP_btn_VentanasAUTH.grid(row=0, column=0, padx=20, pady=10, sticky='ne')
-        elif PST_EXP.st_btnSER:
-            PST_EXP.EXP_btn_VentanasSER.grid(row=0, column=0, padx=20, pady=10, sticky='ne')
-        elif PST_EXP.st_btnACC:
-            PST_EXP.EXP_btn_VentanasACC.grid(row=0, column=0, padx=20, pady=10, sticky='ne')
-        elif PST_EXP.st_btnCMD:
-            PST_EXP.EXP_btn_VentanasCMD.grid(row=0, column=0, padx=20, pady=10, sticky='ne')
-        elif PST_EXP.st_btnIDR:
-            PST_EXP.EXP_btn_VentanasIDR.grid(row=0, column=0, padx=20, pady=10, sticky='ne')
-
-    def _anterior(self):
+    def _anterior(self, customer):
         global _tt_Desv
         self.EXP_btnScreamEvidencia.config(state="disabled")
         self.EXP_btnCopyALL.config(state="disabled")
         if self.varNum == 1:
-            with open(path_modulo.format(asigne_Cliente)) as g:
+            with open(path_modulo.format(customer)) as g:
                 data = json.load(g)
                 for md in data:
                     if value in md['modulo']:
@@ -480,7 +467,7 @@ class Expandir(ttk.Frame):
                             self.varNum = 5
                             self.descativar_botones()
         elif self.varNum == 2:
-            with open(path_modulo.format(asigne_Cliente)) as g:
+            with open(path_modulo.format(customer)) as g:
                 data = json.load(g)
                 for md in data:
                     if value in md['modulo']:
@@ -503,7 +490,7 @@ class Expandir(ttk.Frame):
                             self.varNum = 1
                             self.activar_botones()
         elif self.varNum == 3:
-            with open(path_modulo.format(asigne_Cliente)) as g:
+            with open(path_modulo.format(customer)) as g:
                 data = json.load(g)
                 for md in data:
                     if value in md['modulo']:
@@ -524,7 +511,7 @@ class Expandir(ttk.Frame):
                             self.varNum = 2
                             self.descativar_botones()
         elif self.varNum == 4:
-            with open(path_modulo.format(asigne_Cliente)) as g:
+            with open(path_modulo.format(customer)) as g:
                 data = json.load(g)
                 for md in data:
                     if value in md['modulo']:
@@ -544,7 +531,7 @@ class Expandir(ttk.Frame):
                             self.varNum = 3
                             self.descativar_botones()
         elif self.varNum == 5:
-            with open(path_modulo.format(asigne_Cliente)) as g:
+            with open(path_modulo.format(customer)) as g:
                 data = json.load(g)
                 for md in data:
                     if value in md['modulo']:
@@ -578,6 +565,22 @@ class Expandir(ttk.Frame):
                 pers_fg_nota
             )
     
+    def activar_botones(self):
+
+        global PST_EXP
+        if PST_EXP.st_btnDIR:
+            PST_EXP.EXP_btn_VentanasDIR.grid(row=0, column=0, padx=20, pady=10, sticky='ne')
+        elif PST_EXP.st_btnAUTH:
+            PST_EXP.EXP_btn_VentanasAUTH.grid(row=0, column=0, padx=20, pady=10, sticky='ne')
+        elif PST_EXP.st_btnSER:
+            PST_EXP.EXP_btn_VentanasSER.grid(row=0, column=0, padx=20, pady=10, sticky='ne')
+        elif PST_EXP.st_btnACC:
+            PST_EXP.EXP_btn_VentanasACC.grid(row=0, column=0, padx=20, pady=10, sticky='ne')
+        elif PST_EXP.st_btnCMD:
+            PST_EXP.EXP_btn_VentanasCMD.grid(row=0, column=0, padx=20, pady=10, sticky='ne')
+        elif PST_EXP.st_btnIDR:
+            PST_EXP.EXP_btn_VentanasIDR.grid(row=0, column=0, padx=20, pady=10, sticky='ne')
+
     def WIDGETS_EXPANDIR(self):
         self.EXP_lblWidget = ttk.Label(
             self.vtn_expandir,
@@ -680,7 +683,7 @@ class Expandir(ttk.Frame):
             self.vtn_expandir,
             text='SIGUIENTE',
             image=app.next_icon,
-            command=self._siguiente,
+            command=partial(self._siguiente, PST_EXP.customer),
             border=0,
             borderwidth=0,
             highlightthickness=0,
@@ -696,7 +699,7 @@ class Expandir(ttk.Frame):
             self.vtn_expandir,
             text='ANTERIOR',
             image=app.previous_icon,
-            command=self._anterior,
+            command=partial(self._anterior, PST_EXP.customer),
             border=0,
             borderwidth=0,
             highlightthickness=0,
@@ -705,7 +708,8 @@ class Expandir(ttk.Frame):
             highlightbackground=default_fondo_app,
             activebackground=default_fondo_app,
         )
-        self.EXP_btn_Anterior.grid(row=0, column=1, pady=5, sticky='ns')
+        self.EXP_btn_Anterior.grid(
+            row=0, column=1, pady=5, sticky='ns')
         
         self.activar_botones()
         # if self.st_btnDIR and self.titulo == "COMPROBACION" and self.varNum == 1:
@@ -932,7 +936,7 @@ class TextSimilar(ttk.Frame):
             self._list_modulo.bind('<<ListboxSelect>>',
                                    lambda e: self.on_SelectList(e))
             self._list_modulo.bind('<Double-Button-1>',
-                                   lambda e: self.on_DoubleSelectList(e))
+                                   lambda e: self.onDoubleSelectList(e))
         else:
             for m, c in modulo_clave.items():
                 self._list_modulo.insert(tk.END, m)
@@ -994,7 +998,6 @@ class TextSimilar(ttk.Frame):
 
 # --- ACCION AL SELECIONAR
     def on_SelectList(self, event):
-        global asigne_Cliente
         listbox_list_all = []
         widget = event.widget
         index = widget.curselection()
@@ -1009,7 +1012,7 @@ class TextSimilar(ttk.Frame):
                     lb.selection_set(int(i))
 
 # --- ACCION DOBLE CLICK
-    def on_DoubleSelectList(self, event):
+    def onDoubleSelectList(self, event):
         global asigne_Cliente
         global value
         listbox_list_all = []
@@ -1029,7 +1032,8 @@ class TextSimilar(ttk.Frame):
             data = json.load(g)
             listModulo = []
             for md in data:
-                listModulo.append(md['modulo'])
+                if 'modulo' in md:
+                    listModulo.append(md['modulo'])
         listModulo.sort()
         desviacion.DESV_ListBox.insert(tk.END, *listModulo)
         data = []
@@ -1038,12 +1042,13 @@ class TextSimilar(ttk.Frame):
         with open(path_modulo.format(clt)) as g:
             data = json.load(g)
             for md in data:
-                if modulo_Buscado in md['modulo']:
-                    value = md['modulo']
-                    # --- LIMPIAR ------------------------------------- ##
-                    desviacion.limpiar_Widgets()
-                    ## ------------------------------------------------- ##
-                    desviacion.asignarValor_aWidgets(md)
+                if 'modulo' in md:
+                    if modulo_Buscado in md['modulo']:
+                        value = md['modulo']
+                        # --- LIMPIAR ------------------------------------- ##
+                        desviacion.limpiar_Widgets()
+                        ## ------------------------------------------------- ##
+                        desviacion.asignarValor_aWidgets(md)
             desviacion.mostrar_buttons_modulo(modulo_Buscado)
             desviacion.DESV_ListBox.selection_clear(0, tk.END)
             modulo_ListBox = desviacion.DESV_ListBox.get(0, tk.END)
@@ -1058,11 +1063,12 @@ class TextSimilar(ttk.Frame):
         listbox = event.widget
         index = listbox.curselection()
         value = listbox.get(index[0])
+        customer = PST_DESV.clientesVar.get()
         modulo_ListBox = PST_DESV.DESV_ListBox.get(0, tk.END)
         indice = modulo_ListBox.index(value)
         PST_DESV.DESV_ListBox.selection_set(indice)
         self.vtn_modulos.destroy()
-        desviacion._loadSelectItem(value)
+        desviacion._loadSelectItem(value, customer)
 
 
 class Desviacion(ttk.Frame):
@@ -1152,7 +1158,7 @@ class Desviacion(ttk.Frame):
 
 ## --- BIND --- ##
         self.DESVfr1_entModulo.bind(
-            "<Return>", lambda event=None: self.buscar_Modulos(self.DESVfr1_entModulo.get()))
+            "<Return>", lambda event=None: self.findModule(self.DESVfr1_entModulo.get()))
         self.DESVfr1_entModulo.bind(
             "<KeyPress>", lambda e: self.clear_bsq_buttom(e))
         self.DESV_ListBox.bind('<Control-f>', lambda e: self.buscar(e))
@@ -1345,11 +1351,9 @@ class Desviacion(ttk.Frame):
         #     btn['image'] = icono1
 
 ## ------ VENTANAS TOP EXPANDIR ------------------------------ ##
-    def expandir(self, event, var):  # TODO comprobando expandir
-
+    def expandir(self, scrolltext, titulo):  # TODO comprobando expandir
         global expandir
         global sis_oper
-        global asigne_Cliente
         global varNum
         global text_aExpandir
         global value
@@ -1358,11 +1362,12 @@ class Desviacion(ttk.Frame):
         index = PST_DESV.DESV_ListBox.curselection()
         VALOR_ACTUAL_LIST = PST_DESV.DESV_ListBox.get(index[0])
         value = VALOR_ACTUAL_LIST
-        self.widget_Expan = event
-        tittleExpand = var
-
+        self.widget_Expan = scrolltext
+        tittleExpand = titulo
+        customer = PST_DESV.clientesVar.get()
         self.widget_Expan.focus()
         text_aExpandir = self.widget_Expan.get('1.0', tk.END)
+        print("expandir CUSTOMER ", customer)
         if tittleExpand == "COMPROBACION":
             varNum = 1
         elif tittleExpand == "BACKUP":
@@ -1375,7 +1380,7 @@ class Desviacion(ttk.Frame):
             varNum = 5
 
         # --------- LLAMADA A LA VENTANA EXPANDIR
-        expandir = Expandir(self, text_aExpandir, self.widget_Expan, asigne_Cliente, tittleExpand, sis_oper,
+        expandir = Expandir(self, text_aExpandir, self.widget_Expan, customer, tittleExpand, sis_oper,
                             self._btnDir, self._btnAuth, self._btnSer, self._btnAcc, self._btnCmd, self._btnIdr, varNum)
         # ---------------------------------------
 
@@ -1580,14 +1585,15 @@ class Desviacion(ttk.Frame):
         with open(path_modulo.format(customer)) as g:
             data = json.load(g)
             for md in data:
-                if selectionValue in md['modulo']:
-                    self.limpiar_Widgets()
-                    self._asignarValor_aWidgets(md)
-                    self.mostrar_buttons_modulo(selectionValue)
+                if 'modulo' in md:
+                    if selectionValue in md['modulo']:
+                        self.limpiar_Widgets()
+                        self._asignarValor_aWidgets(md)
+                        self.mostrar_buttons_modulo(selectionValue)
 
-    def _loadSelectItem(self, selectionValue):  # TODO CARGAR MODULO
+    def _loadSelectItem(self, selectionValue, customer):  # TODO CARGAR MODULO
         data = []
-        with open(path_modulo.format(asigne_Cliente)) as g:
+        with open(path_modulo.format(customer)) as g:
             data = json.load(g)
             for md in data:
                 if selectionValue in md['modulo']:
@@ -1938,10 +1944,11 @@ class Desviacion(ttk.Frame):
             full_moduloBuscado = words
         return ' '.join(full_moduloBuscado)
 
-    def buscar_Modulos(self, event=None):
+    def findModule(self, event=None):
         global value
         global no_exist
-
+        customer = PST_DESV.clientesVar.get()
+        print("cliente al BUSCAR :: ", customer)
         dict_clave_modulo = {}
         valor_aBuscar = event
         clave_Buscado = [
@@ -1965,215 +1972,68 @@ class Desviacion(ttk.Frame):
             self._disabled_buttons()
             self.disabled_btn_expandir()
             self.DESV_ListBox.selection_clear(0, tk.END)
-            lis_md_enct = []
-            lis_clv_enct = []
+            listModuleFound = []
+            listKeysFound = []
             MsgBox = mb.askyesno(
                 "ERROR", "El modulo no existe en este cliente.\n¿ Deseas buscar en otro cliente ?")
             if MsgBox:
                 no_exist = True
                 dict_clave_modulo = {}
-                infile_afb = path_modulo.format("AFB")
-                infile_asisa = path_modulo.format("ASISA")
-                infile_cesce = path_modulo.format("CESCE")
-                infile_ctti = path_modulo.format("CTTI")
-                infile_enel = path_modulo.format("ENEL")
-                infile_eurofred = path_modulo.format("EUROFRED")
-                infile_ft = path_modulo.format("FT")
-                infile_infra = path_modulo.format("INFRA")
-                infile_lbk = path_modulo.format("LBK")
-                infile_planeta = path_modulo.format("PLANETA")
-                infile_servihabitat = path_modulo.format("SERVIHABITAT")
-
-# --- ABRIR TODOS LOS JSON DE LOS CLIENTES
-                with open(infile_afb, 'r') as infileAFB, open(infile_asisa, 'r') as infileASISA, open(infile_cesce, 'r') as infileCESCE, open(infile_ctti, 'r') as infileCTTI, open(infile_enel, 'r') as infileENEL, open(infile_eurofred, 'r') as infileEUROFRED, open(infile_ft, 'r') as infileFT,  open(infile_infra, 'r') as infileINFRA, open(infile_lbk, 'r') as infileLBK, open(infile_planeta, 'r') as infilePLANETA, open(infile_servihabitat, 'r') as infileSERVIHABITAT:
-                    fileAFB_data = json.load(infileAFB)
-                    fileASISA_data = json.load(infileASISA)
-                    fileCESCE_data = json.load(infileCESCE)
-                    fileCTTI_data = json.load(infileCTTI)
-                    fileENEL_data = json.load(infileENEL)
-                    fileEUROFRED_data = json.load(infileEUROFRED)
-                    fileFT_data = json.load(infileFT)
-                    fileINFRA_data = json.load(infileINFRA)
-                    fileLBK_data = json.load(infileLBK)
-                    filePLANETA_data = json.load(infilePLANETA)
-                    fileSERVIHABITAT_data = json.load(infileSERVIHABITAT)
-
-                    # OBTENER EL MODULO A BUSCAR
-                    md_a_buscar = self.DESVfr1_entModulo.get()
-                    md_a_buscar = self.solve(md_a_buscar)
-# RECORRER EN TODOS LOS MODULOS DE CADA CLIENTE Y AÑADIRLO A UNA LISTA
-# ---CTTI
-                    for ln_ctti in fileCTTI_data:
-                        lis_md_enct.append(ln_ctti['modulo'])
-                        _md_Buscado = [
-                            n for n in lis_md_enct if md_a_buscar.strip().replace("\\", "/") in n]
-                        self._add_newList_clt(
-                            dict_clave_modulo, _md_Buscado, ln_ctti, CUST='CTTI')
-# ---ASISA
-                    for ln_asisa in fileASISA_data:
-                        lis_md_enct.append(ln_asisa['modulo'])
-                        _md_Buscado = [
-                            n for n in lis_md_enct if md_a_buscar.strip().replace("\\", "/") in n]
-                        self._add_newList_clt(
-                            dict_clave_modulo, _md_Buscado, ln_asisa, CUST='ASISA')
-# ---AFB
-                    for ln_afb in fileAFB_data:
-                        lis_md_enct.append(ln_afb['modulo'])
-                        _md_Buscado = [
-                            n for n in lis_md_enct if md_a_buscar.strip().replace("\\", "/") in n]
-                        self._add_newList_clt(
-                            dict_clave_modulo, _md_Buscado, ln_afb, CUST='AFB')
-# ---CESCE
-                    for ln_cesce in fileCESCE_data:
-                        lis_md_enct.append(ln_cesce['modulo'])
-                        _md_Buscado = [
-                            n for n in lis_md_enct if md_a_buscar.strip().replace("\\", "/") in n]
-                        self._add_newList_clt(
-                            dict_clave_modulo, _md_Buscado, ln_cesce, CUST='CESCE')
-# ---ENEL
-                    for ln_enel in fileENEL_data:
-                        lis_md_enct.append(ln_enel['modulo'])
-                        _md_Buscado = [
-                            n for n in lis_md_enct if md_a_buscar.strip().replace("\\", "/") in n]
-                        self._add_newList_clt(
-                            dict_clave_modulo, _md_Buscado, ln_enel, CUST='ENEL')
-# ---EUROFRED
-                    for ln_eurofred in fileEUROFRED_data:
-                        lis_md_enct.append(ln_eurofred['modulo'])
-                        _md_Buscado = [
-                            n for n in lis_md_enct if md_a_buscar.strip().replace("\\", "/") in n]
-                        self._add_newList_clt(
-                            dict_clave_modulo, _md_Buscado, ln_eurofred, CUST='EUROFRED')
-# ---FT
-                    for ln_ft in fileFT_data:
-                        lis_md_enct.append(ln_ft['modulo'])
-                        _md_Buscado = [
-                            n for n in lis_md_enct if md_a_buscar.strip().replace("\\", "/") in n]
-                        self._add_newList_clt(
-                            dict_clave_modulo, _md_Buscado, ln_ft, CUST='FT')
-# ---INFRA
-                    for ln_infra in fileINFRA_data:
-                        lis_md_enct.append(ln_infra['modulo'])
-                        _md_Buscado = [
-                            n for n in lis_md_enct if md_a_buscar.strip().replace("\\", "/") in n]
-                        self._add_newList_clt(
-                            dict_clave_modulo, _md_Buscado, ln_infra, CUST='INFRA')
-# ---LBK
-                    for ln_lbk in fileLBK_data:
-                        lis_md_enct.append(ln_lbk['modulo'])
-                        _md_Buscado = [
-                            n for n in lis_md_enct if md_a_buscar.strip().replace("\\", "/") in n]
-                        self._add_newList_clt(
-                            dict_clave_modulo, _md_Buscado, ln_lbk, CUST='LBK')
-# ---PLANETA
-                    for ln_planeta in filePLANETA_data:
-                        lis_md_enct.append(ln_planeta['modulo'])
-                        _md_Buscado = [
-                            n for n in lis_md_enct if md_a_buscar.strip().replace("\\", "/") in n]
-                        self._add_newList_clt(
-                            dict_clave_modulo, _md_Buscado, ln_planeta, CUST='PLANETA')
-# ---SERVIHABITAT
-                    for ln_servihabitat in fileSERVIHABITAT_data:
-                        lis_md_enct.append(ln_servihabitat['modulo'])
-                        _md_Buscado = [
-                            n for n in lis_md_enct if md_a_buscar.strip().replace("\\", "/") in n]
-                        self._add_newList_clt(
-                            dict_clave_modulo, _md_Buscado, ln_servihabitat, CUST='SERVIHABITAT')
-
+                listPathCustomer = []
+                for client in list_client:
+                    listPathCustomer.append(path_modulo.format(client))
+                moduleToFind = PST_DESV.DESVfr1_entModulo.get()
+                print("moduleToFind ", moduleToFind)
+                moduleToFind = self.solve(moduleToFind)
+                print("- moduleToFind -", moduleToFind)
+# --- ABRIR TODOS LOS JSON" DE LOS CLIENTESmd_a_buscar
+                for openFile in listPathCustomer:
+                    print("ENTRA------------")
+                    try:
+                        with open(openFile, 'r', encoding='UTF-8') as fileCustomer:
+                            fileJsonCustomer = json.load(fileCustomer)
+                        for dataCustomer in fileJsonCustomer:
+                            if 'modulo' in dataCustomer:
+                                listModuleFound.append(dataCustomer['modulo'])
+                                listKeysFound.append(dataCustomer['clave'])
+                                moduleFound = [n for n in listModuleFound if moduleToFind.strip().replace("\\", "/") in n]
+                                keysFound = [n for n in listKeysFound if moduleToFind.upper() in n]
+                                self.addNewModuleFound(dict_clave_modulo, moduleFound, dataCustomer,openFile)
+                                self.addNewKeysFound(dict_clave_modulo, keysFound, dataCustomer,openFile)
+                    except FileNotFoundError:
+                        mb.showerror("No such file or directory!.\nPlease create a new CUST file")
 # SI EL MODULO EXISTE EN ALGUN CLIENTE QUE NOS MUESTRE EN UNA VENTANA
-                    if len(dict_clave_modulo) == 0:
-                        # --- ABRIR TODOS LOS JSON DE LOS CLIENTES
-                        clv_a_buscar = self.DESVfr1_entModulo.get()
-                        clv_a_buscar = clv_a_buscar.upper()
-# RECORRER EN TODOS LOS MODULOS DE CADA CLIENTE Y AÑADIRLO A UNA LISTA
-# ---CTTI
-                        for ln_ctti in fileCTTI_data:
-                            lis_clv_enct.append(ln_ctti['clave'])
-                            _clv_Buscado = [
-                                n for n in lis_clv_enct if clv_a_buscar in n]
-                            self._add_newList_clt_clv(
-                                dict_clave_modulo, _clv_Buscado, ln_ctti, CUST='CTTI')
-# ---ASISA
-                        for ln_asisa in fileASISA_data:
-                            lis_clv_enct.append(ln_asisa['clave'])
-                            _clv_Buscado = [
-                                n for n in lis_clv_enct if clv_a_buscar in n]
-                            self._add_newList_clt_clv(
-                                dict_clave_modulo, _clv_Buscado, ln_asisa, CUST='ASISA')
-# ---AFB
-                        for ln_afb in fileAFB_data:
-                            lis_clv_enct.append(ln_afb['clave'])
-                            _clv_Buscado = [
-                                n for n in lis_clv_enct if clv_a_buscar in n]
-                            self._add_newList_clt_clv(
-                                dict_clave_modulo, _clv_Buscado, ln_afb, CUST='AFB')
-# ---CESCE
-                        for ln_cesce in fileCESCE_data:
-                            lis_clv_enct.append(ln_cesce['clave'])
-                            _clv_Buscado = [
-                                n for n in lis_clv_enct if clv_a_buscar in n]
-                            self._add_newList_clt_clv(
-                                dict_clave_modulo, _clv_Buscado, ln_cesce, CUST='CESCE')
-# ---ENEL
-                        for ln_enel in fileENEL_data:
-                            lis_clv_enct.append(ln_enel['clave'])
-                            _clv_Buscado = [
-                                n for n in lis_clv_enct if clv_a_buscar in n]
-                            self._add_newList_clt_clv(
-                                dict_clave_modulo, _clv_Buscado, ln_enel, CUST='ENEL')
-# ---EUROFRED
-                        for ln_eurofred in fileEUROFRED_data:
-                            lis_clv_enct.append(ln_eurofred['clave'])
-                            _clv_Buscado = [
-                                n for n in lis_clv_enct if clv_a_buscar in n]
-                            self._add_newList_clt_clv(
-                                dict_clave_modulo, _clv_Buscado, ln_eurofred, CUST='EUROFRED')  # ---FT
-# ---FT
-                        for ln_ft in fileFT_data:
-                            lis_clv_enct.append(ln_ft['clave'])
-                            _clv_Buscado = [
-                                n for n in lis_clv_enct if clv_a_buscar in n]
-                            self._add_newList_clt_clv(
-                                dict_clave_modulo, _clv_Buscado, ln_ft, CUST='FT')
-# ---INFRA
-                        for ln_infra in fileINFRA_data:
-                            lis_clv_enct.append(ln_infra['clave'])
-                            _clv_Buscado = [
-                                n for n in lis_clv_enct if clv_a_buscar in n]
-                            self._add_newList_clt_clv(
-                                dict_clave_modulo, _clv_Buscado, ln_infra, CUST='INFRA')
-# ---LBK
-                        for ln_lbk in fileLBK_data:
-                            lis_clv_enct.append(ln_lbk['clave'])
-                            _clv_Buscado = [
-                                n for n in lis_clv_enct if clv_a_buscar in n]
-                            self._add_newList_clt_clv(
-                                dict_clave_modulo, _clv_Buscado, ln_lbk, CUST='LBK')
-# ---PLANETA
-                        for ln_planeta in filePLANETA_data:
-                            lis_clv_enct.append(ln_planeta['clave'])
-                            _clv_Buscado = [
-                                n for n in lis_clv_enct if clv_a_buscar in n]
-                            self._add_newList_clt_clv(
-                                dict_clave_modulo, _clv_Buscado, ln_planeta, CUST='PLANETA')
-# ---SERVIHABITAT
-                        for ln_servihabitat in fileSERVIHABITAT_data:
-                            lis_clv_enct.append(ln_servihabitat['clave'])
-                            _clv_Buscado = [
-                                n for n in lis_clv_enct if clv_a_buscar in n]
-                            self._add_newList_clt_clv(
-                                dict_clave_modulo, _clv_Buscado, ln_servihabitat, CUST='SERVIHABITAT')
-                        if len(dict_clave_modulo) == 0:
-                            mb.showinfo(
-                                "INFORMACION", "No existe el modulo, en ningun cliente !!")
-                        else:
-                            titulo = 'LISTA DE MODULOS ENCONTRADOS, EN LOS SIGUIENTES CLIENTES x CLAVE'
-                            textsimilar = TextSimilar(
-                                self, titulo, dict_clave_modulo, asigne_Cliente)
-                    else:
-                        titulo = 'LISTA DE MODULOS ENCONTRADOS, EN LOS SIGUIENTES CLIENTES x MODULO'
-                        textsimilar = TextSimilar(
-                            self, titulo, dict_clave_modulo, asigne_Cliente)
+                print("NO HAY MODULO, len es ", len(dict_clave_modulo))      
+                if len(dict_clave_modulo) == 0:
+                    
+                #     # --- ABRIR TODOS LOS JSON DE LOS CLIENTES
+                #     keysToFind = self.DESVfr1_entModulo.get()
+                #     keysToFind = keysToFind.upper()
+                #     # for openFile in listPathCustomer:
+                #     #     #print("oPenFile ", openFile)
+                #     #     try:
+                #     #         with open(openFile, 'r', encoding='UTF-8') as fileCustomer:
+                #     #             fileJsonCustomer = json.load(fileCustomer)
+                #     #             for dataCustomer in fileJsonCustomer:
+                #     #                 if 'clave' in dataCustomer:
+                #     #                     #print("SI HAY UNA CLAVE MODULO")
+                #     #                     listKeysFound.append(dataCustomer['clave'])
+                #     #                     KeysFound = [n for n in listKeysFound if keysToFind in n]
+                #     #                     print("KEYS FOUND ", KeysFound)
+                #     #                     self.addNewKeysFound(dict_clave_modulo, KeysFound, dataCustomer,openFile)
+                #     #     except FileNotFoundError:
+                #     #         mb.showerror("No such file or directory!.\nPlease create a new CUST file")
+                #     print(" --- NO HAY MODULO, len es ---", len(dict_clave_modulo))      
+                    # if len(dict_clave_modulo) == 0:
+                    mb.showinfo("INFORMACION", "No existe el modulo, en ningun cliente !!")
+                    # else:
+                    #     titulo = 'LISTA DE MODULOS ENCONTRADOS, EN LOS SIGUIENTES CLIENTES x CLAVE'
+                    #     textsimilar = TextSimilar(
+                    #         self, titulo, dict_clave_modulo, customer)
+                else:
+                    titulo = 'LISTA DE MODULOS ENCONTRADOS, EN LOS SIGUIENTES CLIENTES'
+                    textsimilar = TextSimilar(
+                        self, titulo, dict_clave_modulo, customer)
             else:
                 no_exist = False
             return 'break'
@@ -2183,15 +2043,16 @@ class Desviacion(ttk.Frame):
             no_exist = False
             clave_Buscado = str(clave_Buscado).replace(
                 "[", "").replace("]", "").replace("'", "")
-            with open(path_modulo.format(asigne_Cliente)) as g:
+            with open(path_modulo.format(customer)) as g:
                 data = json.load(g)
                 for md in data:
-                    if clave_Buscado in md['clave']:
-                        self.limpiar_Widgets()
-                        # self.enabled_Widgets()
-                        value = md['modulo']
-                        self.asignarValor_aWidgets(md)
-                        self.mostrar_buttons_clave(clave_Buscado)
+                    if 'clave' in md:
+                        if clave_Buscado in md['clave']:
+                            self.limpiar_Widgets()
+                            # self.enabled_Widgets()
+                            value = md['modulo']
+                            self.asignarValor_aWidgets(md)
+                            self.mostrar_buttons_clave(clave_Buscado)
                 self.DESV_ListBox.selection_clear(0, tk.END)
                 modulo_ListBox = self.DESV_ListBox.get(0, tk.END)
                 indice = modulo_ListBox.index(value)
@@ -2202,7 +2063,7 @@ class Desviacion(ttk.Frame):
             data = []
             no_exist = False
             self.DESV_ListBox.selection_clear(0, tk.END)
-            with open(path_modulo.format(asigne_Cliente)) as g:
+            with open(path_modulo.format(customer)) as g:
                 data = json.load(g)
                 for md in data:
                     for n in clave_Buscado:
@@ -2210,9 +2071,9 @@ class Desviacion(ttk.Frame):
                             dict_clave_modulo[md['modulo']
                                               ] = md['clave'], md['SO']
                 titulo = 'LISTA DE MODULOS ENCONTRADOS, SEGUN SU CRITERIO DE BUSQUEDA, en {}'.format(
-                    asigne_Cliente)
+                    customer)
                 textsimilar = TextSimilar(
-                    self, titulo, dict_clave_modulo, asigne_Cliente)
+                    self, titulo, dict_clave_modulo, customer)
                 return 'break'
 # TODO --- SI ES MODULO UNICO
         elif len(modulo_Buscado) == 1 and len(clave_Buscado) == 0:
@@ -2220,12 +2081,13 @@ class Desviacion(ttk.Frame):
             no_exist = False
             modulo_Buscado = str(modulo_Buscado).replace(
                 "[", "").replace("]", "").replace("'", "")
-            with open(path_modulo.format(asigne_Cliente)) as g:
+            with open(path_modulo.format(customer)) as g:
                 data = json.load(g)
                 for md in data:
-                    if modulo_Buscado in md['modulo']:
-                        value = md['modulo']
-                        self.asignarValor_aWidgets(md)
+                    if 'modulo' in md:
+                        if modulo_Buscado in md['modulo']:
+                            value = md['modulo']
+                            self.asignarValor_aWidgets(md)
                 self.mostrar_buttons_modulo(modulo_Buscado)
                 self.DESV_ListBox.selection_clear(0, tk.END)
                 modulo_ListBox = self.DESV_ListBox.get(0, tk.END)
@@ -2237,7 +2099,7 @@ class Desviacion(ttk.Frame):
             data = []
             no_exist = False
             self.DESV_ListBox.selection_clear(0, tk.END)
-            with open(path_modulo.format(asigne_Cliente)) as g:
+            with open(path_modulo.format(customer)) as g:
                 data = json.load(g)
                 for md in data:
                     for n in modulo_Buscado:
@@ -2245,36 +2107,71 @@ class Desviacion(ttk.Frame):
                             dict_clave_modulo[md['modulo']
                                               ] = md['clave'], md['SO']
                 titulo = 'LISTA DE MODULOS ENCONTRADOS, SEGUN SU CRITERIO DE BUSQUEDA, en {}'.format(
-                    asigne_Cliente)
+                    customer)
                 textsimilar = TextSimilar(
-                    self, titulo, dict_clave_modulo, asigne_Cliente)
+                    self, titulo, dict_clave_modulo, customer)
                 return 'break'
 # TODO --- SI EXISTE UN MODULO Y UNA CLAVE
         else:
             data = []
             no_exist = False
             self.DESV_ListBox.selection_clear(0, tk.END)
-            with open(path_modulo.format(asigne_Cliente)) as g:
+            with open(path_modulo.format(customer)) as g:
                 data = json.load(g)
                 for md in data:
                     for n in modulo_Buscado:
-                        if n in md['modulo']:
-                            dict_clave_modulo[md['modulo']
-                                              ] = md['clave'], md['SO']
+                        if 'modulo' in md:
+                            if n in md['modulo']:
+                                dict_clave_modulo[md['modulo']
+                                                ] = md['clave'], md['SO']
                     for n in clave_Buscado:
-                        if n in md['clave']:
-                            dict_clave_modulo[md['modulo']
-                                              ] = md['clave'], md['SO']
+                        if 'clave' in md:
+                            if n in md['clave']:
+                                dict_clave_modulo[md['modulo']
+                                                ] = md['clave'], md['SO']
                 titulo = 'LISTA DE MODULOS ENCONTRADOS, SEGUN SU CRITERIO DE BUSQUEDA, en {}'.format(
-                    asigne_Cliente)
+                    customer)
+                print("---------", len(dict_clave_modulo))
                 textsimilar = TextSimilar(
-                    self, titulo, dict_clave_modulo, asigne_Cliente)
+                    self, titulo, dict_clave_modulo, customer)
                 return 'break'
 
     def _add_newList_clt(self, dict_clave_modulo, _md_Buscado, ln_clt, CUST):
         for n in _md_Buscado:
             if n in ln_clt['modulo']:
                 dict_clave_modulo[ln_clt['modulo']] = ln_clt['clave'], CUST
+    
+    def addNewModuleFound(self, dict_clave_modulo, _md_Buscado, ln_clt, file):
+        print("LLEGS A ENTRRA")
+        CUST = ""
+        for n in _md_Buscado:
+            if 'CUSTOMER' in ln_clt:
+                pass
+            else:
+                if n in ln_clt['modulo']:
+                    with open(file, 'r') as fileopen:
+                        data = json.load(fileopen)
+                        for md in data:    
+                            if 'CUSTOMER' in md:
+                                CUST = md['CUSTOMER']
+                                print("cliente al busca add ", CUST)
+                    dict_clave_modulo[ln_clt['modulo']] = ln_clt['clave'], CUST
+            print("SALE ", len(dict_clave_modulo))
+
+    def addNewKeysFound(self, dict_clave_, _clv_Buscado, ln_clt, file):
+        CUST = ""
+        for n in _clv_Buscado:
+            if 'CUSTOMER' in ln_clt:
+                pass
+            else:
+                if n in ln_clt['clave']:
+                    with open(file, 'r') as fileopen:
+                        data = json.load(fileopen)
+                        for md in data:    
+                            if 'CUSTOMER' in md:
+                                CUST = md['CUSTOMER']
+                                print("cliente al busca add ----> ", CUST)
+                    dict_clave_[ln_clt['modulo']] = ln_clt['clave'], CUST
 
     def _add_newList_clt_clv(self, dict_clave_modulo, _clv_Buscado, ln_clt, CUST):
         for n in _clv_Buscado:
@@ -2348,7 +2245,6 @@ class Desviacion(ttk.Frame):
         self.DESV_btn1CopyALL.config(state='normal')
 
     def loadModule(self, clt_modulo=None, *args):
-        global asigne_Cliente
         global listModulo
         global listClave
         self.enabled_Widgets()
@@ -2359,7 +2255,6 @@ class Desviacion(ttk.Frame):
         # else:
         #     customer = self.clientesVar.get()
         customer = self.clientesVar.get()
-        #asigne_Cliente = customer
         self.renameNameTab(customer)
         # --- LIMPIAR -----------------------------
         self.DESVfr1_entModulo.delete(0, tk.END)
@@ -2370,14 +2265,16 @@ class Desviacion(ttk.Frame):
         print("CUSTOMER :: ", customer)
         print("CLIENTE :: ", asigne_Cliente)
         ## ----------------------------------------- ##
-        #asigne_Cliente = customer
         with open(path_modulo.format(customer)) as g:
             data = json.load(g)
             listModulo = []
             listClave = []
             for md in data:
-                listModulo.append(md['modulo'])
-                listClave.append(md['clave'])
+                if 'CUSTOMER' in md:
+                    print("MD CUSTOMER ", md['CUSTOMER'])
+                else:
+                    listModulo.append(md['modulo'])
+                    listClave.append(md['clave'])
         listModulo.sort()
         self.DESV_ListBox.insert(tk.END, *listModulo)
 
@@ -2657,10 +2554,10 @@ class Desviacion(ttk.Frame):
         self.DESV_frame3.rowconfigure(1, weight=1)
         self.DESV_frame3.rowconfigure(3, weight=1)
         self.DESV_frame3.rowconfigure(5, weight=1)
-# --- Variable del OptionMenu, lista de clientes ------------------------------#
+        # --- Variable del OptionMenu, lista de clientes ------------------------------#
         self.clientesVar = tk.StringVar(self)
         self.clientesVar.set('CLIENTES')
-        # -----------------------------------------------------------------------------#
+        #-----------------------------------------------------------------------------#
         ## ======================== FRAME 1 ========================================= ##
         # ---------------- OptionMenu, lista de clientes ---------------------------- ##
         self.DESV_OptionMenu = tk.OptionMenu(
@@ -2709,7 +2606,7 @@ class Desviacion(ttk.Frame):
             self.DESV_frame1,
             image=self.BuscarModulo_icon,
             state='disabled',
-            command=lambda: self.buscar_Modulos(self.DESVfr1_entModulo.get()),
+            command=lambda: self.findModule(self.DESVfr1_entModulo.get()),
         )
         self.DESVfr1_btnBuscar.grid(
             row=1, column=1, pady=5, padx=5, sticky='nsw')
@@ -2960,8 +2857,8 @@ class Desviacion(ttk.Frame):
             image=self.icono_expandir,
             style='DESV.TButton',
             state='disabled',
-            command=lambda x=self.DESV_srcComprobacion: self.expandir(
-                x, self.varComprobacion),
+            command=partial(self.expandir, self.DESV_srcComprobacion, self.varComprobacion),
+            #command=lambda x=self.DESV_srcComprobacion: self.expandir(x, self.varComprobacion),
         )
         self.DESV_btn1Expandir.grid(
             row=2, column=4, padx=(0, 20), pady=15, sticky='ne')
@@ -3245,64 +3142,99 @@ class Desviacion(ttk.Frame):
 
     def abrir_DIRECTORY(self):
         from Ventanas import Ventana
-        global asigne_Cliente
         global CLS_VENTANA
         name_vtn = "PERMISSIONS"
         path = "Compliance/file/directory.json"
-        CLS_VENTANA = Ventana(self, name_vtn, asigne_Cliente,
-                            app, desviacion, path)
+        customer = PST_DESV.clientesVar.get()
+        CLS_VENTANA = Ventana(
+            self, 
+            name_vtn, customer,
+            app,    
+            desviacion, 
+            path
+        )
         self.vtn_modo_dark()
 
     def abrir_COMMAND(self):
         from Ventanas import Ventana
-        global asigne_Cliente
         global CLS_VENTANA
         name_vtn = "COMMAND"
         path = "Compliance/file/command.json"
-        CLS_VENTANA = Ventana(self, name_vtn, asigne_Cliente,
-                          app, desviacion, path)
+        customer = PST_DESV.clientesVar.get()
+        CLS_VENTANA = Ventana(
+            self, 
+            name_vtn, 
+            customer,
+            app, 
+            desviacion, 
+            path
+        )
         self.vtn_modo_dark()
 
     def abrir_AUTHORIZED(self):
         from Ventanas import Ventana
-        global asigne_Cliente
         global CLS_VENTANA
         name_vtn = "AUTHORIZED"
         path = "Compliance/file/authorized_keys.json"
+        customer = PST_DESV.clientesVar.get()
         CLS_VENTANA = Ventana(
-            self, name_vtn, asigne_Cliente, app, desviacion, path)
+            self, 
+            name_vtn, 
+            customer, 
+            app, 
+            desviacion, 
+            path
+        )
         self.vtn_modo_dark()
 
     def abrir_ACCOUNT(self):
         from Ventanas import Ventana
-        global asigne_Cliente
         global CLS_VENTANA
-        customer = PST_DESV.clientesVar.get()
         name_vtn = "ACCOUNT"
         path = "Compliance/file/account.json"
+        customer = PST_DESV.clientesVar.get()
         print("ENVIO ASINE ", asigne_Cliente)
         print("ENVIO CUSTOMER ", customer)
-        CLS_VENTANA = Ventana(self, name_vtn, customer,
-                          app, desviacion, path)
+        CLS_VENTANA = Ventana(
+            self, 
+            name_vtn, 
+            customer,
+            app, 
+            desviacion, 
+            path
+        )
         self.vtn_modo_dark()
 
     def abrir_SERVICE(self):
         from Ventanas import Ventana
-        global asigne_Cliente
         global CLS_VENTANA
         name_vtn = "SERVICE"
         path = "Compliance/file/service.json"
-        CLS_VENTANA = Ventana(self, name_vtn, asigne_Cliente,
-                          app, desviacion, path)
+        customer = PST_DESV.clientesVar.get()
+        CLS_VENTANA = Ventana(
+            self, 
+            name_vtn, 
+            customer,
+            app, 
+            desviacion, 
+            path
+        )
         self.vtn_modo_dark()
 
     def abrir_IDRSA(self):
         from Ventanas import Ventana
-        global asigne_Cliente
         global CLS_VENTANA
         name_vtn = "ID_RSA"
         path = "Compliance/file/idrsa.json"
-        CLS_VENTANA = Ventana(self, name_vtn, asigne_Cliente, app, desviacion, path)
+        customer = PST_DESV.clientesVar.get()
+        CLS_VENTANA = Ventana(
+            self, 
+            name_vtn, 
+            customer, 
+            app, 
+            desviacion, 
+            path
+        )
         self.vtn_modo_dark()
 
     def renameNameTab(self, customer):
@@ -3780,7 +3712,6 @@ class Aplicacion():
 ## ----------------------- ##
     def toChangeTab(self, event):
         global idOpenTab
-        global asigne_Cliente
         global value
         global PST_DESV
         if activar_modo == 'True':
@@ -3811,7 +3742,6 @@ class Aplicacion():
 # ---ASIGNAMOS A UNA VARIABLE CADA CLIENTE----------------------------
         if tab == 'WorkSpace  ':
             self.activar_default(e=None)
-            asigne_Cliente = ""
             self.fileMenu.entryconfig('  Clientes', state='disabled')
             self.menu_Contextual.entryconfig('  Buscar', state='disabled')
             self.menu_Contextual.entryconfig('  Copiar', state='disabled')
