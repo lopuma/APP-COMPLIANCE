@@ -9,7 +9,7 @@ from tkinter import messagebox as mb
 from tkinter import font as font
 from PIL import Image, ImageTk
 from configparser import ConfigParser
-from Compliance import hlh_def, pers_color_text, modo_dark, hhtk, default_color_widget_bg, default_fondo_app, select_fg, select_bg, bg_submenu, default_color_widget_fg, fuente_texto, fg_submenu, select_fg, default_color_titulos, _Font_Texto, default_color_widget_fg, select_bg, select_fg, default_color_widget_act, _Font_Menu, oddrow, evenrow
+from Compliance import PST_DESV, hlh_def, pers_color_text, modo_dark, hhtk, default_color_widget_bg, default_fondo_app, select_fg, select_bg, bg_submenu, default_color_widget_fg, fuente_texto, fg_submenu, select_fg, default_color_titulos, _Font_Texto, default_color_widget_fg, select_bg, select_fg, default_color_widget_act, _Font_Menu, oddrow, evenrow
 from Extraciones import MyEntry
 user = getuser()
 mypath = os.path.expanduser("~/")
@@ -140,12 +140,14 @@ class Ventana(ttk.Frame):
     ## BUSCAR ventanas / FILE
     def clear_bsq_buttom(self, event):
         text_widget = event.widget
+        customer = self.desviacion.varClient.get()
         entry = self.var_ent_buscar.get()
         long_entry = len(entry)
+        print("CLIENTE VENTANA ", customer)
         if long_entry <=1:
             self.btnLimpiar.grid_forget()
             self.btnBuscar.grid(row=0, column=1, sticky=tk.W)
-            self.cargar_ventanas()
+            self.cargar_ventanas(customer)
             self.limpiar_widgets()
     
     def clear_bsq(self, event):

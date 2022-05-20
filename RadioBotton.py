@@ -12,6 +12,7 @@ class RadioButton(ttk.Frame):
             alto, 
             ancho, 
             radio,
+            width,
             bg_color, 
             **kwargs
         ):
@@ -21,10 +22,14 @@ class RadioButton(ttk.Frame):
         global bg_cl
 
         bg_cl =  bg_color
+        print("BG CLOR ", bg_cl)
         if bg_cl is None:
-            bg_cl = default_boton_bg
+            bg_cl = 'red'
+            print("entra")
         else:
             bg_cl = bg_color
+        print("--- BG CLOR ", bg_cl)
+        
         self.canvas = tk.Canvas(self,
         height=alto, 
         width=ancho,
@@ -42,7 +47,7 @@ class RadioButton(ttk.Frame):
             points = (x1+r, y1, x1+r, y1, x2-r, y1, x2-r, y1, x2, y1, x2, y1+r, x2, y1+r, x2, y2-r, x2, y2-r, x2, y2, x2-r, y2, x2-r, y2, x1+r, y2, x1+r, y2, x1, y2, x1, y2-r, x1, y2-r, x1, y1+r, x1, y1+r, x1, y1)
             return obj.create_polygon(points, **kwargs, smooth=True)
         
-        round_rectangle(self.canvas, 5, 5, ancho - 5, alto - 5, radio, outline=default_outline, width=3, fill=bg_cl, activewidth=3)
+        round_rectangle(self.canvas, 5, 5, ancho - 5, alto - 5, radio, outline=default_outline, width=width, fill=bg_cl, activewidth=3)
     
 
 class BtnScripts(tk.Button):

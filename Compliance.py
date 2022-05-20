@@ -12,6 +12,7 @@ from tkinter import scrolledtext as st
 from tkinter import messagebox as mb
 from tkinter import font
 import tkinter as tk
+from turtle import width
 from PIL import Image, ImageTk
 from tkinter.ttk import Style
 from threading import Thread
@@ -20,27 +21,23 @@ from RadioBotton import RadioButton
 from functools import partial
 from configparser import ConfigParser
 #-----------------------------------------------------------#
-
-tt = False
 user = getuser()
 mypath = os.path.expanduser("~/")
 path_icon = mypath+"Compliance/image/"
-clt = ''
-path_modulo = mypath+"Compliance/file/desviaciones_{}.json"
-path_modulo_clave = mypath+"Compliance/file/{}.json"
+pathFileCustomer = mypath+"Compliance/file/desviaciones_{}.json"
+pathFileCustomer_clave = mypath+"Compliance/file/{}.json"
 path_config = mypath+"Compliance/.conf/{}.json"
 path_config_ini = mypath+"Compliance/.conf/{}"
 
-list_client = []
+listClient = []
 list_issues = (
     "DESVIACIONES",
     "EXTRACIONES"
 )
 # --- VARIABLE GLOBAL ---
-asigne_Cliente = ""
 idOpenTab = 0
 listModulo = []
-listClave = []
+listKeys = []
 txtWidget_focus = False
 txtWidget = ""
 sis_oper = ""
@@ -141,7 +138,6 @@ _Font_text_exp_bold = (fuente_titulos, tamñ_texto_exp, weight_DF)
 # * COLOR PERSONALIZADO
 modo_dark = parse.get('dark', 'modo_dark')
 activar_modo = parse.get('dark', 'activar_modo')
-# color_act_bg_pestaña = '#B61919'
 pers_color_text = '#f4f4f4'
 pers_color_titulo = '#FF8080'
 pers_menu_bg = '#353535'  # ? COLOR PRIMARIO
@@ -316,113 +312,118 @@ class Expandir(ttk.Frame):
         self.EXP_btnScreamEvidencia.config(state="disabled")
         self.EXP_btnCopyALL.config(state="disabled")
         if self.varNum == 1:
-            with open(path_modulo.format(customer)) as g:
+            with open(pathFileCustomer.format(customer)) as g:
                 data = json.load(g)
                 for md in data:
-                    if value in md['modulo']:
-                        self._txt_Desv = md['copia']
-                        if self._txt_Desv is None:
-                            _tt_Desv = "EDITAR"
-                            self.EXP_lblWidget['text'] = _tt_Desv
-                            self.EXP_srcExpandir.delete('1.0', tk.END)
-                            self.EXP_srcExpandir.insert(tk.END, md['editar'])
-                            self.varNum = 3
-                            self.descativar_botones()
-                        else:
-                            _tt_Desv = "BACKUP"
-                            self.EXP_lblWidget['text'] = _tt_Desv
-                            self.EXP_srcExpandir.delete('1.0', tk.END)
-                            self.EXP_srcExpandir.insert(tk.END, self._txt_Desv)
-                            self.varNum = 2
-                            self.descativar_botones()
+                    if 'modulo' in md:
+                        if value in md['modulo']:
+                            self._txt_Desv = md['copia']
+                            if self._txt_Desv is None:
+                                _tt_Desv = "EDITAR"
+                                self.EXP_lblWidget['text'] = _tt_Desv
+                                self.EXP_srcExpandir.delete('1.0', tk.END)
+                                self.EXP_srcExpandir.insert(tk.END, md['editar'])
+                                self.varNum = 3
+                                self.descativar_botones()
+                            else:
+                                _tt_Desv = "BACKUP"
+                                self.EXP_lblWidget['text'] = _tt_Desv
+                                self.EXP_srcExpandir.delete('1.0', tk.END)
+                                self.EXP_srcExpandir.insert(tk.END, self._txt_Desv)
+                                self.varNum = 2
+                                self.descativar_botones()
         elif self.varNum == 2:
-            with open(path_modulo.format(customer)) as g:
+            with open(pathFileCustomer.format(customer)) as g:
                 data = json.load(g)
                 for md in data:
-                    if value in md['modulo']:
-                        self._txt_Desv = md['editar']
-                        if self._txt_Desv is None:
-                            _tt_Desv = "REFRESCAR"
-                            self.EXP_lblWidget['text'] = _tt_Desv
-                            self.EXP_srcExpandir.delete('1.0', tk.END)
-                            self.EXP_srcExpandir.insert(
-                                tk.END, md['refrescar'])
-                            self.EXP_btnCopyALL.config(state="normal")
-                            self.varNum = 4
-                            self.descativar_botones()
-                        else:
-                            _tt_Desv = "EDITAR"
-                            self.EXP_lblWidget['text'] = _tt_Desv
-                            self.EXP_srcExpandir.delete('1.0', tk.END)
-                            self.EXP_srcExpandir.insert(tk.END, self._txt_Desv)
-                            self.varNum = 3
-                            self.descativar_botones()
+                    if 'modulo' in md:
+                        if value in md['modulo']:
+                            self._txt_Desv = md['editar']
+                            if self._txt_Desv is None:
+                                _tt_Desv = "REFRESCAR"
+                                self.EXP_lblWidget['text'] = _tt_Desv
+                                self.EXP_srcExpandir.delete('1.0', tk.END)
+                                self.EXP_srcExpandir.insert(
+                                    tk.END, md['refrescar'])
+                                self.EXP_btnCopyALL.config(state="normal")
+                                self.varNum = 4
+                                self.descativar_botones()
+                            else:
+                                _tt_Desv = "EDITAR"
+                                self.EXP_lblWidget['text'] = _tt_Desv
+                                self.EXP_srcExpandir.delete('1.0', tk.END)
+                                self.EXP_srcExpandir.insert(tk.END, self._txt_Desv)
+                                self.varNum = 3
+                                self.descativar_botones()
         elif self.varNum == 3:
-            with open(path_modulo.format(customer)) as g:
+            with open(pathFileCustomer.format(customer)) as g:
                 data = json.load(g)
                 for md in data:
-                    if value in md['modulo']:
-                        self._txt_Desv = md['refrescar']
-                        if self._txt_Desv is None:
-                            _tt_Desv = "EVIDENCIA"
-                            self.EXP_lblWidget['text'] = _tt_Desv
-                            self.EXP_srcExpandir.delete('1.0', tk.END)
-                            self.EXP_srcExpandir.insert(
-                                tk.END, md['evidencia'])
-                            self.EXP_btnScreamEvidencia.config(state="normal")
-                            self.EXP_btnCopyALL.config(state="normal")
-                            self.varNum = 5
-                            self.descativar_botones()
-                        else:
-                            _tt_Desv = "REFRESCAR"
-                            self.EXP_lblWidget['text'] = _tt_Desv
-                            self.EXP_srcExpandir.delete('1.0', tk.END)
-                            self.EXP_srcExpandir.insert(tk.END, self._txt_Desv)
-                            self.EXP_btnCopyALL.config(state="normal")
-                            self.varNum = 4
+                    if 'modulo' in md:
+                        if value in md['modulo']:
+                            self._txt_Desv = md['refrescar']
+                            if self._txt_Desv is None:
+                                _tt_Desv = "EVIDENCIA"
+                                self.EXP_lblWidget['text'] = _tt_Desv
+                                self.EXP_srcExpandir.delete('1.0', tk.END)
+                                self.EXP_srcExpandir.insert(
+                                    tk.END, md['evidencia'])
+                                self.EXP_btnScreamEvidencia.config(state="normal")
+                                self.EXP_btnCopyALL.config(state="normal")
+                                self.varNum = 5
+                                self.descativar_botones()
+                            else:
+                                _tt_Desv = "REFRESCAR"
+                                self.EXP_lblWidget['text'] = _tt_Desv
+                                self.EXP_srcExpandir.delete('1.0', tk.END)
+                                self.EXP_srcExpandir.insert(tk.END, self._txt_Desv)
+                                self.EXP_btnCopyALL.config(state="normal")
+                                self.varNum = 4
         elif self.varNum == 4:
-            with open(path_modulo.format(customer)) as g:
+            with open(pathFileCustomer.format(customer)) as g:
                 data = json.load(g)
                 for md in data:
-                    if value in md['modulo']:
-                        self._txt_Desv = md['evidencia']
-                        if self._txt_Desv is None:
-                            _tt_Desv = "COMPROBACION"
-                            self.EXP_lblWidget['text'] = _tt_Desv
-                            self.EXP_srcExpandir.delete('1.0', tk.END)
-                            self.EXP_srcExpandir.insert(
-                                tk.END, md['comprobacion'])
-                            self.varNum = 1
-                            self.activar_botones()
-                        else:
-                            _tt_Desv = "EVIDENCIA"
-                            self.EXP_lblWidget['text'] = _tt_Desv
-                            self.EXP_srcExpandir.delete('1.0', tk.END)
-                            self.EXP_srcExpandir.insert(tk.END, self._txt_Desv)
-                            self.EXP_btnScreamEvidencia.config(state="normal")
-                            self.EXP_btnCopyALL.config(state="normal")
-                            self.varNum = 5
+                    if 'modulo' in md:
+                        if value in md['modulo']:
+                            self._txt_Desv = md['evidencia']
+                            if self._txt_Desv is None:
+                                _tt_Desv = "COMPROBACION"
+                                self.EXP_lblWidget['text'] = _tt_Desv
+                                self.EXP_srcExpandir.delete('1.0', tk.END)
+                                self.EXP_srcExpandir.insert(
+                                    tk.END, md['comprobacion'])
+                                self.varNum = 1
+                                self.activar_botones()
+                            else:
+                                _tt_Desv = "EVIDENCIA"
+                                self.EXP_lblWidget['text'] = _tt_Desv
+                                self.EXP_srcExpandir.delete('1.0', tk.END)
+                                self.EXP_srcExpandir.insert(tk.END, self._txt_Desv)
+                                self.EXP_btnScreamEvidencia.config(state="normal")
+                                self.EXP_btnCopyALL.config(state="normal")
+                                self.varNum = 5
                             self.descativar_botones()
         elif self.varNum == 5:
-            with open(path_modulo.format(customer)) as g:
+            with open(pathFileCustomer.format(customer)) as g:
                 data = json.load(g)
                 for md in data:
-                    if value in md['modulo']:
-                        self._txt_Desv = md['comprobacion']
-                        if self._txt_Desv is None:
-                            _tt_Desv = "BACKUP"
-                            self.EXP_lblWidget['text'] = _tt_Desv
-                            self.EXP_srcExpandir.delete('1.0', tk.END)
-                            self.EXP_srcExpandir.insert(tk.END, md['copia'])
-                            self.varNum = 2
-                            self.descativar_botones()
-                        else:
-                            _tt_Desv = "COMPROBACION"
-                            self.EXP_lblWidget['text'] = _tt_Desv
-                            self.EXP_srcExpandir.delete('1.0', tk.END)
-                            self.EXP_srcExpandir.insert(tk.END, self._txt_Desv)
-                            self.varNum = 1
-                            self.activar_botones()
+                    if 'modulo' in md:
+                        if value in md['modulo']:
+                            self._txt_Desv = md['comprobacion']
+                            if self._txt_Desv is None:
+                                _tt_Desv = "BACKUP"
+                                self.EXP_lblWidget['text'] = _tt_Desv
+                                self.EXP_srcExpandir.delete('1.0', tk.END)
+                                self.EXP_srcExpandir.insert(tk.END, md['copia'])
+                                self.varNum = 2
+                                self.descativar_botones()
+                            else:
+                                _tt_Desv = "COMPROBACION"
+                                self.EXP_lblWidget['text'] = _tt_Desv
+                                self.EXP_srcExpandir.delete('1.0', tk.END)
+                                self.EXP_srcExpandir.insert(tk.END, self._txt_Desv)
+                                self.varNum = 1
+                                self.activar_botones()
         if modo_dark == 'False':
             self.Expan_color_lineas(
                 default_color_widget_bg,
@@ -443,113 +444,118 @@ class Expandir(ttk.Frame):
         self.EXP_btnScreamEvidencia.config(state="disabled")
         self.EXP_btnCopyALL.config(state="disabled")
         if self.varNum == 1:
-            with open(path_modulo.format(customer)) as g:
+            with open(pathFileCustomer.format(customer)) as g:
                 data = json.load(g)
                 for md in data:
-                    if value in md['modulo']:
-                        self._txt_Desv = md['evidencia']
-                        if self._txt_Desv is None:
-                            _tt_Desv = "REFRESCAR"
-                            self.EXP_lblWidget['text'] = _tt_Desv
-                            self.EXP_srcExpandir.delete('1.0', tk.END)
-                            self.EXP_srcExpandir.insert(
-                                tk.END, md['refrescar'])
-                            self.EXP_btnCopyALL.config(state="normal")
-                            self.varNum = 4
-                            self.descativar_botones()
-                        else:
-                            _tt_Desv = "EVIDENCIA"
-                            self.EXP_lblWidget['text'] = _tt_Desv
-                            self.EXP_srcExpandir.delete('1.0', tk.END)
-                            self.EXP_srcExpandir.insert(tk.END, self._txt_Desv)
-                            self.EXP_btnScreamEvidencia.config(state="normal")
-                            self.EXP_btnCopyALL.config(state="normal")
-                            self.varNum = 5
-                            self.descativar_botones()
+                    if 'modulo' in md:
+                        if value in md['modulo']:
+                            self._txt_Desv = md['evidencia']
+                            if self._txt_Desv is None:
+                                _tt_Desv = "REFRESCAR"
+                                self.EXP_lblWidget['text'] = _tt_Desv
+                                self.EXP_srcExpandir.delete('1.0', tk.END)
+                                self.EXP_srcExpandir.insert(
+                                    tk.END, md['refrescar'])
+                                self.EXP_btnCopyALL.config(state="normal")
+                                self.varNum = 4
+                                self.descativar_botones()
+                            else:
+                                _tt_Desv = "EVIDENCIA"
+                                self.EXP_lblWidget['text'] = _tt_Desv
+                                self.EXP_srcExpandir.delete('1.0', tk.END)
+                                self.EXP_srcExpandir.insert(tk.END, self._txt_Desv)
+                                self.EXP_btnScreamEvidencia.config(state="normal")
+                                self.EXP_btnCopyALL.config(state="normal")
+                                self.varNum = 5
+                                self.descativar_botones()
         elif self.varNum == 2:
-            with open(path_modulo.format(customer)) as g:
+            with open(pathFileCustomer.format(customer)) as g:
                 data = json.load(g)
                 for md in data:
-                    if value in md['modulo']:
-                        self._txt_Desv = md['comprobacion']
-                        if self._txt_Desv is None:
-                            _tt_Desv = "EVIDENCIA"
-                            self.EXP_lblWidget['text'] = _tt_Desv
-                            self.EXP_srcExpandir.delete('1.0', tk.END)
-                            self.EXP_srcExpandir.insert(
-                                tk.END, md['evidencia'])
-                            self.EXP_btnScreamEvidencia.config(state="normal")
-                            self.EXP_btnCopyALL.config(state="normal")
-                            self.varNum = 5
-                            self.descativar_botones()
-                        else:
-                            _tt_Desv = "COMPROBACION"
-                            self.EXP_lblWidget['text'] = _tt_Desv
-                            self.EXP_srcExpandir.delete('1.0', tk.END)
-                            self.EXP_srcExpandir.insert(tk.END, self._txt_Desv)
-                            self.varNum = 1
-                            self.activar_botones()
+                    if 'modulo' in md:
+                        if value in md['modulo']:
+                            self._txt_Desv = md['comprobacion']
+                            if self._txt_Desv is None:
+                                _tt_Desv = "EVIDENCIA"
+                                self.EXP_lblWidget['text'] = _tt_Desv
+                                self.EXP_srcExpandir.delete('1.0', tk.END)
+                                self.EXP_srcExpandir.insert(
+                                    tk.END, md['evidencia'])
+                                self.EXP_btnScreamEvidencia.config(state="normal")
+                                self.EXP_btnCopyALL.config(state="normal")
+                                self.varNum = 5
+                                self.descativar_botones()
+                            else:
+                                _tt_Desv = "COMPROBACION"
+                                self.EXP_lblWidget['text'] = _tt_Desv
+                                self.EXP_srcExpandir.delete('1.0', tk.END)
+                                self.EXP_srcExpandir.insert(tk.END, self._txt_Desv)
+                                self.varNum = 1
+                                self.activar_botones()
         elif self.varNum == 3:
-            with open(path_modulo.format(customer)) as g:
+            with open(pathFileCustomer.format(customer)) as g:
                 data = json.load(g)
                 for md in data:
-                    if value in md['modulo']:
-                        self._txt_Desv = md['copia']
-                        if self._txt_Desv is None:
-                            _tt_Desv = "COMPROBACION"
-                            self.EXP_lblWidget['text'] = _tt_Desv
-                            self.EXP_srcExpandir.delete('1.0', tk.END)
-                            self.EXP_srcExpandir.insert(
-                                tk.END, md['evidencia'])
-                            self.varNum = 1
-                            self.activar_botones()
-                        else:
-                            _tt_Desv = "BACKUP"
-                            self.EXP_lblWidget['text'] = _tt_Desv
-                            self.EXP_srcExpandir.delete('1.0', tk.END)
-                            self.EXP_srcExpandir.insert(tk.END, self._txt_Desv)
-                            self.varNum = 2
-                            self.descativar_botones()
+                    if 'modulo' in md:
+                        if value in md['modulo']:
+                            self._txt_Desv = md['copia']
+                            if self._txt_Desv is None:
+                                _tt_Desv = "COMPROBACION"
+                                self.EXP_lblWidget['text'] = _tt_Desv
+                                self.EXP_srcExpandir.delete('1.0', tk.END)
+                                self.EXP_srcExpandir.insert(
+                                    tk.END, md['evidencia'])
+                                self.varNum = 1
+                                self.activar_botones()
+                            else:
+                                _tt_Desv = "BACKUP"
+                                self.EXP_lblWidget['text'] = _tt_Desv
+                                self.EXP_srcExpandir.delete('1.0', tk.END)
+                                self.EXP_srcExpandir.insert(tk.END, self._txt_Desv)
+                                self.varNum = 2
+                                self.descativar_botones()
         elif self.varNum == 4:
-            with open(path_modulo.format(customer)) as g:
+            with open(pathFileCustomer.format(customer)) as g:
                 data = json.load(g)
                 for md in data:
-                    if value in md['modulo']:
-                        self._txt_Desv = md['editar']
-                        if self._txt_Desv is None:
-                            _tt_Desv = "BACKUP"
-                            self.EXP_lblWidget['text'] = _tt_Desv
-                            self.EXP_srcExpandir.delete('1.0', tk.END)
-                            self.EXP_srcExpandir.insert(tk.END, md['copia'])
-                            self.varNum = 2
-                            self.descativar_botones()
-                        else:
-                            _tt_Desv = "EDITAR"
-                            self.EXP_lblWidget['text'] = _tt_Desv
-                            self.EXP_srcExpandir.delete('1.0', tk.END)
-                            self.EXP_srcExpandir.insert(tk.END, self._txt_Desv)
-                            self.varNum = 3
-                            self.descativar_botones()
+                    if 'modulo' in md:
+                        if value in md['modulo']:
+                            self._txt_Desv = md['editar']
+                            if self._txt_Desv is None:
+                                _tt_Desv = "BACKUP"
+                                self.EXP_lblWidget['text'] = _tt_Desv
+                                self.EXP_srcExpandir.delete('1.0', tk.END)
+                                self.EXP_srcExpandir.insert(tk.END, md['copia'])
+                                self.varNum = 2
+                                self.descativar_botones()
+                            else:
+                                _tt_Desv = "EDITAR"
+                                self.EXP_lblWidget['text'] = _tt_Desv
+                                self.EXP_srcExpandir.delete('1.0', tk.END)
+                                self.EXP_srcExpandir.insert(tk.END, self._txt_Desv)
+                                self.varNum = 3
+                                self.descativar_botones()
         elif self.varNum == 5:
-            with open(path_modulo.format(customer)) as g:
+            with open(pathFileCustomer.format(customer)) as g:
                 data = json.load(g)
                 for md in data:
-                    if value in md['modulo']:
-                        self._txt_Desv = md['refrescar']
-                        if self._txt_Desv is None:
-                            _tt_Desv = "EDITAR"
-                            self.EXP_lblWidget['text'] = _tt_Desv
-                            self.EXP_srcExpandir.delete('1.0', tk.END)
-                            self.EXP_srcExpandir.insert(tk.END, md['editar'])
-                            self.varNum = 2
-                            self.descativar_botones()
-                        else:
-                            _tt_Desv = "REFRESCAR"
-                            self.EXP_lblWidget['text'] = _tt_Desv
-                            self.EXP_srcExpandir.delete('1.0', tk.END)
-                            self.EXP_srcExpandir.insert(tk.END, self._txt_Desv)
-                            self.EXP_btnCopyALL.config(state="normal")
-                            self.varNum = 1
+                    if 'modulo' in md:
+                        if value in md['modulo']:
+                            self._txt_Desv = md['refrescar']
+                            if self._txt_Desv is None:
+                                _tt_Desv = "EDITAR"
+                                self.EXP_lblWidget['text'] = _tt_Desv
+                                self.EXP_srcExpandir.delete('1.0', tk.END)
+                                self.EXP_srcExpandir.insert(tk.END, md['editar'])
+                                self.varNum = 2
+                                self.descativar_botones()
+                            else:
+                                _tt_Desv = "REFRESCAR"
+                                self.EXP_lblWidget['text'] = _tt_Desv
+                                self.EXP_srcExpandir.delete('1.0', tk.END)
+                                self.EXP_srcExpandir.insert(tk.END, self._txt_Desv)
+                                self.EXP_btnCopyALL.config(state="normal")
+                                self.varNum = 1
         if modo_dark == 'False':
             self.Expan_color_lineas(
                 default_color_widget_bg, 
@@ -620,6 +626,7 @@ class Expandir(ttk.Frame):
             alto=Expandir.y_alto_btn,
             ancho=Expandir.x_ancho_btn,
             radio=25,
+            width=3,
             bg_color=default_fondo_app,
         )
         self._btn_DIR_ = ttk.Button(
@@ -808,7 +815,6 @@ class Expandir(ttk.Frame):
                 PST_EXP.EXP_srcExpandir.tag_add(
                     "nota", startline, endline)
 
-
 class TextSimilar(ttk.Frame):
     def __init__(self, parent, titulo, modulo_clave, cliente, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -929,6 +935,7 @@ class TextSimilar(ttk.Frame):
 # --- INSERTAR MODULO Y CLAVE A LIST BOX
         # TRUE
         if no_exist:
+            print("SI NO EXISTE ---------->")
             for m, c in modulo_clave.items():
                 self._list_modulo.insert(tk.END, m)
                 self._list_clave.insert(tk.END, c[0])
@@ -938,6 +945,7 @@ class TextSimilar(ttk.Frame):
             self._list_modulo.bind('<Double-Button-1>',
                                    lambda e: self.onDoubleSelectList(e))
         else:
+            print("SI EXISTE ----------->")
             for m, c in modulo_clave.items():
                 self._list_modulo.insert(tk.END, m)
                 self._list_clave.insert(tk.END, c[0])
@@ -1013,63 +1021,65 @@ class TextSimilar(ttk.Frame):
 
 # --- ACCION DOBLE CLICK
     def onDoubleSelectList(self, event):
-        global asigne_Cliente
+        print("DAMOS DOBLE CLICK ALC ARGAR Y VER QUE IMPRIME")
         global value
+        global listModulo
+        global listKeys
         listbox_list_all = []
         widget = event.widget
         index = widget.curselection()
         listbox_list_all.append(self._list_modulo)
         listbox_list_all.append(self._list_clave)
         listbox_list_all.append(self._list_SO)
-        clt = self._list_SO.get(index[0])
-        modulo_Buscado = self._list_modulo.get(index[0])
+        customer = self._list_SO.get(index[0])
+        print("CLT, AL DARLE DUBLE CLICK ", customer)
+        moduleFound = self._list_modulo.get(index[0])
         desviacion = Desviacion(app.cuaderno)
-        app.cuaderno.add(desviacion, text='DESVIACIONES : {} '.format(clt))
+        app.cuaderno.add(desviacion, text='DESVIACIONES : {} '.format(customer))
         desviacion.enabled_Widgets()
-        asigne_Cliente = clt
-        desviacion.clientesVar.set(clt)
-        with open(path_modulo.format(clt)) as g:
+        desviacion.varClient.set(customer)
+        with open(pathFileCustomer.format(customer)) as g:
             data = json.load(g)
             listModulo = []
+            listKeys = []
             for md in data:
                 if 'modulo' in md:
                     listModulo.append(md['modulo'])
+                    listKeys.append(md['clave'])
         listModulo.sort()
         desviacion.DESV_ListBox.insert(tk.END, *listModulo)
+        moduleFound = str(moduleFound).replace("[", "").replace("]", "").replace("'", "")
         data = []
-        modulo_Buscado = str(modulo_Buscado).replace(
-            "[", "").replace("]", "").replace("'", "")
-        with open(path_modulo.format(clt)) as g:
+        with open(pathFileCustomer.format(customer)) as g:
             data = json.load(g)
             for md in data:
                 if 'modulo' in md:
-                    if modulo_Buscado in md['modulo']:
+                    if moduleFound in md['modulo']:
                         value = md['modulo']
                         # --- LIMPIAR ------------------------------------- ##
                         desviacion.limpiar_Widgets()
                         ## ------------------------------------------------- ##
                         desviacion.asignarValor_aWidgets(md)
-            desviacion.mostrar_buttons_modulo(modulo_Buscado)
+            desviacion.showButtonsModule(moduleFound)
             desviacion.DESV_ListBox.selection_clear(0, tk.END)
-            modulo_ListBox = desviacion.DESV_ListBox.get(0, tk.END)
-            indice = modulo_ListBox.index(value)
-            desviacion.DESV_ListBox.selection_set(indice)
+            moduleLoaded = desviacion.DESV_ListBox.get(0, tk.END)
+            index = moduleLoaded.index(value)
+            desviacion.DESV_ListBox.selection_set(index)
         self.vtn_modulos.destroy()
 
-    @beep_error
+    #@beep_error
     def _on_select_list(self, event):
         global value
         global PST_DESV
         listbox = event.widget
         index = listbox.curselection()
         value = listbox.get(index[0])
-        customer = PST_DESV.clientesVar.get()
-        modulo_ListBox = PST_DESV.DESV_ListBox.get(0, tk.END)
-        indice = modulo_ListBox.index(value)
-        PST_DESV.DESV_ListBox.selection_set(indice)
+        customer = PST_DESV.varClient.get()
+        moduleLoaded = PST_DESV.DESV_ListBox.get(0, tk.END)
+        index = moduleLoaded.index(value)
+        PST_DESV.DESV_ListBox.selection_set(index)
         self.vtn_modulos.destroy()
         desviacion._loadSelectItem(value, customer)
-
 
 class Desviacion(ttk.Frame):
     y_alto_btn = 55
@@ -1110,27 +1120,27 @@ class Desviacion(ttk.Frame):
         #self.DESVfr2_lblModulo.bind("<Motion>",lambda e:self.activar_Focus(e))
         #self.DESV_frame2.bind("<Motion>",lambda e:self.activar_Focus(e))
         #self.DESVfr2_lblDescripcion.bind("<Motion>",lambda e:self.activar_Focus(e))
-        self.DESV_srcComprobacion.bind(
+        self.DESV_scrCheck.bind(
             "<Motion>", lambda e: self.activar_Focus(e))
         self.DESVfr2_srcBackup.bind(
             "<Motion>", lambda e: self.activar_Focus(e))
-        self.DESVfr3_srcEditar.bind(
+        self.DESV_scrEdit.bind(
             "<Motion>", lambda e: self.activar_Focus(e))
         self.DESVfr3_srcRefrescar.bind(
             "<Motion>", lambda e: self.activar_Focus(e))
         self.DESVfr3_srcEvidencia.bind(
             "<Motion>", lambda e: self.activar_Focus(e))
-        self.DESVfr1_entModulo.bind(
+        self.DESV_entryModule.bind(
             "<Motion>", lambda e: self._act_focus_ent(e))
         app.cuaderno.bind("<Motion>", lambda e: self.activar_Focus(e))
         self.DESV_ListBox.bind("<Motion>", lambda e: self._activar_Focus(e))
 
 ## --- MOSTRAR MENU DERECHO  --- ##
-        self.DESV_srcComprobacion.bind(
+        self.DESV_scrCheck.bind(
             "<Button-3><ButtonRelease-3>", self._display_menu_clickDerecho)
         self.DESVfr2_srcBackup.bind(
             "<Button-3><ButtonRelease-3>", self._display_menu_clickDerecho)
-        self.DESVfr3_srcEditar.bind(
+        self.DESV_scrEdit.bind(
             "<Button-3><ButtonRelease-3>", self._display_menu_clickDerecho)
         self.DESVfr3_srcRefrescar.bind(
             "<Button-3><ButtonRelease-3>", self._display_menu_clickDerecho)
@@ -1138,11 +1148,11 @@ class Desviacion(ttk.Frame):
             "<Button-3><ButtonRelease-3>", self._display_menu_clickDerecho)
 
 ## --- ACTIVAR MODO SOLO LECTURA --- ##
-        self.DESV_srcComprobacion.bind(
+        self.DESV_scrCheck.bind(
             "<Key>", lambda e: self.widgets_SoloLectura(e))
         self.DESVfr2_srcBackup.bind(
             "<Key>", lambda e: self.widgets_SoloLectura(e))
-        self.DESVfr3_srcEditar.bind(
+        self.DESV_scrEdit.bind(
             "<Key>", lambda e: self.widgets_SoloLectura(e))
         self.DESVfr3_srcRefrescar.bind(
             "<Key>", lambda e: self.widgets_SoloLectura(e))
@@ -1151,63 +1161,63 @@ class Desviacion(ttk.Frame):
 
 
 ## --- SELECCIONAR TOD --- ##
-        self.DESV_srcComprobacion.bind(
+        self.DESV_scrCheck.bind(
             '<Control-a>', lambda e: self._seleccionar_todo(e))
         self.DESVfr2_srcBackup.bind(
             '<Control-a>', lambda e: self._seleccionar_todo(e))
 
 ## --- BIND --- ##
-        self.DESVfr1_entModulo.bind(
-            "<Return>", lambda event=None: self.findModule(self.DESVfr1_entModulo.get()))
-        self.DESVfr1_entModulo.bind(
+        self.DESV_entryModule.bind(
+            "<Return>", lambda event=None: self.findModule(self.DESV_entryModule.get()))
+        self.DESV_entryModule.bind(
             "<KeyPress>", lambda e: self.clear_bsq_buttom(e))
         self.DESV_ListBox.bind('<Control-f>', lambda e: self.buscar(e))
         self.DESV_ListBox.bind('<Control-F>', lambda e: self.buscar(e))
         self.DESV_ListBox.bind("<Down>", lambda e: self.ListDown(e))
         self.DESV_ListBox.bind("<Up>", lambda e: self.ListUp(e))
-        self.DESVfr1_entModulo.bind(
+        self.DESV_entryModule.bind(
             '<Control-x>', lambda e: self._clear_busqueda(e))
-        self.DESVfr1_entModulo.bind(
+        self.DESV_entryModule.bind(
             "<FocusIn>", lambda e: self.clear_busqueda(e))
-        self.DESVfr1_entModulo.bind(
+        self.DESV_entryModule.bind(
             "<FocusOut>", lambda e: self.clear_busqueda(e))
 
-        self.DESV_srcComprobacion.bind(
+        self.DESV_scrCheck.bind(
             '<Control-f>', lambda e: self.buscar(e))
         self.DESVfr2_srcBackup.bind('<Control-f>', lambda e: self.buscar(e))
-        self.DESV_srcComprobacion.bind(
+        self.DESV_scrCheck.bind(
             '<Control-F>', lambda e: self.buscar(e))
         self.DESVfr2_srcBackup.bind('<Control-F>', lambda e: self.buscar(e))
-        self.DESV_srcComprobacion.bind(
+        self.DESV_scrCheck.bind(
             '<Control-c>', lambda e: self._copiar_texto_seleccionado(e))
         self.DESVfr2_srcBackup.bind(
             '<Control-c>', lambda e: self._copiar_texto_seleccionado(e))
-        self.DESV_srcComprobacion.bind(
+        self.DESV_scrCheck.bind(
             '<Control-C>', lambda e: self._copiar_texto_seleccionado(e))
         self.DESVfr2_srcBackup.bind(
             '<Control-C>', lambda e: self._copiar_texto_seleccionado(e))
-        self.DESVfr3_srcEditar.bind(
+        self.DESV_scrEdit.bind(
             '<Control-a>', lambda e: self._seleccionar_todo(e))
         self.DESVfr3_srcRefrescar.bind(
             '<Control-a>', lambda e: self._seleccionar_todo(e))
         self.DESVfr3_srcEvidencia.bind(
             '<Control-a>', lambda e: self._seleccionar_todo(e))
-        self.DESVfr3_srcEditar.bind('<Control-F>', lambda e: self.buscar(e))
+        self.DESV_scrEdit.bind('<Control-F>', lambda e: self.buscar(e))
         self.DESVfr3_srcRefrescar.bind('<Control-F>', lambda e: self.buscar(e))
         self.DESVfr3_srcEvidencia.bind('<Control-F>', lambda e: self.buscar(e))
-        self.DESVfr3_srcEditar.bind(
+        self.DESV_scrEdit.bind(
             '<Control-c>', lambda e: self._copiar_texto_seleccionado(e))
         self.DESVfr3_srcRefrescar.bind(
             '<Control-c>', lambda e: self._copiar_texto_seleccionado(e))
         self.DESVfr3_srcEvidencia.bind(
             '<Control-c>', lambda e: self._copiar_texto_seleccionado(e))
-        self.DESVfr3_srcEditar.bind(
+        self.DESV_scrEdit.bind(
             '<Control-C>', lambda e: self._copiar_texto_seleccionado(e))
         self.DESVfr3_srcRefrescar.bind(
             '<Control-C>', lambda e: self._copiar_texto_seleccionado(e))
         self.DESVfr3_srcEvidencia.bind(
             '<Control-C>', lambda e: self._copiar_texto_seleccionado(e))
-        self.DESVfr3_srcEditar.bind('<Control-f>', lambda e: self.buscar(e))
+        self.DESV_scrEdit.bind('<Control-f>', lambda e: self.buscar(e))
         self.DESVfr3_srcRefrescar.bind('<Control-f>', lambda e: self.buscar(e))
         self.DESVfr3_srcEvidencia.bind('<Control-f>', lambda e: self.buscar(e))
 
@@ -1284,9 +1294,9 @@ class Desviacion(ttk.Frame):
         self.txtWidget = event.widget
         # self.txtWidget.select_range(0,tk.END)
         self.txtWidget.focus_set()
-        self.DESV_srcComprobacion.tag_remove("sel", "1.0", "end")
+        self.DESV_scrCheck.tag_remove("sel", "1.0", "end")
         self.DESVfr2_srcBackup.tag_remove("sel", "1.0", "end")
-        self.DESVfr3_srcEditar.tag_remove("sel", "1.0", "end")
+        self.DESV_scrEdit.tag_remove("sel", "1.0", "end")
         self.DESVfr3_srcRefrescar.tag_remove("sel", "1.0", "end")
         self.DESVfr3_srcEvidencia.tag_remove("sel", "1.0", "end")
         return 'break'
@@ -1296,30 +1306,30 @@ class Desviacion(ttk.Frame):
         global txtWidget_focus
         global PST_DESV
         txtWidget = event.widget
-        if txtWidget == self.DESVfr1_entModulo:
+        if txtWidget == self.DESV_entryModule:
             txtWidget.focus()
-            self.DESV_srcComprobacion.tag_remove("sel", "1.0", "end")
+            self.DESV_scrCheck.tag_remove("sel", "1.0", "end")
             self.DESVfr2_srcBackup.tag_remove("sel", "1.0", "end")
-            self.DESVfr3_srcEditar.tag_remove("sel", "1.0", "end")
+            self.DESV_scrEdit.tag_remove("sel", "1.0", "end")
             self.DESVfr3_srcRefrescar.tag_remove("sel", "1.0", "end")
             self.DESVfr3_srcEvidencia.tag_remove("sel", "1.0", "end")
-        elif txtWidget == self.DESV_srcComprobacion:
+        elif txtWidget == self.DESV_scrCheck:
             # srcCom = txtWidget
             txtWidget.focus()
             txtWidget_focus = True
             self.DESVfr2_srcBackup.tag_remove("sel", "1.0", "end")
-            self.DESVfr3_srcEditar.tag_remove("sel", "1.0", "end")
+            self.DESV_scrEdit.tag_remove("sel", "1.0", "end")
             self.DESVfr3_srcRefrescar.tag_remove("sel", "1.0", "end")
             self.DESVfr3_srcEvidencia.tag_remove("sel", "1.0", "end")
         elif txtWidget == self.DESVfr2_srcBackup:
             # srcBac = txtWidget
             txtWidget.focus()
             txtWidget_focus = True
-        elif txtWidget == self.DESVfr3_srcEditar:
+        elif txtWidget == self.DESV_scrEdit:
             # srcEdi = txtWidget
             txtWidget.focus()
             txtWidget_focus = True
-            self.DESV_srcComprobacion.tag_remove("sel", "1.0", "end")
+            self.DESV_scrCheck.tag_remove("sel", "1.0", "end")
             self.DESVfr2_srcBackup.tag_remove("sel", "1.0", "end")
             self.DESVfr3_srcRefrescar.tag_remove("sel", "1.0", "end")
             self.DESVfr3_srcEvidencia.tag_remove("sel", "1.0", "end")
@@ -1364,7 +1374,7 @@ class Desviacion(ttk.Frame):
         value = VALOR_ACTUAL_LIST
         self.widget_Expan = scrolltext
         tittleExpand = titulo
-        customer = PST_DESV.clientesVar.get()
+        customer = PST_DESV.varClient.get()
         self.widget_Expan.focus()
         text_aExpandir = self.widget_Expan.get('1.0', tk.END)
         print("expandir CUSTOMER ", customer)
@@ -1423,7 +1433,7 @@ class Desviacion(ttk.Frame):
             background=bg_submenu, foreground=fg_submenu,
             activebackground=select_bg, activeforeground=select_fg,
             font=_Font_Menu,
-            command=lambda e=self.DESVfr1_entModulo: self._buscar(e),
+            command=lambda e=self.DESV_entryModule: self._buscar(e),
             state='disabled',
         )
         self.menu_Contextual.add_separator(background=bg_submenu)
@@ -1443,7 +1453,7 @@ class Desviacion(ttk.Frame):
             background=bg_submenu, foreground=fg_submenu,
             activebackground=select_bg, activeforeground=select_fg,
             font=_Font_Menu,
-            #command=lambda e=self.DESVfr1_entModulo:self.pegar_texto_seleccionado(e),
+            #command=lambda e=self.DESV_entryModule:self.pegar_texto_seleccionado(e),
         )
 
         self.menu_Contextual.add_separator(background=bg_submenu)
@@ -1480,13 +1490,13 @@ class Desviacion(ttk.Frame):
         self.menu_Contextual.tk_popup(event.x_root, event.y_root)
         self.scrEvent = event.widget
         self.scrEvent.focus()
-        if str(self.scrEvent) == str(self.DESVfr1_entModulo):
+        if str(self.scrEvent) == str(self.DESV_entryModule):
             self.menu_Contextual.entryconfig('  Buscar', state='disabled')
             self.menu_Contextual.entryconfig('  Pegar', state='normal')
             self.menu_Contextual.entryconfig('  Copiar', state='disabled')
             self.menu_Contextual.entryconfig(
                 '  Seleccionar todo', state='disabled')
-            if len(self.DESVfr1_entModulo.get()) > 0:
+            if len(self.DESV_entryModule.get()) > 0:
                 self.menu_Contextual.entryconfig('  Limpiar', state='normal')
             else:
                 self.menu_Contextual.entryconfig('  Limpiar', state='disabled')
@@ -1538,7 +1548,7 @@ class Desviacion(ttk.Frame):
             pass
 
     def buscar(self, event):
-        self.DESVfr1_entModulo.focus()
+        self.DESV_entryModule.focus()
         self._buscar_Ativate_focus()
 
     def _buscar_focus(self, event):
@@ -1548,8 +1558,8 @@ class Desviacion(ttk.Frame):
         return 'break'
 
     def _buscar_Ativate_focus(self):
-        self.DESVfr1_entModulo.select_range(0, tk.END)
-        self.DESVfr1_entModulo.focus_set()
+        self.DESV_entryModule.select_range(0, tk.END)
+        self.DESV_entryModule.focus_set()
         return 'break'
 
     def _buscar(self, event):
@@ -1562,16 +1572,16 @@ class Desviacion(ttk.Frame):
         self.DESV_frame2['text'] = 'SISTEMA OPERATIVO'
         self.DESVfr2_lblModulo['text'] = 'MODULO'
         self.DESVfr2_lblDescripcion['text'] = ''
-        self.DESV_srcComprobacion.delete('1.0', tk.END)
+        self.DESV_scrCheck.delete('1.0', tk.END)
         self.DESVfr2_srcBackup.delete('1.0', tk.END)
-        self.DESVfr3_srcEditar.delete('1.0', tk.END)
+        self.DESV_scrEdit.delete('1.0', tk.END)
         self.DESVfr3_srcRefrescar.delete('1.0', tk.END)
         self.DESVfr3_srcEvidencia.delete('1.0', tk.END)
 
 # --- SELECIONA UN ELEMNETO DEL LIST BOX ACTUAL
     def selectModule(self, event):
         global value
-        customer = PST_DESV.clientesVar.get()
+        customer = PST_DESV.varClient.get()
         print("CLIENTE AL SELECIONAR", customer)
         list_event = event.widget
         index = list_event.curselection()
@@ -1582,24 +1592,25 @@ class Desviacion(ttk.Frame):
     def loadSelectItem(self, selectionValue, customer):  # TODO CARGAR MODULO
         data = []
         print("CLIENTE QUE LLEGA DESPUE DE SELECIONAR", customer)
-        with open(path_modulo.format(customer)) as g:
+        with open(pathFileCustomer.format(customer)) as g:
             data = json.load(g)
             for md in data:
                 if 'modulo' in md:
                     if selectionValue in md['modulo']:
                         self.limpiar_Widgets()
                         self._asignarValor_aWidgets(md)
-                        self.mostrar_buttons_modulo(selectionValue)
+                        self.showButtonsModule(selectionValue)
 
     def _loadSelectItem(self, selectionValue, customer):  # TODO CARGAR MODULO
         data = []
-        with open(path_modulo.format(customer)) as g:
+        with open(pathFileCustomer.format(customer)) as g:
             data = json.load(g)
             for md in data:
-                if selectionValue in md['modulo']:
-                    self.limpiar_Widgets()
-                    self.asignarValor_aWidgets(md)
-            self.mostrar_buttons_modulo(selectionValue)
+                if 'modulo'in md:
+                    if selectionValue in md['modulo']:
+                        self.limpiar_Widgets()
+                        self.asignarValor_aWidgets(md)
+            self.showButtonsModule(selectionValue)
 
 #  --- ASIGNACION DE VALORES A WIDGETS SRC, AL CAMBIAR DE PESTAÑA
 #  --- Y al buscar mas de un modulo en el mismo cliente
@@ -1616,7 +1627,7 @@ class Desviacion(ttk.Frame):
             PST_DESV.DESVfr2_lblDescripcion['text'] = md['descripcion']
 
         if md['comprobacion'] is not None:
-            PST_DESV.DESV_srcComprobacion.insert(tk.END, md['comprobacion'])
+            PST_DESV.DESV_scrCheck.insert(tk.END, md['comprobacion'])
             PST_DESV.DESV_btn1Expandir.config(state='normal')
         else:
             PST_DESV.DESV_btn1Expandir.config(state='disabled')
@@ -1628,7 +1639,7 @@ class Desviacion(ttk.Frame):
             PST_DESV.DESV_btn2Expandir.config(state='disabled')
 
         if md['editar'] is not None:
-            PST_DESV.DESVfr3_srcEditar.insert(tk.END, md['editar'])
+            PST_DESV.DESV_scrEdit.insert(tk.END, md['editar'])
             PST_DESV.DESV_btn3Expandir.config(state='normal')
         else:
             PST_DESV.DESV_btn3Expandir.config(state='disabled')
@@ -1664,7 +1675,7 @@ class Desviacion(ttk.Frame):
             self.DESVfr2_lblDescripcion['text'] = md['descripcion']
 
         if md['comprobacion'] is not None:
-            self.DESV_srcComprobacion.insert(tk.END, md['comprobacion'])
+            self.DESV_scrCheck.insert(tk.END, md['comprobacion'])
             self.DESV_btn1Expandir.config(state='normal')
         else:
             self.DESV_btn1Expandir.config(state='disabled')
@@ -1676,7 +1687,7 @@ class Desviacion(ttk.Frame):
             self.DESV_btn2Expandir.config(state='disabled')
 
         if md['editar'] is not None:
-            self.DESVfr3_srcEditar.insert(tk.END, md['editar'])
+            self.DESV_scrEdit.insert(tk.END, md['editar'])
             self.DESV_btn3Expandir.config(state='normal')
         else:
             self.DESV_btn3Expandir.config(state='disabled')
@@ -1709,7 +1720,7 @@ class Desviacion(ttk.Frame):
             PST_DESV.colour_line_ref(pers_bg_text, pers_bg_text, pers_fg_color_codigo)
             PST_DESV.colour_line_evi(pers_bg_text, pers_bg_text, pers_fg_color_codigo)
 
-    def mostrar_buttons_modulo(self, modulo_selecionado):  # TODO añadir demas botones
+    def showButtonsModule(self, modulo_selecionado):  # TODO añadir demas botones
         global PST_DESV
 # --- DIRECTORY ---------------------------------
         if str(modulo_selecionado) == "Protecting Resources-mixed/Ensure sticky bit is set on all world-writable directories" or str(modulo_selecionado) == "Protecting Resources-OSRs/CRON Command WW Permissions" or str(modulo_selecionado) == "Protecting Resources-OSRs/OSR /TMP Files Restrictions" or str(modulo_selecionado) == "Protecting Resources-OSRs/OSR /VAR Files Restrictions" or str(modulo_selecionado) == "Protecting Resources-OSRs/OSR /OPT Files Restrictions" or str(modulo_selecionado) == "Protecting Resources-OSRs/OSR /ETC Restrictions" or str(modulo_selecionado) == "Protecting Resources-OSRs/OSR /USR Restrictions" or str(modulo_selecionado) == "Protecting Resources-OSRs/CRON Command Group Permissions":
@@ -1822,10 +1833,10 @@ class Desviacion(ttk.Frame):
         else:
             self._disabled_buttons()
 
-    def mostrar_buttons_clave(self, clave_Buscado):
+    def mostrar_buttons_clave(self, keyFound):
         global PST_DESV
 # --- DIRECTORY ---------------------------------
-        if clave_Buscado == "STICKY" or clave_Buscado == "OSRsCRON" or clave_Buscado == "OSRTMP" or clave_Buscado == "OSRCRON" or clave_Buscado == "OSRVAR" or clave_Buscado == "OSROPT" or clave_Buscado == "OSRETC" or clave_Buscado == "OSRUSR":
+        if keyFound == "STICKY" or keyFound == "OSRsCRON" or keyFound == "OSRTMP" or keyFound == "OSRCRON" or keyFound == "OSRVAR" or keyFound == "OSROPT" or keyFound == "OSRETC" or keyFound == "OSRUSR":
             self._btnDir = True
             self._btnAuth = False
             self._btnSer = False
@@ -1840,7 +1851,7 @@ class Desviacion(ttk.Frame):
             PST_DESV.DESV_btnRecortar.grid_forget()
             PST_DESV.DESV_btnDirectory.grid(row=2, column=1, padx=5)
 # --- COMMAND
-        elif clave_Buscado == "COMMAND":
+        elif keyFound == "COMMAND":
             self._btnDir = False
             self._btnAuth = False
             self._btnSer = False
@@ -1855,7 +1866,7 @@ class Desviacion(ttk.Frame):
             PST_DESV.DESV_btnRecortar.grid_forget()
             PST_DESV.DESV_btnCommand.grid(row=2, column=1, padx=5)
 # --- ID RSA
-        elif clave_Buscado == "IDRSA" or clave_Buscado == "NOT PASSPHRASE":
+        elif keyFound == "IDRSA" or keyFound == "NOT PASSPHRASE":
             self._btnDir = False
             self._btnAuth = False
             self._btnSer = False
@@ -1870,7 +1881,7 @@ class Desviacion(ttk.Frame):
             PST_DESV.DESV_btnRecortar.grid_forget()
             PST_DESV.DESV_btnIdrsa.grid(row=2, column=1, padx=5)
 # --- SERVICE
-        elif clave_Buscado == "PERMITROOTLOGIN" or clave_Buscado == "LDAP" or clave_Buscado == "PROCESSES" or clave_Buscado == "NFS":
+        elif keyFound == "PERMITROOTLOGIN" or keyFound == "LDAP" or keyFound == "PROCESSES" or keyFound == "NFS":
             self._btnDir = False
             self._btnAuth = False
             self._btnSer = True
@@ -1885,7 +1896,7 @@ class Desviacion(ttk.Frame):
             PST_DESV.DESV_btnRecortar.grid_forget()
             PST_DESV.DESV_btnService.grid(row=2, column=1, padx=5)
 # --- AUTHORIZED
-        elif clave_Buscado == "AUTHORIZED_KEY" or clave_Buscado == "PUBLICKEY" or clave_Buscado == "LABEL":
+        elif keyFound == "AUTHORIZED_KEY" or keyFound == "PUBLICKEY" or keyFound == "LABEL":
             self._btnDir = False
             self._btnAuth = True
             self._btnSer = False
@@ -1900,7 +1911,7 @@ class Desviacion(ttk.Frame):
             PST_DESV.DESV_btnRecortar.grid_forget()
             PST_DESV.DESV_btnAuthorized.grid(row=2, column=1, padx=5)
 # --- MAXAGE
-        elif clave_Buscado == "MAXAGE":
+        elif keyFound == "MAXAGE":
             self._btnDir = False
             self._btnAuth = False
             self._btnSer = False
@@ -1916,7 +1927,7 @@ class Desviacion(ttk.Frame):
             PST_DESV.DESV_btnRecortar.grid(
                 row=2, column=2, padx=5, pady=15, sticky='ne')
 # --- MINAGE
-        elif clave_Buscado == "MINAGE":
+        elif keyFound == "MINAGE":
             self._btnDir = False
             self._btnAuth = False
             self._btnSer = False
@@ -1947,15 +1958,34 @@ class Desviacion(ttk.Frame):
     def findModule(self, event=None):
         global value
         global no_exist
-        customer = PST_DESV.clientesVar.get()
+        global listModulo
+        global listKeys
+        customer = PST_DESV.varClient.get()
+        with open(pathFileCustomer.format(customer)) as g:
+            data = json.load(g)
+            listModulo = []
+            listKeys = []
+            print("DESPUES ME ENLAZA AQUI????")
+            for md in data:
+                if 'CUSTOMER' in md:
+                    print("MD CUSTOMER ", md['CUSTOMER'])
+                else:
+                    listModulo.append(md['modulo'])
+                    listKeys.append(md['clave'])
+        listModulo.sort()
+        #self.moduleLoaded(customer)
         print("cliente al BUSCAR :: ", customer)
         dict_clave_modulo = {}
         valor_aBuscar = event
-        clave_Buscado = [
-            n for n in listClave if valor_aBuscar.upper().strip() in n]
-        modulo_Buscado = self.solve(valor_aBuscar)
-        modulo_Buscado = [
-            n for n in listModulo if modulo_Buscado.strip().replace("\\", "/") in n]
+        print("cliente al BUSCAR modulo: valueToFind: ", valor_aBuscar, type(valor_aBuscar))
+        print("-------------------------------------------: ")
+        print("cliente al BUSCAR modulo: LIST valueToFind: ", listKeys)
+        print("cliente al BUSCAR modulo: LIST valueToFind: ", listModulo)
+        print("-------------------------------------------: ")
+        keyFound = [n for n in listKeys if valor_aBuscar.upper().strip() in n]
+        
+        moduleFound = self.solve(valor_aBuscar)
+        moduleFound = [n for n in listModulo if moduleFound.strip().replace("\\", "/") in n]
 
         self.DESVfr1_btnBuscar.grid_forget()
         self.DESVfr1_btnLimpiar.grid(
@@ -1966,9 +1996,10 @@ class Desviacion(ttk.Frame):
         self.enabled_Widgets()
 # --------- OBTENER MODULO POR CLAVE O MODULO -------------- ## //TODO "definir si buscar por clave o modulo"
 # TODO --- SI NO EXISTE, MODULO O CLAVE
-        if len(clave_Buscado) == 0 and len(modulo_Buscado) == 0:
+        if len(keyFound) == 0 and len(moduleFound) == 0:
+            print("00000000000000")
             self.DESV_ListBox.select_clear(tk.ANCHOR)
-            self.DESVfr1_entModulo.focus()
+            self.DESV_entryModule.focus()
             self._disabled_buttons()
             self.disabled_btn_expandir()
             self.DESV_ListBox.selection_clear(0, tk.END)
@@ -1980,15 +2011,14 @@ class Desviacion(ttk.Frame):
                 no_exist = True
                 dict_clave_modulo = {}
                 listPathCustomer = []
-                for client in list_client:
-                    listPathCustomer.append(path_modulo.format(client))
-                moduleToFind = PST_DESV.DESVfr1_entModulo.get()
+                for client in listClient:
+                    listPathCustomer.append(pathFileCustomer.format(client))
+                moduleToFind = PST_DESV.DESV_entryModule.get()
                 print("moduleToFind ", moduleToFind)
                 moduleToFind = self.solve(moduleToFind)
                 print("- moduleToFind -", moduleToFind)
 # --- ABRIR TODOS LOS JSON" DE LOS CLIENTESmd_a_buscar
                 for openFile in listPathCustomer:
-                    print("ENTRA------------")
                     try:
                         with open(openFile, 'r', encoding='UTF-8') as fileCustomer:
                             fileJsonCustomer = json.load(fileCustomer)
@@ -2007,7 +2037,7 @@ class Desviacion(ttk.Frame):
                 if len(dict_clave_modulo) == 0:
                     
                 #     # --- ABRIR TODOS LOS JSON DE LOS CLIENTES
-                #     keysToFind = self.DESVfr1_entModulo.get()
+                #     keysToFind = self.DESV_entryModule.get()
                 #     keysToFind = keysToFind.upper()
                 #     # for openFile in listPathCustomer:
                 #     #     #print("oPenFile ", openFile)
@@ -2038,74 +2068,80 @@ class Desviacion(ttk.Frame):
                 no_exist = False
             return 'break'
 # TODO --- POR CLAVE UNICA
-        elif len(clave_Buscado) == 1 and len(modulo_Buscado) == 0:
+        elif len(keyFound) == 1 and len(moduleFound) == 0:
+            print("CL 111111111111")
             data = []
             no_exist = False
-            clave_Buscado = str(clave_Buscado).replace(
+            keyFound = str(keyFound).replace(
                 "[", "").replace("]", "").replace("'", "")
-            with open(path_modulo.format(customer)) as g:
+            with open(pathFileCustomer.format(customer)) as g:
                 data = json.load(g)
                 for md in data:
                     if 'clave' in md:
-                        if clave_Buscado in md['clave']:
+                        if keyFound in md['clave']:
                             self.limpiar_Widgets()
                             # self.enabled_Widgets()
                             value = md['modulo']
                             self.asignarValor_aWidgets(md)
-                            self.mostrar_buttons_clave(clave_Buscado)
+                            self.mostrar_buttons_clave(keyFound)
                 self.DESV_ListBox.selection_clear(0, tk.END)
-                modulo_ListBox = self.DESV_ListBox.get(0, tk.END)
-                indice = modulo_ListBox.index(value)
-                self.DESV_ListBox.selection_set(indice)
+                moduleLoaded = self.DESV_ListBox.get(0, tk.END)
+                index = moduleLoaded.index(value)
+                self.DESV_ListBox.selection_set(index)
                 return 'break'
 # TODO --- SI EXISTEN MAS DE UNA CLAVE
-        elif len(clave_Buscado) > 1 and len(modulo_Buscado) == 0:
+        elif len(keyFound) > 1 and len(moduleFound) == 0:
+            print("CL > 111111111111")
             data = []
             no_exist = False
             self.DESV_ListBox.selection_clear(0, tk.END)
-            with open(path_modulo.format(customer)) as g:
+            with open(pathFileCustomer.format(customer)) as g:
                 data = json.load(g)
                 for md in data:
-                    for n in clave_Buscado:
-                        if n in md['clave']:
-                            dict_clave_modulo[md['modulo']
-                                              ] = md['clave'], md['SO']
+                    for n in keyFound:
+                        if 'clave' in md:
+                            if n in md['clave']:
+                                dict_clave_modulo[md['modulo']
+                                                ] = md['clave'], md['SO']
                 titulo = 'LISTA DE MODULOS ENCONTRADOS, SEGUN SU CRITERIO DE BUSQUEDA, en {}'.format(
                     customer)
                 textsimilar = TextSimilar(
                     self, titulo, dict_clave_modulo, customer)
                 return 'break'
 # TODO --- SI ES MODULO UNICO
-        elif len(modulo_Buscado) == 1 and len(clave_Buscado) == 0:
+        elif len(moduleFound) == 1 and len(keyFound) == 0:
+            print("MD 111111111111")
             data = []
             no_exist = False
-            modulo_Buscado = str(modulo_Buscado).replace(
+            moduleFound = str(moduleFound).replace(
                 "[", "").replace("]", "").replace("'", "")
-            with open(path_modulo.format(customer)) as g:
+            with open(pathFileCustomer.format(customer)) as g:
                 data = json.load(g)
                 for md in data:
                     if 'modulo' in md:
-                        if modulo_Buscado in md['modulo']:
+                        if moduleFound in md['modulo']:
                             value = md['modulo']
                             self.asignarValor_aWidgets(md)
-                self.mostrar_buttons_modulo(modulo_Buscado)
+                self.showButtonsModule(moduleFound)
                 self.DESV_ListBox.selection_clear(0, tk.END)
-                modulo_ListBox = self.DESV_ListBox.get(0, tk.END)
-                indice = modulo_ListBox.index(value)
-                self.DESV_ListBox.selection_set(indice)
+                moduleLoaded = self.DESV_ListBox.get(0, tk.END)
+                index = moduleLoaded.index(value)
+                self.DESV_ListBox.selection_set(index)
                 return 'break'
 # TODO --- SI HAY MAS DE UN MODULO
-        elif len(modulo_Buscado) > 1 and len(clave_Buscado) == 0:
+        elif len(moduleFound) > 1 and len(keyFound) == 0:
+            print("MD > 111111111111")
             data = []
             no_exist = False
             self.DESV_ListBox.selection_clear(0, tk.END)
-            with open(path_modulo.format(customer)) as g:
+            with open(pathFileCustomer.format(customer)) as g:
                 data = json.load(g)
                 for md in data:
-                    for n in modulo_Buscado:
-                        if n in md['modulo']:
-                            dict_clave_modulo[md['modulo']
-                                              ] = md['clave'], md['SO']
+                    for n in moduleFound:
+                        if 'modulo' in md:
+                            if n in md['modulo']:
+                                dict_clave_modulo[md['modulo']
+                                                ] = md['clave'], md['SO']
                 titulo = 'LISTA DE MODULOS ENCONTRADOS, SEGUN SU CRITERIO DE BUSQUEDA, en {}'.format(
                     customer)
                 textsimilar = TextSimilar(
@@ -2113,18 +2149,19 @@ class Desviacion(ttk.Frame):
                 return 'break'
 # TODO --- SI EXISTE UN MODULO Y UNA CLAVE
         else:
+            print("UNDEFINE")
             data = []
             no_exist = False
             self.DESV_ListBox.selection_clear(0, tk.END)
-            with open(path_modulo.format(customer)) as g:
+            with open(pathFileCustomer.format(customer)) as g:
                 data = json.load(g)
                 for md in data:
-                    for n in modulo_Buscado:
+                    for n in moduleFound:
                         if 'modulo' in md:
                             if n in md['modulo']:
                                 dict_clave_modulo[md['modulo']
                                                 ] = md['clave'], md['SO']
-                    for n in clave_Buscado:
+                    for n in keyFound:
                         if 'clave' in md:
                             if n in md['clave']:
                                 dict_clave_modulo[md['modulo']
@@ -2142,7 +2179,6 @@ class Desviacion(ttk.Frame):
                 dict_clave_modulo[ln_clt['modulo']] = ln_clt['clave'], CUST
     
     def addNewModuleFound(self, dict_clave_modulo, _md_Buscado, ln_clt, file):
-        print("LLEGS A ENTRRA")
         CUST = ""
         for n in _md_Buscado:
             if 'CUSTOMER' in ln_clt:
@@ -2154,9 +2190,7 @@ class Desviacion(ttk.Frame):
                         for md in data:    
                             if 'CUSTOMER' in md:
                                 CUST = md['CUSTOMER']
-                                print("cliente al busca add ", CUST)
                     dict_clave_modulo[ln_clt['modulo']] = ln_clt['clave'], CUST
-            print("SALE ", len(dict_clave_modulo))
 
     def addNewKeysFound(self, dict_clave_, _clv_Buscado, ln_clt, file):
         CUST = ""
@@ -2170,7 +2204,6 @@ class Desviacion(ttk.Frame):
                         for md in data:    
                             if 'CUSTOMER' in md:
                                 CUST = md['CUSTOMER']
-                                print("cliente al busca add ----> ", CUST)
                     dict_clave_[ln_clt['modulo']] = ln_clt['clave'], CUST
 
     def _add_newList_clt_clv(self, dict_clave_modulo, _clv_Buscado, ln_clt, CUST):
@@ -2202,7 +2235,7 @@ class Desviacion(ttk.Frame):
                 row=1, column=1, pady=5, padx=5, sticky='nsw')
 
     def limpiar_busqueda(self):
-        widget_event = self.DESVfr1_entModulo
+        widget_event = self.DESV_entryModule
         widget_event.delete(0, tk.END)
         widget_event.focus()
         widget_event.icursor(0)
@@ -2226,12 +2259,12 @@ class Desviacion(ttk.Frame):
 
     def enabled_Widgets(self):
         self.DESV_ListBox.config(state="normal")
-        self.DESVfr1_entModulo.config(state="normal")
-        self.DESVfr1_entModulo.focus()
+        self.DESV_entryModule.config(state="normal")
+        self.DESV_entryModule.focus()
         self.DESVfr1_btnBuscar.config(state="normal")
-        self.DESV_srcComprobacion.config(state="normal")
+        self.DESV_scrCheck.config(state="normal")
         self.DESVfr2_srcBackup.config(state="normal")
-        self.DESVfr3_srcEditar.config(state="normal")
+        self.DESV_scrEdit.config(state="normal")
         self.DESVfr3_srcRefrescar.config(state="normal")
         self.DESVfr3_srcEvidencia.config(state="normal")
         self.DESV_btnRiskImpact.config(state='normal')
@@ -2246,45 +2279,34 @@ class Desviacion(ttk.Frame):
 
     def loadModule(self, clt_modulo=None, *args):
         global listModulo
-        global listClave
+        global listKeys
         self.enabled_Widgets()
-        print("CLT MODULE ", clt_modulo)
-        # if clt_modulo is not None:
-        #     customer = clt_modulo
-        #     self.clientesVar.set(customer)
-        # else:
-        #     customer = self.clientesVar.get()
-        customer = self.clientesVar.get()
+        customer = clt_modulo
+        self.varClient.set(customer)
         self.renameNameTab(customer)
         # --- LIMPIAR -----------------------------
-        self.DESVfr1_entModulo.delete(0, tk.END)
+        self.DESV_entryModule.delete(0, tk.END)
         self.DESV_ListBox.delete(0, tk.END)
         self.limpiar_Widgets()
         self._disabled_buttons()
         self.disabled_btn_expandir()
-        print("CUSTOMER :: ", customer)
-        print("CLIENTE :: ", asigne_Cliente)
         ## ----------------------------------------- ##
-        with open(path_modulo.format(customer)) as g:
+        with open(pathFileCustomer.format(customer)) as g:
             data = json.load(g)
             listModulo = []
-            listClave = []
+            listKeys = []
+            print("DESPUES ME ENLAZA AQUI????")
             for md in data:
                 if 'CUSTOMER' in md:
                     print("MD CUSTOMER ", md['CUSTOMER'])
                 else:
                     listModulo.append(md['modulo'])
-                    listClave.append(md['clave'])
+                    listKeys.append(md['clave'])
         listModulo.sort()
         self.DESV_ListBox.insert(tk.END, *listModulo)
 
-    def _loadModule(self):
-        idx = app.ClientVar.get()
-        itm = list_client[idx]
-        self.loadModule(clt_modulo=itm)
-
     def colour_line_com(self, bg_color, bg_codigo, fg_codigo, fg_nota):
-        PST_DESV.DESV_srcComprobacion.tag_configure(
+        PST_DESV.DESV_scrCheck.tag_configure(
             "codigo",
             background=bg_codigo,
             foreground=fg_codigo,
@@ -2293,7 +2315,7 @@ class Desviacion(ttk.Frame):
             font=_Font_Texto_codigo
         )
 
-        PST_DESV.DESV_srcComprobacion.tag_configure(
+        PST_DESV.DESV_scrCheck.tag_configure(
             "line",
             background=bg_color,
             foreground=default_color_line_fg,
@@ -2302,7 +2324,7 @@ class Desviacion(ttk.Frame):
             font=_Font_Texto_bold
         )
 
-        PST_DESV.DESV_srcComprobacion.tag_configure(
+        PST_DESV.DESV_scrCheck.tag_configure(
             "nota",
             background=bg_color,
             foreground=fg_nota,
@@ -2311,21 +2333,21 @@ class Desviacion(ttk.Frame):
             font=_Font_Texto_bold
         )
 
-        end = PST_DESV.DESV_srcComprobacion.index("end")
+        end = PST_DESV.DESV_scrCheck.index("end")
         line_count = int(end.split(".", 1)[0])
         for line in range(1, line_count+1):
             startline = f"{line}.0"
-            if not (PST_DESV.DESV_srcComprobacion.search("##", startline, stopindex=f"{line}.1")) and not (PST_DESV.DESV_srcComprobacion.search("// NOTA", startline, stopindex=f"{line}.1")):
+            if not (PST_DESV.DESV_scrCheck.search("##", startline, stopindex=f"{line}.1")) and not (PST_DESV.DESV_scrCheck.search("// NOTA", startline, stopindex=f"{line}.1")):
                 endline = f"{line}.end"
-                PST_DESV.DESV_srcComprobacion.tag_add(
+                PST_DESV.DESV_scrCheck.tag_add(
                     "codigo", startline, endline)
-            if (PST_DESV.DESV_srcComprobacion.search("+-", startline, stopindex=f"{line}.1")):
+            if (PST_DESV.DESV_scrCheck.search("+-", startline, stopindex=f"{line}.1")):
                 endline = f"{line}.end"
-                PST_DESV.DESV_srcComprobacion.tag_add(
+                PST_DESV.DESV_scrCheck.tag_add(
                     "line", startline, endline)
-            if (PST_DESV.DESV_srcComprobacion.search("//", startline, stopindex=f"{line}.1")):
+            if (PST_DESV.DESV_scrCheck.search("//", startline, stopindex=f"{line}.1")):
                 endline = f"{line}.end"
-                PST_DESV.DESV_srcComprobacion.tag_add(
+                PST_DESV.DESV_scrCheck.tag_add(
                     "nota", startline, endline)
 
     def colour_line_bak(self, bg_color, bg_codigo, fg_codigo):
@@ -2393,7 +2415,7 @@ class Desviacion(ttk.Frame):
                     "line", startline, endline)
 
     def colour_line_edi(self, bg_color, bg_codigo, fg_codigo):
-        PST_DESV.DESVfr3_srcEditar.tag_configure(
+        PST_DESV.DESV_scrEdit.tag_configure(
             "codigo",
             background=bg_codigo,
             foreground=fg_codigo,
@@ -2402,7 +2424,7 @@ class Desviacion(ttk.Frame):
             font=_Font_Texto_codigo
         )
 
-        PST_DESV.DESVfr3_srcEditar.tag_configure(
+        PST_DESV.DESV_scrEdit.tag_configure(
             "line",
             background=bg_color,
             foreground=default_color_line_fg,
@@ -2410,17 +2432,17 @@ class Desviacion(ttk.Frame):
             selectforeground=select_fg,
             font=_Font_Texto_bold
         )
-        end = PST_DESV.DESVfr3_srcEditar.index("end")
+        end = PST_DESV.DESV_scrEdit.index("end")
         line_count = int(end.split(".", 1)[0])
         for line in range(1, line_count+1):
             startline = f"{line}.0"
-            if not (PST_DESV.DESVfr3_srcEditar.search("##", startline, stopindex=f"{line}.1")):
+            if not (PST_DESV.DESV_scrEdit.search("##", startline, stopindex=f"{line}.1")):
                 endline = f"{line}.end"
-                PST_DESV.DESVfr3_srcEditar.tag_add(
+                PST_DESV.DESV_scrEdit.tag_add(
                     "codigo", startline, endline)
-            if (PST_DESV.DESVfr3_srcEditar.search("+-", startline, stopindex=f"{line}.1")):
+            if (PST_DESV.DESV_scrEdit.search("+-", startline, stopindex=f"{line}.1")):
                 endline = f"{line}.end"
-                PST_DESV.DESVfr3_srcEditar.tag_add(
+                PST_DESV.DESV_scrEdit.tag_add(
                     "line", startline, endline)
 
     def colour_line_evi(self, bg_color, bg_codigo, fg_codigo):
@@ -2555,15 +2577,15 @@ class Desviacion(ttk.Frame):
         self.DESV_frame3.rowconfigure(3, weight=1)
         self.DESV_frame3.rowconfigure(5, weight=1)
         # --- Variable del OptionMenu, lista de clientes ------------------------------#
-        self.clientesVar = tk.StringVar(self)
-        self.clientesVar.set('CLIENTES')
+        self.varClient = tk.StringVar(self)
+        self.varClient.set('CLIENTES')
         #-----------------------------------------------------------------------------#
         ## ======================== FRAME 1 ========================================= ##
         # ---------------- OptionMenu, lista de clientes ---------------------------- ##
         self.DESV_OptionMenu = tk.OptionMenu(
             self.DESV_frame1,
-            self.clientesVar,
-            *list_client,
+            self.varClient,
+            *listClient,
             command=self.loadModule,
         )
         self.DESV_OptionMenu.config(
@@ -2591,14 +2613,14 @@ class Desviacion(ttk.Frame):
 # -----------------------------------------------------------------------------#
 # TODO --- ENTRY DE BUSQUEDA
         self.var_entry_bsc = tk.StringVar(self)
-        self.DESVfr1_entModulo = MyEntry(
+        self.DESV_entryModule = MyEntry(
             self.DESV_frame1,
             textvariable=self.var_entry_bsc,
         )
-        self.DESVfr1_entModulo.configure(
+        self.DESV_entryModule.configure(
             state='disabled',
         )
-        self.DESVfr1_entModulo.grid(
+        self.DESV_entryModule.grid(
             row=1, column=0, pady=5, padx=(5, 0), sticky='nsew')
 
 # TODO --- BOTON BUSCAR DESVIACION
@@ -2606,7 +2628,7 @@ class Desviacion(ttk.Frame):
             self.DESV_frame1,
             image=self.BuscarModulo_icon,
             state='disabled',
-            command=lambda: self.findModule(self.DESVfr1_entModulo.get()),
+            command=lambda: self.findModule(self.DESV_entryModule.get()),
         )
         self.DESVfr1_btnBuscar.grid(
             row=1, column=1, pady=5, padx=5, sticky='nsw')
@@ -2681,6 +2703,7 @@ class Desviacion(ttk.Frame):
             alto=Desviacion.y_alto_btn,
             ancho=Desviacion.x_ancho_btn,
             radio=25,
+            width=3,
             bg_color=default_fondo_app,
         )
         self._btnDir_ = ttk.Button(
@@ -2704,6 +2727,7 @@ class Desviacion(ttk.Frame):
             alto=Desviacion.y_alto_btn,
             ancho=Desviacion.x_ancho_btn,
             radio=25,
+            width=3,
             bg_color=default_fondo_app,
         )
         self._btnSer_ = ttk.Button(
@@ -2727,6 +2751,7 @@ class Desviacion(ttk.Frame):
             alto=Desviacion.y_alto_btn,
             ancho=Desviacion.x_ancho_btn,
             radio=25,
+            width=3,
             bg_color=default_fondo_app,
         )
         self._btnAuth_ = ttk.Button(
@@ -2750,6 +2775,7 @@ class Desviacion(ttk.Frame):
             alto=Desviacion.y_alto_btn,
             ancho=Desviacion.x_ancho_btn,
             radio=25,
+            width=3,
             bg_color=default_fondo_app,
         )
         self._btnAcc_ = ttk.Button(
@@ -2773,6 +2799,7 @@ class Desviacion(ttk.Frame):
             alto=Desviacion.y_alto_btn,
             ancho=Desviacion.x_ancho_btn,
             radio=25,
+            width=3,
             bg_color=default_fondo_app,
         )
         self._btnComm_ = ttk.Button(
@@ -2796,6 +2823,7 @@ class Desviacion(ttk.Frame):
             alto=Desviacion.y_alto_btn,
             ancho=Desviacion.x_ancho_btn,
             radio=25,
+            width=3,
             bg_color=None,
         )
         self._btnIdr_ = ttk.Button(
@@ -2822,8 +2850,8 @@ class Desviacion(ttk.Frame):
             command=self.RecortarMinMax,
         )
 
-        self.DESV_srcComprobacion = st.ScrolledText(self.DESV_frame2)
-        self.DESV_srcComprobacion.config(
+        self.DESV_scrCheck = st.ScrolledText(self.DESV_frame2)
+        self.DESV_scrCheck.config(
             font=_Font_Texto,
             wrap=tk.WORD,
             highlightcolor=default_color_widget_act,
@@ -2838,7 +2866,7 @@ class Desviacion(ttk.Frame):
             foreground=default_color_widget_fg,
             state='disabled',
         )
-        self.DESV_srcComprobacion.grid(
+        self.DESV_scrCheck.grid(
             row=3, column=0, padx=5, pady=5, sticky='new', columnspan=5)
 
         self.DESV_btnRiskImpact = ttk.Button(
@@ -2857,8 +2885,8 @@ class Desviacion(ttk.Frame):
             image=self.icono_expandir,
             style='DESV.TButton',
             state='disabled',
-            command=partial(self.expandir, self.DESV_srcComprobacion, self.varComprobacion),
-            #command=lambda x=self.DESV_srcComprobacion: self.expandir(x, self.varComprobacion),
+            command=partial(self.expandir, self.DESV_scrCheck, self.varComprobacion),
+            #command=lambda x=self.DESV_scrCheck: self.expandir(x, self.varComprobacion),
         )
         self.DESV_btn1Expandir.grid(
             row=2, column=4, padx=(0, 20), pady=15, sticky='ne')
@@ -2914,8 +2942,8 @@ class Desviacion(ttk.Frame):
         self.DESVfr3_lblEditar.grid(
             row=0, column=0, padx=5, pady=5, sticky='w')
 
-        self.DESVfr3_srcEditar = st.ScrolledText(self.DESV_frame3)
-        self.DESVfr3_srcEditar.config(
+        self.DESV_scrEdit = st.ScrolledText(self.DESV_frame3)
+        self.DESV_scrEdit.config(
             font=_Font_Texto,
             wrap=tk.WORD,
             highlightcolor=default_color_widget_act,
@@ -2930,7 +2958,7 @@ class Desviacion(ttk.Frame):
             foreground=default_color_widget_fg,
             state='disabled',
         )
-        self.DESVfr3_srcEditar.grid(
+        self.DESV_scrEdit.grid(
             row=1, column=0, padx=5, pady=5, sticky='new', columnspan=4)
 
         self.varEditar = "EDITAR"
@@ -2939,7 +2967,7 @@ class Desviacion(ttk.Frame):
             image=self.icono_expandir,
             style='DESV.TButton',
             state='disabled',
-            command=lambda x=self.DESVfr3_srcEditar: self.expandir(
+            command=lambda x=self.DESV_scrEdit: self.expandir(
                 x, self.varEditar),
         )
         self.DESV_btn3Expandir.grid(row=0, column=1, padx=(
@@ -3055,12 +3083,12 @@ class Desviacion(ttk.Frame):
         self.DESVfr2_lblDescripcion.bind('<Motion>', app.activar_default)
         self.DESVfr2_lblComprobacion.bind('<Motion>', app.activar_default)
         self.DESVfr2_lblBackup.bind('<Motion>', app.activar_default)
-        self.DESV_srcComprobacion.bind('<Motion>', app.activar_default)
+        self.DESV_scrCheck.bind('<Motion>', app.activar_default)
         self.DESVfr2_srcBackup.bind('<Motion>', app.activar_default)
         self.DESVfr3_lblEditar.bind('<Motion>', app.activar_default)
         self.DESVfr3_lblEvidencia.bind('<Motion>', app.activar_default)
         self.DESVfr3_lblRefrescar.bind('<Motion>', app.activar_default)
-        self.DESVfr3_srcEditar.bind('<Motion>', app.activar_default)
+        self.DESV_scrEdit.bind('<Motion>', app.activar_default)
         self.DESVfr3_srcEvidencia.bind('<Motion>', app.activar_default)
         self.DESVfr3_srcRefrescar.bind('<Motion>', app.activar_default)
 
@@ -3076,9 +3104,9 @@ class Desviacion(ttk.Frame):
         global txtWidget
         PST_DESV.DESV_frame2['text'] = 'SISTEMA OPERATIVO'
         PST_DESV.DESVfr2_lblDescripcion['text'] = ''
-        PST_DESV.DESV_srcComprobacion.delete('1.0', tk.END)
+        PST_DESV.DESV_scrCheck.delete('1.0', tk.END)
         PST_DESV.DESVfr2_srcBackup.delete('1.0', tk.END)
-        PST_DESV.DESVfr3_srcEditar.delete('1.0', tk.END)
+        PST_DESV.DESV_scrEdit.delete('1.0', tk.END)
         PST_DESV.DESVfr3_srcRefrescar.delete('1.0', tk.END)
         PST_DESV.DESVfr3_srcEvidencia.delete('1.0', tk.END)
         PST_DESV.DESVfr2_lblModulo['text'] = 'MODULO'
@@ -3145,7 +3173,7 @@ class Desviacion(ttk.Frame):
         global CLS_VENTANA
         name_vtn = "PERMISSIONS"
         path = "Compliance/file/directory.json"
-        customer = PST_DESV.clientesVar.get()
+        customer = PST_DESV.varClient.get()
         CLS_VENTANA = Ventana(
             self, 
             name_vtn, customer,
@@ -3160,7 +3188,7 @@ class Desviacion(ttk.Frame):
         global CLS_VENTANA
         name_vtn = "COMMAND"
         path = "Compliance/file/command.json"
-        customer = PST_DESV.clientesVar.get()
+        customer = PST_DESV.varClient.get()
         CLS_VENTANA = Ventana(
             self, 
             name_vtn, 
@@ -3176,7 +3204,7 @@ class Desviacion(ttk.Frame):
         global CLS_VENTANA
         name_vtn = "AUTHORIZED"
         path = "Compliance/file/authorized_keys.json"
-        customer = PST_DESV.clientesVar.get()
+        customer = PST_DESV.varClient.get()
         CLS_VENTANA = Ventana(
             self, 
             name_vtn, 
@@ -3192,8 +3220,7 @@ class Desviacion(ttk.Frame):
         global CLS_VENTANA
         name_vtn = "ACCOUNT"
         path = "Compliance/file/account.json"
-        customer = PST_DESV.clientesVar.get()
-        print("ENVIO ASINE ", asigne_Cliente)
+        customer = PST_DESV.varClient.get()
         print("ENVIO CUSTOMER ", customer)
         CLS_VENTANA = Ventana(
             self, 
@@ -3210,7 +3237,7 @@ class Desviacion(ttk.Frame):
         global CLS_VENTANA
         name_vtn = "SERVICE"
         path = "Compliance/file/service.json"
-        customer = PST_DESV.clientesVar.get()
+        customer = PST_DESV.varClient.get()
         CLS_VENTANA = Ventana(
             self, 
             name_vtn, 
@@ -3226,7 +3253,7 @@ class Desviacion(ttk.Frame):
         global CLS_VENTANA
         name_vtn = "ID_RSA"
         path = "Compliance/file/idrsa.json"
-        customer = PST_DESV.clientesVar.get()
+        customer = PST_DESV.varClient.get()
         CLS_VENTANA = Ventana(
             self, 
             name_vtn, 
@@ -3290,11 +3317,13 @@ class Desviacion(ttk.Frame):
         self._btnIdr_.bind('<Motion>', partial(
             app.active_radio_botton, self.DESV_btnIdrsa, self._btnIdr_))
 
-
 class Aplicacion():
     WIDTH = 1360
     HEIGHT = 650
-
+    y_alto_btn = 200
+    x_ancho_btn = 250
+    hg_btn = int(y_alto_btn-30)
+    wd_btn = int(x_ancho_btn-30)
     def __init__(self):
         self.root = tk.Tk()
         self._Font_Titulo_bold = font.Font(
@@ -3308,12 +3337,10 @@ class Aplicacion():
             f'{Aplicacion.WIDTH}x{Aplicacion.HEIGHT}+{position_top}+{position_right}')
         #self.root.minsize(Aplicacion.WIDTH, Aplicacion.HEIGHT)
         self.root.configure(background=default_fondo_app, borderwidth=0, border=0)
-        self.root.tk.call('wm', 'iconphoto', self.root._w,
-                          tk.PhotoImage(file=path_icon+r'compliance.png'))
+        self.root.tk.call('wm', 'iconphoto', self.root._w,tk.PhotoImage(file=path_icon+r'compliance.png'))
         self.open_client()
         self.iconos()
-        self.cuaderno = ScrollableNotebook(
-            self.root, wheelscroll=False, tabmenu=True, application=self)
+        self.cuaderno = ScrollableNotebook(self.root, wheelscroll=False, tabmenu=True, application=self)
         self.contenedor = ttk.Frame(self.cuaderno)
         self.contenedor.config(
             borderwidth=1,
@@ -3322,19 +3349,16 @@ class Aplicacion():
         self.contenedor.columnconfigure(1, weight=1)
         self.contenedor.rowconfigure(1, weight=1)
 
-        self.cuaderno.add(self.contenedor, text='WorkSpace  ',
-                          underline=0, image=self.WorkSpace_icon, compound=tk.LEFT)
+        self.cuaderno.add(self.contenedor, text='WorkSpace  ', underline=0, image=self.WorkSpace_icon, compound=tk.LEFT)
         self.cuaderno.pack(fill="both", expand=True)
-        self.cuaderno.bind_all("<<NotebookTabChanged>>",
-                               lambda e: self.toChangeTab(e))
+        self.cuaderno.bind_all("<<NotebookTabChanged>>",lambda e: self.toChangeTab(e))
         self.cuaderno.enable_traversal()
-        self.cuaderno.notebookTab.bind(
-            "<Button-3>", self.display_menu_clickDerecho)
+        self.cuaderno.notebookTab.bind("<Button-3>", self.display_menu_clickDerecho)
         self.cuaderno.bind("<Button-3>", self._display_menu_clickDerecho)
 
         self.root.bind_all("<Control-l>", lambda x: self.ocultar())
         self.root.focus_set()
-        self.contenedor.bind('<Motion>', self.activar_default)
+        #self.contenedor.bind('<Motion>', self.activar_default)
         # Fuente MENU CLICK DERECHO APP
         # ----------------------------------------------------------
         self.sizegrid = ttk.Sizegrip(
@@ -3349,12 +3373,12 @@ class Aplicacion():
 
     def activar_default(self, e):
         if not act_rbtn_auto:
-            self.btn_AbrirAuto.canvas.itemconfig(
-                1, fill=default_boton_bg, outline=default_outline)
-            self.btn_AbrirExt.canvas.itemconfig(
-                1, fill=default_boton_bg, outline=default_outline)
-            self.btn_AbrirDesv.canvas.itemconfig(
-                1, fill=default_boton_bg, outline=default_outline)
+            self.rbOpenAuto.canvas.itemconfig(
+                1, fill=default_fondo_app, outline=default_outline)
+            self.rbOpenExt.canvas.itemconfig(
+                1, fill=default_fondo_app, outline=default_outline)
+            self.rbOpenDesv.canvas.itemconfig(
+                1, fill=default_fondo_app, outline=default_outline)
 
         if 'desviacion' in globals():
             if modo_dark == 'True':
@@ -3427,12 +3451,12 @@ class Aplicacion():
                 PST_DESV.DESV_btn1CopyALL['image'] = PST_DESV.icono_copiar
 
     def open_client(self):
-        global list_client
-        list_client = []
+        global listClient
+        listClient = []
         with open(path_config.format("clientes")) as op:
             data = json.load(op)
             for clt in data:
-                list_client.append(clt['name'])
+                listClient.append(clt['name'])
 
     def iconos(self):
         self.Desviaciones_icon = ImageTk.PhotoImage(
@@ -3498,15 +3522,15 @@ class Aplicacion():
                              )
         self.style.configure(
             'APP.TButton',
-            background=default_boton_bg,
+            background=default_fondo_app,
             foreground=default_boton_fg,
-            font=(fuente_boton, 12, weight_DF),
+            #font=(fuente_boton, 12, weight_DF),
             borderwidth=0,
         )
         self.style.map(
             'APP.TButton',
-            background=[("active", default_boton_acbg)],
-            foreground=[("active", default_boton_fg)],
+            background=[("active", default_fondo_app)],
+            #foreground=[("active", default_boton_fg)],
             borderwidth=[("active", 0)],
         )
 
@@ -3716,91 +3740,41 @@ class Aplicacion():
         global PST_DESV
         if activar_modo == 'True':
             self.MODE_DARK()
-        # global automatizar
-        # if automatizar in globals():
-        #     automatizar.btn_lis_cli = []
         idOpenTab = event.widget.index('current')
         tab = event.widget.tab(idOpenTab)['text']
-        self.root.update()
+        
         if idOpenTab != 0:
             self.menu_Contextual.entryconfig('  Copiar', state='disabled')
             self.menu_Contextual.entryconfig('  Pegar', state='disabled')
-            self.menu_Contextual.entryconfig(
-                '  Seleccionar todo', state='disabled')
+            self.menu_Contextual.entryconfig('  Seleccionar todo', state='disabled')
         elif idOpenTab == 0:
-            self.menu_Contextual.entryconfig(
-                '  Cerrar pestaña', state='disabled')
+            self.menu_Contextual.entryconfig('  Cerrar pestaña', state='disabled')
             self.cuaderno._release_callback(e=None)
         else:
-            self.menu_Contextual.entryconfig(
-                '  Cerrar pestaña', state='normal')
+            self.menu_Contextual.entryconfig('  Cerrar pestaña', state='normal')
+        
         if idOpenTab == 1 or idOpenTab == 2 or idOpenTab == 3 or idOpenTab == 4:
             self.cuaderno.rightArrow.configure(foreground=default_color_widget_act)
             Thread(target=self.cuaderno._leftSlide, daemon=True).start()
             self.cuaderno._release_callback(e=None)
             self.cuaderno.rightArrow.configure(foreground=default_color_widget_act)
 # ---ASIGNAMOS A UNA VARIABLE CADA CLIENTE----------------------------
+        
         if tab == 'WorkSpace  ':
-            self.activar_default(e=None)
+            #self.activar_default(e=None)
             self.fileMenu.entryconfig('  Clientes', state='disabled')
             self.menu_Contextual.entryconfig('  Buscar', state='disabled')
             self.menu_Contextual.entryconfig('  Copiar', state='disabled')
             self.menu_Contextual.entryconfig('  Pegar', state='disabled')
-            self.menu_Contextual.entryconfig(
-                '  Seleccionar todo', state='disabled')
-            self.menu_Contextual.entryconfig(
-                '  Cerrar pestaña', state='disabled')
-        # elif tab == 'DESVIACIONES : AFB ':
-        #     asigne_Cliente = 'AFB'
-        #     # index = PST_DESV.DESV_ListBox.curselection()
-        #     # VALOR_ACTUAL_LIST = PST_DESV.DESV_ListBox.get(index[0])
-        # elif tab == 'DESVIACIONES : ASISA ':
-        #     asigne_Cliente = 'ASISA'
-        #     # index = PST_DESV.DESV_ListBox.curselection()
-        #     # VALOR_ACTUAL_LIST = PST_DESV.DESV_ListBox.get(index[0])
-        #     # value = VALOR_ACTUAL_LIST
-        # elif tab == 'DESVIACIONES : CESCE ':
-        #     asigne_Cliente = 'CESCE'
-        #     # index = PST_DESV.DESV_ListBox.curselection()
-        #     # VALOR_ACTUAL_LIST = PST_DESV.DESV_ListBox.get(index[0])
-        #     # value = VALOR_ACTUAL_LIST
-        # elif tab == 'DESVIACIONES : CTTI ':
-        #     asigne_Cliente = 'CTTI'
-        # elif tab == 'DESVIACIONES : ENEL ':
-        #     asigne_Cliente = 'ENEL'
-        # elif tab == 'DESVIACIONES : EUROFRED ':
-        #     asigne_Cliente = 'EUROFRED'
-        # elif tab == 'DESVIACIONES : FT ':
-        #     asigne_Cliente = 'FT'
-        # elif tab == 'DESVIACIONES : INFRA ':
-        #     asigne_Cliente = 'INFRA'
-        # elif tab == 'DESVIACIONES : IDISO ':
-        #     asigne_Cliente = 'IDISO'
-        # elif tab == 'DESVIACIONES : LBK ':
-        #     asigne_Cliente = 'LBK'
-        # elif tab == 'DESVIACIONES : PLANETA ':
-        #     asigne_Cliente = 'PLANETA'
-        # elif tab == 'DESVIACIONES : SERVIHABITAT ':
-        #     asigne_Cliente = 'SERVIHABITAT'
+            self.menu_Contextual.entryconfig('  Seleccionar todo', state='disabled')
+            self.menu_Contextual.entryconfig('  Cerrar pestaña', state='disabled')
         else:
             self.fileMenu.entryconfig('  Clientes', state='normal')
             self.menu_Contextual.entryconfig('  Copiar', state='disabled')
             self.menu_Contextual.entryconfig('  Pegar', state='disabled')
-            self.menu_Contextual.entryconfig(
-                '  Seleccionar todo', state='disabled')
-            self.menu_Contextual.entryconfig(
-                '  Cerrar pestaña', state='normal')
-        # if 'asigne_Cliente' in globals() and len(asigne_Cliente) != 0:
-        #     with open(path_modulo.format(asigne_Cliente)) as g:
-        #         global listClave
-        #         global listModulo
-        #         data = json.load(g)
-        #         listModulo = []
-        #         listClave = []
-        #         for md in data:
-        #             listModulo.append(md['modulo'])
-        #             listClave.append(md['clave'])
-        
+            self.menu_Contextual.entryconfig('  Seleccionar todo', state='disabled')
+            self.menu_Contextual.entryconfig('  Cerrar pestaña', state='normal')
+
         if tab == 'Issues EXTRACIONES':
             self.fileMenu.entryconfig('  Clientes', state='disabled')
             self.editMenu.entryconfig('  Buscar', state='normal')
@@ -3817,7 +3791,6 @@ class Aplicacion():
 
         # self._QuitarSeleccion()
         self._cerrar_vtn_bsc()
-
 
     def _cerrar_vtn_bsc(self):
         global extracion
@@ -3871,8 +3844,10 @@ class Aplicacion():
     def bsc(self):
         extracion.panel_buscar()
 
-    def cargar_modulos(self):
-        desviacion._loadModule()
+    def loadClient(self):
+        index = self.varClientMenu.get()
+        customer = listClient[int(index)]
+        desviacion.loadModule(customer)
 
     def label_resize(self, event):
         event.widget['wraplength'] = event.width
@@ -4019,7 +3994,7 @@ class Aplicacion():
         )
 
     def _cargar_modulo_glosario(self, clt_modulo=None, *args):
-        with open(path_modulo_clave.format('GLOSARIO')) as g:
+        with open(pathFileCustomer_clave.format('GLOSARIO')) as g:
             data = json.load(g)
             listModulo = []
             listClave = []
@@ -4230,17 +4205,13 @@ class Aplicacion():
             image=self.Abrir_icon,
             menu=self.issuesMenu
         )
-
         self.fileMenu.add_cascade(
             label="  Clientes",
             image=self.Client_icon,
             compound=tk.LEFT,
             menu=self.clientMenu
         )
-
         self.fileMenu.add_separator()
-
-        # * MENU PREFERENCIAS
         self.fileMenu.add_command(
             label="  Preferencias",
             image=self.Client_icon,
@@ -4248,23 +4219,22 @@ class Aplicacion():
             command=self._fontchooser
             # menu=self.clientMenu
         )
-
         self.fileMenu.add_separator()
-
         self.fileMenu.add_command(
             label="  Salir",
             image=self.Salir_icon,
             compound=tk.LEFT,
             command=self.root.quit
         )
+        self.fileMenu.add_separator()
 
-        self.ClientVar = tk.IntVar()
-        for i, m in enumerate(list_client):
+        self.varClientMenu = tk.StringVar()
+        for i, m in enumerate(listClient):
             self.clientMenu.add_radiobutton(
                 label=m,
-                variable=self.ClientVar,
+                variable=self.varClientMenu,
                 value=i,
-                command=self.cargar_modulos,
+                command=self.loadClient
             )
 
         self.IssuesVar = tk.IntVar()
@@ -4292,7 +4262,7 @@ class Aplicacion():
             compound=tk.LEFT,
             state="disabled"
         )
-        self.fileMenu.add_separator()
+        
         self.helpMenu = tk.Menu(self.menuBar, tearoff=0)
         self.helpMenu.config(
             background=bg_submenu,
@@ -4323,124 +4293,117 @@ class Aplicacion():
 
         self.frameButtons = ttk.Frame(
             self.contenedor,
-            style='TFrame'
+            #style='TFrame'
         )
-        self.frameButtons.grid(row=0, column=0, pady=5, padx=5
-                               )
-
-        # * Espesificamos el ancho y alto del boton
-        y_alto_btn = 200
-        x_ancho_btn = 200
-        hg_btn = int(y_alto_btn-25)
-        wd_btn = int(x_ancho_btn-25)
+        self.frameButtons.grid(row=0, column=0, pady=5, padx=5)
 # TODO BOTON DESVIACION
-        self.btn_AbrirDesv = RadioButton(
+        self.rbOpenDesv = RadioButton(
             self.frameButtons,
-            alto=y_alto_btn,
-            ancho=x_ancho_btn,
+            alto=Aplicacion.y_alto_btn,
+            ancho=Aplicacion.x_ancho_btn,
             radio=50,
-            bg_color=None,
+            width=5,
+            bg_color=default_fondo_app,
         )
-        self.btn_AbrirDesv.grid(
-            row=0,
-            column=0,
-            padx=20,
-            pady=20
-        )
-        self.btn_Desv = ttk.Button(
-            self.btn_AbrirDesv,
+        self.btnOpenDesv = ttk.Button(
+            self.rbOpenDesv,
             text='\nDESVIACIONES',
             style='APP.TButton',
             image=self.Automatizar_icon,
             compound='top',
             command=self.abrir_issuesDesviacion,
         )
-        self.btn_Desv.place(
+        self.btnOpenDesv.place(
             relx=0.5,
             rely=0.5,
             anchor=tk.CENTER,
-            height=hg_btn,
-            width=wd_btn
+            height=Aplicacion.hg_btn,
+            width=Aplicacion.wd_btn
         )
-
-# TODO BOTON EXTRACION
-        self.btn_AbrirExt = RadioButton(
-            self.frameButtons,
-            alto=y_alto_btn,
-            ancho=x_ancho_btn,
-            radio=50,
-            bg_color=None,
-        )
-        self.btn_AbrirExt.grid(
+        self.rbOpenDesv.grid(
             row=0,
-            column=1,
+            column=0,
             padx=20,
             pady=20
         )
-        self.btn_Ext = ttk.Button(
-            self.btn_AbrirExt,
+
+# TODO BOTON EXTRACION
+        self.rbOpenExt = RadioButton(
+            self.frameButtons,
+            alto=Aplicacion.y_alto_btn,
+            ancho=Aplicacion.x_ancho_btn,
+            radio=50,
+            width = 5,
+            bg_color=default_fondo_app,
+        )
+        self.btnOpenExt = ttk.Button(
+            self.rbOpenExt,
             text='\nEXTRACIONES',
             style='APP.TButton',
             image=self.Extracion_icon,
             compound='top',
             command=self.abrir_issuesExtracion,
         )
-        self.btn_Ext.place(
+        self.btnOpenExt.place(
             relx=0.5,
             rely=0.5,
             anchor=tk.CENTER,
-            height=hg_btn,
-            width=wd_btn
+            height=Aplicacion.hg_btn,
+            width=Aplicacion.wd_btn
         )
-
-# TODO BOTON AUTOMATIZAR
-        self.btn_AbrirAuto = RadioButton(
-            self.frameButtons,
-            alto=y_alto_btn,
-            ancho=x_ancho_btn,
-            radio=50,
-            bg_color=None,
-        )
-        self.btn_AbrirAuto.grid(
+        self.rbOpenExt.grid(
             row=0,
-            column=2,
+            column=1,
             padx=20,
             pady=20
         )
-        self.btn_Auto = ttk.Button(
-            self.btn_AbrirAuto,
+
+# TODO BOTON AUTOMATIZAR
+        self.rbOpenAuto = RadioButton(
+            self.frameButtons,
+            alto=Aplicacion.y_alto_btn,
+            ancho=Aplicacion.x_ancho_btn,
+            radio=50,
+            width = 5,
+            bg_color=default_fondo_app,
+        )
+        self.btnOpenAuto = ttk.Button(
+            self.rbOpenAuto,
             text='\nAUTOMATIZACION',
             style='APP.TButton',
             image=self.Automatizar_icon,
             compound='top',
             command=self.abrir_scripts,
         )
-        self.btn_Auto.place(
+        self.btnOpenAuto.place(
             relx=0.5,
             rely=0.5,
             anchor=tk.CENTER,
-            height=hg_btn,
-            width=wd_btn
+            height=Aplicacion.hg_btn,
+            width=Aplicacion.wd_btn
         )
-
-        # Aqui activamos los colores por defecto del radio button
-        # Tambien hay que llamar a la funcion en ='WorkSpace'
+        self.rbOpenAuto.grid(
+            row=0,
+            column=2,
+            padx=20,
+            pady=20
+        )
+        
+        self.btnOpenDesv.bind('<Motion>', partial(
+            self.active_radio_botton, self.rbOpenDesv, self.btnOpenDesv))
+        self.btnOpenExt.bind('<Motion>', partial(
+            self.active_radio_botton, self.rbOpenExt, self.btnOpenExt))
+        self.btnOpenAuto.bind('<Motion>', partial(
+            self.active_radio_botton, self.rbOpenAuto, self.btnOpenAuto))
+        
+        # # Aqui activamos los colores por defecto del radio button
+        # # Tambien hay que llamar a la funcion en ='WorkSpace'
         self.frameButtons.bind('<Motion>', self.activar_default)
-        self.btn_AbrirDesv.canvas.bind('<Motion>', self.activar_default)
-        self.btn_AbrirExt.canvas.bind('<Motion>', self.activar_default)
-        self.btn_AbrirAuto.canvas.bind('<Motion>', self.activar_default)
+        # self.rbOpenDesv.canvas.bind('<Motion>', self.activar_default)
+        # self.rbOpenExt.canvas.bind('<Motion>', self.activar_default)
+        # self.rbOpenAuto.canvas.bind('<Motion>', self.activar_default)
         self.contenedor.bind("<Motion>", self.activar_default)
         self.menuBar.bind("<Motion>", self.activar_default)
-
-        # Aqui activamos el color activo
-        # ? Definir motion para cada boton creado
-        # self.btn_Auto.bind('<Motion>', partial(
-        #     self.active_radio_botton, self.btn_AbrirAuto, self.btn_Auto))
-        # self.btn_Desv.bind('<Motion>', partial(
-        #     self.active_radio_botton, self.btn_AbrirDesv, self.btn_Desv))
-        # self.btn_Ext.bind('<Motion>', partial(
-        #     self.active_radio_botton, self.btn_AbrirExt, self.btn_Ext))
-
 
 # TODO BIENVANIDA
 
@@ -4473,21 +4436,6 @@ class Aplicacion():
         elif modo_dark == 'False':
             canva.canvas.itemconfig(
                 1, outline=default_color_outline)
-            # self.style.configure('TButton',
-            #     background=default_boton_bg,
-            #     foreground=default_boton_fg,
-            #     relief='sunke',
-            #     borderwidth=1,
-            #     padding=6,
-            #     font=_Font_Boton
-            # )
-            # self.style.map('TButton',
-            #     background=[("active", default_boton_acbg)],
-            #     foreground=[("active", default_boton_acfg)],
-            #     padding=[("active", 6), ("pressed", 6)],
-            #     relief=[("active", 'ridge'), ("pressed", 'groove')],
-            #     borderwidth=[("active", 1)],
-            # )
 
     def _fontchooser(self):
         from Preferencias import SelectFont
@@ -4531,9 +4479,9 @@ class Aplicacion():
             self.cuaderno.bottomTab_novo.config(background=pers_default_fondo_app)
             self.cuaderno.leftArrow.config(background=pers_default_fondo_app)
             self.cuaderno.rightArrow.config(background=pers_default_fondo_app)
-            self.btn_AbrirExt.canvas.config(background=pers_default_fondo_app)
-            self.btn_AbrirDesv.canvas.config(background=pers_default_fondo_app)
-            self.btn_AbrirAuto.canvas.config(background=pers_default_fondo_app)
+            self.rbOpenExt.canvas.config(background=pers_default_fondo_app)
+            self.rbOpenDesv.canvas.config(background=pers_default_fondo_app)
+            self.rbOpenAuto.canvas.config(background=pers_default_fondo_app)
 
             self.menuBar.config(
                 background=pers_menu_bg,
@@ -4643,7 +4591,7 @@ class Aplicacion():
                 fill=pers_default_fondo_app,
                 outline=default_outline
                 )
-            PST_DESV.DESVfr1_entModulo.config(
+            PST_DESV.DESV_entryModule.config(
                 background=pers_bg_text,
                 foreground=pers_color_text,
                 highlightbackground=pers_bg_text,
@@ -4671,7 +4619,7 @@ class Aplicacion():
                 foreground='gray60',
                 background=pers_bg_text,
             )
-            PST_DESV.DESV_srcComprobacion.configure(
+            PST_DESV.DESV_scrCheck.configure(
                 foreground=pers_color_text,
                 background=pers_bg_text,
                 highlightbackground=pers_bg_text,
@@ -4687,7 +4635,7 @@ class Aplicacion():
                 highlightthickness=hhtk,
                 insertbackground=pers_hglcolor
             )
-            PST_DESV.DESVfr3_srcEditar.configure(
+            PST_DESV.DESV_scrEdit.configure(
                 foreground=pers_color_text,
                 background=pers_bg_text,
                 highlightbackground=pers_bg_text,
@@ -4720,9 +4668,9 @@ class Aplicacion():
                 self.cuaderno.bottomTab_novo.config(background=default_fondo_app)
                 self.cuaderno.leftArrow.config(background=default_fondo_app)
                 self.cuaderno.rightArrow.config(background=default_fondo_app)
-                self.btn_AbrirExt.canvas.config(background=default_fondo_app)
-                self.btn_AbrirDesv.canvas.config(background=default_fondo_app)
-                self.btn_AbrirAuto.canvas.config(background=default_fondo_app)
+                self.rbOpenExt.canvas.config(background=default_fondo_app)
+                self.rbOpenDesv.canvas.config(background=default_fondo_app)
+                self.rbOpenAuto.canvas.config(background=default_fondo_app)
 
                 self.menuBar.config(
                     background=default_menu_bg,
@@ -4842,7 +4790,7 @@ class Aplicacion():
                     fill=default_fondo_app,
                     outline=default_outline
                 )
-                PST_DESV.DESVfr1_entModulo.config(
+                PST_DESV.DESV_entryModule.config(
                     background=default_color_widget_bg,
                     foreground=default_color_widget_fg,
                     highlightbackground=defautl_marco_widget,
@@ -4870,7 +4818,7 @@ class Aplicacion():
                     foreground='gray60',
                     background=default_fondo_app,
                 )
-                PST_DESV.DESV_srcComprobacion.configure(
+                PST_DESV.DESV_scrCheck.configure(
                     foreground=default_color_widget_fg,
                     background=default_color_widget_bg,
                     highlightbackground=defautl_marco_widget,
@@ -4886,7 +4834,7 @@ class Aplicacion():
                     highlightthickness=hhtk,
                     insertbackground=default_color_widget_act
                 )
-                PST_DESV.DESVfr3_srcEditar.configure(
+                PST_DESV.DESV_scrEdit.configure(
                     foreground=default_color_widget_fg,
                     background=default_color_widget_bg,
                     highlightbackground=defautl_marco_widget,
@@ -4914,7 +4862,6 @@ class Aplicacion():
 
     def mainloop(self):
         self.root.mainloop()
-
 
 if __name__ == "__main__":
     app = Aplicacion()
