@@ -8,7 +8,7 @@ from getpass import getuser
 import subprocess
 from functools import partial
 from ScrollableNotebook  import *
-from Compliance import default_fondo_app, default_outline, default_boton_acfg, default_boton_fg, hhtk, default_boton_bg
+from Compliance import default_bottom_app, default_boton_acfg, default_boton_fg, hhtk, default_boton_bg
 from RadioBotton import RadioButton, BtnScripts
 #* variable para actualizar la ventana
 PST_AUT = ""
@@ -56,7 +56,7 @@ class FramesPoliticas(ttk.Frame):
 
         self.canvas = tk.Canvas(
             self.fr_md2,
-            background=default_fondo_app,
+            background=default_bottom_app,
             width=400,
             borderwidth=0,
             border=0,
@@ -118,7 +118,8 @@ class FramesPoliticas(ttk.Frame):
                 alto=y_alto_btn,
                 ancho=x_ancho_btn,
                 radio=25,
-                bg_color=default_fondo_app
+                bg_color=default_bottom_app,
+                width=3
             )
             self.buttons_POLITICA.pack(
                 expand=0,
@@ -256,7 +257,7 @@ class FramesScripts(ttk.Frame):
 
         self.canvas3 = tk.Canvas(
             self.fr_md3,
-            background=default_fondo_app,
+            background=default_bottom_app,
             borderwidth=0,
             border=0,
             highlightthickness=0
@@ -348,7 +349,8 @@ class FramesScripts(ttk.Frame):
                 alto=y_alto_btn,
                 ancho=x_ancho_btn,
                 radio=25,
-                bg_color=default_fondo_app
+                bg_color=default_bottom_app,
+                width=3
             )
 
             grid_by_column(self.lb_frame_script, 4)
@@ -488,7 +490,7 @@ class Automatizar(ttk.Frame):
             expand=1
         )
         self.frame_medio.config(
-            background=default_fondo_app,
+            background=default_bottom_app,
             borderwidth=2,
             highlightbackground=color_bd_fr,
             highlightthickness=hhtk
@@ -511,7 +513,7 @@ class Automatizar(ttk.Frame):
 # #? ----------- CREAR  CANVAS PARA AÑADIR BOTONES Y SER SCROLLABLE
         self.canvas = tk.Canvas(
             self.fr_md1,
-            background=default_fondo_app,
+            background=default_bottom_app,
             width=300,
             borderwidth=0,
             border=0,
@@ -569,7 +571,8 @@ class Automatizar(ttk.Frame):
                     alto=y_alto_btn,
                     ancho=x_ancho_btn,
                     radio = 25,
-                    bg_color=default_fondo_app
+                    bg_color=default_bottom_app,
+                    width=3
                 )
                 self.buttons_clientes.pack(
                     expand=0,

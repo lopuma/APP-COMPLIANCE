@@ -1,15 +1,10 @@
 # -*- coding: utf-8 -*-
 import tkinter as tk
 from tkinter import StringVar, ttk
-import os
 from tkinter import font
 from getpass import getuser
 from Extraciones import MyEntry
-from Compliance import default_fondo_app, hhtk
-
-user = getuser()
-mypath = os.path.expanduser("~/")
-path_config = mypath+"Compliance/.conf/"
+from Compliance import default_bottom_app, hhtk
 
 class SelectFont(tk.Toplevel):
     def __init__(self, parent, titulo, app, application=None, *args, **kwargs):
@@ -19,7 +14,7 @@ class SelectFont(tk.Toplevel):
         self.geometry('700x600')
         self.title("Apariencia para {} ".format(self.titulo))
         self.our_font = font.Font(family='Helvetica', size=32)
-        self.config(background=default_fondo_app)
+        self.config(background=default_bottom_app)
         self.widget_preferencia()
 
     def widget_preferencia(self):
@@ -35,7 +30,7 @@ class SelectFont(tk.Toplevel):
             side=tk.TOP
         )
         
-        self.frl_familia = ttk.LabelFrame(
+        self.frl_familia = tk.LabelFrame(
             self.fr1,
             text="Familia:",
             height=250,
@@ -51,7 +46,7 @@ class SelectFont(tk.Toplevel):
 
         #self.frl_familia.configure(width=200)
 
-        self.frl_estilo = ttk.LabelFrame(
+        self.frl_estilo = tk.LabelFrame(
             self.fr1,
             text="Estilo:",
             relief='groove'
@@ -64,7 +59,7 @@ class SelectFont(tk.Toplevel):
             pady=10
         )
 
-        self.frl_tamaño = ttk.LabelFrame(
+        self.frl_tamaño = tk.LabelFrame(
             self.fr1,
             text="Tamaño:",
             relief='groove'
@@ -252,21 +247,22 @@ class SelectFont(tk.Toplevel):
         self.result.bind("<Configure>", self.label_resize)
     
     def font_family_chooser(self, e):
-        self.our_font.config(
-            family=self.list_familia.get(self.list_familia.curselection())
-        )
+        # self.our_font.config(
+        #     family=self.list_familia.get(self.list_familia.curselection())
+        # )
         self.app._Font_Titulo_bold.config(
             family=self.list_familia.get(self.list_familia.curselection())
         )
 
     def font_style_chooser(self, e):
+        print(e)
         style=self.list_estilo.get(self.list_estilo.curselection()).lower()
         if style == "bold":
-            self.our_font.config(
-            weight=style,
-            slant='roman',
-            underline=0
-            )
+            # self.our_font.config(
+            # weight=style,
+            # slant='roman',
+            # underline=0
+            # )
             self.app._Font_Titulo_bold.config(
             weight=style,
             slant='roman',
@@ -274,11 +270,11 @@ class SelectFont(tk.Toplevel):
             )
         
         if style == "italic":
-            self.our_font.config(
-            slant=style,
-            weight='normal',
-            underline=0
-            )
+            # self.our_font.config(
+            # slant=style,
+            # weight='normal',
+            # underline=0
+            # )
             self.app._Font_Titulo_bold.config(
             slant=style,
             weight='normal',
@@ -286,11 +282,11 @@ class SelectFont(tk.Toplevel):
             )
         
         if style == "bold/italic":
-            self.our_font.config(
-            weight='bold',
-            slant='italic',
-            underline=0
-            )
+            # self.our_font.config(
+            # weight='bold',
+            # slant='italic',
+            # underline=0
+            # )
             self.app._Font_Titulo_bold.config(
             weight='bold',
             slant='italic',
@@ -298,11 +294,11 @@ class SelectFont(tk.Toplevel):
             )
 
         if style == "regular":
-            self.our_font.config(
-            weight='normal',
-            slant='roman',
-            underline=0
-            )
+            # self.our_font.config(
+            # weight='normal',
+            # slant='roman',
+            # underline=0
+            # )
             self.app._Font_Titulo_bold.config(
             weight='normal',
             slant='roman',
@@ -310,11 +306,11 @@ class SelectFont(tk.Toplevel):
             )
 
         if style == "underline":
-            self.our_font.config(
-            weight='normal',
-            slant='roman',
-            underline=1
-            )
+            # self.our_font.config(
+            # weight='normal',
+            # slant='roman',
+            # underline=1
+            # )
             self.app._Font_Titulo_bold.config(
             weight='normal',
             slant='roman',
@@ -322,9 +318,9 @@ class SelectFont(tk.Toplevel):
             )
 
     def font_size_chooser(self, e):
-        self.our_font.config(
-            size=self.list_size.get(self.list_size.curselection())
-        )
+        # self.our_font.config(
+        #     size=self.list_size.get(self.list_size.curselection())
+        # )
         self.app._Font_Titulo_bold.config(
             size=self.list_size.get(self.list_size.curselection())
         )

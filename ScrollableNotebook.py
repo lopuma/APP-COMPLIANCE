@@ -3,17 +3,12 @@
 # For license see LICENSE
 
 import tkinter as tk
-from tkinter import font
-import os
 import time
 from tkinter import ttk
 from threading import Thread
 from PIL import Image, ImageTk
-from Compliance import _Font_Texto, fg_submenu, select_bg, default_menu_bg, select_fg, bg_submenu,default_fondo_app, _Font_pestañas, color_out_bg_pestaña, color_out_fg_pestaña, color_act_bg_pestaña, color_sel_fg_pestaña, color_act_fg_pestaña
-
+from Compliance import _Font_Texto, listButton, path_icon, fg_submenu, default_select_bg, default_menu_bg, default_select_fg, bg_submenu,default_bottom_app, _Font_pestañas, color_out_bg_pestaña, color_out_fg_pestaña, color_act_bg_pestaña, color_sel_fg_pestaña, color_act_fg_pestaña
 release = True
-path = os.path.expanduser("~/")
-path_icon = path+"Compliance/image/"
 count = 0
 color_btn_tab = '#297F87'
 class ScrollableNotebook(ttk.Frame):
@@ -26,7 +21,7 @@ class ScrollableNotebook(ttk.Frame):
         kwargs["style"] = "ScrollableNotebook"
         self._active = None
         self.xLocation = 0
-        self._application = application
+        self.app = application
         self.WorkSpac_icon = ImageTk.PhotoImage(Image.open(path_icon+r"workspace.png").resize((20, 20)))
         self.novo = ImageTk.PhotoImage(Image.open(path_icon+r"novo.png").resize((25, 25)))
         self.notebookContent = ttk.Notebook(self,**kwargs)
@@ -46,53 +41,34 @@ class ScrollableNotebook(ttk.Frame):
         
         self.menuSpace=30
         if tabmenu==True:
-            self.menuSpace=50
+            self.menuSpace=100
 
-            self.bottomTab = tk.Button(slideFrame, 
-                                text="  \u2630  ",
-                                background=color_out_bg_pestaña,
-                                foreground=color_btn_tab,
-                                activebackground=color_act_bg_pestaña,
-                                activeforeground=color_act_fg_pestaña,
-                                border=0,
-                                borderwidth=0,
-                                font = font.Font(family=_Font_Texto, size=17, weight='bold')
-                                )
-            self.bottomTab.bind("<1>",self._bottomMenu)
+            self.bottomTab = ttk.Button(
+                slideFrame, 
+                text="  \u2630  ",
+            )
+            self.bottomTab.bind("<Button-1>",self._bottomMenu)
+            self.bottomTab.bind("<ButtonRelease-1>",self._bottomMenu_)
             self.bottomTab.pack(expand=1, fill=tk.BOTH ,side=tk.RIGHT)
 
-        self.bottomTab_novo = tk.Label(slideFrame, 
-                                image=self.novo,
-                                background=default_fondo_app,
-                                foreground=color_btn_tab,
-                                text="Abrir",
-                                justify='center',
-                                anchor='center',
-                                #font = font.Font(family='Helvetica', size=17, weight='bold')
-                                )
+        self.bottomTab_novo = ttk.Label(
+            slideFrame, 
+            image=self.novo,
+        )
         self.bottomTab_novo.bind("<1>",self._bottomMenu_novo)
         self.bottomTab_novo.pack(side=tk.LEFT, padx=5, pady=5)
 
-        self.leftArrow = tk.Label(slideFrame, 
-                                text=" \u276E ",
-                                background=default_fondo_app,
-                                foreground=color_btn_tab,
-                                justify='center',
-                                anchor='center',
-                                font = font.Font(family='Helvetica', size=15, weight='bold')
-                                )
+        self.leftArrow = ttk.Label(
+            slideFrame, 
+            text=" \u276E ",
+        )
         self.leftArrow.bind("<Button-1>",lambda e: Thread(target=self._leftSlide, daemon=True).start())
         self.leftArrow.bind("<ButtonRelease-1>", self._release_callback)
         self.leftArrow.pack(side=tk.LEFT, padx=5)
         
-        self.rightArrow = tk.Label(slideFrame, 
+        self.rightArrow = ttk.Label(slideFrame, 
                                 text=" \u276F ",
-                                foreground=color_btn_tab,
-                                background = default_fondo_app,
-                                justify='center',
-                                anchor='center',
-                                font = font.Font(family='Helvetica', size=15, weight='bold')
-                                )
+        )
         self.rightArrow.bind("<Button-1>",lambda e: Thread(target=self._rightSlide, daemon=True).start())
         self.rightArrow.bind("<ButtonRelease-1>", self._release_callback)
         self.rightArrow.pack(side=tk.RIGHT, pady=5)
@@ -181,7 +157,7 @@ class ScrollableNotebook(ttk.Frame):
         )         
         self.style.map('ScrollableNotebook.Tab', 
             background = [
-                            ("selected", default_fondo_app),
+                            ("selected", default_bottom_app),
                             ("active", color_act_bg_pestaña)
                         ],
             foreground = [
@@ -193,6 +169,9 @@ class ScrollableNotebook(ttk.Frame):
     def _wheelscroll(self, event):
         pass
 
+    def _bottomMenu_(self,event):
+        print("DESOUES", event)
+    
     def _bottomMenu(self,event):
         tabListMenu = tk.Menu(self, tearoff = 0)
         for tab in self.notebookTab.tabs():
@@ -201,8 +180,8 @@ class ScrollableNotebook(ttk.Frame):
                                     background=bg_submenu, 
                                     foreground=fg_submenu,
                                     font=_Font_Texto,
-                                    activebackground=select_bg,
-                                    activeforeground=select_fg)
+                                    activebackground=default_select_bg,
+                                    activeforeground=default_select_fg)
         tabListMenu.entryconfig('WorkSpace  ', 
                                 accelerator="ALT+W",
                                 image=self.WorkSpac_icon, 
@@ -214,39 +193,46 @@ class ScrollableNotebook(ttk.Frame):
             pass
 
     def _bottomMenu_novo(self,event):
+        self.varButton =  tk.StringVar()
         self.tabListMenu = tk.Menu(self, tearoff = 0)
-        self.tabListMenu.add_command(
-            label="  Desviaciones", 
-            #accelerator='Ctrl+F',
-            command=self._abrir_issuesDESV,
+        for n in listButton:
+            self.tabListMenu.add_radiobutton(
+            label=n, 
+            variable=self.varButton,
+            command=self.openCommandButton,
             background=bg_submenu, foreground=fg_submenu,
-            activebackground=select_bg,activeforeground=select_fg,
+            activebackground=default_select_bg,activeforeground=default_select_fg,
             font=_Font_Texto,
         )
-        self.tabListMenu.add_command(
-            label="  Extraciones", 
-            #accelerator='Ctrl+F',
-            command=self._abrir_issuesEXT,
-            background=bg_submenu, foreground=fg_submenu,
-            activebackground=select_bg,activeforeground=select_fg,
-            font=_Font_Texto,
-        )
-        self.tabListMenu.add_command(
-            label="  Automatizacion", 
-            #accelerator='Ctrl+F',
-            #command=self._abrir_issuesEXT,
-            background=bg_submenu, foreground=fg_submenu,
-            activebackground=select_bg,activeforeground=select_fg,
-            font=_Font_Texto,
-        )
+        # self.tabListMenu.add_command(
+        #     label="  Extraciones", 
+        #     #accelerator='Ctrl+F',
+        #     command=self._openButtonEXT,
+        #     background=bg_submenu, foreground=fg_submenu,
+        #     activebackground=default_select_bg,activeforeground=default_select_fg,
+        #     font=_Font_Texto,
+        # )
+        # self.tabListMenu.add_command(
+        #     label="  Automatizacion", 
+        #     #accelerator='Ctrl+F',
+        #     #command=self._openButtonEXT,
+        #     background=bg_submenu, foreground=fg_submenu,
+        #     activebackground=default_select_bg,activeforeground=default_select_fg,
+        #     font=_Font_Texto,
+        # )
         self.tabListMenu.tk_popup(event.x_root, event.y_root)
     
-    def _abrir_issuesEXT(self):
-        self._application.abrir_issuesExtracion()
+    def openCommandButton(self):
+        index =  self.varButton.get()
+        self.app.openButton(index)
         Thread(target=self._rightSlide, daemon=True).start()
 
-    def _abrir_issuesDESV(self):
-        self._application.abrir_issuesDesviacion()
+    def _openButtonEXT(self):
+        self.app.openButtonExtracion()
+        Thread(target=self._rightSlide, daemon=True).start()
+
+    def _openButtonDESV(self):
+        self.app.openButtonDesviacion()
         Thread(target=self._rightSlide, daemon=True).start()
 
     def _tabChanger(self,event):
@@ -326,7 +312,6 @@ class ScrollableNotebook(ttk.Frame):
     def tab(self,tab_id, option=None, **kwargs):
         kwargs_Content = kwargs.copy()
         kwargs_Content["text"] = "" # important
-        #self.notebookContent.tab(self.__ContentTabID(tab_id), option=None, **kwargs_Content)
         return self.notebookTab.tab(tab_id, option=None, **kwargs)
 
     def tabs(self):
