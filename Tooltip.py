@@ -1,7 +1,4 @@
-from cmath import exp
 import tkinter as tk
-from tkinter import ttk
-from functools import partial
 
 class CustomHovertip(tk.Toplevel):
     def __init__(self, boton, text, *args, **kwargs):

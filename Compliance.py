@@ -12,7 +12,6 @@ from tkinter import TclError, scrolledtext as st
 from tkinter import messagebox as mb
 from tkinter import font
 import tkinter as tk
-from turtle import back
 from PIL import Image, ImageTk
 from ScrollableNotebook import *
 from RadioBotton import RadioButton
@@ -3424,10 +3423,36 @@ class Aplicacion():
     def open_client(self):
         global listClient
         listClient = []
-        with open(path_config.format("clientes")) as op:
-            data = json.load(op)
-            for clt in data:
-                listClient.append(clt['name'])
+        pathFiles = mypath+"Compliance/file/"
+        os.chdir(pathFiles)
+        listPathCustomer = []
+        for file in os.listdir():
+            if file.startswith("desviaciones_"):
+                file_path = f"{pathFiles}{file}"
+                listPathCustomer.append(file_path)
+                print(listPathCustomer)
+                for openFile in listPathCustomer:
+                #     #try:
+                #     print(*openFile)
+                    with open(openFile, 'r', encoding='UTF-8') as fileCustomer:
+                        fileJsonCustomer = json.load(fileCustomer)
+                    for dataCustomer in fileJsonCustomer:
+                        if 'CUSTOMER' in dataCustomer:
+                            print(dataCustomer)
+                            listClient.append(dataCustomer['CUSTOMER'])
+        listClient = set(listClient)
+        listClient = list(listClient)
+        listClient.sort()
+        print(listClient)
+                    # except FileNotFoundError:
+                    #     pass
+                        #mb.showerror("No such file or directory!.\nPlease create a new CUST file")
+        # for client in pathFileCustomer:
+        #     listPathCustomer.append(pathFileCustomer.format(client))
+        # with open(path_config.format("clientes")) as op:
+        #     data = json.load(op)
+        #     for clt in data:
+        #         listClient.append(clt['name'])
 
     def iconos(self):
         self.Desviaciones_icon = ImageTk.PhotoImage(
