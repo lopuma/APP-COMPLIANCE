@@ -4,11 +4,8 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import scrolledtext as st
 from PIL import Image, ImageTk
-from configparser import ConfigParser
 from Compliance import   hlh_def, default_Framework, default_select_fg, default_select_bg, mypath, parse, user, path_icon, path_config_ini, pers_scrText_fg, modo_dark, hhtk, default_scrText_bg, default_bottom_app, default_scrText_fg, default_scrText_bg, bg_submenu, default_scrText_fg, fuente_texto, fg_submenu, default_scrText_fg, default_color_titulos, _Font_Texto, default_scrText_fg, default_scrText_bg, default_scrText_fg, default_hglcolor, _Font_Menu, oddrow, evenrow
 from Extraciones import MyEntry
-window_width = parse.get('medidas_ventana', 'width')
-window_height = parse.get('medidas_ventana', 'height')
 
 def beep_error(f):
     def applicator(*args, **kwargs):
@@ -41,6 +38,9 @@ class Ventana(ttk.Frame):
         screen_height= self.app.root.winfo_y()
         position_top = int(screen_height)
         position_right = int(screen_width+150)
+        parse.read(path_config_ini.format("apariencia.ini"))
+        window_width = parse.get('medidas_ventana', 'width')
+        window_height = parse.get('medidas_ventana', 'height')
         self.vtn_ventanas.geometry(f'{window_width}x{window_height}+{position_right}+{position_top}')
         self.vtn_ventanas.resizable(0,0)
 

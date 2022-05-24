@@ -191,8 +191,9 @@ class Expandir(ttk.Frame):
         self.varNum = varNum
         self.vtn_expandir = tk.Toplevel(self)
         self.vtn_expandir.config(background=default_bottom_app)
-        window_width = 1010
-        window_height = 650
+        parse.read(path_config_ini.format("apariencia.ini"))
+        window_width = parse.get('medidas_expandir', 'width')
+        window_height = parse.get('medidas_expandir', 'height')
         screen_width = app.root.winfo_x()
         screen_height = app.root.winfo_y()
         position_top = int(screen_height+70)
@@ -1389,10 +1390,11 @@ class Desviacion(ttk.Frame):
         else:
             app.menu_Contextual.entryconfig('  Copiar', state='disabled')
 
-    def cambiar_icono(self, btn, icono1, *arg):
+    def cambiar_icono(self, btn, icono1, *args):
         btn['image'] = icono1
         name = btn['text']
         app.openTooltip(btn, name)
+        btn.bind('<Leave>', app._hide_event)
 
 ## ------ VENTANAS TOP EXPANDIR ------------------------------ ##
     def expandir(self, scrolltext, titulo):  # TODO comprobando expandir
@@ -2219,14 +2221,16 @@ class Desviacion(ttk.Frame):
         list_event.yview_scroll(1, "units")
         selecion = list_event.curselection()[0]+1
         modulo_selecionado = list_event.get(selecion)
-        self.loadSelectItem(modulo_selecionado)
+        customer =  PST_DESV.varClient.get()
+        self.loadSelectItem(modulo_selecionado, customer)
 
     def ListUp(self, event):
         list_event = event.widget
         list_event.yview_scroll(-1, "units")
         selecion = list_event.curselection()[0]-1
         modulo_selecionado = list_event.get(selecion)
-        self.loadSelectItem(modulo_selecionado)
+        customer =  PST_DESV.varClient.get()
+        self.loadSelectItem(modulo_selecionado, customer)
 
     def enabled_Widgets(self):
         self.DESV_ListBox.config(state="normal")
@@ -3355,6 +3359,7 @@ class Aplicacion():
                     fill=pers_bottom_app,
                     outline=default_Outline
                 )
+                PST_DESV.DESV_btnAccount.bind_all("<Leave>", self._hide_event)
                 PST_DESV.DESV_btnCommand.canvas.itemconfig(
                     1,
                     fill=pers_bottom_app,
@@ -3829,14 +3834,14 @@ class Aplicacion():
     def _acerca_de(self):
         self.vtn_acerca_de = tk.Toplevel(self.root)
         self.vtn_acerca_de.config(background=default_bottom_app)
-        window_width = 720
-        window_height = 380
+        window_wh = 780
+        window_hg = 400
         screen_width = app.root.winfo_x()
         screen_height = app.root.winfo_y()
         position_top = int(screen_height+70)
         position_right = int(screen_width+150)
         self.vtn_acerca_de.geometry(
-            f'{window_width}x{window_height}+{position_right}+{position_top}')
+            f'{window_wh}x{window_hg}+{position_right}+{position_top}')
         self.vtn_acerca_de.tk.call('wm', 'iconphoto', self.vtn_acerca_de._w, tk.PhotoImage(
             file=path_icon+r'acercaDe.png'))
         self.vtn_acerca_de.transient(self.root)
@@ -3987,7 +3992,7 @@ class Aplicacion():
     def _glosario(self):
         self.vtn_glosario = tk.Toplevel(self.root)
         self.vtn_glosario.config(background=default_bottom_app)
-        window_width = 800
+        window_width = 1000
         window_height = 500
         screen_width = app.root.winfo_x()
         screen_height = app.root.winfo_y()
@@ -4106,7 +4111,7 @@ class Aplicacion():
             image=self.close_icon_gls,
             command=self.cerrar_vtn_gls
         )
-        self.boton_gls.pack(side=tk.RIGHT, padx=20, pady=10)
+        self.boton_gls.pack(side=tk.RIGHT, padx=10, pady=10)
         self.boton_gls.config(
             background=default_bottom_app,
             activebackground=default_bottom_app,
@@ -4562,7 +4567,7 @@ class Aplicacion():
                     fill=pers_bottom_app,
                     outline=default_Outline
                 )
-                # PST_DESV.cambiar_icono(PST_DESV._btnAcc_, app.icono_account1)
+                PST_DESV.cambiar_icono(PST_DESV._btnAcc_, app.icono_account1)
                 # PST_DESV.cambiar_icono(PST_DESV._btnAuth_, app.icono_account1)
                 # PST_DESV.cambiar_icono(PST_DESV._btnComm_, app.icono_account1)
                 # PST_DESV.cambiar_icono(PST_DESV._btnDir_, app.icono_account1)

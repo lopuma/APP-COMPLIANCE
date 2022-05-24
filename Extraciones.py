@@ -736,7 +736,6 @@ class Extracion(ttk.Frame):
     def hide(self, even):
         global parar
         if self.hidden == 0:
-            print("\n1 HIDE VALOR PANEL ", self.wd)
             self.frame1.destroy()
             #self.frame1.config(width=0)
             self.menu_Contextual.entryconfig(
@@ -746,7 +745,6 @@ class Extracion(ttk.Frame):
             self.hidden = 1
             parar = False
         elif self.hidden == 1:
-            print("\n2 HIDE VALOR PANEL ", self.wd)
             self.menu()
             self.menu_Contextual.entryconfig("  Ocultar Panel", state="normal")
             self.menu_Contextual.entryconfig(
@@ -830,12 +828,11 @@ class Extracion(ttk.Frame):
 ## --- BUSCAR -------------------------------------
     def searchPanel(self, event=None):
         global _estado_actual
-        print("\nvalor del PANEL ", self.wd)
         if not _estado_actual:
             self.busca_top = tk.Toplevel(self.frame2)
             self._w = 0
             self._y = 0
-            window_width = 650
+            window_width = 680
             window_height = 100
             bus_reem_top_msg_w = 240
             self.busca_top.overrideredirect(True)

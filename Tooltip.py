@@ -1,21 +1,44 @@
 import tkinter as tk
+from RadioBotton import RadioButton
 
 class CustomHovertip(tk.Toplevel):
+    y_alto_btn = 45
+    x_ancho_btn = 180
+    hg_btn = int(y_alto_btn-15)
+    wd_btn = int(x_ancho_btn-20)
     def __init__(self, boton, text, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.text = text.split()
+        self.config(borderwidth=2, background="silver")
         self.wm_overrideredirect(1)
         self.position_window(boton)
 
     def showcontents(self):
+        # self.frame_label = RadioButton(
+        #     self,
+        #     alto=self.y_alto_btn,
+        #     ancho=self.x_ancho_btn,
+        #     radio=25,
+        #     width=2,
+        #     bg_color="#151515",
+        # )
         label = tk.Label(
-            self, 
-            text=self.text, 
-            bg="#151515", 
-            fg="#ffffff",             
+#            self.frame_label,
+            self,
+            text=self.text,
+            bg="#151515",
+            fg="#ffffff",
             font=("conforta", 13)
             )
         label.pack(expand=1, fill=tk.BOTH)
+        # label.place(
+        #     relx=0.5,
+        #     rely=0.5,
+        #     anchor=tk.CENTER,
+        #     height=self.hg_btn,
+        #     width=self.wd_btn,
+        # )
+        # self.frame_label.pack(expand=1, fill=tk.BOTH)
 
     def position_window(self, boton):
         x, y = self.get_position(boton)
