@@ -43,31 +43,34 @@ class ScrollableNotebook(ttk.Frame):
         if tabmenu==True:
             self.menuSpace=100
 
-            self.bottomTab = ttk.Button(
+            self.buttonTab = ttk.Button(
                 slideFrame, 
                 text="  \u2630  ",
             )
-            self.bottomTab.bind("<Button-1>",self._bottomMenu)
-            self.bottomTab.bind("<ButtonRelease-1>",self._bottomMenu_)
-            self.bottomTab.pack(expand=1, fill=tk.BOTH ,side=tk.RIGHT)
-
-        self.bottomTab_novo = ttk.Label(
+            self.buttonTab.bind("<Button-1>",self._bottomMenu)
+            self.buttonTab.bind("<ButtonRelease-1>",self._bottomMenu_)
+            self.buttonTab.pack(expand=1, fill=tk.BOTH ,side=tk.RIGHT)
+        self.buttonTab_novo = ttk.Label(
             slideFrame, 
             image=self.novo,
+            font=("Helvetica", 14, 'bold')
         )
-        self.bottomTab_novo.bind("<1>",self._bottomMenu_novo)
-        self.bottomTab_novo.pack(side=tk.LEFT, padx=5, pady=5)
+        self.buttonTab_novo.bind("<1>",self._bottomMenu_novo)
+        self.buttonTab_novo.pack(side=tk.LEFT, padx=5, pady=5)
 
         self.leftArrow = ttk.Label(
             slideFrame, 
             text=" \u276E ",
+            font=("Helvetica", 14, 'bold')
         )
         self.leftArrow.bind("<Button-1>",lambda e: Thread(target=self._leftSlide, daemon=True).start())
         self.leftArrow.bind("<ButtonRelease-1>", self._release_callback)
         self.leftArrow.pack(side=tk.LEFT, padx=5)
         
-        self.rightArrow = ttk.Label(slideFrame, 
-                                text=" \u276F ",
+        self.rightArrow = ttk.Label(
+            slideFrame, 
+            text=" \u276F ",
+            font=("Helvetica", 14, 'bold')
         )
         self.rightArrow.bind("<Button-1>",lambda e: Thread(target=self._rightSlide, daemon=True).start())
         self.rightArrow.bind("<ButtonRelease-1>", self._release_callback)
@@ -170,7 +173,7 @@ class ScrollableNotebook(ttk.Frame):
         pass
 
     def _bottomMenu_(self,event):
-        print("DESOUES", event)
+        pass
     
     def _bottomMenu(self,event):
         tabListMenu = tk.Menu(self, tearoff = 0)

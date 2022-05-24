@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
+from copy import deepcopy
 import os
 import tkinter as tk
 from os import listdir
 from os.path import isdir, join, abspath
-from getpass import getuser
-from tkinter import ttk
+from tkinter import TclError, ttk
 from tkinter import scrolledtext as st
 from tkinter import font
 from PIL import Image, ImageTk
 from threading import Thread
 import time
+from functools import partial
 from Compliance import hlh_def, pers_menu_bg, path_config_ini, parse, pers_bottom_app, activar_modo, mypath, hhtk, default_scrText_bg, default_panelBg, bg_submenu, default_scrText_fg, default_menu_bg, fg_submenu, acdefault_panelBg, _Font_Menu, _Font_Texto, default_select_bg, default_select_fg, default_bottom_app, default_hglcolor, default_select_bg, default_select_fg, fuente_texto, tamñ_texto, _Font_Texto_bold, _Font_Texto_codigo
 path_extracion = mypath+"Compliance/extracion/"
 path_icon = mypath+"Compliance/image/"
@@ -211,9 +212,9 @@ class Extracion(ttk.Frame):
         self.columnconfigure(2, weight=5)
         self.rowconfigure(0, weight=1)
         self.bind("<Motion>", lambda e : self.EXT_motion(e))
-        self.txt.bind('<Control-f>', lambda x: self.panel_buscar(x))
-        self.txt.bind('<Control-F>', lambda x: self.panel_buscar(x))
-        self.txt.bind('<Control-l>', self.hide)
+        self.txt.bind('<Control-f>', lambda x: self.searchPanel(x))
+        self.txt.bind('<Control-F>', lambda x: self.searchPanel(x))
+        self.txt.bind('<Control-l>', lambda e : self.hide(e))
         self.txt.bind('<Control-c>', lambda x: self._copiar_texto_seleccionado(x))
         self.txt.bind('<Control-C>', lambda x: self._copiar_texto_seleccionado(x))
         self.txt.bind('<Control-a>', lambda e: self._seleccionar_todo(e))
@@ -231,6 +232,7 @@ class Extracion(ttk.Frame):
         )
         if activar_modo == 'True':
             app.MODE_DARK()
+        app.root.update()
 
     def EXT_motion(self, event):
         global PST_EXT
@@ -246,80 +248,87 @@ class Extracion(ttk.Frame):
         self.btn_x = ImageTk.PhotoImage(
             Image.open(path_icon+r"btn-x.png").resize((20, 20)))
 
+    #@beep_error
     def menu(self):
         parse.read(path_config_ini.format("apariencia.ini"))
         modo_dark = parse.get('dark', 'modo_dark')
-        self.frame1 = tk.Frame(
-            self,
-            #background=default_menu_bg,
-            width=self.wd
-        )
-        if modo_dark == 'False':
-            self.frame1.config(
-                background=default_menu_bg,
-                #width=self.wd
+        try:
+            self.frame1 = tk.Frame(
+                self,
+                width=self.wd,
             )
-        else:
-            self.frame1.config(
-                background=pers_menu_bg,
-                #width=self.wd
+        
+            if modo_dark == 'False':
+                self.frame1.config(
+                    background=default_menu_bg,
+                    #width=self.wd
+                )
+            else:
+                self.frame1.config(
+                    background=pers_menu_bg,
+                    #width=self.wd
+                )
+
+            self.frame1.grid_propagate(False)
+            self.frame1.grid(row=0, column=0, sticky="nsew", pady=(10,0))
+            self.frame1.columnconfigure(0, weight=1)
+            self.frame1.rowconfigure(1, weight=1)
+        
+            self.btn_close = ttk.Button(
+                self.frame1,
+                image=self.closeIcon,
+                command=self.hide_btn_nav,
             )
-        self.frame1.grid_propagate(False)
-        self.frame1.grid(row=0, column=0, sticky="nsew", pady=(10,0))
-        self.frame1.columnconfigure(0, weight=1)
-        self.frame1.rowconfigure(1, weight=1)
+            self.btn_close.grid(row=0, column=0, sticky="e", columnspan=2)
 
-        self.btn_close = ttk.Button(
-            self.frame1,
-            image=self.closeIcon,
-            command=self.hide_btn_nav,
-        )
-        self.btn_close.grid(row=0, column=0, sticky="e", columnspan=2)
+            self.treeview = ttk.Treeview(
+                self.frame1,
+            )
 
-        self.treeview = ttk.Treeview(
-            self.frame1,
-        )
+            #? COLOR TEXT DE LAS CARPETAS DE EXTRACION
+            self.treeview.heading("#0", text="FICHEROS de EXTRACIONES", anchor="center")
+            self.treeview.grid(row=1, column=0, sticky="nsew")
 
-        #? COLOR TEXT DE LAS CARPETAS DE EXTRACION
-        self.treeview.heading("#0", text="FICHEROS de EXTRACIONES", anchor="center")
-        self.treeview.grid(row=1, column=0, sticky="nsew")
+            self.treeview.tag_bind(
+                "fstag", "<<TreeviewOpen>>", self.item_opened
+            )
+            self.treeview.tag_bind(
+                "fstag", "<<TreeviewClose>>", self.item_closed
+            )
+            self.treeview.bind(
+                "<<TreeviewSelect>>", lambda e: self.select_extraction(e)
+            )
+            self.fsobjects = {}
 
-        self.treeview.tag_bind(
-            "fstag", "<<TreeviewOpen>>", self.item_opened
-        )
-        self.treeview.tag_bind(
-            "fstag", "<<TreeviewClose>>", self.item_closed
-        )
-        self.treeview.bind(
-            "<<TreeviewSelect>>", lambda e: self.select_extraction(e)
-        )
-        self.fsobjects = {}
+            self.file_image = tk.PhotoImage(file=path_icon+r"files.png")
+            self.folder_image = tk.PhotoImage(file=path_icon+r"folder.png")
 
-        self.file_image = tk.PhotoImage(file=path_icon+r"files.png")
-        self.folder_image = tk.PhotoImage(file=path_icon+r"folder.png")
+            self.max = ttk.Button(
+                self.frame1,
+                text="+",
+            )
+            self.max.grid(row=2, column=0, sticky="e",columnspan=2)
+            self.max.config(width=2)
 
-        self.max = ttk.Button(
-            self.frame1,
-            text="+",
-        )
-        self.max.grid(row=2, column=0, sticky="e",columnspan=2)
-        self.max.config(width=2)
+            self.min = ttk.Button(
+                self.frame1,
+                text="-",
+            )
+            self.min.grid(row=2, column=0, sticky="w")
+            self.min.config(width=2)
 
-        self.min = ttk.Button(
-            self.frame1,
-            text="-",
-        )
-        self.min.grid(row=2, column=0, sticky="w")
-        self.min.config(width=2)
-
-        # Cargar el directorio raíz.
-        self.load_tree(abspath(path_extracion))
-        self.max.bind(
-            "<Button-1>", lambda e: Thread(target=self.ampliar, daemon=True).start())
-        self.max.bind("<ButtonRelease-1>", self._parar_)
-        self.min.bind(
-            "<Button-1>", lambda e: Thread(target=self.reducir, daemon=True).start())
-        self.min.bind("<ButtonRelease-1>", self._parar_)
+            # Cargar el directorio raíz.
+            self.load_tree(abspath(path_extracion))
+            self.max.bind(
+                "<Button-1>", lambda e: Thread(target=self.ampliar, daemon=True).start())
+            self.max.bind("<ButtonRelease-1>", self._parar_)
+            self.min.bind(
+                "<Button-1>", lambda e: Thread(target=self.reducir, daemon=True).start())
+            self.min.bind("<ButtonRelease-1>", self._parar_)
+        except TypeError:
+            pass
+        except TclError:
+            pass
 
     def ampliar(self):
         global parar
@@ -610,7 +619,7 @@ class Extracion(ttk.Frame):
             background=bg_submenu, foreground=fg_submenu,
             activebackground=default_select_bg, activeforeground=default_select_fg,
             font=_Font_Menu,
-            command=lambda e=self.txt: self.panel_buscar(e)
+            command=lambda e=self.txt: self.searchPanel(e)
         )
         self.menu_Contextual.add_separator(background=bg_submenu)
         self.menu_Contextual.add_command(
@@ -648,7 +657,7 @@ class Extracion(ttk.Frame):
             background=bg_submenu, foreground=fg_submenu,
             activebackground=default_select_bg, activeforeground=default_select_fg,
             font=_Font_Menu,
-            command=self.hide
+            command=partial(self.hide, even=None)
         )
         self.menu_Contextual.add_command(
             label="  Mostrar Panel",
@@ -658,7 +667,7 @@ class Extracion(ttk.Frame):
             background=bg_submenu, foreground=fg_submenu,
             activebackground=default_select_bg, activeforeground=default_select_fg,
             font=_Font_Menu,
-            command=self.hide
+            command=partial(self.hide, even=None)
         )
         self.menu_Contextual.add_separator(background=bg_submenu)
         self.menu_Contextual.add_command(
@@ -724,10 +733,12 @@ class Extracion(ttk.Frame):
     def cerrar_vtn_desviacion(self):
         self.app.cerrar_vtn_desviacion()
 
-    def hide(self):
+    def hide(self, even):
         global parar
         if self.hidden == 0:
+            print("\n1 HIDE VALOR PANEL ", self.wd)
             self.frame1.destroy()
+            #self.frame1.config(width=0)
             self.menu_Contextual.entryconfig(
                 "  Ocultar Panel", state="disabled")
             self.menu_Contextual.entryconfig("  Mostrar Panel", state="normal")
@@ -735,6 +746,7 @@ class Extracion(ttk.Frame):
             self.hidden = 1
             parar = False
         elif self.hidden == 1:
+            print("\n2 HIDE VALOR PANEL ", self.wd)
             self.menu()
             self.menu_Contextual.entryconfig("  Ocultar Panel", state="normal")
             self.menu_Contextual.entryconfig(
@@ -816,17 +828,14 @@ class Extracion(ttk.Frame):
         return self._ocurrencias_encontradas
 
 ## --- BUSCAR -------------------------------------
-    def panel_buscar(self, event=None):
+    def searchPanel(self, event=None):
         global _estado_actual
+        print("\nvalor del PANEL ", self.wd)
         if not _estado_actual:
             self.busca_top = tk.Toplevel(self.frame2)
-            #self.busca_top.grab_set()
-            #self.busca_top.transient()
-            #self.busca_top.attributes('-type', 'splash')
-            
             self._w = 0
             self._y = 0
-            window_width = 787
+            window_width = 650
             window_height = 100
             bus_reem_top_msg_w = 240
             self.busca_top.overrideredirect(True)
@@ -890,7 +899,7 @@ class Extracion(ttk.Frame):
             self.entr_str.grid(row=0, column=0, padx=5, sticky="nsew")
 
             self.entr_str.configure(
-                width=50,
+                width=43,
                 highlightcolor=default_hglcolor,
                 insertbackground=default_hglcolor,
                 insertwidth=5,

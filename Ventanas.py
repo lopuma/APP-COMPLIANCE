@@ -143,13 +143,11 @@ class Ventana(ttk.Frame):
             parse.read(path_config_ini.format("apariencia.ini"))
             modo_dark = parse.get('dark', 'modo_dark')
             if modo_dark == 'True':
-                print("TEXT TRUE")   
                 text_widget.config(
                     foreground=pers_scrText_fg,
                     font=_Font_Texto
                 )
             else:
-                print("TEXT FALSE")   
                 text_widget.config(
                     foreground=default_scrText_fg,
                     font=_Font_Texto

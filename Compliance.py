@@ -108,8 +108,8 @@ default_colourCodeBg = '#FFE7E7'
 default_color_line_fg = '#1E90FF'
 default_colourNoteFg = '#7A7A7A'
 default_Framework = '#838389'
-default_panelBg = 'red'
-acdefault_panelBg = 'blue'
+default_panelBg = '#F8F3D4'
+acdefault_panelBg = '#92BA92'
 
 # FUENTES
 fuente_titulos = parse.get('app', 'fuente_titulo')
@@ -1428,10 +1428,8 @@ class Desviacion(ttk.Frame):
                             self.activeBtnDir, self.activeBtnAuth, self.activeBtnSer, self.activeBtnAcc, self.activeBtnCmd, self.activeBtnIdr, varNum)
         #PST_EXP = extracion
         if modo_dark == 'True':
-            print("EJECUTA TRUE")
             app.expandirModeDark()
         elif modo_dark == 'False':
-            print("EJECUTA FALSE")
             app.expandirModeDefault()
         
         # ---------------------------------------
@@ -3430,29 +3428,15 @@ class Aplicacion():
             if file.startswith("desviaciones_"):
                 file_path = f"{pathFiles}{file}"
                 listPathCustomer.append(file_path)
-                print(listPathCustomer)
                 for openFile in listPathCustomer:
-                #     #try:
-                #     print(*openFile)
                     with open(openFile, 'r', encoding='UTF-8') as fileCustomer:
                         fileJsonCustomer = json.load(fileCustomer)
                     for dataCustomer in fileJsonCustomer:
                         if 'CUSTOMER' in dataCustomer:
-                            print(dataCustomer)
                             listClient.append(dataCustomer['CUSTOMER'])
         listClient = set(listClient)
         listClient = list(listClient)
         listClient.sort()
-        print(listClient)
-                    # except FileNotFoundError:
-                    #     pass
-                        #mb.showerror("No such file or directory!.\nPlease create a new CUST file")
-        # for client in pathFileCustomer:
-        #     listPathCustomer.append(pathFileCustomer.format(client))
-        # with open(path_config.format("clientes")) as op:
-        #     data = json.load(op)
-        #     for clt in data:
-        #         listClient.append(clt['name'])
 
     def iconos(self):
         self.Desviaciones_icon = ImageTk.PhotoImage(
@@ -3782,7 +3766,6 @@ class Aplicacion():
         self.openButton(itm)
 
     def openButton(self, button):
-        print("desde SCROLL", button)
         if button == "DESVIACIONES":
             self.openButtonDesviacion()
         elif button ==  "EXTRACIONES":
@@ -3824,7 +3807,7 @@ class Aplicacion():
         idpTab = self.cuaderno.index('current')
 
     def ocultar(self):
-        extracion.hide()
+        partial(extracion.hide, even=None)
 
     def bsc(self):
         extracion.panel_buscar()
@@ -3908,7 +3891,7 @@ class Aplicacion():
 
         self.lbl2 = ttk.Label(
             self.AcercaDe_txt_frame,
-            text='Versión:   2.0',
+            text='Versión:   2.5',
             anchor='w',
             font=(fuente_titulos, 13)
         )
@@ -4240,12 +4223,12 @@ class Aplicacion():
             height=Aplicacion.hg_btn,
             width=Aplicacion.wd_btn
         )
-        self.rbOpenAuto.grid(
-            row=0,
-            column=2,
-            padx=20,
-            pady=20
-        )
+        # self.rbOpenAuto.grid(
+        #     row=0,
+        #     column=2,
+        #     padx=20,
+        #     pady=20
+        # )
         
         self.btnOpenDesv.bind('<Motion>', partial(
             self.active_radio_botton, self.rbOpenDesv, self.btnOpenDesv))
@@ -4344,13 +4327,15 @@ class Aplicacion():
         self.fileMenu.add_separator()
         self.fileMenu.add_command(
             label="  Preferencias",
-            image=self.Client_icon,
+            #image=self.Client_icon,
             compound=tk.LEFT,
+            state='disable',
             command=self._fontchooser
         )
         self.fileMenu.add_command(
             label="  Modo Dark",
-            image=self.Client_icon,
+            #image=self.Client_icon,
+            state='disable',
             compound=tk.LEFT,
             command=self.activar_modo_noche
         )
@@ -4446,7 +4431,6 @@ class Aplicacion():
             name = "Open Window Permissions"
         self.openTooltip(button, name)
 
-
     def _fontchooser(self):
         from Preferencias import SelectFont
         ventanafont = SelectFont(None, "Ventana", app, application=self)
@@ -4474,14 +4458,14 @@ class Aplicacion():
             desviacion.llamada_colores()
         self.MODE_DARK()
 
-    #@beep_error
+    @beep_error
     def MODE_DARK(self):
         global modo_dark
         if modo_dark == 'True':
             self.root.configure(
                 background=pers_bottom_app,
             )
-            self.cuaderno.bottomTab_novo.config(background=pers_bottom_app)
+            self.cuaderno.buttonTab_novo.config(background=pers_bottom_app)
             self.cuaderno.leftArrow.config(background=pers_bottom_app)
             self.cuaderno.rightArrow.config(background=pers_bottom_app)
             self.rbOpenExt.canvas.config(background=pers_bottom_app)
@@ -4578,12 +4562,12 @@ class Aplicacion():
                     fill=pers_bottom_app,
                     outline=default_Outline
                 )
-                PST_DESV.cambiar_icono(PST_DESV._btnAcc_, app.icono_account1)
-                PST_DESV.cambiar_icono(PST_DESV._btnAuth_, app.icono_account1)
-                PST_DESV.cambiar_icono(PST_DESV._btnComm_, app.icono_account1)
-                PST_DESV.cambiar_icono(PST_DESV._btnDir_, app.icono_account1)
-                PST_DESV.cambiar_icono(PST_DESV._btnIdr_, app.icono_account1)
-                PST_DESV.cambiar_icono(PST_DESV._btnSer_, app.icono_account1)
+                # PST_DESV.cambiar_icono(PST_DESV._btnAcc_, app.icono_account1)
+                # PST_DESV.cambiar_icono(PST_DESV._btnAuth_, app.icono_account1)
+                # PST_DESV.cambiar_icono(PST_DESV._btnComm_, app.icono_account1)
+                # PST_DESV.cambiar_icono(PST_DESV._btnDir_, app.icono_account1)
+                # PST_DESV.cambiar_icono(PST_DESV._btnIdr_, app.icono_account1)
+                # PST_DESV.cambiar_icono(PST_DESV._btnSer_, app.icono_account1)
                 PST_DESV.DESV_btnCommand.canvas.config(
                     background=pers_bottom_app,
                 )
@@ -4694,7 +4678,7 @@ class Aplicacion():
                 self.root.configure(
                     background=default_bottom_app,
                 )
-                self.cuaderno.bottomTab_novo.config(background=default_bottom_app)
+                self.cuaderno.buttonTab_novo.config(background=default_bottom_app)
                 self.cuaderno.leftArrow.config(background=default_bottom_app)
                 self.cuaderno.rightArrow.config(background=default_bottom_app)
                 self.rbOpenExt.canvas.config(background=default_bottom_app)
@@ -4750,12 +4734,12 @@ class Aplicacion():
                             self.expandirModeDefault()
                         except TclError:
                             pass
-                    PST_DESV.cambiar_icono(PST_DESV._btnAcc_, app.icono_account)
-                    PST_DESV.cambiar_icono(PST_DESV._btnAuth_, app.icono_account)
-                    PST_DESV.cambiar_icono(PST_DESV._btnComm_, app.icono_account)
-                    PST_DESV.cambiar_icono(PST_DESV._btnDir_, app.icono_account)
-                    PST_DESV.cambiar_icono(PST_DESV._btnIdr_, app.icono_account)
-                    PST_DESV.cambiar_icono(PST_DESV._btnSer_, app.icono_account)
+                    # PST_DESV.cambiar_icono(PST_DESV._btnAcc_, app.icono_account)
+                    # PST_DESV.cambiar_icono(PST_DESV._btnAuth_, app.icono_account)
+                    # PST_DESV.cambiar_icono(PST_DESV._btnComm_, app.icono_account)
+                    # PST_DESV.cambiar_icono(PST_DESV._btnDir_, app.icono_account)
+                    # PST_DESV.cambiar_icono(PST_DESV._btnIdr_, app.icono_account)
+                    # PST_DESV.cambiar_icono(PST_DESV._btnSer_, app.icono_account)
                     PST_DESV.DESV_btnAccount.canvas.config(
                         background=default_bottom_app,
                     )
@@ -4930,18 +4914,15 @@ class Aplicacion():
         PST_EXP.EXP_btnIdrsa.canvas.config(background=default_bottom_app)
     
     def expandirModeDark(self):
-        print("DESPUES DE TRUE ----- AQI")
         PST_EXP.expandirColourLine(
                 pers_scrText_bg,
                 pers_colourCodeBg,
                 pers_colourCodeFg,
                 pers_colourNoteFg
         )
-        print("----------------------->>>>>")
         PST_EXP.vtn_expandir.config(
                                     background=pers_bottom_app,
                             )
-        print("<<<<-----------------------")
         PST_EXP.EXP_btn_Siguiente.config(
                                 background=pers_bottom_app,
                                 activebackground=pers_bottom_app
@@ -5097,11 +5078,11 @@ class Aplicacion():
         except TclError:
             pass
 
-    def openTooltip(self, boton, text, *args):
+    def openTooltip(self, object, text, *args):
         global custom
         global tooltip
         if tooltip == False:
-            custom = CustomHovertip(boton, text=text)
+            custom = CustomHovertip(object, text=text)
             tooltip = True
 
     def mainloop(self):

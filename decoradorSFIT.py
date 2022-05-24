@@ -2,13 +2,14 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) Jose Alvaro Cedeño 2022
 # For license see LICENSE
+# Version  2.0
 import csv
 import os
+from statistics import median
 from tkinter import *
 from tkinter import filedialog
 from pathlib import Path
 import tkinter as tk
-
 filename_r = ""
 hostname = ""
 path = os.path.expanduser("~/Descargas/")
@@ -39,14 +40,14 @@ def decorar_csv():
         with open(filename_r) as file:
             data = csv.reader(file, delimiter=',')
             for linea in data:
-                if linea[2] == 'WARNING' or linea[2] == 'ERROR': 
+                if linea[2] == 'WARNING' or linea[2] == 'ERROR':
                     server = linea[0]
                     MESSAGE_SEVERITY = "MESSAGE SEVERITY : "+linea[2]
                     ENTRY = "ENTRY : "+linea[3]
                     LINE_NUMBER = "LINE NUMBER : "+linea[4]
                     VALUE = "VALUE : "+linea[5]
                     DESCRIPTION = "DESCRIPTION : "+linea[6]
-                    FILE = "FILE : "+linea[8]                    
+                    FILE = "FILE : "+linea[8]   
                     guardado.write("+-----------------------------------------------------------+\n")
                     guardado.write(MESSAGE_SEVERITY+"\n")
                     guardado.write(ENTRY+"\n")
@@ -55,12 +56,17 @@ def decorar_csv():
                     guardado.write(DESCRIPTION+"\n")
                     guardado.write(FILE+"\n")
                     guardado.write("+-----------------------------------------------------------+\n\n")
-        print("")
-        print("\033[0;32m"+"FICHERO GUARDADO CORRECTAMENTE {}.txt, para el SERVER [{}]".format(hostname, server)+"\033[0m")
-        guardado.close()
+        try:
+            print("\033[0;32m"+"FICHERO GUARDADO CORRECTAMENTE {}.txt, para el SERVER [{}]".format(hostname, server)+"\033[0m")
+            guardado.close()
+        except UnboundLocalError:
+            print("")
+            print("\033[0;33m"+"No existen WARNING or ERROR, en el CSV : [ {} ]".format(hostname)+"\033[0m")
+            os.remove(file_result)
+
     else:
         print("")
-        print("\033[0;31m"+"\nError no as selecionado ningun archivo CSV\n"+"\033[0m")
+        print("\033[0;31m"+"\nError, no as selecionado ningun archivo CSV\n"+"\033[0m")
 os.system('clear')
 while True:
     menu()

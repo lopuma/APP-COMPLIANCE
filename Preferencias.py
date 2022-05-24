@@ -255,7 +255,6 @@ class SelectFont(tk.Toplevel):
         )
 
     def font_style_chooser(self, e):
-        print(e)
         style=self.list_estilo.get(self.list_estilo.curselection()).lower()
         if style == "bold":
             # self.our_font.config(
