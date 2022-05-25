@@ -25,3 +25,5 @@
 	sudo mv screamshot.png /usr/share/pixmaps/
 	```
 ![img_compliance](https://user-images.githubusercontent.com/86171869/166647737-00522195-5d1d-4c40-a400-d29dab098291.png)
+
+Deviation Management
