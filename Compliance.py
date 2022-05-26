@@ -842,8 +842,8 @@ class Expandir(ttk.Frame):
         )
         PST_EXP.EXP_srcExpandir.tag_configure(
             "nota",
-            background=bg_color,
-            foreground=fg_nota,
+            background='#D4EFEE',
+            foreground='#000000',
             selectbackground=default_select_bg,
             selectforeground=default_select_fg,
             font=_Font_txt_exp
@@ -2300,11 +2300,11 @@ class Desviacion(ttk.Frame):
 
         PST_DESV.DESV_scrCheck.tag_configure(
             "nota",
-            background=bg_color,
-            foreground=fg_nota,
+            background='#D4EFEE',
+            foreground='#000000',
             selectbackground=default_select_bg,
             selectforeground=default_select_fg,
-            font=_Font_Texto_bold
+            font=_Font_Texto
         )
 
         end = PST_DESV.DESV_scrCheck.index("end")
@@ -3318,7 +3318,7 @@ class Aplicacion():
         self.cuaderno.notebookTab.bind("<Button-3>", self.display_menu_clickDerecho)
         self.cuaderno.bind("<Button-3>", self._display_menu_clickDerecho)
 
-        #self.root.bind_all("<Control-l>", lambda x: self.ocultar())
+        self.root.bind_all("<Control-l>", lambda x: self.ocultar())
         self.root.focus_set()
         #self.contenedor.bind('<Motion>', self.activeDefault)
         # Fuente MENU CLICK DERECHO APP
@@ -3396,7 +3396,7 @@ class Aplicacion():
                 PST_DESV.DESV_btnIdrsa.canvas.itemconfig(
                     1, fill=default_boton_bg, outline=default_Outline)
                 PST_DESV.DESV_btnDirectory.canvas.itemconfig(
-                    1, fill=default_bottom_app, outline=default_Outline)
+                1, fill=default_bottom_app, outline=default_Outline)
                 PST_DESV.DESV_btnService.canvas.itemconfig(
                     1, fill=default_bottom_app, outline=default_Outline)
                 PST_DESV.DESV_btnAuthorized.canvas.itemconfig(
@@ -3442,6 +3442,7 @@ class Aplicacion():
         listClient = set(listClient)
         listClient = list(listClient)
         listClient.sort()
+        print(listClient)
 
     def iconos(self):
         self.Desviaciones_icon = ImageTk.PhotoImage(
@@ -3782,7 +3783,7 @@ class Aplicacion():
         global idOpenTab
         global desviacion
         #self.root.after(1, self.open_client)
-        self.open_client()
+        #self.open_client()
         desviacion = Desviacion(self.cuaderno)
         self.cuaderno.add(desviacion, text='Issues DESVIACIONES ')
 
@@ -3797,7 +3798,8 @@ class Aplicacion():
         except:
             pass
 
-        extracion = Extracion(self.cuaderno, app, application=self)
+        #extracion = Extracion(self.cuaderno, app, application=self)
+        extracion = Extracion(self.cuaderno, app)
         PST_EXT = extracion
         self.cuaderno.add(extracion, text='Issues EXTRACIONES')
         idpTab = self.cuaderno.index('current')
@@ -3812,7 +3814,7 @@ class Aplicacion():
         idpTab = self.cuaderno.index('current')
 
     def ocultar(self):
-        partial(extracion.hide, even=None)
+        partial(extracion.close_frame, even=None)
 
     def bsc(self):
         extracion.panel_buscar()
