@@ -3318,7 +3318,7 @@ class Aplicacion():
         self.cuaderno.notebookTab.bind("<Button-3>", self.display_menu_clickDerecho)
         self.cuaderno.bind("<Button-3>", self._display_menu_clickDerecho)
 
-        self.root.bind_all("<Control-l>", lambda x: self.ocultar())
+        #self.root.bind_all("<Control-l>", lambda x: self.ocultar())
         self.root.focus_set()
         #self.contenedor.bind('<Motion>', self.activeDefault)
         # Fuente MENU CLICK DERECHO APP
@@ -4334,13 +4334,13 @@ class Aplicacion():
             label="  Preferencias",
             #image=self.Client_icon,
             compound=tk.LEFT,
-            state='disable',
+            #state='disable',
             command=self._fontchooser
         )
         self.fileMenu.add_command(
             label="  Modo Dark",
             #image=self.Client_icon,
-            state='disable',
+            #state='disable',
             compound=tk.LEFT,
             command=self.activar_modo_noche
         )

@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from copy import deepcopy
 import os
 import tkinter as tk
 from os import listdir
@@ -19,7 +18,7 @@ parar = False
 _estado_actual = False
 PST_EXT = ""
 HIDDEN = 0
-
+on = 1
 def beep_error(f):
     def applicator(*args, **kwargs):
         try:
@@ -191,7 +190,6 @@ class MyEntry(tk.Entry):
             self.steps += 1
 
 class Extracion(ttk.Frame):
-
     def __init__(self, parent, app, application=None, *args, **kwargs):
         ttk.Frame.__init__(self, parent, *args)
         global _estado_actual
@@ -205,16 +203,18 @@ class Extracion(ttk.Frame):
         self.app = app
         self.iconos()
         self.hidden = 0
-        self.menu()
+        #self.menu()
+        
+        self.create_frame()
         #self.ampliador()
-        self.text()
+        #self.text()
         #self.columnconfigure(1, weight=1)
-        self.columnconfigure(2, weight=5)
-        self.rowconfigure(0, weight=1)
+        # self.columnconfigure(2, weight=5)
+        # self.rowconfigure(0, weight=1)
         self.bind("<Motion>", lambda e : self.EXT_motion(e))
         self.txt.bind('<Control-f>', lambda x: self.searchPanel(x))
         self.txt.bind('<Control-F>', lambda x: self.searchPanel(x))
-        self.txt.bind('<Control-l>', lambda e : self.hide(e))
+        self.txt.bind('<Control-l>', lambda e : self.close_frame(e))
         self.txt.bind('<Control-c>', lambda x: self._copiar_texto_seleccionado(x))
         self.txt.bind('<Control-C>', lambda x: self._copiar_texto_seleccionado(x))
         self.txt.bind('<Control-a>', lambda e: self._seleccionar_todo(e))
@@ -248,95 +248,184 @@ class Extracion(ttk.Frame):
         self.btn_x = ImageTk.PhotoImage(
             Image.open(path_icon+r"btn-x.png").resize((20, 20)))
 
+    def close_frame(self, evt):
+        global on
+        if on:
+            self.frame1.pack_forget()
+            on = 0
+        else:
+            self.frame.pack_forget()
+            self.busca_top.destroy()
+            self.frame1.pack_forget()
+            self.frame2.pack_forget()
+            self.create_frame()
+            
+            on = 1
+
+    def create_frame(self):
+        """create frame to be hidden when we press k"""
+        self.frame = tk.Frame(self, background="red")
+        self.frame.pack(expand=1, fill=tk.BOTH)
+        self.frame2 = tk.Frame(self.frame)
+        self.frame2.pack(side="right", expand=True, fill=tk.BOTH)
+        self.txt = st.ScrolledText(
+                self.frame2,
+                font=_Font_Texto,
+            )
+
+        self.txt.config(
+            font=_Font_Texto, 
+            wrap=tk.WORD,
+            highlightcolor=default_hglcolor,
+            borderwidth=0,
+            highlightthickness=hhtk,
+            insertbackground=default_hglcolor,
+            insertwidth=hlh_def,
+            selectbackground=default_select_bg,
+            selectforeground=default_select_fg,
+            background=default_scrText_bg,
+            foreground=default_scrText_fg,
+            state='normal'
+        )
+        #self.txt.grid(row=0, column=0, sticky="nsew")
+        self.txt.pack(expand=1, fill=tk.BOTH)
+        self.idx_gnral = tk.StringVar()
+        pos_cursor = self.txt.index(tk.INSERT)
+        self.idx_gnral.set(pos_cursor)
+        self.txt.bind("<Key>", lambda e: self.widgets_SoloLectura(e))
+        self.txt.bind("<Button-3><ButtonRelease-3>",self._display_menu_clickDerecho)
+        self.txt.bind("<Motion>",lambda e: self.activar_Focus(e))
+
+
+        
+
     #@beep_error
-    def menu(self):
+    # def menu(self):
         parse.read(path_config_ini.format("apariencia.ini"))
         modo_dark = parse.get('dark', 'modo_dark')
-        try:
-            self.frame1 = tk.Frame(
-                self,
-                width=self.wd,
+        self.frame1 = tk.Frame(self.frame)
+        self.frame1.pack(expand=1, fill=tk.BOTH)
+        if modo_dark == 'False':
+            self.frame1.config(
+                background=default_menu_bg,
+                #width=self.wd
             )
+        else:
+            self.frame1.config(
+                background=pers_menu_bg,
+                #width=self.wd
+            )
+
+       # self.frame1.grid_propagate(0)
+        #self.frame1.grid(row=0, column=0, sticky="nsew", pady=(10,0))
+    #     print(self.frame1)
+    #     self.frame1.pack(side="left")
+    #     # self.frame1.columnconfigure(0, weight=1)
+    #     # self.frame1.rowconfigure(1, weight=1)
+    
         
-            if modo_dark == 'False':
-                self.frame1.config(
-                    background=default_menu_bg,
-                    #width=self.wd
-                )
-            else:
-                self.frame1.config(
-                    background=pers_menu_bg,
-                    #width=self.wd
-                )
+        #self.btn_close.grid(row=0, column=0, sticky="e", columnspan=2)
+        self.treeview = ttk.Treeview(
+            self.frame1,
+        )
 
-            self.frame1.grid_propagate(False)
-            self.frame1.grid(row=0, column=0, sticky="nsew", pady=(10,0))
-            self.frame1.columnconfigure(0, weight=1)
-            self.frame1.rowconfigure(1, weight=1)
+        #? COLOR TEXT DE LAS CARPETAS DE EXTRACION
+        self.treeview.heading("#0", text="FICHEROS de EXTRACIONES", anchor="center")
+        self.treeview.pack(fill='both', expand=True, ipadx=50)
+#         #self.treeview.grid(row=1, column=0, sticky="nsew")
+
+        self.treeview.tag_bind(
+            "fstag", "<<TreeviewOpen>>", self.item_opened
+        )
+        self.treeview.tag_bind(
+            "fstag", "<<TreeviewClose>>", self.item_closed
+        )
+        self.treeview.bind(
+            "<<TreeviewSelect>>", lambda e: self.select_extraction(e)
+        )
+        self.fsobjects = {}
+
+        self.file_image = tk.PhotoImage(file=path_icon+r"files.png")
+        self.folder_image = tk.PhotoImage(file=path_icon+r"folder.png")
+
+        self.btn_close = ttk.Button(
+            self.frame1,
+            image=self.closeIcon,
+            command=self.hide_btn_nav,
+        )
         
-            self.btn_close = ttk.Button(
-                self.frame1,
-                image=self.closeIcon,
-                command=self.hide_btn_nav,
-            )
-            self.btn_close.grid(row=0, column=0, sticky="e", columnspan=2)
+        self.btn_close.pack(before=self.treeview, expand=0, anchor='ne')
+        
+        self.max = ttk.Button(
+            self.frame1,
+            width=4,
+            text="+",
+        )
+        self.max.pack(side="right", expand=0)
+        # #self.max.grid(row=2, column=0, sticky="e",columnspan=2)
 
-            self.treeview = ttk.Treeview(
-                self.frame1,
-            )
+        self.min = ttk.Button(
+            self.frame1,
+            width=4,
+            text="-",
+        )
+        self.min.pack(side="left", expand=0)
+#        self.min.grid(row=2, column=0, sticky="w")
 
-            #? COLOR TEXT DE LAS CARPETAS DE EXTRACION
-            self.treeview.heading("#0", text="FICHEROS de EXTRACIONES", anchor="center")
-            self.treeview.grid(row=1, column=0, sticky="nsew")
+        # Cargar el directorio raíz.
+        self.load_tree(abspath(path_extracion))
+        self.max.bind(
+            "<Button-1>", lambda e: Thread(target=self.ampliar, daemon=True).start())
+        self.max.bind("<ButtonRelease-1>", self._parar_)
+        self.min.bind(
+            "<Button-1>", lambda e: Thread(target=self.reducir, daemon=True).start())
+        self.min.bind("<ButtonRelease-1>", self._parar_)
 
-            self.treeview.tag_bind(
-                "fstag", "<<TreeviewOpen>>", self.item_opened
-            )
-            self.treeview.tag_bind(
-                "fstag", "<<TreeviewClose>>", self.item_closed
-            )
-            self.treeview.bind(
-                "<<TreeviewSelect>>", lambda e: self.select_extraction(e)
-            )
-            self.fsobjects = {}
+    #     self.frame2 = tk.Frame(self)
+    #     #self.frame2.grid(row=0, column=2, sticky="nsew", padx=5, pady=(10,0))
+    #     # self.frame2.columnconfigure(0, weight=1)
+    #     # self.frame2.rowconfigure(0, weight=1)
+    #     self.frame2.pack()
+        
+    #     self.txt = st.ScrolledText(
+    #         self.frame2,
+    #         font=_Font_Texto,
+    #     )
 
-            self.file_image = tk.PhotoImage(file=path_icon+r"files.png")
-            self.folder_image = tk.PhotoImage(file=path_icon+r"folder.png")
+    #     self.txt.config(
+    #         font=_Font_Texto, 
+    #         wrap=tk.WORD,
+    #         highlightcolor=default_hglcolor,
+    #         borderwidth=0,
+    #         highlightthickness=hhtk,
+    #         insertbackground=default_hglcolor,
+    #         insertwidth=hlh_def,
+    #         selectbackground=default_select_bg,
+    #         selectforeground=default_select_fg,
+    #         background=default_scrText_bg,
+    #         foreground=default_scrText_fg,
+    #         state='normal'
+    #     )
+    #     #self.txt.grid(row=0, column=0, sticky="nsew")
+    #     self.pack()
+    #     self.idx_gnral = tk.StringVar()
+    #     pos_cursor = self.txt.index(tk.INSERT)
+    #     self.idx_gnral.set(pos_cursor)
+    #     self.txt.bind("<Key>", lambda e: self.widgets_SoloLectura(e))
+    #     self.txt.bind("<Button-3><ButtonRelease-3>",self._display_menu_clickDerecho)
+    #     self.txt.bind("<Motion>",lambda e: self.activar_Focus(e))
 
-            self.max = ttk.Button(
-                self.frame1,
-                text="+",
-            )
-            self.max.grid(row=2, column=0, sticky="e",columnspan=2)
-            self.max.config(width=2)
-
-            self.min = ttk.Button(
-                self.frame1,
-                text="-",
-            )
-            self.min.grid(row=2, column=0, sticky="w")
-            self.min.config(width=2)
-
-            # Cargar el directorio raíz.
-            self.load_tree(abspath(path_extracion))
-            self.max.bind(
-                "<Button-1>", lambda e: Thread(target=self.ampliar, daemon=True).start())
-            self.max.bind("<ButtonRelease-1>", self._parar_)
-            self.min.bind(
-                "<Button-1>", lambda e: Thread(target=self.reducir, daemon=True).start())
-            self.min.bind("<ButtonRelease-1>", self._parar_)
-        except TypeError:
-            pass
-        except TclError:
-            pass
 
     def ampliar(self):
         global parar
         parar = False
+        print("FRAME 1 AMPLIAR¡", self.frame1, self.wd)
         while not parar:
             time.sleep(0.01)
             if self.wd < 1250:
                 self.wd += 3
+                #self.frame1.destroy()
+                #self.menu()
                 self.frame1.config(width=self.wd)
             else:
                 self._parar_(event=None)
@@ -572,38 +661,38 @@ class Extracion(ttk.Frame):
         )
         self.frame3.grid(row=0, column=1, sticky="nsew")
 
-    def text(self):
-        self.frame2 = tk.Frame(self)
-        self.frame2.grid(row=0, column=2, sticky="nsew", padx=5, pady=(10,0))
-        self.frame2.columnconfigure(0, weight=1)
-        self.frame2.rowconfigure(0, weight=1)
+    # def text(self):
+    #     self.frame2 = tk.Frame(self)
+    #     self.frame2.grid(row=0, column=2, sticky="nsew", padx=5, pady=(10,0))
+    #     self.frame2.columnconfigure(0, weight=1)
+    #     self.frame2.rowconfigure(0, weight=1)
         
-        self.txt = st.ScrolledText(
-            self.frame2,
-            font=_Font_Texto,
-        )
+    #     self.txt = st.ScrolledText(
+    #         self.frame2,
+    #         font=_Font_Texto,
+    #     )
 
-        self.txt.config(
-            font=_Font_Texto, 
-            wrap=tk.WORD,
-            highlightcolor=default_hglcolor,
-            borderwidth=0,
-            highlightthickness=hhtk,
-            insertbackground=default_hglcolor,
-            insertwidth=hlh_def,
-            selectbackground=default_select_bg,
-            selectforeground=default_select_fg,
-            background=default_scrText_bg,
-            foreground=default_scrText_fg,
-            state='normal'
-        )
-        self.txt.grid(row=0, column=0, sticky="nsew")
-        self.idx_gnral = tk.StringVar()
-        pos_cursor = self.txt.index(tk.INSERT)
-        self.idx_gnral.set(pos_cursor)
-        self.txt.bind("<Key>", lambda e: self.widgets_SoloLectura(e))
-        self.txt.bind("<Button-3><ButtonRelease-3>",self._display_menu_clickDerecho)
-        self.txt.bind("<Motion>",lambda e: self.activar_Focus(e))
+    #     self.txt.config(
+    #         font=_Font_Texto, 
+    #         wrap=tk.WORD,
+    #         highlightcolor=default_hglcolor,
+    #         borderwidth=0,
+    #         highlightthickness=hhtk,
+    #         insertbackground=default_hglcolor,
+    #         insertwidth=hlh_def,
+    #         selectbackground=default_select_bg,
+    #         selectforeground=default_select_fg,
+    #         background=default_scrText_bg,
+    #         foreground=default_scrText_fg,
+    #         state='normal'
+    #     )
+    #     self.txt.grid(row=0, column=0, sticky="nsew")
+    #     self.idx_gnral = tk.StringVar()
+    #     pos_cursor = self.txt.index(tk.INSERT)
+    #     self.idx_gnral.set(pos_cursor)
+    #     self.txt.bind("<Key>", lambda e: self.widgets_SoloLectura(e))
+    #     self.txt.bind("<Button-3><ButtonRelease-3>",self._display_menu_clickDerecho)
+    #     self.txt.bind("<Motion>",lambda e: self.activar_Focus(e))
 
     def widgets_SoloLectura(self, event):
         if(20 == event.state and event.keysym == 'c' or event.keysym == 'Down' or event.keysym == 'Up' or 20 == event.state and event.keysym == 'f' or 20 == event.state and event.keysym == 'a'):
@@ -734,10 +823,14 @@ class Extracion(ttk.Frame):
         self.app.cerrar_vtn_desviacion()
 
     def hide(self, even):
+        print("Hide event",even)
         global parar
         if self.hidden == 0:
-            self.frame1.destroy()
-            #self.frame1.config(width=0)
+            print("FRAME cerrar", self.frame1)
+
+            self.frame1.grid_forget()
+            #self.frame1.destroy()
+            print("wd cerrar", self.wd)
             self.menu_Contextual.entryconfig(
                 "  Ocultar Panel", state="disabled")
             self.menu_Contextual.entryconfig("  Mostrar Panel", state="normal")
@@ -745,19 +838,21 @@ class Extracion(ttk.Frame):
             self.hidden = 1
             parar = False
         elif self.hidden == 1:
-            self.menu()
-            self.menu_Contextual.entryconfig("  Ocultar Panel", state="normal")
-            self.menu_Contextual.entryconfig(
-                "  Mostrar Panel", state="disabled")
+            #self.menu()
+            print("FRAME 1 ABRIR", self.frame1)
+            print("wd abrir", self.wd)
+            #self.frame1 = tk.Frame(self, width=self.wd)
+            self.frame1.grid(row=0, column=0, sticky="nsew", pady=(10,0))
+            
             self.btn_nav.grid_forget()
-            self.hidden = 0
             parar = False
+            self.hidden = 0
 
     def hide_btn_nav(self):
         global parar
         if self.hidden == 0:
-            self.frame1.destroy()
-            self.btn_nav.grid(row=0, column=0, sticky="nw")
+            #self.frame1.destroy()
+            #self.btn_nav.grid(row=0, column=0, sticky="nw")
             self.menu_Contextual.entryconfig(
                 "  Ocultar Panel", state="disabled")
             self.menu_Contextual.entryconfig("  Mostrar Panel", state="normal")
@@ -767,8 +862,8 @@ class Extracion(ttk.Frame):
     def show_btn_nav(self):
         global parar
         if self.hidden == 1:
-            self.menu()
-            self.btn_nav.grid_forget()
+            #self.menu()
+            #self.btn_nav.grid_forget()
             self.menu_Contextual.entryconfig("  Ocultar Panel", state="normal")
             self.menu_Contextual.entryconfig(
                 "  Mostrar Panel", state="disabled")
@@ -984,8 +1079,6 @@ class Extracion(ttk.Frame):
             self.entr_str.bind('<Any-KeyRelease>', self.on_entr_str_busca_key_release)
             _estado_actual = True
         else:
-            #self.entr_str.focus_set()
-## --- Activa el panel y seleciona todo el text
             self._buscar_focus(self.entr_str)
             _estado_actual = True
             return 'break'
