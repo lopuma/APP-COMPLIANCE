@@ -104,7 +104,8 @@ default_hglcolor = parse.get('app', 'color_widget_activo')
 default_scrText_bg = parse.get('app', 'colour_scroll') #? COLOR FONDO PARA WIDGETS
 default_color_descripcion = '#838389'
 default_colourCodeFg = '#FF5E5E'
-default_colourCodeBg = '#FFE7E7'
+#default_colourCodeBg = '#FFE7E7'
+default_colourCodeBg = '#fedee1'
 default_color_line_fg = '#1E90FF'
 default_colourNoteFg = '#7A7A7A'
 default_Framework = '#838389'
@@ -144,10 +145,10 @@ activar_modo = parse.get('dark', 'activar_modo')
 
 # * COLOR PERSONALIZADO
 pers_scrText_fg = '#f4f4f4'
+pers_scrText_bg = '#555555'  # ? PARA CUADRO DE TEXTO
 pers_color_titulo = '#FF8080'
 pers_menu_bg = '#353535'  # ? COLOR PRIMARIO
 pers_bottom_app = '#454545'  # ? SECUNDARIO
-pers_scrText_bg = '#555555'  # ? PARA CUADRO DE TEXTO
 pers_hglcolor = '#E7E7E7'
 pers_OutlineDark = '#E95858' #? color rojo outline
 pers_Outline = '#4A8CCA' #? color azul outline
@@ -212,15 +213,15 @@ class Expandir(ttk.Frame):
         self.WIDGETS_EXPANDIR()
         
         self.bind("<Motion>", lambda e: self.EXP_motion(e))
-        self.EXP_srcExpandir.bind(
+        self.EXP_scrExpandir.bind(
             "<Button-3><ButtonRelease-3>", self.display_menu_clickDerecho)
-        self.EXP_srcExpandir.bind(
+        self.EXP_scrExpandir.bind(
             "<Motion>", lambda e: desviacion.activar_Focus(e))
-        self.EXP_srcExpandir.bind(
+        self.EXP_scrExpandir.bind(
             "<Key>", lambda e: desviacion.widgets_SoloLectura(e))
-        self.EXP_srcExpandir.bind(
+        self.EXP_scrExpandir.bind(
             '<Control-c>', lambda e: self._copiar_texto_seleccionado(e))
-        self.EXP_srcExpandir.bind(
+        self.EXP_scrExpandir.bind(
             '<Control-C>', lambda e: self._copiar_texto_seleccionado(e))
     ## --- MENU CONTEXTUAL --------------------------- ##
 
@@ -309,15 +310,15 @@ class Expandir(ttk.Frame):
                             if self._txt_Desv is None:
                                 _tt_Desv = "EDITAR"
                                 self.EXP_lblWidget['text'] = _tt_Desv
-                                self.EXP_srcExpandir.delete('1.0', tk.END)
-                                self.EXP_srcExpandir.insert(tk.END, md['editar'])
+                                self.EXP_scrExpandir.delete('1.0', tk.END)
+                                self.EXP_scrExpandir.insert(tk.END, md['editar'])
                                 self.varNum = 3
                                 self.descativar_botones()
                             else:
                                 _tt_Desv = "BACKUP"
                                 self.EXP_lblWidget['text'] = _tt_Desv
-                                self.EXP_srcExpandir.delete('1.0', tk.END)
-                                self.EXP_srcExpandir.insert(tk.END, self._txt_Desv)
+                                self.EXP_scrExpandir.delete('1.0', tk.END)
+                                self.EXP_scrExpandir.insert(tk.END, self._txt_Desv)
                                 self.varNum = 2
                                 self.descativar_botones()
         elif self.varNum == 2:
@@ -330,8 +331,8 @@ class Expandir(ttk.Frame):
                             if self._txt_Desv is None:
                                 _tt_Desv = "REFRESCAR"
                                 self.EXP_lblWidget['text'] = _tt_Desv
-                                self.EXP_srcExpandir.delete('1.0', tk.END)
-                                self.EXP_srcExpandir.insert(
+                                self.EXP_scrExpandir.delete('1.0', tk.END)
+                                self.EXP_scrExpandir.insert(
                                     tk.END, md['refrescar'])
                                 self.EXP_btnCopyALL.config(state="normal")
                                 self.varNum = 4
@@ -339,8 +340,8 @@ class Expandir(ttk.Frame):
                             else:
                                 _tt_Desv = "EDITAR"
                                 self.EXP_lblWidget['text'] = _tt_Desv
-                                self.EXP_srcExpandir.delete('1.0', tk.END)
-                                self.EXP_srcExpandir.insert(tk.END, self._txt_Desv)
+                                self.EXP_scrExpandir.delete('1.0', tk.END)
+                                self.EXP_scrExpandir.insert(tk.END, self._txt_Desv)
                                 self.varNum = 3
                                 self.descativar_botones()
         elif self.varNum == 3:
@@ -353,8 +354,8 @@ class Expandir(ttk.Frame):
                             if self._txt_Desv is None:
                                 _tt_Desv = "EVIDENCIA"
                                 self.EXP_lblWidget['text'] = _tt_Desv
-                                self.EXP_srcExpandir.delete('1.0', tk.END)
-                                self.EXP_srcExpandir.insert(
+                                self.EXP_scrExpandir.delete('1.0', tk.END)
+                                self.EXP_scrExpandir.insert(
                                     tk.END, md['evidencia'])
                                 self.EXP_btnScreamEvidencia.config(state="normal")
                                 self.EXP_btnCopyALL.config(state="normal")
@@ -363,8 +364,8 @@ class Expandir(ttk.Frame):
                             else:
                                 _tt_Desv = "REFRESCAR"
                                 self.EXP_lblWidget['text'] = _tt_Desv
-                                self.EXP_srcExpandir.delete('1.0', tk.END)
-                                self.EXP_srcExpandir.insert(tk.END, self._txt_Desv)
+                                self.EXP_scrExpandir.delete('1.0', tk.END)
+                                self.EXP_scrExpandir.insert(tk.END, self._txt_Desv)
                                 self.EXP_btnCopyALL.config(state="normal")
                                 self.varNum = 4
         elif self.varNum == 4:
@@ -377,16 +378,16 @@ class Expandir(ttk.Frame):
                             if self._txt_Desv is None:
                                 _tt_Desv = "COMPROBACION"
                                 self.EXP_lblWidget['text'] = _tt_Desv
-                                self.EXP_srcExpandir.delete('1.0', tk.END)
-                                self.EXP_srcExpandir.insert(
+                                self.EXP_scrExpandir.delete('1.0', tk.END)
+                                self.EXP_scrExpandir.insert(
                                     tk.END, md['comprobacion'])
                                 self.varNum = 1
                                 self.activar_botones()
                             else:
                                 _tt_Desv = "EVIDENCIA"
                                 self.EXP_lblWidget['text'] = _tt_Desv
-                                self.EXP_srcExpandir.delete('1.0', tk.END)
-                                self.EXP_srcExpandir.insert(tk.END, self._txt_Desv)
+                                self.EXP_scrExpandir.delete('1.0', tk.END)
+                                self.EXP_scrExpandir.insert(tk.END, self._txt_Desv)
                                 self.EXP_btnScreamEvidencia.config(state="normal")
                                 self.EXP_btnCopyALL.config(state="normal")
                                 self.varNum = 5
@@ -401,26 +402,26 @@ class Expandir(ttk.Frame):
                             if self._txt_Desv is None:
                                 _tt_Desv = "BACKUP"
                                 self.EXP_lblWidget['text'] = _tt_Desv
-                                self.EXP_srcExpandir.delete('1.0', tk.END)
-                                self.EXP_srcExpandir.insert(tk.END, md['copia'])
+                                self.EXP_scrExpandir.delete('1.0', tk.END)
+                                self.EXP_scrExpandir.insert(tk.END, md['copia'])
                                 self.varNum = 2
                                 self.descativar_botones()
                             else:
                                 _tt_Desv = "COMPROBACION"
                                 self.EXP_lblWidget['text'] = _tt_Desv
-                                self.EXP_srcExpandir.delete('1.0', tk.END)
-                                self.EXP_srcExpandir.insert(tk.END, self._txt_Desv)
+                                self.EXP_scrExpandir.delete('1.0', tk.END)
+                                self.EXP_scrExpandir.insert(tk.END, self._txt_Desv)
                                 self.varNum = 1
                                 self.activar_botones()
         if modo_dark == 'False':
-            self.expandirColourLine(
+            self.colourLineExpandir(
                 default_scrText_bg,
                 default_colourCodeBg,
                 default_colourCodeFg,
                 default_colourNoteFg
             )
         else:
-            PST_EXP.expandirColourLine(
+            PST_EXP.colourLineExpandir(
                 pers_scrText_bg,
                 pers_scrText_bg,
                 pers_colourCodeFg,
@@ -441,8 +442,8 @@ class Expandir(ttk.Frame):
                             if self._txt_Desv is None:
                                 _tt_Desv = "REFRESCAR"
                                 self.EXP_lblWidget['text'] = _tt_Desv
-                                self.EXP_srcExpandir.delete('1.0', tk.END)
-                                self.EXP_srcExpandir.insert(
+                                self.EXP_scrExpandir.delete('1.0', tk.END)
+                                self.EXP_scrExpandir.insert(
                                     tk.END, md['refrescar'])
                                 self.EXP_btnCopyALL.config(state="normal")
                                 self.varNum = 4
@@ -450,8 +451,8 @@ class Expandir(ttk.Frame):
                             else:
                                 _tt_Desv = "EVIDENCIA"
                                 self.EXP_lblWidget['text'] = _tt_Desv
-                                self.EXP_srcExpandir.delete('1.0', tk.END)
-                                self.EXP_srcExpandir.insert(tk.END, self._txt_Desv)
+                                self.EXP_scrExpandir.delete('1.0', tk.END)
+                                self.EXP_scrExpandir.insert(tk.END, self._txt_Desv)
                                 self.EXP_btnScreamEvidencia.config(state="normal")
                                 self.EXP_btnCopyALL.config(state="normal")
                                 self.varNum = 5
@@ -466,8 +467,8 @@ class Expandir(ttk.Frame):
                             if self._txt_Desv is None:
                                 _tt_Desv = "EVIDENCIA"
                                 self.EXP_lblWidget['text'] = _tt_Desv
-                                self.EXP_srcExpandir.delete('1.0', tk.END)
-                                self.EXP_srcExpandir.insert(
+                                self.EXP_scrExpandir.delete('1.0', tk.END)
+                                self.EXP_scrExpandir.insert(
                                     tk.END, md['evidencia'])
                                 self.EXP_btnScreamEvidencia.config(state="normal")
                                 self.EXP_btnCopyALL.config(state="normal")
@@ -476,8 +477,8 @@ class Expandir(ttk.Frame):
                             else:
                                 _tt_Desv = "COMPROBACION"
                                 self.EXP_lblWidget['text'] = _tt_Desv
-                                self.EXP_srcExpandir.delete('1.0', tk.END)
-                                self.EXP_srcExpandir.insert(tk.END, self._txt_Desv)
+                                self.EXP_scrExpandir.delete('1.0', tk.END)
+                                self.EXP_scrExpandir.insert(tk.END, self._txt_Desv)
                                 self.varNum = 1
                                 self.activar_botones()
         elif self.varNum == 3:
@@ -490,16 +491,16 @@ class Expandir(ttk.Frame):
                             if self._txt_Desv is None:
                                 _tt_Desv = "COMPROBACION"
                                 self.EXP_lblWidget['text'] = _tt_Desv
-                                self.EXP_srcExpandir.delete('1.0', tk.END)
-                                self.EXP_srcExpandir.insert(
+                                self.EXP_scrExpandir.delete('1.0', tk.END)
+                                self.EXP_scrExpandir.insert(
                                     tk.END, md['evidencia'])
                                 self.varNum = 1
                                 self.activar_botones()
                             else:
                                 _tt_Desv = "BACKUP"
                                 self.EXP_lblWidget['text'] = _tt_Desv
-                                self.EXP_srcExpandir.delete('1.0', tk.END)
-                                self.EXP_srcExpandir.insert(tk.END, self._txt_Desv)
+                                self.EXP_scrExpandir.delete('1.0', tk.END)
+                                self.EXP_scrExpandir.insert(tk.END, self._txt_Desv)
                                 self.varNum = 2
                                 self.descativar_botones()
         elif self.varNum == 4:
@@ -512,15 +513,15 @@ class Expandir(ttk.Frame):
                             if self._txt_Desv is None:
                                 _tt_Desv = "BACKUP"
                                 self.EXP_lblWidget['text'] = _tt_Desv
-                                self.EXP_srcExpandir.delete('1.0', tk.END)
-                                self.EXP_srcExpandir.insert(tk.END, md['copia'])
+                                self.EXP_scrExpandir.delete('1.0', tk.END)
+                                self.EXP_scrExpandir.insert(tk.END, md['copia'])
                                 self.varNum = 2
                                 self.descativar_botones()
                             else:
                                 _tt_Desv = "EDITAR"
                                 self.EXP_lblWidget['text'] = _tt_Desv
-                                self.EXP_srcExpandir.delete('1.0', tk.END)
-                                self.EXP_srcExpandir.insert(tk.END, self._txt_Desv)
+                                self.EXP_scrExpandir.delete('1.0', tk.END)
+                                self.EXP_scrExpandir.insert(tk.END, self._txt_Desv)
                                 self.varNum = 3
                                 self.descativar_botones()
         elif self.varNum == 5:
@@ -533,26 +534,26 @@ class Expandir(ttk.Frame):
                             if self._txt_Desv is None:
                                 _tt_Desv = "EDITAR"
                                 self.EXP_lblWidget['text'] = _tt_Desv
-                                self.EXP_srcExpandir.delete('1.0', tk.END)
-                                self.EXP_srcExpandir.insert(tk.END, md['editar'])
+                                self.EXP_scrExpandir.delete('1.0', tk.END)
+                                self.EXP_scrExpandir.insert(tk.END, md['editar'])
                                 self.varNum = 2
                                 self.descativar_botones()
                             else:
                                 _tt_Desv = "REFRESCAR"
                                 self.EXP_lblWidget['text'] = _tt_Desv
-                                self.EXP_srcExpandir.delete('1.0', tk.END)
-                                self.EXP_srcExpandir.insert(tk.END, self._txt_Desv)
+                                self.EXP_scrExpandir.delete('1.0', tk.END)
+                                self.EXP_scrExpandir.insert(tk.END, self._txt_Desv)
                                 self.EXP_btnCopyALL.config(state="normal")
                                 self.varNum = 1
         if modo_dark == 'False':
-            self.expandirColourLine(
+            self.colourLineExpandir(
                 default_scrText_bg, 
                 default_colourCodeBg, 
                 default_colourCodeFg, 
                 default_colourNoteFg
             )
         else:
-            PST_EXP.expandirColourLine(
+            PST_EXP.colourLineExpandir(
                 pers_scrText_bg,
                 pers_scrText_bg,
                 pers_colourCodeFg,
@@ -582,10 +583,10 @@ class Expandir(ttk.Frame):
         )
         self.EXP_lblWidget.grid(row=0, column=0, padx=20, pady=10, sticky='w')
 
-        self.EXP_srcExpandir = st.ScrolledText(
+        self.EXP_scrExpandir = st.ScrolledText(
             self.vtn_expandir,
         )
-        self.EXP_srcExpandir.config(
+        self.EXP_scrExpandir.config(
             font=_Font_txt_exp,
             wrap=tk.WORD,
             highlightcolor=default_hglcolor,
@@ -599,7 +600,7 @@ class Expandir(ttk.Frame):
             background=default_scrText_bg,
             foreground=default_scrText_fg,
         )
-        self.EXP_srcExpandir.insert('1.0', self.txt_Expan)
+        self.EXP_scrExpandir.insert('1.0', self.txt_Expan)
         
         self.EXP_btnDirectory = RadioButton(
             self.vtn_expandir,
@@ -785,7 +786,7 @@ class Expandir(ttk.Frame):
             image=desviacion.icono_copiar,
             style='APP.TButton',
             state="disabled",
-            command=lambda e=self.EXP_srcExpandir: self.copiarALL(e),
+            command=lambda e=self.EXP_scrExpandir: self.copiarALL(e),
         )
         self.EXP_btnCopyALL.grid(row=0, column=4, pady=15, sticky='ns')
         
@@ -806,7 +807,7 @@ class Expandir(ttk.Frame):
         )
         self.EXP_btnReducir.grid(row=0, column=6, padx=20, pady=17, sticky='ne')
         
-        self.EXP_srcExpandir.grid(
+        self.EXP_scrExpandir.grid(
             row=1, column=0, padx=5, pady=5, sticky='nsew', columnspan=7)
 
         self.activar_botones()
@@ -819,12 +820,12 @@ class Expandir(ttk.Frame):
         self.EXP_btnCommand.grid_forget()
         self.EXP_btnIdrsa.grid_forget()
 
-    def expandirColourLine(self, 
+    def colourLineExpandir(self, 
         bg_color, 
         bg_codigo, 
         fg_codigo, 
         fg_nota):
-        PST_EXP.EXP_srcExpandir.tag_configure(
+        PST_EXP.EXP_scrExpandir.tag_configure(
             "codigo",
             background=bg_codigo,
             foreground=fg_codigo,
@@ -832,7 +833,7 @@ class Expandir(ttk.Frame):
             selectforeground=default_select_fg,
             font=_Font_txt_exp_cdg
         )
-        PST_EXP.EXP_srcExpandir.tag_configure(
+        PST_EXP.EXP_scrExpandir.tag_configure(
             "line",
             background=bg_color,
             foreground=default_color_line_fg,
@@ -840,7 +841,7 @@ class Expandir(ttk.Frame):
             selectforeground=default_select_fg,
             font=font.Font(family=_Font_Texto, size=20, weight='bold')
         )
-        PST_EXP.EXP_srcExpandir.tag_configure(
+        PST_EXP.EXP_scrExpandir.tag_configure(
             "nota",
             background='#D4EFEE',
             foreground='#000000',
@@ -848,23 +849,46 @@ class Expandir(ttk.Frame):
             selectforeground=default_select_fg,
             font=_Font_txt_exp
         )
-
-        end = PST_EXP.EXP_srcExpandir.index("end")
+        PST_EXP.EXP_scrExpandir.tag_configure(
+            "server",
+            background='#7BB3A4',
+            foreground='#000000',
+            selectbackground=default_select_bg,
+            selectforeground=default_select_fg,
+            font=_Font_txt_exp
+        )
+        PST_EXP.EXP_scrExpandir.tag_configure(
+            "coment",
+            background=pers_scrText_bg,
+            foreground='#EFB810',
+            selectbackground=default_select_bg,
+            selectforeground=default_select_fg,
+            font=_Font_txt_exp
+        )
+        end = PST_EXP.EXP_scrExpandir.index("end")
         line_count = int(end.split(".", 1)[0])
         for line in range(1, line_count+1):
             startline = f"{line}.0"
-            if not (PST_EXP.EXP_srcExpandir.search("##", startline, stopindex=f"{line}.1")):
+            if not (PST_EXP.EXP_scrExpandir.search("##", startline, stopindex=f"{line}.1")):
                 endline = f"{line}.end"
-                PST_EXP.EXP_srcExpandir.tag_add(
+                PST_EXP.EXP_scrExpandir.tag_add(
                     "codigo", startline, endline)
-            if (PST_EXP.EXP_srcExpandir.search("+-", startline, stopindex=f"{line}.1")):
+            if (PST_EXP.EXP_scrExpandir.search("+-", startline, stopindex=f"{line}.1")):
                 endline = f"{line}.end"
-                PST_EXP.EXP_srcExpandir.tag_add(
+                PST_EXP.EXP_scrExpandir.tag_add(
                     "line", startline, endline)
-            if (PST_EXP.EXP_srcExpandir.search("//", startline, stopindex=f"{line}.1")):
+            if (PST_EXP.EXP_scrExpandir.search("//", startline, stopindex=f"{line}.1")):
                 endline = f"{line}.end"
-                PST_EXP.EXP_srcExpandir.tag_add(
+                PST_EXP.EXP_scrExpandir.tag_add(
                     "nota", startline, endline)
+            if (PST_EXP.EXP_scrExpandir.search("[", startline, stopindex=f"{line}.1")):
+                endline = f"{line}.end"
+                PST_EXP.EXP_scrExpandir.tag_add(
+                    "server", startline, endline)
+            if (PST_EXP.EXP_scrExpandir.search("\"", startline, stopindex=f"{line}.1")):
+                endline = f"{line}.end"
+                PST_EXP.EXP_scrExpandir.tag_add(
+                    "coment", startline, endline)
 
 class TextSimilar(ttk.Frame):
     def __init__(self, parent, titulo, modulo_clave, cliente, *args, **kwargs):
@@ -1722,13 +1746,13 @@ class Desviacion(ttk.Frame):
 
     def llamada_colores(self):
         if modo_dark == 'False':
-            PST_DESV.colour_line_com(default_scrText_bg, default_colourCodeBg, default_colourCodeFg, default_colourNoteFg)
+            PST_DESV.colourLineCheck(default_scrText_bg, default_colourCodeBg, default_colourCodeFg, default_colourNoteFg)
             PST_DESV.colour_line_bak(default_scrText_bg, default_colourCodeBg, default_colourCodeFg)
             PST_DESV.colour_line_edi(default_scrText_bg, default_colourCodeBg, default_colourCodeFg)
             PST_DESV.colour_line_ref(default_scrText_bg, default_colourCodeBg, default_colourCodeFg)
             PST_DESV.colour_line_evi(default_scrText_bg, default_colourCodeBg, default_colourCodeFg)
         elif modo_dark == 'True':
-            PST_DESV.colour_line_com(pers_scrText_bg, pers_scrText_bg, pers_colourCodeFg, pers_colourNoteFg)
+            PST_DESV.colourLineCheck(pers_scrText_bg, pers_scrText_bg, pers_colourCodeFg, pers_colourNoteFg)
             PST_DESV.colour_line_bak(pers_scrText_bg, pers_scrText_bg, pers_colourCodeFg)
             PST_DESV.colour_line_edi(pers_scrText_bg, pers_scrText_bg, pers_colourCodeFg)
             PST_DESV.colour_line_ref(pers_scrText_bg, pers_scrText_bg, pers_colourCodeFg)
@@ -2279,7 +2303,7 @@ class Desviacion(ttk.Frame):
         listModulo.sort()
         self.DESV_ListBox.insert(tk.END, *listModulo)
 
-    def colour_line_com(self, bg_color, bg_codigo, fg_codigo, fg_nota):
+    def colourLineCheck(self, bg_color, bg_codigo, fg_codigo, fg_nota):
         PST_DESV.DESV_scrCheck.tag_configure(
             "codigo",
             background=bg_codigo,
@@ -2307,6 +2331,23 @@ class Desviacion(ttk.Frame):
             font=_Font_Texto
         )
 
+        PST_DESV.DESV_scrCheck.tag_configure(
+            "server",
+            background='#7BB3A4',
+            foreground='#000000',
+            selectbackground=default_select_bg,
+            selectforeground=default_select_fg,
+            font=_Font_Texto
+        )
+        PST_DESV.DESV_scrCheck.tag_configure(
+            "coment",
+            background=pers_scrText_bg,
+            foreground='#EFB810',
+            selectbackground=default_select_bg,
+            selectforeground=default_select_fg,
+            font=_Font_Texto
+        )
+
         end = PST_DESV.DESV_scrCheck.index("end")
         line_count = int(end.split(".", 1)[0])
         for line in range(1, line_count+1):
@@ -2323,6 +2364,14 @@ class Desviacion(ttk.Frame):
                 endline = f"{line}.end"
                 PST_DESV.DESV_scrCheck.tag_add(
                     "nota", startline, endline)
+            if (PST_DESV.DESV_scrCheck.search("[", startline, stopindex=f"{line}.1")):
+                endline = f"{line}.end"
+                PST_DESV.DESV_scrCheck.tag_add(
+                    "server", startline, endline)
+            if (PST_DESV.DESV_scrCheck.search("\"", startline, stopindex=f"{line}.1")):
+                endline = f"{line}.end"
+                PST_DESV.DESV_scrCheck.tag_add(
+                    "coment", startline, endline)
 
     def colour_line_bak(self, bg_color, bg_codigo, fg_codigo):
         PST_DESV.DESVfr2_srcBackup.tag_configure(
@@ -4373,6 +4422,22 @@ class Aplicacion():
                 command=self.nameOpenButton
             )
 
+        self.verMenu = tk.Menu(self.bar, tearoff=0)
+        self.verMenu.config(
+            background=bg_submenu,
+            foreground=fg_submenu,
+            font=_Font_Menu,
+            activebackground=default_select_bg,
+            activeforeground=default_select_fg,
+        )
+        self.verMenu.add_command(
+            label="  Incidencias Criticas",
+            command=self.bsc,
+            image=self.BuscarBar_icon,
+            compound=tk.LEFT,
+            state="normal"
+        )
+        
         self.editMenu = tk.Menu(self.bar, tearoff=0)
         self.editMenu.config(
             background=bg_submenu,
@@ -4389,7 +4454,6 @@ class Aplicacion():
             compound=tk.LEFT,
             state="disabled"
         )
-        
         self.helpMenu = tk.Menu(self.bar, tearoff=0)
         self.helpMenu.config(
             background=bg_submenu,
@@ -4414,6 +4478,7 @@ class Aplicacion():
 
         self.bar.add_cascade(label=" Archivo ", menu=self.fileMenu)
         self.bar.add_cascade(label=" Editar ", menu=self.editMenu)
+        self.bar.add_cascade(label=" Ver ", menu=self.verMenu)
         self.bar.add_cascade(label=" Ayuda ", menu=self.helpMenu)
 
     def active_radio_botton(self, canva, button, *args):
@@ -4864,7 +4929,7 @@ class Aplicacion():
                     PST_DESV.asignar_iconos()
 
     def expandirModeDefault(self):
-        PST_EXP.expandirColourLine(
+        PST_EXP.colourLineExpandir(
                 default_scrText_bg,
                 default_colourCodeBg,
                 default_colourCodeFg,
@@ -4881,7 +4946,7 @@ class Aplicacion():
                                 background=default_bottom_app,
                                 activebackground=default_bottom_app
                             )
-        PST_EXP.EXP_srcExpandir.config(
+        PST_EXP.EXP_scrExpandir.config(
                             foreground=default_scrText_fg,
                             background=default_scrText_bg,
                             highlightbackground=default_Framework,
@@ -4921,7 +4986,7 @@ class Aplicacion():
         PST_EXP.EXP_btnIdrsa.canvas.config(background=default_bottom_app)
     
     def expandirModeDark(self):
-        PST_EXP.expandirColourLine(
+        PST_EXP.colourLineExpandir(
                 pers_scrText_bg,
                 pers_colourCodeBg,
                 pers_colourCodeFg,
@@ -4938,7 +5003,7 @@ class Aplicacion():
                                 background=pers_bottom_app,
                                 activebackground=pers_bottom_app
                             )
-        PST_EXP.EXP_srcExpandir.config(
+        PST_EXP.EXP_scrExpandir.config(
                             foreground=pers_scrText_fg,
                             background=pers_scrText_bg,
                             highlightbackground=pers_Framework,

@@ -237,14 +237,17 @@ class Ventana(ttk.Frame):
         with open(self.path_ventanas) as g:
             data = json.load(g)
             count = 0
-            for md in sorted(data[customer], key=lambda md:md['object']):
-                #guardar solo el valor de 'object a una lista'
-                self.ventanas.append(md['object'])
-                if count % 2 == 0:
-                    self.tree.insert(parent='', index='end', iid=count, text='', value=(md['object'],md['owner'],md['tipo'],md['ownerGroup'],md['code']), tags=('evenrow'))
-                else:
-                    self.tree.insert(parent='', index='end', iid=count, text='', value=(md['object'],md['owner'],md['tipo'],md['ownerGroup'],md['code']), tags=('oddrow'))
-                count += 1
+            try:
+                for md in sorted(data[customer], key=lambda md:md['object']):
+                    #guardar solo el valor de 'object a una lista'
+                    self.ventanas.append(md['object'])
+                    if count % 2 == 0:
+                        self.tree.insert(parent='', index='end', iid=count, text='', value=(md['object'],md['owner'],md['tipo'],md['ownerGroup'],md['code']), tags=('evenrow'))
+                    else:
+                        self.tree.insert(parent='', index='end', iid=count, text='', value=(md['object'],md['owner'],md['tipo'],md['ownerGroup'],md['code']), tags=('oddrow'))
+                    count += 1
+            except KeyError:
+                print("NO existen datos para {}, del cliente {}".format(self.path_ventanas, customer))
 
     def limpiar_tree(self):
         records = self.tree.get_children()
