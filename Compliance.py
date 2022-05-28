@@ -3367,7 +3367,6 @@ class Aplicacion():
         self.cuaderno.notebookTab.bind("<Button-3>", self.display_menu_clickDerecho)
         self.cuaderno.bind("<Button-3>", self._display_menu_clickDerecho)
 
-        self.root.bind_all("<Control-l>", lambda x: self.ocultar())
         self.root.focus_set()
         #self.contenedor.bind('<Motion>', self.activeDefault)
         # Fuente MENU CLICK DERECHO APP
