@@ -2,12 +2,14 @@
 # Copyright (c) Muhammet Emin TURGUT 2020
 # For license see LICENSE
 
+from functools import partial
 import tkinter as tk
 import time
 from tkinter import ttk
 from threading import Thread
 from PIL import Image, ImageTk
-from Compliance import _Font_Texto, listButton, path_icon, fg_submenu, default_select_bg, default_menu_bg, default_select_fg, bg_submenu,default_bottom_app, _Font_pestañas, color_out_bg_pestaña, color_out_fg_pestaña, color_act_bg_pestaña, color_sel_fg_pestaña, color_act_fg_pestaña
+from Compliance import _Font_Texto, listButton, pathIcon, fg_submenu, default_select_bg, default_menu_bg, default_select_fg, bg_submenu,default_bottom_app, _Font_pestañas, color_out_bg_pestaña, color_out_fg_pestaña, color_act_bg_pestaña, color_sel_fg_pestaña, color_act_fg_pestaña
+from RadioBotton import RadioFrame
 release = True
 count = 0
 color_btn_tab = '#297F87'
@@ -22,41 +24,54 @@ class ScrollableNotebook(ttk.Frame):
         self._active = None
         self.xLocation = 0
         self.app = application
-        self.WorkSpac_icon = ImageTk.PhotoImage(Image.open(path_icon+r"workspace.png").resize((20, 20)))
-        self.novo = ImageTk.PhotoImage(Image.open(path_icon+r"novo.png").resize((25, 25)))
+        self.WorkSpac_icon = ImageTk.PhotoImage(Image.open(pathIcon+r"workspace.png").resize((20, 20)))
+        self.novo = ImageTk.PhotoImage(Image.open(pathIcon+r"novo.png").resize((25, 25)))
         self.notebookContent = ttk.Notebook(self,**kwargs)
         self.notebookContent.pack(fill="both", expand=True)
         self.notebookTab = ttk.Notebook(self,**kwargs)
         self.notebookTab.bind("<<NotebookTabChanged>>",lambda e:self._tabChanger(e))
+        #self.notebookTab.bind('<Motion>', lambda e: self.activeToolTip(e))
         # if wheelscroll==True: 
         #     self.notebookTab.bind("<MouseWheel>", self._wheelscroll)
-        #     self.notebookTab.bind("<Button-4>", self._wheelscroll)
-        #     self.notebookTab.bind("<Button-5>", self._wheelscroll)
+        self.notebookTab.bind("<Button-4>", self._wheelscroll)
+        self.notebookTab.bind("<Button-5>", self._wheelscroll)
         slideFrame = ttk.Frame(self)
+        # slideFrame = RadioFrame(
+        #     self,
+        #     alto=100,
+        #     ancho=300,
+        #     radio=10,
+        #     width=0,
+        #     bg_color=default_bottom_app
+        # )
         slideFrame.config(
             border=0,
             borderwidth=0,
         )
-        slideFrame.place(x=0, y=0, anchor='ne', relx=1.0)
+        slideFrame.place(x=0, y=0, anchor='ne', relx=1.0, height=40)
         
         self.menuSpace=30
         if tabmenu==True:
             self.menuSpace=100
 
             self.buttonTab = ttk.Button(
-                slideFrame, 
+                slideFrame,
                 text="  \u2630  ",
             )
             self.buttonTab.bind("<Button-1>",self._bottomMenu)
             self.buttonTab.bind("<ButtonRelease-1>",self._bottomMenu_)
-            self.buttonTab.pack(expand=1, fill=tk.BOTH ,side=tk.RIGHT)
+            self.buttonTab.pack(expand=0, fill=tk.BOTH ,side=tk.RIGHT)
+            self.buttonTab.bind('<Motion>',partial(self.app.openTooltip, self.buttonTab, "Tab drawer"))
+            self.buttonTab.bind('<Leave>', self.app._hide_event)
+
         self.buttonTab_novo = ttk.Label(
             slideFrame, 
             image=self.novo,
-            font=("Helvetica", 14, 'bold')
         )
         self.buttonTab_novo.bind("<1>",self._bottomMenu_novo)
-        self.buttonTab_novo.pack(side=tk.LEFT, padx=5, pady=5)
+        self.buttonTab_novo.pack(side=tk.LEFT, fill=tk.BOTH, expand=1, padx=10)
+        self.buttonTab_novo.bind('<Motion>',partial(self.app.openTooltip, self.buttonTab_novo, "New tab"))
+        self.buttonTab_novo.bind('<Leave>', self.app._hide_event)
 
         self.leftArrow = ttk.Label(
             slideFrame, 
@@ -65,8 +80,10 @@ class ScrollableNotebook(ttk.Frame):
         )
         self.leftArrow.bind("<Button-1>",lambda e: Thread(target=self._leftSlide, daemon=True).start())
         self.leftArrow.bind("<ButtonRelease-1>", self._release_callback)
-        self.leftArrow.pack(side=tk.LEFT, padx=5)
-        
+        self.leftArrow.pack(side=tk.LEFT, fill=tk.BOTH, expand=1, padx=10)
+        self.leftArrow.bind('<Motion>',partial(self.app.openTooltip, self.leftArrow, "Previous tab"))
+        self.leftArrow.bind('<Leave>', self.app._hide_event)
+
         self.rightArrow = ttk.Label(
             slideFrame, 
             text=" \u276F ",
@@ -74,14 +91,34 @@ class ScrollableNotebook(ttk.Frame):
         )
         self.rightArrow.bind("<Button-1>",lambda e: Thread(target=self._rightSlide, daemon=True).start())
         self.rightArrow.bind("<ButtonRelease-1>", self._release_callback)
-        self.rightArrow.pack(side=tk.RIGHT, pady=5)
+        self.rightArrow.pack(side=tk.RIGHT,fill=tk.BOTH, expand=1, padx=10)
+        self.rightArrow.bind('<Motion>',partial(self.app.openTooltip, self.rightArrow, "Next tab"))
+        self.rightArrow.bind('<Leave>', self.app._hide_event)
+
+        self.btnMode = tk.Button(
+            slideFrame,
+            borderwidth=0,
+            background=default_bottom_app,
+            highlightbackground=default_bottom_app,
+            activebackground=default_bottom_app,
+            image=self.app.icono_modeOff,
+            command=self.app.activeModeDark,
+            )
+        self.btnMode.pack(before=self.buttonTab_novo, side=tk.LEFT, fill=tk.BOTH, expand=1, padx=10)
 
         self.notebookContent.bind("<Configure>", self._resetSlide)
         self.notebookTab.bind("<ButtonPress-1>", self.on_tab_close_press, True)
         self.notebookTab.bind("<ButtonRelease-1>", self.on_tab_close_release)
         self.notebookContent.bind("<ButtonPress-1>", self.on_tab_close_press, True)
         self.notebookContent.bind("<ButtonRelease-1>", self.on_tab_close_release)
-    
+
+    # def activeToolTip(self, event):
+    #     name = self.identify(event.x, event.y)  
+    #     if name == "tab_btn_close":
+    #         print("Activa")
+    #         self.app.openTooltip(self.notebookTab, "Close")
+    #         self.notebookTab.bind('<Leave>', self.app._hide_event)
+
     def _release_callback(self, e):
         global release
         release = True
@@ -170,7 +207,8 @@ class ScrollableNotebook(ttk.Frame):
         )
     
     def _wheelscroll(self, event):
-        pass
+        print("siguiente")
+        self._rightSlide
 
     def _bottomMenu_(self,event):
         pass

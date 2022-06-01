@@ -9,7 +9,7 @@ class CustomHovertip(tk.Toplevel):
     def __init__(self, boton, text, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.text = text.split()
-        self.config(borderwidth=2, background="silver")
+        self.config(borderwidth=2, background="gray77")
         self.wm_overrideredirect(1)
         self.position_window(boton)
 
@@ -28,7 +28,7 @@ class CustomHovertip(tk.Toplevel):
             text=self.text,
             bg="#151515",
             fg="#ffffff",
-            font=("conforta", 13)
+            font=("Noto Mono", 13)
             )
         label.pack(expand=1, fill=tk.BOTH)
         # label.place(

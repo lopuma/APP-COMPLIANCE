@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 import os
+import re
 import tkinter as tk
 from os import listdir
 from os.path import isdir, join, abspath
-from tkinter import TclError, ttk
+from tkinter import END, TclError, ttk
 from tkinter import scrolledtext as st
 from tkinter import font
 from turtle import left
@@ -11,9 +12,7 @@ from PIL import Image, ImageTk
 from threading import Thread
 import time
 from functools import partial
-from Compliance import hlh_def, pers_menu_bg, pers_scrText_bg, path_config_ini, parse, pers_bottom_app, activar_modo, mypath, hhtk, default_scrText_bg, default_panelBg, bg_submenu, default_scrText_fg, default_menu_bg, fg_submenu, acdefault_panelBg, _Font_Menu, _Font_Texto, default_select_bg, default_select_fg, default_bottom_app, default_hglcolor, default_select_bg, default_select_fg, fuente_texto, tamñ_texto, _Font_Texto_bold, _Font_Texto_codigo
-path_extracion = mypath+"Compliance/extracion/"
-path_icon = mypath+"Compliance/image/"
+from Compliance import pathExtraction, hlh_def, pathIcon, pers_menu_bg, pers_scrText_bg, pathConfig, parse, pers_bottom_app, activar_modo, mypath, hhtk, default_scrText_bg, default_panelBg, bg_submenu, default_scrText_fg, default_menu_bg, fg_submenu, acdefault_panelBg, _Font_Menu, _Font_Texto, default_select_bg, default_select_fg, default_bottom_app, default_hglcolor, default_select_bg, default_select_fg, fuente_texto, tamñ_texto, _Font_Texto_bold, _Font_Texto_codigo
 
 parar = False
 _estado_actual = False
@@ -196,9 +195,9 @@ class Extracion(ttk.Frame):
         global _estado_actual
         global PST_EXT
         self.navIcon = ImageTk.PhotoImage(Image.open(
-            path_icon+r"menu.png").resize((25, 25)))
+            pathIcon+r"menu.png").resize((25, 25)))
         self.closeIcon = ImageTk.PhotoImage(Image.open(
-            path_icon+r"close.png").resize((25, 25)))
+            pathIcon+r"close.png").resize((25, 25)))
         PST_EXT = self
         self.wd = 50
         self.app = app
@@ -228,13 +227,13 @@ class Extracion(ttk.Frame):
 
     def iconos(self):
         self.flecha_up = ImageTk.PhotoImage(
-            Image.open(path_icon+r"flecha1.png").resize((20, 20)))
+            Image.open(pathIcon+r"flecha1.png").resize((20, 20)))
         self.btn_lmp = ImageTk.PhotoImage(
-            Image.open(path_icon+r"lmp.png").resize((22, 22)))
+            Image.open(pathIcon+r"lmp.png").resize((22, 22)))
         self.flecha_down = ImageTk.PhotoImage(
-            Image.open(path_icon+r"flecha2.png").resize((20, 20)))
+            Image.open(pathIcon+r"flecha2.png").resize((20, 20)))
         self.btn_x = ImageTk.PhotoImage(
-            Image.open(path_icon+r"btn-x.png").resize((20, 20)))
+            Image.open(pathIcon+r"btn-x.png").resize((20, 20)))
 
     def closeFrame(self, event):
         global on
@@ -250,7 +249,7 @@ class Extracion(ttk.Frame):
             on = 1
 
     def createFrameClose(self):
-        parse.read(path_config_ini.format("apariencia.ini"))
+        parse.read(pathConfig.format("apariencia.ini"))
         modo_dark = parse.get('dark', 'modo_dark')
         self.frameClose = tk.Frame(self)
         self.frameClose.pack(before=self.frame2, side="left", expand=0, ipadx=1, anchor='ne')
@@ -274,7 +273,7 @@ class Extracion(ttk.Frame):
     def createFrame(self):
         global on
         on = 1
-        parse.read(path_config_ini.format("apariencia.ini"))
+        parse.read(pathConfig.format("apariencia.ini"))
         modo_dark = parse.get('dark', 'modo_dark')
         activar_modo = parse.get('dark', 'activar_modo')
         self.frame1 = tk.Frame(self)
@@ -298,8 +297,8 @@ class Extracion(ttk.Frame):
         )
         self.fsobjects = {}
 
-        self.file_image = tk.PhotoImage(file=path_icon+r"files.png")
-        self.folder_image = tk.PhotoImage(file=path_icon+r"folder.png")
+        self.file_image = tk.PhotoImage(file=pathIcon+r"files.png")
+        self.folder_image = tk.PhotoImage(file=pathIcon+r"folder.png")
 
         self.btn_close = ttk.Button(
             self.frame1,
@@ -324,7 +323,7 @@ class Extracion(ttk.Frame):
         self.min.pack(side="left", expand=0)
 
         #todo Cargar el directorio raíz.
-        self.load_tree(abspath(path_extracion))
+        self.load_tree(abspath(pathExtraction))
         self.max.bind(
             "<Button-1>", lambda e: Thread(target=self.ampliar, daemon=True).start())
         self.max.bind("<ButtonRelease-1>", self._parar_)
@@ -462,14 +461,14 @@ class Extracion(ttk.Frame):
         iid = self.treeview.selection()[0]
         records = self.treeview.get_children(iid)
         self.treeview.delete(*self.treeview.get_children())
-        self.load_tree(abspath(path_extracion))
+        self.load_tree(abspath(pathExtraction))
 
     def select_extraction(self, event):
         treeSelect = event.widget
         iid = treeSelect.selection()[0]
         plantilla = treeSelect.item(iid, option="text")
         path = ''
-        for root, _, files in os.walk(path_extracion):
+        for root, _, files in os.walk(pathExtraction):
             if plantilla in files:
                 path = os.path.join(root, plantilla)
                 break
@@ -477,6 +476,12 @@ class Extracion(ttk.Frame):
             self.seleccionar_plantilla(path)
             self.colour_line()
             self.colour_line2()
+
+    def cadena_valida(self, cadena):
+        patron = "^\/*.*?\*/$"
+        INTR = re.search(patron, cadena)
+        print(INTR)
+
 
     def colour_line(self):
         indx = '1.0'
@@ -487,6 +492,12 @@ class Extracion(ttk.Frame):
         line1 = "+-------------------------------------------------------------------------------------+"
         line3 = "CONTESTAR NO"
         line4 = "CONTESTAR N/A"
+        # patron = "^\/*.*?\*/$"
+        # i = 0
+        # texto = self.txt.get("1.0", END)
+        # for i in texto:
+        #     INTR = re.search(patron, texto)
+        #     print(INTR)
         if line1:
             while True:
                 indx = self.txt.search(line1, indx, nocase=1, stopindex=tk.END)
@@ -498,7 +509,7 @@ class Extracion(ttk.Frame):
             self.txt.tag_config(
                 'found1',
                 foreground='dodgerblue',
-                font=(fuente_texto, tamñ_texto, font.BOLD)
+                font=(fuente_texto, 17, font.BOLD)
             )
         if line3:
             while True:

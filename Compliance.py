@@ -21,12 +21,16 @@ from Tooltip import CustomHovertip
 #-----------------------------------------------------------#
 user = getuser()
 mypath = os.path.expanduser("~/")
-path_icon = mypath+"Compliance/image/"
-pathFileCustomer = mypath+"Compliance/file/desviaciones_{}.json"
-pathFileCustomer_clave = mypath+"Compliance/file/{}.json"
-path_config = mypath+"Compliance/.conf/{}.json"
-path_config_ini = mypath+"Compliance/.conf/{}"
 
+#? ROUTERS
+pathExtraction = mypath+"Compliance/extracion/"
+pathIcon = mypath+"Compliance/image/"
+pathFiles = mypath+"Compliance/file/desviaciones_{}.json"
+pathFilesGl = mypath+"Compliance/file/{}.json"
+pathConfig = mypath+"Compliance/.conf/{}"
+pathRisk = mypath+"Compliance/file/Riesgo_Impacto/{}"
+
+#? Arrays
 listClient = []
 listButton = [
     "DESVIACIONES",
@@ -63,7 +67,7 @@ act_rbtn_auto = False
 
 # * Configuracion de APARIENCIA INICIAL
 parse = ConfigParser()
-parse.read(path_config_ini.format("apariencia.ini"))
+parse.read(pathConfig.format("apariencia.ini"))
 
 # COLOR MENU
 default_menu_bg = parse.get('menu', 'background')
@@ -142,7 +146,7 @@ _Font_Boton = (fuente_boton, tamñ_boton, weight_DF)
 #todo MODO DARK
 modo_dark = parse.get('dark', 'modo_dark')
 activar_modo = parse.get('dark', 'activar_modo')
-
+text_btnMode = "Dark Mode OFF"
 # * COLOR PERSONALIZADO
 pers_scrText_fg = '#f4f4f4'
 pers_scrText_bg = '#555555'  # ? PARA CUADRO DE TEXTO
@@ -192,7 +196,7 @@ class Expandir(ttk.Frame):
         self.varNum = varNum
         self.vtn_expandir = tk.Toplevel(self)
         self.vtn_expandir.config(background=default_bottom_app)
-        parse.read(path_config_ini.format("apariencia.ini"))
+        parse.read(pathConfig.format("apariencia.ini"))
         window_width = parse.get('medidas_expandir', 'width')
         window_height = parse.get('medidas_expandir', 'height')
         screen_width = app.root.winfo_x()
@@ -201,7 +205,7 @@ class Expandir(ttk.Frame):
         position_right = int(screen_width+150)
         self.vtn_expandir.geometry(
             f'{window_width}x{window_height}+{position_right}+{position_top}')
-        #self.vtn_expandir.tk.call('wm', 'iconphoto', self.vtn_expandir._w, tk.PhotoImage(file=path_icon+r'expandir1.png'))
+        #self.vtn_expandir.tk.call('wm', 'iconphoto', self.vtn_expandir._w, tk.PhotoImage(file=pathIcon+r'expandir1.png'))
         self.vtn_expandir.transient(self.parent)
         self.vtn_expandir.title(
             "DESVIACIONES : {} - {}".format(self.customer, self.so))
@@ -301,7 +305,7 @@ class Expandir(ttk.Frame):
         self.EXP_btnScreamEvidencia.config(state="disabled")
         self.EXP_btnCopyALL.config(state="disabled")
         if self.varNum == 1:
-            with open(pathFileCustomer.format(customer)) as g:
+            with open(pathFiles.format(customer)) as g:
                 data = json.load(g)
                 for md in data:
                     if 'modulo' in md:
@@ -322,7 +326,7 @@ class Expandir(ttk.Frame):
                                 self.varNum = 2
                                 self.descativar_botones()
         elif self.varNum == 2:
-            with open(pathFileCustomer.format(customer)) as g:
+            with open(pathFiles.format(customer)) as g:
                 data = json.load(g)
                 for md in data:
                     if 'modulo' in md:
@@ -345,7 +349,7 @@ class Expandir(ttk.Frame):
                                 self.varNum = 3
                                 self.descativar_botones()
         elif self.varNum == 3:
-            with open(pathFileCustomer.format(customer)) as g:
+            with open(pathFiles.format(customer)) as g:
                 data = json.load(g)
                 for md in data:
                     if 'modulo' in md:
@@ -369,7 +373,7 @@ class Expandir(ttk.Frame):
                                 self.EXP_btnCopyALL.config(state="normal")
                                 self.varNum = 4
         elif self.varNum == 4:
-            with open(pathFileCustomer.format(customer)) as g:
+            with open(pathFiles.format(customer)) as g:
                 data = json.load(g)
                 for md in data:
                     if 'modulo' in md:
@@ -393,7 +397,7 @@ class Expandir(ttk.Frame):
                                 self.varNum = 5
                             self.descativar_botones()
         elif self.varNum == 5:
-            with open(pathFileCustomer.format(customer)) as g:
+            with open(pathFiles.format(customer)) as g:
                 data = json.load(g)
                 for md in data:
                     if 'modulo' in md:
@@ -433,7 +437,7 @@ class Expandir(ttk.Frame):
         self.EXP_btnScreamEvidencia.config(state="disabled")
         self.EXP_btnCopyALL.config(state="disabled")
         if self.varNum == 1:
-            with open(pathFileCustomer.format(customer)) as g:
+            with open(pathFiles.format(customer)) as g:
                 data = json.load(g)
                 for md in data:
                     if 'modulo' in md:
@@ -458,7 +462,7 @@ class Expandir(ttk.Frame):
                                 self.varNum = 5
                                 self.descativar_botones()
         elif self.varNum == 2:
-            with open(pathFileCustomer.format(customer)) as g:
+            with open(pathFiles.format(customer)) as g:
                 data = json.load(g)
                 for md in data:
                     if 'modulo' in md:
@@ -482,7 +486,7 @@ class Expandir(ttk.Frame):
                                 self.varNum = 1
                                 self.activar_botones()
         elif self.varNum == 3:
-            with open(pathFileCustomer.format(customer)) as g:
+            with open(pathFiles.format(customer)) as g:
                 data = json.load(g)
                 for md in data:
                     if 'modulo' in md:
@@ -504,7 +508,7 @@ class Expandir(ttk.Frame):
                                 self.varNum = 2
                                 self.descativar_botones()
         elif self.varNum == 4:
-            with open(pathFileCustomer.format(customer)) as g:
+            with open(pathFiles.format(customer)) as g:
                 data = json.load(g)
                 for md in data:
                     if 'modulo' in md:
@@ -525,7 +529,7 @@ class Expandir(ttk.Frame):
                                 self.varNum = 3
                                 self.descativar_botones()
         elif self.varNum == 5:
-            with open(pathFileCustomer.format(customer)) as g:
+            with open(pathFiles.format(customer)) as g:
                 data = json.load(g)
                 for md in data:
                     if 'modulo' in md:
@@ -1109,7 +1113,7 @@ class TextSimilar(ttk.Frame):
         app.cuaderno.add(desviacion, text='DESVIACIONES : {} '.format(customer))
         desviacion.enabled_Widgets()
         desviacion.varClient.set(customer)
-        with open(pathFileCustomer.format(customer)) as g:
+        with open(pathFiles.format(customer)) as g:
             data = json.load(g)
             listModulo = []
             listKeys = []
@@ -1121,7 +1125,7 @@ class TextSimilar(ttk.Frame):
         desviacion.DESV_ListBox.insert(tk.END, *listModulo)
         moduleFound = str(moduleFound).replace("[", "").replace("]", "").replace("'", "")
         data = []
-        with open(pathFileCustomer.format(customer)) as g:
+        with open(pathFiles.format(customer)) as g:
             data = json.load(g)
             for md in data:
                 if 'modulo' in md:
@@ -1167,7 +1171,7 @@ class Desviacion(ttk.Frame):
         self.columnconfigure(1, weight=1)
         self.columnconfigure(2, weight=1)
         self.rowconfigure(0, weight=1)
-        self.bind("<Motion>", lambda e: self.DESV_motion(e))
+        PST_DESV.bind("<Motion>", lambda e: self.DESV_motion(e))
 # --- FUENTE PARA DESVIACIONES
 # --- Fuente Menu click derecho
         self.iconos()
@@ -1198,7 +1202,7 @@ class Desviacion(ttk.Frame):
             "<Motion>", lambda e: self.activar_Focus(e))
         self.DESV_entryModule.bind(
             "<Motion>", lambda e: self._act_focus_ent(e))
-        app.cuaderno.bind("<Motion>", lambda e: self.activar_Focus(e))
+        #*app.cuaderno.bind("<Motion>", lambda e: self.activar_Focus(e))
         self.DESV_ListBox.bind("<Motion>", lambda e: self._activar_Focus(e))
 
 ## --- MOSTRAR MENU DERECHO  --- ##
@@ -1303,41 +1307,41 @@ class Desviacion(ttk.Frame):
 
     def iconos(self):  # TODO ICONOS DE VENTANA DESVIACION
         self.BuscarModulo_icon = ImageTk.PhotoImage(
-            Image.open(path_icon+r"buscar.png").resize((25, 25)))
+            Image.open(pathIcon+r"buscar.png").resize((25, 25)))
         self.LimpiarModulo_icon = ImageTk.PhotoImage(
-            Image.open(path_icon+r"limpiar.png").resize((25, 25)))
+            Image.open(pathIcon+r"limpiar.png").resize((25, 25)))
         self.icono_expandir = ImageTk.PhotoImage(
-            Image.open(path_icon+r"expandir.png").resize((40, 40)))
+            Image.open(pathIcon+r"expandir.png").resize((40, 40)))
         self.icono_expandir1 = ImageTk.PhotoImage(
-            Image.open(path_icon+r"expandir1.png").resize((40, 40)))
+            Image.open(pathIcon+r"expandir1.png").resize((40, 40)))
         self.icono_expandir2 = ImageTk.PhotoImage(
-            Image.open(path_icon+r"expandir2.png").resize((40, 40)))
+            Image.open(pathIcon+r"expandir2.png").resize((40, 40)))
         self.icono_recortar = ImageTk.PhotoImage(
-            Image.open(path_icon+r"recortar.png").resize((40, 40)))
+            Image.open(pathIcon+r"recortar.png").resize((40, 40)))
         self.icono_recortar1 = ImageTk.PhotoImage(
-            Image.open(path_icon+r"recortar1.png").resize((40, 40)))
+            Image.open(pathIcon+r"recortar1.png").resize((40, 40)))
         self.icono_recortar2 = ImageTk.PhotoImage(
-            Image.open(path_icon+r"recortar2.png").resize((40, 40)))
+            Image.open(pathIcon+r"recortar2.png").resize((40, 40)))
         self.icono_captura = ImageTk.PhotoImage(
-            Image.open(path_icon+r"captura.png").resize((40, 40)))
+            Image.open(pathIcon+r"captura.png").resize((40, 40)))
         self.icono_captura1 = ImageTk.PhotoImage(
-            Image.open(path_icon+r"captura1.png").resize((40, 40)))
+            Image.open(pathIcon+r"captura1.png").resize((40, 40)))
         self.icono_captura2 = ImageTk.PhotoImage(
-            Image.open(path_icon+r"captura2.png").resize((40, 40)))
+            Image.open(pathIcon+r"captura2.png").resize((40, 40)))
         self.icono_reducir = ImageTk.PhotoImage(
-            Image.open(path_icon+r"reduce.png").resize((30, 30)))
+            Image.open(pathIcon+r"reduce.png").resize((30, 30)))
         self.icono_copiar = ImageTk.PhotoImage(
-            Image.open(path_icon+r"copiar.png").resize((40, 40)))
+            Image.open(pathIcon+r"copiar.png").resize((40, 40)))
         self.icono_copiar1 = ImageTk.PhotoImage(
-            Image.open(path_icon+r"copiar1.png").resize((40, 40)))
+            Image.open(pathIcon+r"copiar1.png").resize((40, 40)))
         self.icono_copiar2 = ImageTk.PhotoImage(
-            Image.open(path_icon+r"copiar2.png").resize((40, 40)))
+            Image.open(pathIcon+r"copiar2.png").resize((40, 40)))
         self.icono_riesgos = ImageTk.PhotoImage(
-            Image.open(path_icon+r"riesgos.png").resize((40, 40)))
+            Image.open(pathIcon+r"riesgos.png").resize((40, 40)))
         self.icono_riesgos1 = ImageTk.PhotoImage(
-            Image.open(path_icon+r"riesgos1.png").resize((40, 40)))
+            Image.open(pathIcon+r"riesgos1.png").resize((40, 40)))
         self.icono_riesgos2 = ImageTk.PhotoImage(
-            Image.open(path_icon+r"riesgos2.png").resize((40, 40)))
+            Image.open(pathIcon+r"riesgos2.png").resize((40, 40)))
 
 ## --- ADJUTAR EL TEXT DE LOS LABEL -------------------------- ##
     def label_resize(self, event):
@@ -1366,39 +1370,40 @@ class Desviacion(ttk.Frame):
         global txtWidget
         global txtWidget_focus
         global PST_DESV
+        print(PST_DESV)
         txtWidget = event.widget
-        if txtWidget == self.DESV_entryModule:
+        if txtWidget == PST_DESV.DESV_entryModule:
             txtWidget.focus()
-            self.DESV_scrCheck.tag_remove("sel", "1.0", "end")
-            self.DESVfr2_srcBackup.tag_remove("sel", "1.0", "end")
-            self.DESV_scrEdit.tag_remove("sel", "1.0", "end")
-            self.DESVfr3_srcRefrescar.tag_remove("sel", "1.0", "end")
-            self.DESV_scrEvidencia.tag_remove("sel", "1.0", "end")
-        elif txtWidget == self.DESV_scrCheck:
+            PST_DESV.DESV_scrCheck.tag_remove("sel", "1.0", "end")
+            PST_DESV.DESVfr2_srcBackup.tag_remove("sel", "1.0", "end")
+            PST_DESV.DESV_scrEdit.tag_remove("sel", "1.0", "end")
+            PST_DESV.DESVfr3_srcRefrescar.tag_remove("sel", "1.0", "end")
+            PST_DESV.DESV_scrEvidencia.tag_remove("sel", "1.0", "end")
+        elif txtWidget == PST_DESV.DESV_scrCheck:
             # srcCom = txtWidget
             txtWidget.focus()
             txtWidget_focus = True
-            self.DESVfr2_srcBackup.tag_remove("sel", "1.0", "end")
-            self.DESV_scrEdit.tag_remove("sel", "1.0", "end")
-            self.DESVfr3_srcRefrescar.tag_remove("sel", "1.0", "end")
-            self.DESV_scrEvidencia.tag_remove("sel", "1.0", "end")
-        elif txtWidget == self.DESVfr2_srcBackup:
+            PST_DESV.DESVfr2_srcBackup.tag_remove("sel", "1.0", "end")
+            PST_DESV.DESV_scrEdit.tag_remove("sel", "1.0", "end")
+            PST_DESV.DESVfr3_srcRefrescar.tag_remove("sel", "1.0", "end")
+            PST_DESV.DESV_scrEvidencia.tag_remove("sel", "1.0", "end")
+        elif txtWidget == PST_DESV.DESVfr2_srcBackup:
             # srcBac = txtWidget
             txtWidget.focus()
             txtWidget_focus = True
-        elif txtWidget == self.DESV_scrEdit:
+        elif txtWidget == PST_DESV.DESV_scrEdit:
             # srcEdi = txtWidget
             txtWidget.focus()
             txtWidget_focus = True
-            self.DESV_scrCheck.tag_remove("sel", "1.0", "end")
-            self.DESVfr2_srcBackup.tag_remove("sel", "1.0", "end")
-            self.DESVfr3_srcRefrescar.tag_remove("sel", "1.0", "end")
-            self.DESV_scrEvidencia.tag_remove("sel", "1.0", "end")
-        elif txtWidget == self.DESVfr3_srcRefrescar:
+            PST_DESV.DESV_scrCheck.tag_remove("sel", "1.0", "end")
+            PST_DESV.DESVfr2_srcBackup.tag_remove("sel", "1.0", "end")
+            PST_DESV.DESVfr3_srcRefrescar.tag_remove("sel", "1.0", "end")
+            PST_DESV.DESV_scrEvidencia.tag_remove("sel", "1.0", "end")
+        elif txtWidget == PST_DESV.DESVfr3_srcRefrescar:
             # srcRes = txtWidget
             txtWidget.focus()
             txtWidget_focus = True
-        elif txtWidget == self.DESV_scrEvidencia:
+        elif txtWidget == PST_DESV.DESV_scrEvidencia:
             # srcEvi = txtWidget
             txtWidget.focus()
             txtWidget_focus = True
@@ -1466,7 +1471,7 @@ class Desviacion(ttk.Frame):
             varNum = 5
             expandir.EXP_btnScreamEvidencia.config(state="normal")
             expandir.EXP_btnCopyALL.config(state="normal")
-        expandir.vtn_expandir.bind('<Motion>', app.activeDefault)
+        #expandir.vtn_expandir.bind('<Motion>', app.activeDefault)
 
     def _menu_clickDerecho(self):
         self.menu_Contextual = tk.Menu(self, tearoff=0)
@@ -1632,7 +1637,7 @@ class Desviacion(ttk.Frame):
 # --- CARGA ELEMENTO SELECIONADO
     def loadSelectItem(self, selectionValue, customer):  # TODO CARGAR MODULO
         data = []
-        with open(pathFileCustomer.format(customer)) as g:
+        with open(pathFiles.format(customer)) as g:
             data = json.load(g)
             for md in data:
                 if 'modulo' in md:
@@ -1643,7 +1648,7 @@ class Desviacion(ttk.Frame):
 
     def _loadSelectItem(self, selectionValue, customer):  # TODO CARGAR MODULO
         data = []
-        with open(pathFileCustomer.format(customer)) as g:
+        with open(pathFiles.format(customer)) as g:
             data = json.load(g)
             for md in data:
                 if 'modulo'in md:
@@ -1999,7 +2004,7 @@ class Desviacion(ttk.Frame):
         global listModulo
         global listKeys
         customer = PST_DESV.varClient.get()
-        with open(pathFileCustomer.format(customer)) as g:
+        with open(pathFiles.format(customer)) as g:
             data = json.load(g)
             listModulo = []
             listKeys = []
@@ -2042,7 +2047,7 @@ class Desviacion(ttk.Frame):
                 dict_clave_modulo = {}
                 listPathCustomer = []
                 for client in listClient:
-                    listPathCustomer.append(pathFileCustomer.format(client))
+                    listPathCustomer.append(pathFiles.format(client))
                 moduleToFind = PST_DESV.DESV_entryModule.get()
                 moduleToFind = self.solve(moduleToFind)
 # --- ABRIR TODOS LOS JSON" DE LOS CLIENTESmd_a_buscar
@@ -2076,7 +2081,7 @@ class Desviacion(ttk.Frame):
             no_exist = False
             keyFound = str(keyFound).replace(
                 "[", "").replace("]", "").replace("'", "")
-            with open(pathFileCustomer.format(customer)) as g:
+            with open(pathFiles.format(customer)) as g:
                 data = json.load(g)
                 for md in data:
                     if 'clave' in md:
@@ -2096,7 +2101,7 @@ class Desviacion(ttk.Frame):
             data = []
             no_exist = False
             self.DESV_ListBox.selection_clear(0, tk.END)
-            with open(pathFileCustomer.format(customer)) as g:
+            with open(pathFiles.format(customer)) as g:
                 data = json.load(g)
                 for md in data:
                     for n in keyFound:
@@ -2115,7 +2120,7 @@ class Desviacion(ttk.Frame):
             no_exist = False
             moduleFound = str(moduleFound).replace(
                 "[", "").replace("]", "").replace("'", "")
-            with open(pathFileCustomer.format(customer)) as g:
+            with open(pathFiles.format(customer)) as g:
                 data = json.load(g)
                 for md in data:
                     if 'modulo' in md:
@@ -2133,7 +2138,7 @@ class Desviacion(ttk.Frame):
             data = []
             no_exist = False
             self.DESV_ListBox.selection_clear(0, tk.END)
-            with open(pathFileCustomer.format(customer)) as g:
+            with open(pathFiles.format(customer)) as g:
                 data = json.load(g)
                 for md in data:
                     for n in moduleFound:
@@ -2151,7 +2156,7 @@ class Desviacion(ttk.Frame):
             data = []
             no_exist = False
             self.DESV_ListBox.selection_clear(0, tk.END)
-            with open(pathFileCustomer.format(customer)) as g:
+            with open(pathFiles.format(customer)) as g:
                 data = json.load(g)
                 for md in data:
                     for n in moduleFound:
@@ -2290,7 +2295,7 @@ class Desviacion(ttk.Frame):
         self._disabled_buttons()
         self.disabled_btn_expandir()
         ## ----------------------------------------- ##
-        with open(pathFileCustomer.format(customer)) as g:
+        with open(pathFiles.format(customer)) as g:
             data = json.load(g)
             listModulo = []
             listKeys = []
@@ -2530,8 +2535,7 @@ class Desviacion(ttk.Frame):
 
     def Risk_Impact(self):
         opener = "open" if sys.platform == "darwin" else "xdg-open"
-        excel_risk_impact = mypath+"Compliance/file/RISK_IMPACT.ods"
-        subprocess.call([opener, excel_risk_impact])
+        subprocess.call([opener, pathRisk.format("RISK_IMPACT.ods")])
 
     def RecortarMinMax(self):
         recortar = mypath+"Compliance/recortar.sh"
@@ -3101,21 +3105,21 @@ class Desviacion(ttk.Frame):
         self.DESV_btn5Expandir.grid(
             row=4, column=3, padx=(5, 20), pady=5, sticky='ne')
 
-        self.DESVfr2_lblDescripcion.bind('<Motion>', app.activeDefault)
-        self.DESVfr2_lblComprobacion.bind('<Motion>', app.activeDefault)
-        self.DESVfr2_lblBackup.bind('<Motion>', app.activeDefault)
-        self.DESV_scrCheck.bind('<Motion>', app.activeDefault)
-        self.DESVfr2_srcBackup.bind('<Motion>', app.activeDefault)
-        self.DESVfr3_lblEditar.bind('<Motion>', app.activeDefault)
-        self.DESVfr3_lblEvidencia.bind('<Motion>', app.activeDefault)
-        self.DESVfr3_lblRefrescar.bind('<Motion>', app.activeDefault)
-        self.DESV_scrEdit.bind('<Motion>', app.activeDefault)
-        self.DESV_scrEvidencia.bind('<Motion>', app.activeDefault)
-        self.DESVfr3_srcRefrescar.bind('<Motion>', app.activeDefault)
+        # self.DESVfr2_lblDescripcion.bind('<Motion>', app.activeDefault)
+        # self.DESVfr2_lblComprobacion.bind('<Motion>', app.activeDefault)
+        # self.DESVfr2_lblBackup.bind('<Motion>', app.activeDefault)
+        # self.DESV_scrCheck.bind('<Motion>', app.activeDefault)
+        # self.DESVfr2_srcBackup.bind('<Motion>', app.activeDefault)
+        # self.DESVfr3_lblEditar.bind('<Motion>', app.activeDefault)
+        # self.DESVfr3_lblEvidencia.bind('<Motion>', app.activeDefault)
+        # self.DESVfr3_lblRefrescar.bind('<Motion>', app.activeDefault)
+        # self.DESV_scrEdit.bind('<Motion>', app.activeDefault)
+        # self.DESV_scrEvidencia.bind('<Motion>', app.activeDefault)
+        # self.DESVfr3_srcRefrescar.bind('<Motion>', app.activeDefault)
 
-        self.DESV_frame1.bind('<Motion>', app.activeDefault)
-        self.DESV_frame2.bind('<Motion>', app.activeDefault)
-        self.DESV_frame3.bind('<Motion>', app.activeDefault)
+        # self.DESV_frame1.bind('<Motion>', app.activeDefault)
+        # self.DESV_frame2.bind('<Motion>', app.activeDefault)
+        # self.DESV_frame3.bind('<Motion>', app.activeDefault)
 
         self.DESV_btnRecortar.bind("<Leave>", app._hide_event)
         self.DESV_btnRiskImpact.bind("<Leave>", app._hide_event)
@@ -3135,7 +3139,7 @@ class Desviacion(ttk.Frame):
         self._btnSer_.bind("<Leave>", app._hide_event)
 
         self.asignar_iconos()
-        self.cambiar_color_RD()
+        self.changeColorActiveToolTipRB()
 
     def _QuitarSeleccion_(self):
         global list_motion
@@ -3305,7 +3309,7 @@ class Desviacion(ttk.Frame):
         self.DESV_btn1CopyALL.bind('<Motion>', partial(
             self.cambiar_icono, self.DESV_btn1CopyALL, icon_copy))
 
-    def cambiar_color_RD(self):
+    def changeColorActiveToolTipRB(self):
         self._btnDir_.bind('<Motion>', partial(
             app.active_radio_botton, self.DESV_btnDirectory, self._btnDir_))
         self._btnSer_.bind('<Motion>', partial(
@@ -3320,7 +3324,6 @@ class Desviacion(ttk.Frame):
             app.active_radio_botton, self.DESV_btnIdrsa, self._btnIdr_))
 
 class Aplicacion():
-
     #Ancho y Alto de la APP
     WIDTH = 1360
     HEIGHT = 650
@@ -3332,8 +3335,7 @@ class Aplicacion():
     wd_btn = int(x_ancho_btn-30)
     def __init__(self):
         self.root = tk.Tk()
-        self._Font_Titulo_bold = font.Font(
-            family=fuente_titulos, size=tamñ_titulo, weight=weight_DF)
+        self._Font_Titulo_bold = font.Font(family=fuente_titulos, size=tamñ_titulo, weight=weight_DF)
         self.root.title("CONTINUOUS COMPLIANCE")
         screen_width = self.root.winfo_screenwidth()
         screen_height = self.root.winfo_screenheight()
@@ -3342,35 +3344,22 @@ class Aplicacion():
         self.root.geometry(
             f'{Aplicacion.WIDTH}x{Aplicacion.HEIGHT}+{position_top}+{position_right}')
         #self.root.minsize(Aplicacion.WIDTH, Aplicacion.HEIGHT)
-        #self.root.configure(background=default_bottom_app, borderwidth=0, border=0)
-        self.root.tk.call('wm', 'iconphoto', self.root._w,tk.PhotoImage(file=path_icon+r'compliance.png'))
-        self.open_client()
+        self.root.configure(background=default_bottom_app, borderwidth=0, border=0)
+        self.root.tk.call('wm', 'iconphoto', self.root._w,tk.PhotoImage(file=pathIcon+r'compliance.png'))
+        self.openCustomer()
         self.iconos()
-        
         self.cuaderno = ScrollableNotebook(self.root, wheelscroll=False, tabmenu=True, application=self)
-
         self.contenedor = ttk.Frame(self.cuaderno)
-        self.contenedor.config(
-            borderwidth=1,
-            border=1,
-        )
+        self.contenedor.config(borderwidth=1,border=1)
         self.contenedor.columnconfigure(1, weight=1)
         self.contenedor.rowconfigure(1, weight=1)
-        #self.contenedor.rowconfigure(2, weight=1)
-
         self.cuaderno.add(self.contenedor, text='WorkSpace  ', underline=0, image=self.WorkSpace_icon, compound=tk.LEFT)
         self.cuaderno.grid(row=0, column=0, sticky='nsew')
-        #self.cuaderno.pack(fill="both", expand=True)
-        
         self.cuaderno.bind_all("<<NotebookTabChanged>>",lambda e: self.toChangeTab(e))
         self.cuaderno.enable_traversal()
         self.cuaderno.notebookTab.bind("<Button-3>", self.display_menu_clickDerecho)
         self.cuaderno.bind("<Button-3>", self._display_menu_clickDerecho)
-
         self.root.focus_set()
-        #self.contenedor.bind('<Motion>', self.activeDefault)
-        # Fuente MENU CLICK DERECHO APP
-        # ----------------------------------------------------------
         self.estilos()
         self.menu_clickDerecho()
         self._menu_clickDerecho()
@@ -3383,9 +3372,29 @@ class Aplicacion():
             self.root,
         )
         #self.sizegrid.pack(fill='both')
-        self.sizegrid.grid(row=1, column=0, sticky='nsew')
+        self.sizegrid.grid(row=1, column=0, pady=5, sticky='nsew')
 
-    def activeDefault(self, e):
+        self.btnMode = tk.Button(
+            self.sizegrid,
+            text="Mode Dark",
+            height=40,
+            border=0,
+            borderwidth=0,
+            bg=default_menu_bg,
+            highlightbackground=default_menu_bg,
+            activebackground=default_menu_bg,
+            image=self.icono_modeOff,
+            anchor='center',
+            command=self.activeModeDark,
+            )
+        #self.btnMode.grid(row=0, column=0, padx=0, pady=0, sticky='nsew')
+        self.changeTextButton(text_btnMode)
+
+    def changeTextButton(self, text_btnMode):
+        self.cuaderno.btnMode.bind("<Motion>", partial(self.openTooltip, self.cuaderno.btnMode, text_btnMode))
+        self.cuaderno.btnMode.bind("<Leave>", self._hide_event)
+
+    def activeDefault(self):
         if modo_dark == 'True':
             self.rbOpenAuto.canvas.itemconfig(
                 1, fill=pers_bottom_app, outline=default_Outline)
@@ -3407,7 +3416,7 @@ class Aplicacion():
                     fill=pers_bottom_app,
                     outline=default_Outline
                 )
-                PST_DESV.DESV_btnAccount.bind_all("<Leave>", self._hide_event)
+                #PST_DESV.DESV_btnAccount.bind("<Leave>", self._hide_event)
                 PST_DESV.DESV_btnCommand.canvas.itemconfig(
                     1,
                     fill=pers_bottom_app,
@@ -3471,7 +3480,7 @@ class Aplicacion():
             if PST_DESV.DESV_btn1CopyALL:
                 PST_DESV.DESV_btn1CopyALL['image'] = PST_DESV.icono_copiar
 
-    def open_client(self):
+    def openCustomer(self):
         global listClient
         listClient = []
         pathFiles = mypath+"Compliance/file/"
@@ -3490,39 +3499,42 @@ class Aplicacion():
         listClient = set(listClient)
         listClient = list(listClient)
         listClient.sort()
-        print(listClient)
 
     def iconos(self):
         self.Desviaciones_icon = ImageTk.PhotoImage(
-            Image.open(path_icon+r"openDesviaciones.png").resize((80, 80)))
+            Image.open(pathIcon+r"openDesviaciones.png").resize((80, 80)))
         self.Extracion_icon = ImageTk.PhotoImage(
-            Image.open(path_icon+r"openExtraciones.png").resize((80, 80)))
+            Image.open(pathIcon+r"openExtraciones.png").resize((80, 80)))
         self.Automatizar_icon = ImageTk.PhotoImage(
-            Image.open(path_icon+r"automatizar.png").resize((80, 80)))
+            Image.open(pathIcon+r"automatizar.png").resize((80, 80)))
         self.Abrir_icon = ImageTk.PhotoImage(
-            Image.open(path_icon+r"abrir.png").resize((30, 30)))
+            Image.open(pathIcon+r"abrir.png").resize((30, 30)))
         self.Client_icon = ImageTk.PhotoImage(
-            Image.open(path_icon+r"clientes.png").resize((30, 30)))
+            Image.open(pathIcon+r"clientes.png").resize((30, 30)))
         self.Salir_icon = ImageTk.PhotoImage(
-            Image.open(path_icon+r"salir.png").resize((30, 30)))
+            Image.open(pathIcon+r"salir.png").resize((30, 30)))
         self.BuscarBar_icon = ImageTk.PhotoImage(
-            Image.open(path_icon+r"buscar1.png").resize((30, 30)))
+            Image.open(pathIcon+r"buscar1.png").resize((30, 30)))
         self.PegarBar_icon = ImageTk.PhotoImage(
-            Image.open(path_icon+r"pegarBarra.png").resize((30, 30)))
+            Image.open(pathIcon+r"pegarBarra.png").resize((30, 30)))
         self.Ayuda_icon = ImageTk.PhotoImage(
-            Image.open(path_icon+r"ayuda.png").resize((30, 30)))
+            Image.open(pathIcon+r"ayuda.png").resize((30, 30)))
         self.AcercaDe_icon = ImageTk.PhotoImage(
-            Image.open(path_icon+r"acercaDe.png").resize((30, 30)))
+            Image.open(pathIcon+r"acercaDe.png").resize((30, 30)))
         self.WorkSpace_icon = ImageTk.PhotoImage(
-            Image.open(path_icon+r"workspace.png").resize((20, 20)))
+            Image.open(pathIcon+r"workspace.png").resize((20, 20)))
         self.icono_account = ImageTk.PhotoImage(
-            Image.open(path_icon+r"account.png").resize((20, 20)))
+            Image.open(pathIcon+r"account.png").resize((20, 20)))
         self.icono_account1 = ImageTk.PhotoImage(
-            Image.open(path_icon+r"account1.png").resize((20, 20)))
+            Image.open(pathIcon+r"account1.png").resize((20, 20)))
         self.previous_icon = ImageTk.PhotoImage(
-            Image.open(path_icon+r"previous.png").resize((40, 40)))
+            Image.open(pathIcon+r"previous.png").resize((40, 40)))
         self.next_icon = ImageTk.PhotoImage(
-            Image.open(path_icon+r"next.png").resize((40, 40)))
+            Image.open(pathIcon+r"next.png").resize((40, 40)))
+        self.icono_modeOn = ImageTk.PhotoImage(
+            Image.open(pathIcon+r"switchon.png").resize((65, 45)))
+        self.icono_modeOff = ImageTk.PhotoImage(
+            Image.open(pathIcon+r"switchoff.png").resize((65, 45)))
 
     def estilos(self):
         self.style = ttk.Style()
@@ -3764,9 +3776,9 @@ class Aplicacion():
     def toChangeTab(self, event):
         global idOpenTab
         global value
+        global modo_dark
         global PST_DESV
-        if activar_modo == 'True':
-            self.MODE_DARK()
+        # if activar_modo == 'True':
         idOpenTab = event.widget.index('current')
         tab = event.widget.tab(idOpenTab)['text']
         
@@ -3804,7 +3816,9 @@ class Aplicacion():
             expandir.cerrar_vtn_expandir()
         except:
             pass
-
+        modo_dark = parse.get('dark', 'modo_dark')
+        if activar_modo == 'True':
+            self.MODE_DARK()
         self._cerrar_vtn_bsc()
 
     def _cerrar_vtn_bsc(self):
@@ -3830,15 +3844,12 @@ class Aplicacion():
     def openButtonDesviacion(self):
         global idOpenTab
         global desviacion
-        #self.root.after(1, self.open_client)
-        #self.open_client()
         desviacion = Desviacion(self.cuaderno)
         self.cuaderno.add(desviacion, text='Issues DESVIACIONES ')
 
     def openButtonExtracion(self):
         global PST_EXT
         from Extraciones import Extracion
-
         global idpTab
         global extracion
         try:
@@ -3865,7 +3876,7 @@ class Aplicacion():
         partial(extracion.close_frame, even=None)
 
     def bsc(self):
-        extracion.panel_buscar()
+        extracion.searchPanel()
 
     def loadClient(self):
         index = self.varClientMenu.get()
@@ -3893,16 +3904,16 @@ class Aplicacion():
         self.vtn_acerca_de.geometry(
             f'{window_wh}x{window_hg}+{position_right}+{position_top}')
         self.vtn_acerca_de.tk.call('wm', 'iconphoto', self.vtn_acerca_de._w, tk.PhotoImage(
-            file=path_icon+r'acercaDe.png'))
+            file=pathIcon+r'acercaDe.png'))
         self.vtn_acerca_de.transient(self.root)
         self.vtn_acerca_de.resizable(False, False)
         self.vtn_acerca_de.title("Acerca de")
 
         self.close_icon = ImageTk.PhotoImage(
-            Image.open(path_icon+r"close1.png").resize((80, 60)))
+            Image.open(pathIcon+r"close1.png").resize((80, 60)))
 
         self.icono_Acerca_de = ImageTk.PhotoImage(
-            Image.open(path_icon+r"img_acerca_de.png").resize((200, 200)))
+            Image.open(pathIcon+r"img_acerca_de.png").resize((200, 200)))
 
         self.AcercaDe_ico_frame = ttk.Frame(
             self.vtn_acerca_de,
@@ -4017,7 +4028,7 @@ class Aplicacion():
         )
 
     def _cargar_modulo_glosario(self, clt_modulo=None, *args):
-        with open(pathFileCustomer_clave.format('GLOSARIO')) as g:
+        with open(pathFilesGl.format('GLOSARIO')) as g:
             data = json.load(g)
             listModulo = []
             listClave = []
@@ -4051,13 +4062,13 @@ class Aplicacion():
         self.vtn_glosario.geometry(
             f'{window_width}x{window_height}+{position_right}+{position_top}')
         self.vtn_glosario.tk.call('wm', 'iconphoto', self.vtn_glosario._w, tk.PhotoImage(
-            file=path_icon+r'acercaDe.png'))
+            file=pathIcon+r'acercaDe.png'))
         self.vtn_glosario.transient(self.root)
         self.vtn_glosario.resizable(False, False)
         self.vtn_glosario.title("Ayuda")
 
         self.close_icon_gls = ImageTk.PhotoImage(
-            Image.open(path_icon+r"close1.png").resize((80, 60)))
+            Image.open(pathIcon+r"close1.png").resize((80, 60)))
 
         self.fr1_gls = ttk.Frame(
             self.vtn_glosario,
@@ -4291,6 +4302,7 @@ class Aplicacion():
             self.active_radio_botton, self.rbOpenExt, self.btnOpenExt))
         self.btnOpenAuto.bind('<Motion>', partial(
             self.active_radio_botton, self.rbOpenAuto, self.btnOpenAuto))
+        
         self.btnOpenDesv.bind("<Leave>", self._hide_event)
         self.btnOpenExt.bind("<Leave>", self._hide_event)
         self.btnOpenAuto.bind("<Leave>", self._hide_event)
@@ -4300,8 +4312,8 @@ class Aplicacion():
         # self.rbOpenDesv.canvas.bind('<Motion>', self.activeDefault)
         # self.rbOpenExt.canvas.bind('<Motion>', self.activeDefault)
         # self.rbOpenAuto.canvas.bind('<Motion>', self.activeDefault)
-        self.frameButtons.bind('<Motion>', self.activeDefault)
-        self.contenedor.bind("<Motion>", self.activeDefault)
+        #self.frameButtons.bind('<Motion>', self.activeDefault)
+        #self.contenedor.bind("<Motion>", self.activeDefault)
 
 # TODO BIENVANIDA
 
@@ -4392,7 +4404,7 @@ class Aplicacion():
             #image=self.Client_icon,
             #state='disable',
             compound=tk.LEFT,
-            command=self.activar_modo_noche
+            command=self.activeModeDark
         )
         self.fileMenu.add_separator()
         self.fileMenu.add_command(
@@ -4510,29 +4522,36 @@ class Aplicacion():
         # python = sys.executable
         # os.execl(python, python, * sys.argv)
 
-    def activar_modo_noche(self):
+    def activeModeDark(self):
         global activar_modo
         global modo_dark
         if activar_modo == 'False':
             modo_dark = 'True'
             activar_modo = 'True'
             parse['dark'] = {"activar_modo": activar_modo, "modo_dark": modo_dark}
-            with open(path_config_ini.format("apariencia.ini"), 'w') as configfile:
+            with open(pathConfig.format("apariencia.ini"), 'w') as configfile:
                 parse.write(configfile)
         elif activar_modo == 'True':
             modo_dark = 'False'
             activar_modo = 'False'
             parse['dark'] = {"activar_modo": activar_modo, "modo_dark": modo_dark}
-            with open(path_config_ini.format("apariencia.ini"), 'w') as configfile:
+            with open(pathConfig.format("apariencia.ini"), 'w') as configfile:
                 parse.write(configfile)
         if 'desviacion' in globals():
             desviacion.llamada_colores()
+        print("---> 2")
         self.MODE_DARK()
 
-    @beep_error
+    #@beep_error
     def MODE_DARK(self):
         global modo_dark
+        global text_btnMode
+        modo_dark = parse.get('dark', 'modo_dark')
         if modo_dark == 'True':
+            text_btnMode = "Dark Mode ON"
+            print(text_btnMode)
+            self.cuaderno.btnMode['image'] = self.icono_modeOn
+            self.cuaderno.btnMode.config(background=pers_bottom_app, highlightbackground=pers_bottom_app, activebackground=pers_bottom_app)
             self.root.configure(
                 background=pers_bottom_app,
             )
@@ -4557,6 +4576,10 @@ class Aplicacion():
                     foreground=pers_scrText_fg,
                     rowheight=30,
                     fieldbackground=pers_scrText_bg
+            )
+            self.style.map("Treeview",
+                background=[('selected', default_select_bg)],
+                foreground=[('selected', default_select_fg)]
             )
             self.style.configure('TFrame',
                     background=pers_bottom_app,
@@ -4606,7 +4629,7 @@ class Aplicacion():
             )
             if PST_EXT != "":
                 PST_EXT.frame1.config(background=pers_menu_bg)            
-                PST_EXT.txt.configure(
+                PST_EXT.txt.config(
                 foreground=pers_scrText_fg,
                 background=pers_scrText_bg,
                 highlightbackground=pers_Framework,
@@ -4625,6 +4648,13 @@ class Aplicacion():
                         self.expandirModeDark()
                     except TclError:
                         pass
+                PST_DESV.cambiar_icono(PST_DESV._btnAuth_, app.icono_account1)
+                PST_DESV.cambiar_icono(PST_DESV._btnAcc_, app.icono_account1)
+                PST_DESV.cambiar_icono(PST_DESV._btnComm_, app.icono_account1)
+                PST_DESV.cambiar_icono(PST_DESV._btnDir_, app.icono_account1)
+                PST_DESV.cambiar_icono(PST_DESV._btnIdr_, app.icono_account1)
+                PST_DESV.cambiar_icono(PST_DESV._btnSer_, app.icono_account1)
+                app._hide_event()
                 PST_DESV.DESV_btnAccount.canvas.config(
                     background=pers_bottom_app,
                 )
@@ -4633,12 +4663,6 @@ class Aplicacion():
                     fill=pers_bottom_app,
                     outline=default_Outline
                 )
-                PST_DESV.cambiar_icono(PST_DESV._btnAcc_, app.icono_account1)
-                # PST_DESV.cambiar_icono(PST_DESV._btnAuth_, app.icono_account1)
-                # PST_DESV.cambiar_icono(PST_DESV._btnComm_, app.icono_account1)
-                # PST_DESV.cambiar_icono(PST_DESV._btnDir_, app.icono_account1)
-                # PST_DESV.cambiar_icono(PST_DESV._btnIdr_, app.icono_account1)
-                # PST_DESV.cambiar_icono(PST_DESV._btnSer_, app.icono_account1)
                 PST_DESV.DESV_btnCommand.canvas.config(
                     background=pers_bottom_app,
                 )
@@ -4745,188 +4769,205 @@ class Aplicacion():
                     insertbackground=pers_hglcolor
                 )
                 PST_DESV.asignar_iconos()
+        
         elif modo_dark == 'False':
-                self.root.configure(
+            text_btnMode = "Dark Mode OFF"
+            print(text_btnMode)
+            self.cuaderno.btnMode['image'] = self.icono_modeOff
+            self.cuaderno.btnMode.config(background=default_bottom_app, highlightbackground=default_bottom_app, activebackground=default_bottom_app)            
+            self.root.configure(
+                background=default_bottom_app,
+            )
+            self.cuaderno.buttonTab_novo.config(background=default_bottom_app)
+            self.cuaderno.leftArrow.config(background=default_bottom_app)
+            self.cuaderno.rightArrow.config(background=default_bottom_app)
+            self.rbOpenExt.canvas.config(background=default_bottom_app)
+            self.rbOpenDesv.canvas.config(background=default_bottom_app)
+            self.rbOpenAuto.canvas.config(background=default_bottom_app)
+            self.rbOpenExt.canvas.itemconfig(1, fill=default_bottom_app)
+            self.rbOpenDesv.canvas.itemconfig(1 ,fill=default_bottom_app)
+            self.rbOpenAuto.canvas.itemconfig(1, fill=default_bottom_app)
+            self.bar.config(
+                background=default_menu_bg,
+                foreground=default_scrText_fg,
+            )
+            self.style.configure('ScrollableNotebook',
+                        background=default_menu_bg,
+            )
+            app.estilos()
+            self.style.configure("Treeview",
+                background=default_scrText_bg,
+                foreground=default_scrText_fg,
+                font=_Font_Texto,
+                rowheight=30,
+                fieldbackground=default_scrText_bg
+            )
+            self.style.map("Treeview",
+                background=[('selected', default_select_bg)],
+                foreground=[('selected', default_select_fg)]
+            )
+            self.style.map("ScrollableNotebook.Tab",
+                        background=[
+                            ("selected", default_bottom_app),
+                            ("active", color_act_bg_pestaña)
+                        ],
+                        foreground=[
+                            ("selected", default_scrText_fg),
+                            ("active", default_scrText_fg)
+                        ]
+                        )
+            self.style.configure('TCombobox',
+                                background=default_bottom_app,
+                                foreground=default_scrText_fg,
+                                #electbackground=default_scrText_fg,
+                                #selectforeground=default_select_fg,
+                                )
+            
+            if PST_EXT != "":
+                PST_EXT.frame1.config(background=default_menu_bg)            
+                PST_EXT.txt.config(
+                    foreground=default_scrText_fg,
+                    background=default_scrText_bg,
+                    highlightbackground=default_Framework,
+                    highlightcolor=default_hglcolor,
+                    highlightthickness=hhtk,
+                    insertbackground=default_hglcolor
+                )            
+            if PST_DESV != "":
+                if PST_VTN != "":
+                    try:
+                        self.windowModeDefault()
+                    except TclError:
+                        pass
+                if PST_EXP != "":
+                    try:
+                        self.expandirModeDefault()
+                    except TclError:
+                        pass
+                PST_DESV.cambiar_icono(PST_DESV._btnAcc_, app.icono_account)
+                PST_DESV.cambiar_icono(PST_DESV._btnAuth_, app.icono_account)
+                PST_DESV.cambiar_icono(PST_DESV._btnComm_, app.icono_account)
+                PST_DESV.cambiar_icono(PST_DESV._btnDir_, app.icono_account)
+                PST_DESV.cambiar_icono(PST_DESV._btnIdr_, app.icono_account)
+                PST_DESV.cambiar_icono(PST_DESV._btnSer_, app.icono_account)
+                app._hide_event()
+                PST_DESV.DESV_btnAccount.canvas.config(
                     background=default_bottom_app,
                 )
-                self.cuaderno.buttonTab_novo.config(background=default_bottom_app)
-                self.cuaderno.leftArrow.config(background=default_bottom_app)
-                self.cuaderno.rightArrow.config(background=default_bottom_app)
-                self.rbOpenExt.canvas.config(background=default_bottom_app)
-                self.rbOpenDesv.canvas.config(background=default_bottom_app)
-                self.rbOpenAuto.canvas.config(background=default_bottom_app)
-                self.rbOpenExt.canvas.itemconfig(1, fill=default_bottom_app)
-                self.rbOpenDesv.canvas.itemconfig(1 ,fill=default_bottom_app)
-                self.rbOpenAuto.canvas.itemconfig(1, fill=default_bottom_app)
-                self.bar.config(
+                PST_DESV.DESV_btnAccount.canvas.itemconfig(
+                    1,
+                    fill=default_bottom_app,
+                    outline=default_Outline
+                )
+                PST_DESV.DESV_btnCommand.canvas.config(
+                    background=default_bottom_app,
+                )
+                PST_DESV.DESV_btnCommand.canvas.itemconfig(
+                    1,
+                    fill=default_bottom_app,
+                    outline=default_Outline
+                )
+                PST_DESV.DESV_btnDirectory.canvas.config(
+                    background=default_bottom_app,
+                )
+                PST_DESV.DESV_btnDirectory.canvas.itemconfig(
+                    1,
+                    fill=default_bottom_app,
+                    outline=default_Outline
+                )
+                PST_DESV.DESV_btnAuthorized.canvas.config(
+                    background=default_bottom_app,
+                )
+                PST_DESV.DESV_btnAuthorized.canvas.itemconfig(
+                    1,
+                    fill=default_bottom_app,
+                    outline=default_Outline
+                )
+                PST_DESV.DESV_btnIdrsa.canvas.config(
+                    background=default_bottom_app,
+                )
+                PST_DESV.DESV_btnIdrsa.canvas.itemconfig(
+                    1,
+                    fill=default_bottom_app,
+                    outline=default_Outline
+                )
+                PST_DESV.DESV_btnService.canvas.config(
+                    background=default_bottom_app,
+                )
+                PST_DESV.DESV_btnService.canvas.itemconfig(
+                    1,
+                    fill=default_bottom_app,
+                    outline=default_Outline
+                )
+                PST_DESV.DESV_entryModule.config(
+                    background=default_scrText_bg,
+                    foreground=default_scrText_fg,
+                    highlightbackground=default_Framework,
+                    highlightcolor=default_hglcolor,
+                    highlightthickness=hhtk,
+                    insertbackground=default_hglcolor
+                )
+                PST_DESV.DESV_ListBox.config(
+                    background=default_scrText_bg,
+                    foreground=default_scrText_fg,
+                    highlightbackground=default_Framework,
+                    highlightcolor=default_hglcolor,
+                    highlightthickness=hhtk,
+                )
+                PST_DESV.DESV_OptionMenu.config(
                     background=default_menu_bg,
                     foreground=default_scrText_fg,
+                    highlightbackground=default_Framework,
+                    highlightcolor=default_hglcolor,
                 )
-                self.style.configure('ScrollableNotebook',
-                            background=default_menu_bg,
+                PST_DESV.DESVfr2_lblDescripcion.configure(
+                    foreground='gray60',
+                    background=default_bottom_app,
                 )
-                app.estilos()
-                self.style.map("ScrollableNotebook.Tab",
-                            background=[
-                                ("selected", default_bottom_app),
-                                ("active", color_act_bg_pestaña)
-                            ],
-                            foreground=[
-                                ("selected", default_scrText_fg),
-                                ("active", default_scrText_fg)
-                            ]
-                            )
-                self.style.configure('TCombobox',
-                                    background=default_bottom_app,
-                                    foreground=default_scrText_fg,
-                                    #electbackground=default_scrText_fg,
-                                    #selectforeground=default_select_fg,
-                                    )
-                
-                if PST_EXT != "":
-                    PST_EXT.frame1.config(background=default_menu_bg)            
-                    PST_EXT.txt.config(
-                        foreground=default_scrText_fg,
-                        background=default_scrText_bg,
-                        highlightbackground=default_Framework,
-                        highlightcolor=default_hglcolor,
-                        highlightthickness=hhtk,
-                        insertbackground=default_hglcolor
-                    )            
+                PST_DESV.DESV_scrCheck.configure(
+                    foreground=default_scrText_fg,
+                    background=default_scrText_bg,
+                    highlightbackground=default_Framework,
+                    highlightcolor=default_hglcolor,
+                    highlightthickness=hhtk,
+                    insertbackground=default_hglcolor
+                )
+                PST_DESV.DESVfr2_srcBackup.configure(
+                    foreground=default_scrText_fg,
+                    background=default_scrText_bg,
+                    highlightbackground=default_Framework,
+                    highlightcolor=default_hglcolor,
+                    highlightthickness=hhtk,
+                    insertbackground=default_hglcolor
+                )
+                PST_DESV.DESV_scrEdit.configure(
+                    foreground=default_scrText_fg,
+                    background=default_scrText_bg,
+                    highlightbackground=default_Framework,
+                    highlightcolor=default_hglcolor,
+                    highlightthickness=hhtk,
+                    insertbackground=default_hglcolor
+                )
+                PST_DESV.DESV_scrEvidencia.configure(
+                    foreground=default_scrText_fg,
+                    background=default_scrText_bg,
+                    highlightbackground=default_Framework,
+                    highlightcolor=default_hglcolor,
+                    highlightthickness=hhtk,
+                    insertbackground=default_hglcolor
+                )
+                PST_DESV.DESVfr3_srcRefrescar.configure(
+                    foreground=default_scrText_fg,
+                    background=default_scrText_bg,
+                    highlightbackground=default_Framework,
+                    highlightcolor=default_hglcolor,
+                    highlightthickness=hhtk,
+                    insertbackground=default_hglcolor
+                )
+                PST_DESV.asignar_iconos()
+        self.changeTextButton(text_btnMode)
 
-                if PST_DESV != "":
-                    if PST_VTN != "":
-                        try:
-                            self.windowModeDefault()
-                        except TclError:
-                            pass
-                    if PST_EXP != "":
-                        try:
-                            self.expandirModeDefault()
-                        except TclError:
-                            pass
-                    # PST_DESV.cambiar_icono(PST_DESV._btnAcc_, app.icono_account)
-                    # PST_DESV.cambiar_icono(PST_DESV._btnAuth_, app.icono_account)
-                    # PST_DESV.cambiar_icono(PST_DESV._btnComm_, app.icono_account)
-                    # PST_DESV.cambiar_icono(PST_DESV._btnDir_, app.icono_account)
-                    # PST_DESV.cambiar_icono(PST_DESV._btnIdr_, app.icono_account)
-                    # PST_DESV.cambiar_icono(PST_DESV._btnSer_, app.icono_account)
-                    PST_DESV.DESV_btnAccount.canvas.config(
-                        background=default_bottom_app,
-                    )
-                    PST_DESV.DESV_btnAccount.canvas.itemconfig(
-                        1,
-                        fill=default_bottom_app,
-                        outline=default_Outline
-                    )
-                    PST_DESV.DESV_btnCommand.canvas.config(
-                        background=default_bottom_app,
-                    )
-                    PST_DESV.DESV_btnCommand.canvas.itemconfig(
-                        1,
-                        fill=default_bottom_app,
-                        outline=default_Outline
-                    )
-                    PST_DESV.DESV_btnDirectory.canvas.config(
-                        background=default_bottom_app,
-                    )
-                    PST_DESV.DESV_btnDirectory.canvas.itemconfig(
-                        1,
-                        fill=default_bottom_app,
-                        outline=default_Outline
-                    )
-                    PST_DESV.DESV_btnAuthorized.canvas.config(
-                        background=default_bottom_app,
-                    )
-                    PST_DESV.DESV_btnAuthorized.canvas.itemconfig(
-                        1,
-                        fill=default_bottom_app,
-                        outline=default_Outline
-                    )
-                    PST_DESV.DESV_btnIdrsa.canvas.config(
-                        background=default_bottom_app,
-                    )
-                    PST_DESV.DESV_btnIdrsa.canvas.itemconfig(
-                        1,
-                        fill=default_bottom_app,
-                        outline=default_Outline
-                    )
-                    PST_DESV.DESV_btnService.canvas.config(
-                        background=default_bottom_app,
-                    )
-                    PST_DESV.DESV_btnService.canvas.itemconfig(
-                        1,
-                        fill=default_bottom_app,
-                        outline=default_Outline
-                    )
-                    PST_DESV.DESV_entryModule.config(
-                        background=default_scrText_bg,
-                        foreground=default_scrText_fg,
-                        highlightbackground=default_Framework,
-                        highlightcolor=default_hglcolor,
-                        highlightthickness=hhtk,
-                        insertbackground=default_hglcolor
-                    )
-                    PST_DESV.DESV_ListBox.config(
-                        background=default_scrText_bg,
-                        foreground=default_scrText_fg,
-                        highlightbackground=default_Framework,
-                        highlightcolor=default_hglcolor,
-                        highlightthickness=hhtk,
-                    )
-                    PST_DESV.DESV_OptionMenu.config(
-                        background=default_menu_bg,
-                        foreground=default_scrText_fg,
-                        highlightbackground=default_Framework,
-                        highlightcolor=default_hglcolor,
-                        # highlightthickness=0,
-                    )
-                    PST_DESV.DESVfr2_lblDescripcion.configure(
-                        foreground='gray60',
-                        background=default_bottom_app,
-                    )
-                    PST_DESV.DESV_scrCheck.configure(
-                        foreground=default_scrText_fg,
-                        background=default_scrText_bg,
-                        highlightbackground=default_Framework,
-                        highlightcolor=default_hglcolor,
-                        highlightthickness=hhtk,
-                        insertbackground=default_hglcolor
-                    )
-                    PST_DESV.DESVfr2_srcBackup.configure(
-                        foreground=default_scrText_fg,
-                        background=default_scrText_bg,
-                        highlightbackground=default_Framework,
-                        highlightcolor=default_hglcolor,
-                        highlightthickness=hhtk,
-                        insertbackground=default_hglcolor
-                    )
-                    PST_DESV.DESV_scrEdit.configure(
-                        foreground=default_scrText_fg,
-                        background=default_scrText_bg,
-                        highlightbackground=default_Framework,
-                        highlightcolor=default_hglcolor,
-                        highlightthickness=hhtk,
-                        insertbackground=default_hglcolor
-                    )
-                    PST_DESV.DESV_scrEvidencia.configure(
-                        foreground=default_scrText_fg,
-                        background=default_scrText_bg,
-                        highlightbackground=default_Framework,
-                        highlightcolor=default_hglcolor,
-                        highlightthickness=hhtk,
-                        insertbackground=default_hglcolor
-                    )
-                    PST_DESV.DESVfr3_srcRefrescar.configure(
-                        foreground=default_scrText_fg,
-                        background=default_scrText_bg,
-                        highlightbackground=default_Framework,
-                        highlightcolor=default_hglcolor,
-                        highlightthickness=hhtk,
-                        insertbackground=default_hglcolor
-                    )
-                    PST_DESV.asignar_iconos()
-
+    #todo MODO PARA LA CLASE EXPANDIR
     def expandirModeDefault(self):
         PST_EXP.colourLineExpandir(
                 default_scrText_bg,
@@ -4953,12 +4994,12 @@ class Aplicacion():
                             highlightthickness=hhtk,
                             insertbackground=default_hglcolor
                             )
-        PST_DESV.cambiar_icono(PST_EXP._btn_expDIR_, app.icono_account)
-        PST_DESV.cambiar_icono(PST_EXP._btn_expAUT_, app.icono_account)
-        PST_DESV.cambiar_icono(PST_EXP._btn_expACC_, app.icono_account)
-        PST_DESV.cambiar_icono(PST_EXP._btn_expSER_, app.icono_account)
-        PST_DESV.cambiar_icono(PST_EXP._btn_expCMD_, app.icono_account)
-        PST_DESV.cambiar_icono(PST_EXP._btn_expIDR_, app.icono_account)
+        # PST_DESV.cambiar_icono(PST_EXP._btn_expDIR_, app.icono_account)
+        # PST_DESV.cambiar_icono(PST_EXP._btn_expAUT_, app.icono_account)
+        # PST_DESV.cambiar_icono(PST_EXP._btn_expACC_, app.icono_account)
+        # PST_DESV.cambiar_icono(PST_EXP._btn_expSER_, app.icono_account)
+        # PST_DESV.cambiar_icono(PST_EXP._btn_expCMD_, app.icono_account)
+        # PST_DESV.cambiar_icono(PST_EXP._btn_expIDR_, app.icono_account)
         PST_EXP.EXP_btnDirectory.canvas.itemconfig(1,
                         fill=default_bottom_app,
                         outline=default_Outline)
@@ -5010,12 +5051,12 @@ class Aplicacion():
                             highlightthickness=hhtk,
                             insertbackground=pers_hglcolor
                             )
-        PST_DESV.cambiar_icono(PST_EXP._btn_expDIR_, app.icono_account1)
-        PST_DESV.cambiar_icono(PST_EXP._btn_expAUT_, app.icono_account1)
-        PST_DESV.cambiar_icono(PST_EXP._btn_expACC_, app.icono_account1)
-        PST_DESV.cambiar_icono(PST_EXP._btn_expSER_, app.icono_account1)
-        PST_DESV.cambiar_icono(PST_EXP._btn_expCMD_, app.icono_account1)
-        PST_DESV.cambiar_icono(PST_EXP._btn_expIDR_, app.icono_account1)
+        # PST_DESV.cambiar_icono(PST_EXP._btn_expDIR_, app.icono_account1)
+        # PST_DESV.cambiar_icono(PST_EXP._btn_expAUT_, app.icono_account1)
+        # PST_DESV.cambiar_icono(PST_EXP._btn_expACC_, app.icono_account1)
+        # PST_DESV.cambiar_icono(PST_EXP._btn_expSER_, app.icono_account1)
+        # PST_DESV.cambiar_icono(PST_EXP._btn_expCMD_, app.icono_account1)
+        # PST_DESV.cambiar_icono(PST_EXP._btn_expIDR_, app.icono_account1)
         
         PST_EXP.EXP_btnDirectory.canvas.itemconfig(1,
                         fill=pers_bottom_app,
@@ -5042,6 +5083,7 @@ class Aplicacion():
         PST_EXP.EXP_btnCommand.canvas.config(background=pers_bottom_app)
         PST_EXP.EXP_btnIdrsa.canvas.config(background=pers_bottom_app)
 
+    #todo MODO PARA LA CLASE VENTANA
     def windowModeDark(self):
         PST_VTN.vtn_ventanas.config(
             background=pers_bottom_app,
@@ -5148,6 +5190,7 @@ class Aplicacion():
             tooltip = False
         except TclError:
             pass
+        self.activeDefault()
 
     def openTooltip(self, object, text, *args):
         global custom

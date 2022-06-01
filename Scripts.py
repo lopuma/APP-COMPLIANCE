@@ -8,7 +8,7 @@ from getpass import getuser
 import subprocess
 from functools import partial
 from ScrollableNotebook  import *
-from Compliance import default_bottom_app, default_boton_acfg, default_boton_fg, hhtk, default_boton_bg
+from Compliance import default_Outline, pathIcon, pathConfig, default_bottom_app, default_boton_acfg, default_boton_fg, hhtk, default_boton_bg
 from RadioBotton import RadioButton, BtnScripts
 #* variable para actualizar la ventana
 PST_AUT = ""
@@ -16,11 +16,6 @@ FR_POL = ""
 FR_SCR = ""
 fr_clt = False
 framescript = ""
-#* PATH
-user = getuser()
-mypath = os.path.expanduser("~/")
-path_icon = mypath+"Compliance/image/"
-path_config = mypath+"Compliance/.conf/{}.json"
 btn_cerrar = ""
 # * COLORES INICIALES
 # ? -------------------------------------------------------------
@@ -103,7 +98,7 @@ class FramesPoliticas(ttk.Frame):
         self.asignar_name_clt(cliente)
 
     def format_response(self, data):
-        url = path_icon+"{}"
+        url = pathIcon+"{}"
         y_alto_btn = 80
         x_ancho_btn = 300
         hg_btn = int(y_alto_btn - 22)
@@ -151,7 +146,7 @@ class FramesPoliticas(ttk.Frame):
             self.botones_politica.bind("<Button-1>", partial(self.on_enter_politica, self.botones_politica, self.buttons_POLITICA))
 
     def asignar_name_clt(self, name):
-        with open(path_config.format('clientes')) as pr_clt:
+        with open(pathConfig.format('clientes.json')) as pr_clt:
             data = json.load(pr_clt)
             for dt in data:
                 if dt['name'] == name:
@@ -224,7 +219,7 @@ class FramesPoliticas(ttk.Frame):
             i['foreground'] = default_boton_fg
 
         for rb in self.btn_rb_pol:
-            rb.canvas.itemconfig(1, fill=default_boton_bg, outline=default_outline)
+            rb.canvas.itemconfig(1, fill=default_boton_bg, outline=default_Outline)
 
 class FramesScripts(ttk.Frame):
     def __init__(self, parent, cliente, frame, lt_scr, scr_pol, * args, **kwargs):
@@ -409,7 +404,7 @@ class FramesScripts(ttk.Frame):
             i['foreground'] = default_boton_fg
 
         for rb in self.btn_rb_scr:
-            rb.canvas.itemconfig(1, fill=default_boton_bg, outline=default_outline)
+            rb.canvas.itemconfig(1, fill=default_boton_bg, outline=default_Outline)
 
     def ejecutar_script(self, btn, cliente, datos, frame, canvas):
         self.fr_cv_scripts = []
@@ -449,9 +444,9 @@ class Automatizar(ttk.Frame):
     
     def iconos(self):
         self.close_icon = ImageTk.PhotoImage(
-            Image.open(path_icon+r"close1.png").resize((80, 60)))
+            Image.open(pathIcon+r"close1.png").resize((80, 60)))
         self.goclient_ico = ImageTk.PhotoImage(
-            Image.open(path_icon+r"goclient.png").resize((20, 20)))
+            Image.open(pathIcon+r"goclient.png").resize((20, 20)))
 
     def src_sudo(self):
         tittle = "{} SCRIPT de {}".format(("AFB"), ("SUDO"))
@@ -563,7 +558,7 @@ class Automatizar(ttk.Frame):
         hg_btn = int(y_alto_btn - 22)
         wd_btn = int(x_ancho_btn - 22)
 # # * ----------- BOTOTNES DE CLIENTES ------------
-        with open(path_config.format("clientes")) as op:
+        with open(pathConfig.format("clientes.json")) as op:
             data = json.load(op)
             for clt in data:
                 self.buttons_clientes = RadioButton(
@@ -719,7 +714,7 @@ class Automatizar(ttk.Frame):
             i['foreground']=default_boton_fg
 
         for rb in PST_AUT.bfr_rb_list:
-            rb.canvas.itemconfig(1, fill=default_boton_bg, outline=default_outline)
+            rb.canvas.itemconfig(1, fill=default_boton_bg, outline=default_Outline)
     
     
 

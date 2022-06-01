@@ -45,7 +45,45 @@ class RadioButton(ttk.Frame):
             return obj.create_polygon(points, **kwargs, smooth=True)
         
         round_rectangle(self.canvas, 5, 5, ancho - 5, alto - 5, radio, outline=default_Outline, width=width, fill=bg_cl, activewidth=3)
-    
+
+class RadioFrame(ttk.Frame):
+    def __init__(self, *args,
+            alto, 
+            ancho, 
+            radio,
+            width,
+            bg_color, 
+            **kwargs
+        ):
+        super().__init__(*args, **kwargs)
+        from Compliance import default_bottom_app, default_Outline
+        
+        global bg_cl
+
+        bg_cl =  bg_color
+        if bg_cl is None:
+            bg_cl = 'red'
+        else:
+            bg_cl = bg_color
+        
+        self.canvas = tk.Canvas(self,
+        height=alto, 
+        width=ancho,
+        )
+        self.canvas.pack( pady=10)
+        self.canvas.configure(
+            background=default_bottom_app,
+            border=0,
+            borderwidth=0,
+            highlightthickness=0
+        )
+        
+
+        def round_rectangle(obj, x1, y1, x2, y2, r=radio, border=2, **kwargs):    
+            points = (x1+r, y1, x1+r, y1, x2-r, y1, x2-r, y1, x2, y1, x2, y1+r, x2, y1+r, x2, y2-r, x2, y2-r, x2, y2, x2-r, y2, x2-r, y2, x1+r, y2, x1+r, y2, x1, y2, x1, y2-r, x1, y2-r, x1, y1+r, x1, y1+r, x1, y1)
+            return obj.create_polygon(points, **kwargs, smooth=True)
+        
+        round_rectangle(self.canvas, 5, 5, ancho - 5, alto - 5, radio, outline=default_Outline, width=width, fill=bg_cl, activewidth=3)
 
 class BtnScripts(tk.Button):
     def __init__(self, *args, **kwargs):
