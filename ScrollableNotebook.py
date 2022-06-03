@@ -207,7 +207,6 @@ class ScrollableNotebook(ttk.Frame):
         )
     
     def _wheelscroll(self, event):
-        print("siguiente")
         self._rightSlide
 
     def _bottomMenu_(self,event):
