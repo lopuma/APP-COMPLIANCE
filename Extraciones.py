@@ -8,7 +8,6 @@ from os.path import isdir, join, abspath
 from tkinter import ttk
 from tkinter import scrolledtext as st
 from tkinter import font
-from turtle import width
 from PIL import Image, ImageTk
 from threading import Thread
 from functools import partial

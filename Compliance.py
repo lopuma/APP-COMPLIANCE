@@ -3372,21 +3372,6 @@ class Aplicacion():
         )
         #self.sizegrid.pack(fill='both')
         self.sizegrid.grid(row=1, column=0, pady=5, sticky='nsew')
-
-        self.btnMode = tk.Button(
-            self.sizegrid,
-            text="Mode Dark",
-            height=40,
-            border=0,
-            borderwidth=0,
-            bg=default_menu_bg,
-            highlightbackground=default_menu_bg,
-            activebackground=default_menu_bg,
-            image=self.icono_modeOff,
-            anchor='center',
-            command=self.activeModeDark,
-            )
-        #self.btnMode.grid(row=0, column=0, padx=0, pady=0, sticky='nsew')
         self.changeTextButton(text_btnMode)
 
     def changeTextButton(self, text_btnMode):
@@ -3506,20 +3491,38 @@ class Aplicacion():
             Image.open(pathIcon+r"openExtraciones.png").resize((80, 80)))
         self.Automatizar_icon = ImageTk.PhotoImage(
             Image.open(pathIcon+r"automatizar.png").resize((80, 80)))
-        self.Abrir_icon = ImageTk.PhotoImage(
-            Image.open(pathIcon+r"abrir.png").resize((30, 30)))
-        self.Client_icon = ImageTk.PhotoImage(
-            Image.open(pathIcon+r"clientes.png").resize((30, 30)))
-        self.Salir_icon = ImageTk.PhotoImage(
-            Image.open(pathIcon+r"salir.png").resize((30, 30)))
-        self.BuscarBar_icon = ImageTk.PhotoImage(
-            Image.open(pathIcon+r"buscar1.png").resize((30, 30)))
-        self.PegarBar_icon = ImageTk.PhotoImage(
-            Image.open(pathIcon+r"pegarBarra.png").resize((30, 30)))
-        self.Ayuda_icon = ImageTk.PhotoImage(
-            Image.open(pathIcon+r"ayuda.png").resize((30, 30)))
-        self.AcercaDe_icon = ImageTk.PhotoImage(
-            Image.open(pathIcon+r"acercaDe.png").resize((30, 30)))
+        self.iconoNew = (
+        tk.PhotoImage("iconoNew", data='''
+            iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAABmJLR0QA/wD/AP+gvaeTAAACQ0lEQVRIieWWTUhUURSAv/swtDEyZIyXC9+zDGkSgiJIwoVUkGJgbYPBAqPaBP1Rs65NW8EWbqIiqCRLC6oJgiyhiMAwNcHxmdmMmjY6TvOjz9eiHHR09M2fEn6rd88793yXey6XC2sNER3wer2FQINhGEWGYSz4vwTToVDosSzLl4UQ+nLJGdEBSZJuTE4GDrS2doJhmLZuyrFQut92fmRkxGoYRo0QYsnJC8S6rhd1dvTT8uQDO/fsMC3+3PiOr53fqKk9bPd4PH7gbFzi2e0tLFY4duKIafGPfjdPW96zLjOD4/aDZzRN86uqeilWvmS68jJIkiAcmqKpsY3mR23k5uZe7OnpuZZ28SzhUJjbt5y8fP4RWZYd7e3tV1dE/Fc+RUP9M96+6RCqql53Op210TkLepwo+eoWBvvdkfGMrnOzrhlF2SwKCgrOAQ+A8ZSLq+1VVNur5sXu1t3H7R5j2/Y8C2CdK07LVsdg3mWUsNjV1Yerqy/hVSQs7u3W6O3WVl6cLHEdrgmvj3AwDIDf9xuAn55RANZbssjemJ0e8b36h4wOjwHg++UD4MunLgDyZCunrtSkR3zacTLy7Wx6DcCho+XxlIjwf/R4LkLE80ZIoXhf+d7VEW/IMX+CF2PVerz2xDF7POAa5EXjq6SKD7gGoXSrObGu65qtRNlVUemP63m7GBWVu7GVKLjd34eBmSXFgUDgQjAYVMrKivOTsv5jfHxsyOFw3AGG5sZj3QJZgApkpsA9DQwAEymolTx/AAVIwo5raMlVAAAAAElFTkSuQmCC
+        ''')) 
+        self.iconoCustomer = (
+        tk.PhotoImage("iconoCustomer", data='''
+            iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAABmJLR0QA/wD/AP+gvaeTAAAEhUlEQVRIieXWb0wbZRwH8O/1etfrtVcopToKFOi2Am4F3QbO/UtwKIsv1DdTE9SYDF+Q7I+OOXXGGP+9GUSzLCEZm5mLiX9CBjRm/zo0JvxnGSwIcTCgpaMtlpZxbUe767XnC6NxY6xd6xvj7+Xl+/w+z3N5nnsO+L8Vkcogu92+mWGYbQAQDAa7zGbzwL87rXtqbm7uyOLi4i2e56VAICAFAgGJ53nJ4/EE7Hb7Rw/TK+kV+3y+Tpqmd/p9AVw+P4ipCScAYE2xEc88VwltFgen03nFYrFUJtNPlkzI6/V+RdP0zt7uUbz/VjMyQnbs2a7Enu1KcMFpvHegGf3dYzAajRWdnZ0XkulJJgr4fL5cmqa/nrzhlp06dhbH6tegolgDnYaCTkNhfaEaVeUZaDw5iFLLahSZ8k0Mw/zc1dXlTGvFsVjsCEEQ5HenL2L/CwboNNSyjE5DY//zBnx7+gJUKpXMbDZ/lqhvQpiiqI3xuAS7fQ4b1nIr5jaaOUxNeRCPS9Dr9ebGxkZVWjAApSBEoVTIQRAr70WCIMAo5IgKIiiKovr7+x9NF/YwDA1BlBC5E18xFBZiEGMSFAwFr9d7W6vVCmnBS0tL7QDw1NZ1aO+ZXzHX3uPDlm3rAQDd3d3Xa2tr59KC8/LyToTD4cDLr1fj4rUgLg8tLMvYri7g0nAQL71WDYfDccdqtbZWVVWJD+qb1AfE7XbvUigU50PBCHG8qRW8fwFPmP7cO0NTIWj12dh3aDcUDCnV19e3hUKht2022820YQCYmZl5VaFQnGFZVuZ2+TE54QIArC3OQ44hC5FIRGpoaLg0Ojr6yfDwcF+ifknBDodjS0ZGxvckSebH4xImJ1zwuP0QxRh02RqUPlYABUOB53khHA5/msw5TgjPzs4e5DjuqCjGyLbWHpz7cRCMSgO5QgUQMkjRCAK35vH4htXY8+azyNSq4XQ6e8vKyramDHu93gMMw3zpm+eJD949A5LJhDbXDJKi78pJkoRbvzvBu27gQMOL2FRpxvj4+HBFRcWGh4bdbvcmtVrdN+/l5e8cPAVtbik43aoHzRNC+DY841dQv3cXKjeXYGBg4IeamppX7pdd8TgplcrWaFSUf/zhN8g0lCREAYBWqpBT8iSaj5+Da9aP8vLy3S0tLdVJwx6PZy9JkoXWtj6IMg6a7JyE6N84o4TOuA7HvrCCZVlZUVFRiyRJy97sfWGGYQ5FIgI6zvZCl1+SNPpXcbpVWAxEcW1oEhaLpbCuru7phPD09HQBSZLGrl9+hUZvAClffg0mU2p9Iazt/WBZltixY8eRhDDHcfsBED91joDNNKSEAgCX9Qiu/3YTghBFQUFB+eHDh++6U+X3DiBJcrMkSZhxzMG43gQhfDtlnFVnYHLCDYPBoOnt7TUDuLoiDIATBBEmUw7uLN5IGQWALC0NggAYhiFdLlfuA+FYLHacIIgTnx99I6V/7ntLkiR0dHQ4WZYN/vP5Mliv159samryq1SqfaIoqtOFR0ZGpm02m7WmpqZ7bGws3Xb/4foDR4WzhPac9+4AAAAASUVORK5CYII=
+        ''')) 
+        self.iconoExit = (
+        tk.PhotoImage("iconoExit", data='''
+            iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAABmJLR0QA/wD/AP+gvaeTAAAFJ0lEQVRIiaWWW4wTZRSAv39m2k673W3ZG+Ju2wXKkgArGuQSQAgCicQECYlvJCoQ1Cgm+IB4QWNIiIIYMEafcE2M0SejL4JBSQy35bKbrbjIZUEuwV0oe2m7baedzvw+7EV2C7MFz9PMOec/3znJ+c/5BQ4ipVTOnj0bcPIpVZLJZGHx4sWp4X/h5PzSxlcPdd+Kr1BU9X+DrUKBRfPnr9q+fetBAM3J2TStYOP0KJOnNCCEQFEG85w7bwG6Vyc1kCKfMx2BihBMqJzArp27pWnma4b1juBhuXTxMtev36C6qhpV0+jtzaB7ddrb2sjnc45nDcNg46YNRfqSwEjJmrXPEagI8Ne5c8Ta2xBCRdVc+MsDuN36fY8mEz0UCoWHBAMuTSPaGCXaGGXDpg10/9NNa2srJ1tOcav7BrpehuZy4/X6UBRl3Hglg8dKXaiOulAdq9esJpFI0N4W42TLKTovdVLmL0dRNLy+MmdwLBYrE0K47zb09PSk9n/9XUlJBAIBli5bwtJlS7AKBc6dO8/eT/c5gzs6Ovzbtm5PCSRSDHatLaE6WP43mqenJPJdomoas5pmFumXr1ye7e3O/zICzmazukDyvjuFqWkoqsKfpsIxq1Bp3QPccuwEy1YsIxgMPlBCyURCTWsZP3AbYKQLhMfFjoyXfWld/pZ3S133Xr5XgNYjR/jqsy+QUt4XIoQgFA6P0p0+dcZt96UXDf+PgF2Kil9TrUXPLH/UXfPIxxnFdcjI5SalBzKkMxm6um7RebETI5+n9+oVDv180LHCpqYmR3tRV1+92vVkdc/NbdiSSS5NKn0ZBILMmeOcPXOc6VisC+R454cfmT5rBpFIpCiolJKDBw4w8ZFQ6eCKCs/luS6TaitP4wSfcKvWkGX0hNrsy/Dlnr18uPsjPB4P+Xye1tNtTI1Ooaa2Btu2HSsuuunXbnZv+DU/mE+/wxx+Qod5hSTf7W8G4Nvmz2k5/Ak7d3wwLhTGGSDx9OCoC3pcqKJ4kd3dX5ZlIfI5BFaR3wODJZLbaZPb6eLKL9kqLXo5O9a/CMC69ZvZ/naczVteebiRqQjNvmorfC99gwoxtLSHKlaRPC0MfsLPm+++ha4PLghd1/GW+QgESns3FIFnTJ+8pz1nWneQYiCTWRcMBuqijVOJRqcB8OM33/CtobDq+bVFHf36G69RVV3leMeLwKpiM1Cw1OOHj94EqKyqPFrweLrK/L66VDKFruvUh+vRXRr+qnoWLH2qKFhtbU2RblywZZjsCipY5FUAs3FSbO/5roUA/X399Pb2UB+u58kVK2ma3UQ2a6DrOXTdUzJsFNjr9RogeC/rh+x/hqlXulcBibEHFixcMPLd399HZWUlbrd7rNv44JkzZw7EYjH/fdbiCafDUkJPbx+BinJ8Pt+DgQFmz56dBtJjjete2DR+BClJJJJkMlnK/X48ntKqf+gXyFgxTZPevj4UIXC53Yjh3W7bXL92Ddu2R02gksGnT7WSy+WJRMLUTKwdCTxWbCkxDIOCaXIn3kUuZ5BKJpBy9BgtCTxl2mTit+P80R7jyO9HSaaShEIhIg0hQpEIkXAY3Tv6palpLubMeQyEIBCoKIrpDBYic7nzCtev3RillpbkwvkLXDh/YchNUDuxhoaGBsKRMOFIeHBbnWkfOWNkDdxuT/9IaCduc3OzHo/H5zsmNySJRDZ8M979rCrUFdlsrtLIGSya9/hyy7JsAJcrkNqy5eW2UmL9L+no6HBs738BCEj1jbPumaUAAAAASUVORK5CYII=
+        '''))
+        self.iconoModeDark = (
+        tk.PhotoImage("iconoModeDark", data='''
+            iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAABmJLR0QA/wD/AP+gvaeTAAAFC0lEQVRIidWWXWxTZRjHn/f0nNOP0dOvbe26IXNbGVlkKtV90Gw0aiDojSESwREFrwhxN174gUNPGCEDE8FAYrzxAyYIg00unKjA6iLJMiLOAYWMgYUO6Nat6057+nF6znm9sdUtp11piIn/q+Z5/+f/O2/6PO95Af5vam5mzc3NrLnQ51EhD7ndLLmiSnsZEOAbt+JOj4cVHzaDKAQcj4POVq6z2uw6WzwOukIyCgI/CpFKxfU17eqyJvs3oiRPHjmeagdg5YeLZYnXN1OHSBVhfTB0v+2H8UPJhQ7FHXNWraVimc61utW6fWsbfRSAnecjiLlUMiEmkwkxSRBzqYXQrW300dWt1u3lS3Uuzqq1KDFUSkW//2KkotTFGc20y1FraChmkk84VphPe71eDAAwMTEklpe4kpE5cbD/p71D83dKdze1lG6KcsLcjatzu78/23leiZGzq7ds3PNWvdO8mzHShgtn779/yz9xoM5hO6DWyC8CpjVcJMojJN+M88TAvWD4YHVF+dvPrS/fy4WFudHfQh9293QczpatuOO0Rr0Xhq3GpvDsbEofjaYuPVah6S8pS7nrVi41Gc1F+lg8aDYVyw7GKL1AE7q1qSQ1wPOi2X878mn3qV2f5crOa443rNtZZrTBDUtpiqmpqQGKomA2lISxsTHQ6nDGF5ggRwPTS573eNjpxTLzGiemhDylN8YYu90OFEVl9VnLxXrTktj+fDIXBbvdrIaiBSdFkWAwGHJ6EQIo0ktr1te0qxfLzczxyy/tcpbZ9e+qaUSna+GQEAiHU72UOqXW6YoWywIAgCWM/PiUnWnc+uzeLUYzVZquJwUsTN6NdfX+yF6eB9aqyc3OBstGQvXP3+738eGRS5N/IkIClSpnH2akIjGScaq+yqF/paKyyJSuyxKGc6HEHQCYD34QwuzP/femtVpV5uzlOfFahBfHRIHoEsX8vgNCAglSAg2MjszuuD3O1WXqAvChm1xmvDJgj4eNAkCXQhZaVvUBx/M8I8syEETutohyKu/ApX1eALiWy5dPV+NUUnVcEDAEg8GcRjEFcpRDPQCAcxrzBMP18TgbmdVfDQSCEIlEFD2SBPj+HfWZQAi+yCdzkY5hiW1t646setqyf+qB+IkoqKhwOFxJ0jKBEA2hUAgoCoCbJYKBCfIrDa0fbmwoOVa9bM1TI1dazgB4su48B5gltrXR3Y0tpZsRAumujzt2/HTnzmKD60QsKpungzwfDkm/h6ao06EpzY7+c13Hah0tj1UvN2yoWs48U2JI1I5caenLBs8KfuO1tUebWks3pQ/8E30ffQ0AMO67ODN6dbC3vm6tm6Y0iZPfdbbfujMYBgC4PvbLdaupmTea6dXVtYzTwiQcf1w535s32N30XqWzsXi/JGJB6Svjcr2jX+UsOWg0q6tFaeXnfv9FIb026r0wnIYzBqoaJ5486Zv4NbyQoXgD8Qx1+WxlnR9jQLdP9HX0LFwXRR0iEELp3wvXu3s6Dr8q7plEgKs8Q10+JYYiGADg275d+7Kt5SOlF/63CrrskWQMyzIGWcZAkrFFZ1ZJCIAlWhuS2xDC+R3Gf8ti0bwJgGBmJp7X3KaFMZIGh9VfIgBArQ0dlTIWUVzWBPQEz4igKuiunE0kSLGIXMRpiYSNQCQeHN7jIwEAMCGbKAxII8dnZFldRJGi8VGCkahGJojHJQKZRCRjAFBsuP9EfwEG3xj4PwITUQAAAABJRU5ErkJggg==
+        '''))
+        self.iconoIncident = (
+        tk.PhotoImage("iconoIncident", data='''
+            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
+        '''))
+        self.iconoFindBar = (
+        tk.PhotoImage("iconoFindBar", data='''
+            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
+        '''))
+        self.iconoHelp = (
+        tk.PhotoImage("iconoHelp", data='''
+            iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAABmJLR0QA/wD/AP+gvaeTAAAE9UlEQVRIieWWW3ATVRjH/5vsbnaTbpKmpSktoS0X24ECrYwXxjIgl9HhQaAIlOqDPHB5gFFUFIbCgx2dcRSvYL2h46WA+MSM4ogODHSAwSnlNlMLtJReoJA2bZLNZu+7PrSpCUlJOo7jg9/TyXe+7//b75yT8x3gPzJinPEkAG5kzAPQ/jUwS5LzSrLY1z02eko2TXEcRVopC4GQqpm6iWhE0ZSIpsqCbvQHJfnXO6LcCCDwT8DuUhd3aKXP+8iWspKcXBv9QKGopuN8IKh/29HTdyUY7rgVkV4SVPXSeMGFsz3O3w5VPVw2lXOMdzvgl2S8fKHV39I/9PVNQdyRKsaawsfNynadPLbosZmTHGwSVDVMXA3yaA4Ewas6chkaViIxzEGSqJ480cFR1OzrvFAckJWf0oJLndyRxvkVVUVZ9gQ1E8B7XX58IhgIzJ0HPPkULrEcGi63QYxGMYezJ1Uwx+O0BWV1SkdIuB3WtKvxcwniOQyzZPP0yYd3z56ec7/Ituu9mLF+IxYvX5EEOLjvY+SePYnNk3KT5gzTxMLj59r/GBiqACDE/Jb4oALW9vb2mVOToKf7g2Afn4/Fy1dAEkXs27Mbe1ZXY1dtDXq7ulC7ZSvOMU6E1eR/l4Ug8FZlWUlRln1ngj82oIC5C/M9JYzVkpTcJMhYsmYtIjyPXc+tQ23fDXxfkouGPBZf1A3rzVu5Ck3+waRcAKjK81i9DLMacVtLxgbT3NyL66f6slMlPu22480dr0HXNLzjdeAhzgEAcNMUaCkIALCxLGTDTAkGgJri/PwrwfACSdNOJFScRZIzZ7i4lElz3Rw+n5iFAz73KBQABmQFOucCAPx5pgmV2anzAWDV5AJnscO+IaliF02OnQUg/gIxAeztuoeLlANb976PCM+jt6UZJaWFY+Z7WRs4yjL9fjDlsJK2B4Hj7cuefjDV61C/tgayLKN+4wbU5bvS5rloyhkbx5ZaFQ1dzRR8VtKwbG0NIjyPuudrsZ3RMMOVlTbPYSUZjBQ7useyrouZgk16eHFO/XIMm1gTlRlAAcBJkwDgSAAHFS2aKThmxaVluChl3hmHZNXEyCXyd8WGecMvyRkJaMpwXFl5OTpUI2Mwr2kiRnr46Kn2S+KJy4Ph2qUFE9J2owragob6NyBFo1jKMRlBBU1Hnyh1x36Pggcl9fTxuwP+pQUTvOlEXi3y4kp3KwgCmJXvyQh8oL0rFBDF/UlgAO1n7g36DdP0WogHF31+iMfeQQmkYWA7YUl7uMKqhm86bt8IKPrRmC/hYvZL0kff3ewVklMTbf+AgPrDP6Lu4A941x9JF45tza19nYK4Kd6XAO6NSgc+bLvVmu6QkaaB7s5OCJEIWIx9PwNAY2dv5Iw/8FlUVVvi/anW1Dffm9P086JHi2hLcqcCgICs4NM7Q7itaNjpy4HPnvqANQdC2gtnL//eHuaXAYlfmHIzJ7BsVYWHO9z4RGWhkyJThaS1dl4wnz11oaUtxFcBkO6fT/XmQlTTuv2yevxoz70qwLSXu5020pL5m+9amDfWnG652BbiFyPu1RFv6dSIPJau9jLMK+VuzldTVFA4K9tJFIyxtIph4Kv2Hr7h+q0L10KRZzD86E8tnGkVAPLcDLUsn2YWWK3ENBdJspTV4qAtFpuVIIigomiCrvf3i9IHd0XlyDh0/yf2F7A64c4RDz8sAAAAAElFTkSuQmCC        
+        '''))
+        self.iconoAbout = (
+        tk.PhotoImage("iconoAbout", data='''
+            iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAABmJLR0QA/wD/AP+gvaeTAAAEjUlEQVRIibWXXWwUVRTHf3NnZj/KIgW67XZhSSmh8mFSvh/ASBTkIz6IYIySoBE1EaPxwRiVxGJ4wECMMQhiJIA+ANGY4ovC8pVojCEY+ajQ0kopsuxu6xJgYbu7nZ251we2tZbtdgX7T+Zl5pzzm3vPybnnwr3LzD/DKhNYbArxmc802ty6uAFIQLp1ccNnGm2mENuBRYBRSkCtBOBLLiE2GUIbsTzo15ZW+83QCC9VHhcAXVmLSHeGcDyR+yGawFHqtiXlemAXYN8LeIZHF9+NNIzAxvo693M14zBF8f+0pGT/5RgNZ9t6UrYdzzpyBXD2v4BXGZq299XJE4wP6ut0r64XBQ5U2nFoONPq7LwYsW2lVgONA20KRVyla9rX2+c9ZL41rVaYQtxl8PWfMVafbGZHe5Sxhs708pH/+m4KwZKgX4wr8xiHYomnFZwDWvrbDFzxDEPTTnwyZ5r7xUmhgqvpSKWZHf6F7Ts+RynF6+vWcWr5AmpGeAva7+2I8trJc5at1Hzgt0Jg06OLP16eFBq/edbUQfc2HEvwZutVrnR2AhAKVLH1wRBLg/7BXHj7VIuzuz1yJevIOvIF17/0X/EZRmBDfV3RhM4dW0737WZeWLMGpRSZVIp5FeXFXNhYX6d/eyUezDrWWuAL+CfHpkuIg1tmTfHNGVs8iNfQWRao4ERTE1oswraZUwgNss29MoVgtMs0jsWvzbeV+hiQvVv9uFfXv4+tWmS6ChRTIVlSAlCqfU4qgo1HrbTtLAeOCwBd8NQT4ypVqUG2tHRQ1XiMQONxPrpwuSQfU2gsC1ZophArAQSAVzcWL6mucJUSoDmZYnPLJQ4fPcahI0f4sLmdlmSqJPiS6krTrYvFkC+unCOrhspTr1qSKWpDE1i4cCEAtaEJNCdTTB3lG9I3VOYhJ2UV3FmxaUk5strrLgksUYh+rVMIDYkqybfa68Zy5CjA7EuqKs33vtQPoQSQcwlxK57JDjs4nunBpYskYAsAUxd/RdLDD450ZzCF6IJ8VWcc+3A4nrCGGxyOJ3JZxw73gR3JgYPRhNbbFIZDlpSEY9ewJQf6wMBPSqnb+y/Hhg28ryOGUuoW8HN/cC4r5fr3z7b2pB3nf4dmHIcNTW3ZrJTvkj+d+vfIXd22E28401qUHPC4iXZ2kUwmuXnzJtHOLgKe4j1g/elWJ2XbMeDL3nf9wXbWkSt2XozYe9ojgwaZ7x/NzFE+JtfUMHliDbPLfSzwjx7Ufm9HlN2XInZ+/uob/grNXCt1Tftm29zp+vO14wsGc5Tix67raBo8UjkGXSs8un116Spv/HredpR6Bu4UVa8KHfotCs6FY4knr1sWD1eOuWvuEprGRF8ZE31liALQtOPwzukLzqbzF3OOUs8OhA624l7Ve3RxwGcYwTvjbXDIs9eSkn0dMRqaWnu6bSea397fC9kONdAbwFqPEJs0TXtgWdCvlgb9rlCZh0D+UOnM9BBJZzkUS1jhWEJTSt3KSvkesIciA32pMoDHdMGnPtNoLXCFuaALtgKPUuIV5n50X5e2vwFPYsaDeTmdkwAAAABJRU5ErkJggg==
+        '''))
         self.WorkSpace_icon = ImageTk.PhotoImage(
             Image.open(pathIcon+r"workspace.png").resize((20, 20)))
         self.icono_account = ImageTk.PhotoImage(
@@ -3530,10 +3533,18 @@ class Aplicacion():
             Image.open(pathIcon+r"previous.png").resize((40, 40)))
         self.next_icon = ImageTk.PhotoImage(
             Image.open(pathIcon+r"next.png").resize((40, 40)))
-        self.icono_modeOn = ImageTk.PhotoImage(
-            Image.open(pathIcon+r"switchon.png").resize((65, 45)))
-        self.icono_modeOff = ImageTk.PhotoImage(
-            Image.open(pathIcon+r"switchoff.png").resize((65, 45)))
+        self.iconoSwitchOn = (
+        tk.PhotoImage("switchOn", data='''
+            iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAABmJLR0QA/wD/AP+gvaeTAAACEklEQVRYhe3XT4sSYQDH8d88/sknbRZWFAtUOtXBYA9jdvDspYO3Yk/bJXoLQS+ge69glaDDQp0EoYOXhQgNLFcECaVWqWlx1bWZR9TneTrEym65i+CfOex8b888Dw8fhnmYGcDOzs7uaqecHRSLxTsA7hNCqBUYIQQTQnxMJBL102tTYKVSeRUIBJ55PB4XAEVKaYVRmqbJu93ubiwWezoFlkqle+Fw+BOl1GWF6t/a7Tav1+vb6XR6zwkAiqI8oJS6JhOOne2XGJwMLYGpKsXum+cIhUKOXC73qFAovHMCgJSSAoDgAoOTIZI7Q9ANsVYc6xPsZ/4a3Ndc0HXd5/f7bzhnLd64KeDdXC/Qff38WEqpMMbITOCibdIwbql351p7ZDSh//564fxKgEHvbWyFHs619kB/fymQLAu1qmzgotnARbOBi2YDF20lb5JfRhPln7m51h4ZzUvnVwI8Zoc4ZodL2WsmsP+DYGQuZf+5Y/3ZT9vpByuTUoI4CFSVYj+zVts0VaVwOB3gnENKOZoChRAfDMOY+Hw+5+u9F9boztRoNESv1/s2Ho9HTgCIx+MH1Wo10+l0ngSDQQch1hxuIQRarZbIZrNfotHo52QyOTj325nP59O1Wu2xrutezrly0UarinM+Mk3zeyQSqaRSqbeapvX/Q0gpSblcVhljltxGt9s91DRtzUfUzs7uCvcH1IDLM1dhnewAAAAASUVORK5CYII=
+        '''))
+        self.iconoSwitchOff = (
+        tk.PhotoImage("switchOff", data='''
+            iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAABmJLR0QA/wD/AP+gvaeTAAAB80lEQVRYhe3XsWsTYRzG8ef3Jj2OcKEoObQQkCgIOVA6BYQ46lBaEVw6xEGn4JDVRbcu/QdcXbIFGqgNCI4RXCKESJIKVhQSiWkIChmO673v6+LF0IQYOZt36PuZ7l6O977H3XHvAZqmaecbTe60Wq0rhmHcA2Ao6vE8z9t3HOdrMDAO7PV6e7FY7D5ORS+blFIOh8PXqVRqA0FMt9vdsixrn4hw3P8BIaSSuEiEIWGvwvd9FIvF54VCYScKAES0QURo1I/w7OlLJXGBnd1HuLl+DUKIB7VabTcINADAdU9w0YzgxdWBkrgnnxNw3RMAAOfcKJfLl6OnD2IMsCJqbjFjf7allADApgInyVu3gUtrC01O9ffAl6MQebPNDcSNdcjr6YUmon7vTALZ3w9RSweGpQPD0oFh6cCw5n9JPtRB/e+LzfSt+x9yps0NpHfVMznpv5gKFAIYcTWLaiGmx6IAIKX0AMA0VzB0ObZbF5ZbNsZhmisAAN/3OfB7yd/pdDYty3rFGMPg+Cc4n3EpSzC55M/lcgfZbPZxFACSyeRBu91+Y9v2nYS9qiQu4HkeSqXSp0aj8bZSqQzGz2A6nb6bz+e34/H4Q9d1YyrifN8X1Wr142g0OsxkMntEJGe+Dc1mU9V/MRzH4UTEVZ1f07Rz5xfaiKHAztUwZwAAAABJRU5ErkJggg==
+        '''))
+        self.preference = (
+        tk.PhotoImage("preference", data='''
+            iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAABmJLR0QA/wD/AP+gvaeTAAAFN0lEQVRIie1WX0xTVxz+zr2lFRRKgfK3tBQQlAKCEwXENA7FgBqWLNP5L9l8Me5hmmx7mC7bki2LL0v2smW+6BI3F6dDQUCYEqdDLBNkghUE2tJW+VdEb0EKLfecPRTRjusCxvjk93Rzft/5ffl+57snB3iNVwSy0A1HGto/M/e5D/HeCQ+jzAfGfOkqduDQrtKKhfSRLYTMGCOln5/6auKeEwCCn6wPR6vPAOBemvDJlrvL6ttHWzmArc1RGJqamjxTLhey31wHrXENhrxAf+N19F9rJiaTKawD0cHNHbZmNukjqzKCCvcXF99fsPCxhp6Vv9abWwVLLwiAkcHUvj5DgplO+xASLIeP+nmcXA6IImosE8fNzn/KR3qsPGGAyxVvP3qxMXnfxiKHVH/JM/7tpjnjxIUes9tqQdn2zfD4RFyuqAOjFLLFofjy0z2o8oSAAfCNjcN87AR8449BeB7J5WVglMFaVYPwhHix1Bijk3Iu6bimTWh1W3pR9u4WxGWnwz0NfLw0DnedIyjM0uJPjwJshhsUugRZ+/bC7XAiJEYNhVI528daWc2bOkJNABLnJcwIm/32UcA2Cdg4FYhOhd/dc/n8IgVUaalSrQCOZ5LLUotbcsLfCEtJRe2pGihHhyGbORDJDhJ43D8IW2UtVDqNmG9QFMxbeNtKw523C1M+ASG4bnYi/D9zmRIEuNra4Wprx5QgzNk/ZneAEYYtOfHbnpfsgHB9U9ux/6/mrh8mhwbBqAhGKQ58tBsmuRrijN2RW7dhr7sERv2xJhwHXelGRGUbnjoeGELnT7+A8Dw4nkdIVAQrWJW69XD5mponnAAv7ffd30447TAYCxEUJINxRRJcSjXEiRmnjwTY6y4hMnM5tCXFAABHfQPsdRcRptVAHu4P1uK4GCx/bxfG7A7QaRH3rzSS7vioowA0kqMWfaIMHIeD7xQgsSgPzYvU6J54Wnfb7ABj0JYUgwuSgQuSQbupGKAMgs0eMMrFcTGIzc9DfFE+QADRRxc9W5dMtUcEBrxSlRcEmXtdBAjLeEJBKX6suA6B8AiOjkJ4avJsPSxZBxACR32D3yn8owYh/tozEKx9mBgcBhgFYQDPkwArAcI5acovHt7THOkytQKMQZyaQlJZCdS52QAAhVIJXekG2C9cwkiH2W9mJlzPXhwj7bdhO18HXqEAIQRL4mNZVmzkhwFDeN50jv9hWnryQnt3qFYD/dbSgNqUIMBt9Z+pUq+bDdUT2M7XYczuwM6yFWnvl+T3SPWX/I+/v3w5tuqGs9MrjCEyyzCnrlAqoc7Nhjo3e44oAERmZsDrHkfV347Oo1evxs1buKXL2/LA0scnv1WGsCStFOV/EabXQl9ehgdWO2/q8NyQ4kimmjACAhKQxkc9Fgw0NSMkJhqJG9eD43kAABVFOBuuwDM4hNiC1QhfmuLvwXMgICCc9E0r6bjIEFeg0idS69kajHbexeidLvSergT1eeG6eQuj5q5ZrtDdC1dLG6jXi97TlX5+VzesFdVQ6RNpUUZ84byF9xqznNuL0lJU+gRqOVcNS2UNIpK14gclqzN5hQK+8cez3MmHAji5HHs2ZS6PSNaKlnPVsJw9D5VeQ3fmZabvNWY5pTSe+wLZsT6379iVjqRr0RGNoAwrl8nXhGL4EQCA0adERkEIQZLCa9+wNkpzMzLcRHiCwvSYdduMBklR4AVemZsP/0zH+gcC9i1JiGO1X+9+eY89KRjzknaY70V+Nz3pUwCATBE0makJPVi70Eav8arwL6DRDYzgtzsxAAAAAElFTkSuQmCC
+        '''))
 
     def estilos(self):
         self.style = ttk.Style()
@@ -4339,6 +4350,7 @@ class Aplicacion():
         )
 
     def menuBar(self):
+        #* MENU
         self.bar = tk.Menu(self.root, relief=tk.FLAT, border=0)
         self.root.config(menu=self.bar)
         self.bar.config(
@@ -4356,11 +4368,44 @@ class Aplicacion():
             activebackground=default_select_bg,
             activeforeground=default_select_fg,
         )
-        # --- INICIAMOS SUB MENU -------------------------- #
+
+        #* --- INICIAMOS SUB MENU de SUB MENU -------------------------- #
         self.clientMenu = tk.Menu(self.fileMenu, tearoff=0)
         self.issuesMenu = tk.Menu(self.fileMenu, tearoff=0)
-        # -------------------------------------------------- #
-
+        self.preferenceMenu = tk.Menu(self.fileMenu, tearoff=0)
+        #* -------------------------------------------------- #
+        
+        #* AÑADIMOS SUB MENU A FILE
+        self.fileMenu.add_cascade(
+            label="  Abrir",
+            compound=tk.LEFT,
+            image=self.iconoNew,
+            menu=self.issuesMenu
+        )
+        self.fileMenu.add_cascade(
+            label="  Clientes",
+            image=self.iconoCustomer,
+            compound=tk.LEFT,
+            menu=self.clientMenu
+        )
+        self.fileMenu.add_separator()
+        self.fileMenu.add_cascade(
+            label="  Preferencias",
+            image=self.preference,
+            compound=tk.LEFT,
+            menu=self.preferenceMenu,
+            #command=self._fontchooser
+        )
+        self.fileMenu.add_separator()
+        self.fileMenu.add_command(
+            label="  Salir",
+            image=self.iconoExit,
+            compound=tk.LEFT,
+            command=self.root.quit
+        )
+        self.fileMenu.add_separator()
+        #? CONFIGURAMOS SUBMENU
+        #?---------------------------------------------
         self.issuesMenu.config(
             background=bg_submenu,
             foreground=fg_submenu,
@@ -4377,43 +4422,17 @@ class Aplicacion():
             activeforeground=default_select_fg,
             selectcolor=default_menu_fg
         )
-
-        self.fileMenu.add_cascade(
-            label="  Abrir",
-            compound=tk.LEFT,
-            image=self.Abrir_icon,
-            menu=self.issuesMenu
+        self.preferenceMenu.config(
+            background=bg_submenu,
+            foreground=fg_submenu,
+            font=_Font_Menu,
+            activebackground=default_select_bg,
+            activeforeground=default_select_fg,
+            selectcolor=default_menu_fg
         )
-        self.fileMenu.add_cascade(
-            label="  Clientes",
-            image=self.Client_icon,
-            compound=tk.LEFT,
-            menu=self.clientMenu
-        )
-        self.fileMenu.add_separator()
-        self.fileMenu.add_command(
-            label="  Preferencias",
-            #image=self.Client_icon,
-            compound=tk.LEFT,
-            #state='disable',
-            command=self._fontchooser
-        )
-        self.fileMenu.add_command(
-            label="  Modo Dark",
-            #image=self.Client_icon,
-            #state='disable',
-            compound=tk.LEFT,
-            command=self.activeModeDark
-        )
-        self.fileMenu.add_separator()
-        self.fileMenu.add_command(
-            label="  Salir",
-            image=self.Salir_icon,
-            compound=tk.LEFT,
-            command=self.root.quit
-        )
-        self.fileMenu.add_separator()
-
+        #?---------------------------------------------
+        #todo AÑADIR ITEM AL SUBMENU
+        #todo -----------------------------------------
         self.varClientMenu = tk.StringVar()
         for i, m in enumerate(listClient):
             self.clientMenu.add_radiobutton(
@@ -4422,7 +4441,6 @@ class Aplicacion():
                 value=i,
                 command=self.loadClient
             )
-
         self.IssuesVar = tk.IntVar()
         for i, m in enumerate(listButton):
             self.issuesMenu.add_radiobutton(
@@ -4431,7 +4449,23 @@ class Aplicacion():
                 value=i,
                 command=self.nameOpenButton
             )
+        self.preferenceMenu.add_command(
+            label="  Titulo",
+            #image=self.preference,
+            compound=tk.LEFT,
+            command=self._fontchooser
+        )
+        self.preferenceMenu.add_separator()
+        self.preferenceMenu.add_command(
+            label="  Modo Dark",
+            image=self.iconoModeDark,
+            #state='disable',
+            compound=tk.LEFT,
+            command=self.activeModeDark
+        )
+        #todo -----------------------------------------
 
+        #* MENU VER
         self.verMenu = tk.Menu(self.bar, tearoff=0)
         self.verMenu.config(
             background=bg_submenu,
@@ -4443,11 +4477,12 @@ class Aplicacion():
         self.verMenu.add_command(
             label="  Incidencias Criticas",
             command=self.bsc,
-            image=self.BuscarBar_icon,
+            image=self.iconoIncident,
             compound=tk.LEFT,
             state="normal"
         )
 
+        #* MENU EDIT
         self.editMenu = tk.Menu(self.bar, tearoff=0)
         self.editMenu.config(
             background=bg_submenu,
@@ -4460,10 +4495,12 @@ class Aplicacion():
             label="  Buscar",
             accelerator='Ctrl+F',
             command=self.bsc,
-            image=self.BuscarBar_icon,
+            image=self.iconoFindBar,
             compound=tk.LEFT,
             state="disabled"
         )
+        
+        #* MENU HELP
         self.helpMenu = tk.Menu(self.bar, tearoff=0)
         self.helpMenu.config(
             background=bg_submenu,
@@ -4474,14 +4511,14 @@ class Aplicacion():
         )
         self.helpMenu.add_command(
             label="  Ayuda",
-            image=self.Ayuda_icon,
+            image=self.iconoHelp,
             compound=tk.LEFT,
             command=self._glosario
         )
         self.helpMenu.add_separator()
         self.helpMenu.add_command(
             label="  Acerca de...",
-            image=self.AcercaDe_icon,
+            image=self.iconoAbout,
             compound=tk.LEFT,
             command=self._acerca_de
         )
@@ -4548,7 +4585,7 @@ class Aplicacion():
         modo_dark = parse.get('dark', 'modo_dark')
         if modo_dark == 'True':
             text_btnMode = "Dark Mode OFF"
-            self.cuaderno.btnMode['image'] = self.icono_modeOn
+            self.cuaderno.btnMode['image'] = self.iconoSwitchOn
             self.cuaderno.btnMode.config(background=pers_bottom_app, highlightbackground=pers_bottom_app, activebackground=pers_bottom_app)
             self.root.configure(
                 background=pers_bottom_app,
@@ -4779,7 +4816,7 @@ class Aplicacion():
                 PST_DESV.asignar_iconos()
         elif modo_dark == 'False':
             text_btnMode = "Dark Mode ON"
-            self.cuaderno.btnMode['image'] = self.icono_modeOff
+            self.cuaderno.btnMode['image'] = self.iconoSwitchOff
             self.cuaderno.btnMode.config(background=default_bottom_app, highlightbackground=default_bottom_app, activebackground=default_bottom_app)
             self.root.configure(
                 background=default_bottom_app,

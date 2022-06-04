@@ -101,7 +101,7 @@ class ScrollableNotebook(ttk.Frame):
             background=default_bottom_app,
             highlightbackground=default_bottom_app,
             activebackground=default_bottom_app,
-            image=self.app.icono_modeOff,
+            image=self.app.iconoSwitchOff,
             command=self.app.activeModeDark,
             )
         self.btnMode.pack(before=self.buttonTab_novo, side=tk.LEFT, fill=tk.BOTH, expand=1, padx=10)

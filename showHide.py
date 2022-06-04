@@ -4,7 +4,6 @@ import tkinter as tk
 from os import listdir, path, sep, stat
 from os.path import isdir, join, abspath
 from getpass import getuser
-from tkinter import *
 from tkinter import Button, ttk
 from tkinter import scrolledtext as st
 from tkinter import messagebox as mb
@@ -220,8 +219,8 @@ class Extracion(ttk.Frame):
         self.columnconfigure(2, weight=5)
         self.rowconfigure(0, weight=1)
         self.bind("<Motion>", lambda e : self.EXT_motion(e))
-        self.txt.bind('<Control-f>', lambda x: self.panel_buscar(x))
-        self.txt.bind('<Control-F>', lambda x: self.panel_buscar(x))
+        self.txt.bind('<Control-f>', lambda x: self.searchPanel(x))
+        self.txt.bind('<Control-F>', lambda x: self.searchPanel(x))
         self.txt.bind('<Control-l>', self.hide)
         self.txt.bind('<Control-c>', lambda x: self._copiar_texto_seleccionado(x))
         self.txt.bind('<Control-C>', lambda x: self._copiar_texto_seleccionado(x))
@@ -635,14 +634,14 @@ class Extracion(ttk.Frame):
 
     def _menu_clickDerecho(self):
         self.text_font = font.Font(family='Courier', size=14, font=font.BOLD)
-        self.menu_Contextual = Menu(self, tearoff=0)
+        self.menu_Contextual = tk.Menu(self, tearoff=0)
         self.menu_Contextual.add_command(
             label="  Buscar",
             accelerator='Ctrl+F',
             background='#ccffff', foreground='black',
             activebackground='#004c99', activeforeground='white',
             font=self.text_font,
-            command=lambda e=self.txt: self.panel_buscar(e)
+            command=lambda e=self.txt: self.searchPanel(e)
         )
         self.menu_Contextual.add_separator(background='#ccffff')
         self.menu_Contextual.add_command(
@@ -676,7 +675,7 @@ class Extracion(ttk.Frame):
         self.menu_Contextual.add_command(
             label="  Ocultar Panel",
             accelerator='Ctrl+L',
-            compound=LEFT,
+            compound=tk.LEFT,
             background='#ccffff', foreground='black',
             activebackground='#004c99', activeforeground='white',
             font=self.text_font,
@@ -686,7 +685,7 @@ class Extracion(ttk.Frame):
             label="  Mostrar Panel",
             state="disabled",
             accelerator='Ctrl+L',
-            compound=LEFT,
+            compound=tk.LEFT,
             background='#ccffff', foreground='black',
             activebackground='#004c99', activeforeground='white',
             font=self.text_font,
@@ -695,7 +694,7 @@ class Extracion(ttk.Frame):
         self.menu_Contextual.add_separator(background='#ccffff')
         self.menu_Contextual.add_command(
             label="  Cerrar pestaña",
-            compound=LEFT,
+            compound=tk.LEFT,
             background='#ccffff', foreground='black',
             activebackground='#004c99', activeforeground='white',
             font=self.text_font,
@@ -903,14 +902,14 @@ class Extracion(ttk.Frame):
         self.menu_opciones.add_command(
             label="  Selecionar todo",
             accelerator='Ctrl+A',
-            compound=LEFT,
+            compound=tk.LEFT,
             background='#ccffff', foreground='black',
             activebackground='#004c99', activeforeground='white',
             font=self.text_font,
         )
 
 ## --- BUSCAR -------------------------------------
-    def panel_buscar(self, event=None):
+    def searchPanel(self, event=None):
         global _estado_actual
         if not _estado_actual:
             self.busca_top = tk.Toplevel(self.frame2)
