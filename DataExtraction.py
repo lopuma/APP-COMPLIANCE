@@ -1,24 +1,20 @@
 # -*- coding: utf-8 -*-
 import os
-import re
-import tkinter as tk
 import time
+import tkinter as tk
 from os import listdir
 from os.path import isdir, join, abspath
-from tkinter import ttk
+from tkinter import  TclError, ttk
 from tkinter import scrolledtext as st
 from tkinter import font
-from PIL import Image, ImageTk
 from threading import Thread
-from functools import partial
-from Compliance import pathExtraction, hlh_def, pathIcon, pers_menu_bg, pers_scrText_bg, pathConfig, parse, pers_bottom_app, activar_modo, mypath, hhtk, default_scrText_bg, default_panelBg, bg_submenu, default_scrText_fg, default_menu_bg, fg_submenu, acdefault_panelBg, _Font_Menu, _Font_Texto, default_select_bg, default_select_fg, default_bottom_app, default_hglcolor, default_select_bg, default_select_fg, fuente_texto, tamñ_texto, _Font_Texto_bold, _Font_Texto_codigo
+from Compliance import pathExtraction, hlh_def, pers_menu_bg, pers_scrText_bg, pathConfig, parse, pers_bottom_app, activar_modo, mypath, hhtk, default_scrText_bg, default_bottom_app, bg_submenu, default_scrText_fg, default_menu_bg, fg_submenu, _Font_Menu, _Font_Texto, default_select_bg, default_select_fg, default_bottom_app, default_hglcolor, default_select_bg, default_select_fg, fuente_texto, tamñ_texto, _Font_Texto_bold, _Font_Texto_codigo
 parar = False
 _estado_actual = False
 PST_EXT = ""
 HIDDEN = 0
-on = 1
-exist = 1
-wdMain = 50.0
+_activeFocus = False
+delimiters=[]
 def beep_error(f):
     def applicator(*args, **kwargs):
         try:
@@ -46,6 +42,7 @@ class MyEntry(tk.Entry):
             selectbackground=default_select_bg,
             highlightthickness=hhtk,        )
         self.mostrar_menu()
+
         self.bind('<Control-a>', self.seleccionar_todo)
         self.bind('<Control-A>', self.seleccionar_todo)
         self.bind('<Control-f>', self.seleccionar_todo)
@@ -152,7 +149,9 @@ class MyEntry(tk.Entry):
         return 'break'
 
     def cortar(self, event=None):
+        PST_EXT.entr_str.select_range(0, tk.END)
         self.event_generate("<<Cut>>")
+        self.defaultEntry()
         return 'break'
 
     def pegar(self, event=None):
@@ -195,21 +194,20 @@ class Extracion(ttk.Frame):
         global _estado_actual
         global PST_EXT
         PST_EXT = self
+        self.wd = 300
         self.app = app
-        self.iconos()
-        self.createFrameText()
-        self.createFrameMain()
-        if activar_modo == 'True':
-            self.app.MODE_DARK()
-        #self.bind("<Motion>", lambda e : self.EXT_motion(e))
-        # parent.bind_all('<Control-f>', lambda x: self.searchPanel(x))
-        # parent.bind_all('<Control-F>', lambda x: self.searchPanel(x))
-        #parent.bind_all('<Control-l>', lambda e : self.closeFrame(e))
-        #PST_EXT.txt.bind('<Control-l>', lambda e : self.closeFrame(e))
+        self.hidden = 0
+        self.menu()
+        self.text()
+        self.columnconfigure(2, weight=5)
+        self.rowconfigure(0, weight=1)
+        PST_EXT.bind("<Motion>", lambda e : self.EXT_motion(e))
+        self.txt.bind('<Control-f>', lambda x: self.searchPanel(x))
+        self.txt.bind('<Control-F>', lambda x: self.searchPanel(x))
+        self.txt.bind('<Control-l>', lambda x: self.hide_btn_nav(x))
         self.txt.bind('<Control-c>', lambda x: self._copiar_texto_seleccionado(x))
         self.txt.bind('<Control-C>', lambda x: self._copiar_texto_seleccionado(x))
         self.txt.bind('<Control-a>', lambda e: self._seleccionar_todo(e))
-        self.txt.bind('<Control-A>', lambda e: self._seleccionar_todo(e))
         self.txt.bind('<Control-x>', lambda e: self._limpiar_busqueda(e))
         self.txt.bind('<Control-X>', lambda e: self._limpiar_busqueda(e))
         self._ocurrencias_encontradas = []
@@ -217,57 +215,26 @@ class Extracion(ttk.Frame):
         _estado_actual = False
         self._menu_clickDerecho()
 
+        self.btn_nav = ttk.Button(
+            self,
+            image=self.app.iconoMenu,
+            command=self.show_btn_nav,
+        )
+
     def EXT_motion(self, event):
         global PST_EXT
         PST_EXT = event.widget
+        PST_EXT.app.MODE_DARK()
+        PST_EXT.app.EXT_motion()
 
-    def iconos(self):
-        self.navIcon = ImageTk.PhotoImage(Image.open(
-            pathIcon+r"menu.png").resize((25, 25)))
-        self.closeIcon = ImageTk.PhotoImage(Image.open(
-            pathIcon+r"close.png").resize((25, 25)))
-        self.flecha_up = ImageTk.PhotoImage(
-            Image.open(pathIcon+r"flecha1.png").resize((20, 20)))
-        self.btn_lmp = ImageTk.PhotoImage(
-            Image.open(pathIcon+r"lmp.png").resize((22, 22)))
-        self.flecha_down = ImageTk.PhotoImage(
-            Image.open(pathIcon+r"flecha2.png").resize((20, 20)))
-        self.btn_x = ImageTk.PhotoImage(
-            Image.open(pathIcon+r"btn-x.png").resize((20, 20)))
-
-    def closeFrame(self, event):
-        global on
-        if on:
-            PST_EXT.frameMain.pack_forget()
-            PST_EXT.createFrameClose()
-            on = 0
-        else:
-            PST_EXT.frameClose.pack_forget()
-            PST_EXT.frameMain.pack_forget()
-            PST_EXT.createFrameMain()
-            on = 1
-
-    def createFrameClose(self):
-        self.frameClose = tk.Frame(self)
-        self.frameClose.pack(before=self.frame2, side="left", expand=0, anchor='ne')
-
-        #PST_EXT.frameClose.config(background=default_menu_bg)
-        PST_EXT.btn_nav = ttk.Button(
-                self.frameClose,
-                image=self.navIcon,
-                command=self.show_btn_nav,
-            )
-        PST_EXT.btn_nav.pack(side=tk.TOP, expand=0, fill=tk.BOTH)
-
-    def createFrameMain(self):
+    def menu(self):
         parse.read(pathConfig.format("apariencia.ini"))
         modo_dark = parse.get('dark', 'modo_dark')
-        global on
-        global exist
-        global wdMain
-        on = 1
-        self.frameMain = tk.Frame(self)
-        print("MODO ", modo_dark)
+        self.text_font = font.Font(family='Consolas', size=14, weight="bold")
+        self.frameMain = tk.Frame(
+            self,
+            width=self.wd
+        )
         if modo_dark == 'False':
             self.frameMain.config(
             background=default_menu_bg,
@@ -276,18 +243,24 @@ class Extracion(ttk.Frame):
             self.frameMain.config(
                 background=pers_menu_bg,
             )
-            self.txt.config(
-                background=pers_scrText_bg,)
+            #self.txt.config(background=pers_scrText_bg,)
+        self.frameMain.grid_propagate(False)
+        self.frameMain.grid(row=0, column=0, sticky="nsew", pady=(10,0))
+        self.frameMain.columnconfigure(0, weight=1)
+        self.frameMain.rowconfigure(1, weight=1)
 
-        self.frameMain.pack(before=self.frame2, side="left", expand=0, fill=tk.BOTH, ipadx=wdMain)
+        self.buttonCloseMenu = ttk.Button(
+            self.frameMain,
+            image=self.app.iconoCloseMenu,
+            command=self.hide_btn_nav,
+        )
+        self.buttonCloseMenu.grid(row=0, column=0, sticky="e")
         
         self.treeview = ttk.Treeview(
             self.frameMain,
         )
-
-        #? COLOR TEXT DE LAS CARPETAS DE EXTRACION
         self.treeview.heading("#0", text="FICHEROS de EXTRACIONES", anchor="center")
-        self.treeview.pack(fill='both', expand=True)
+        self.treeview.grid(row=1, column=0, sticky="nsew")
 
         self.treeview.tag_bind(
             "fstag", "<<TreeviewOpen>>", self.item_opened
@@ -299,33 +272,21 @@ class Extracion(ttk.Frame):
             "<<TreeviewSelect>>", lambda e: self.select_extraction(e)
         )
         self.fsobjects = {}
-
-        self.file_image = tk.PhotoImage(file=pathIcon+r"files.png")
-        self.folder_image = tk.PhotoImage(file=pathIcon+r"folder.png")
-
-        self.btn_close = ttk.Button(
-            self.frameMain,
-            image=self.closeIcon,
-            command=self.hide_btn_nav,
-        )
-
-        self.btn_close.pack(before=self.treeview, expand=0, anchor='ne')
-
         self.max = ttk.Button(
             self.frameMain,
             width=4,
             text="+",
         )
-        self.max.pack(side="right", expand=0)
+        self.max.grid(row=2, column=0, sticky="e")
 
         self.min = ttk.Button(
             self.frameMain,
             width=4,
             text="-",
         )
-        self.min.pack(side="left", expand=0)
+        self.min.grid(row=2, column=0, sticky="w")
 
-        #todo Cargar el directorio raíz.
+        # Cargar el directorio raíz.
         self.load_tree(abspath(pathExtraction))
         self.max.bind(
             "<Button-1>", lambda e: Thread(target=self.ampliar, daemon=True).start())
@@ -334,49 +295,14 @@ class Extracion(ttk.Frame):
             "<Button-1>", lambda e: Thread(target=self.reducir, daemon=True).start())
         self.min.bind("<ButtonRelease-1>", self._parar_)
 
-    def createFrameText(self):
-        self.frame2 = tk.Frame(self)
-        self.frame2.pack(expand=True, fill=tk.BOTH)
-
-        self.txt = st.ScrolledText(
-            self.frame2,
-            font=_Font_Texto,
-        )
-
-        self.txt.config(
-            font=_Font_Texto,
-            wrap=tk.WORD,
-            highlightcolor=default_hglcolor,
-            borderwidth=0,
-            highlightthickness=hhtk,
-            insertbackground=default_hglcolor,
-            insertwidth=hlh_def,
-            selectbackground=default_select_bg,
-            selectforeground=default_select_fg,
-            background=default_scrText_bg,
-            foreground=default_scrText_fg,
-            state='normal'
-        )
-        self.txt.pack(expand=1, fill=tk.BOTH)
-        self.idx_gnral = tk.StringVar()
-        pos_cursor = self.txt.index(tk.INSERT)
-        self.idx_gnral.set(pos_cursor)
-        self.txt.bind("<Key>", lambda e: self.widgets_SoloLectura(e))
-        self.txt.bind("<Button-3><ButtonRelease-3>",self._display_menu_clickDerecho)
-        self.txt.bind("<Motion>",lambda e: self.activar_Focus(e))
-        #self.frame2.bind_all('<Control-l>', lambda e : self.closeFrame(e))
-
     def ampliar(self):
         global parar
-        global wdMain
         parar = False
-        
         while not parar:
-            print("wdMain ampliar ", wdMain)
             time.sleep(0.01)
-            if wdMain < 300:
-                wdMain += 0.5
-                self.frameMain.pack_configure(ipadx=wdMain)
+            if self.wd < 1000:
+                self.wd += 3
+                self.frameMain.config(width=self.wd)
             else:
                 self._parar_(event=None)
 
@@ -386,15 +312,12 @@ class Extracion(ttk.Frame):
 
     def reducir(self):
         global parar
-        global wdMain
         parar = False
-        wdMain = 50.0
         while not parar:
             time.sleep(0.01)
-            print("main parar ", wdMain)
-            if wdMain > 25:
-                wdMain -= 0.5
-                self.frameMain.pack_configure(ipadx=wdMain)
+            if self.wd > 190:
+                self.wd -= 3
+                self.frameMain.config(width=self.wd)
             else:
                 self._parar_(event=None)
 
@@ -413,13 +336,13 @@ class Extracion(ttk.Frame):
             return []
 
     def get_icon(self, path):
-        """
-        Retorna la imagen correspondiente según se especifique
-        un archivo o un directorio.
-        """
-        return self.folder_image if isdir(path) else self.file_image
+        return self.app.iconoFolder if isdir(path) else self.app.iconoFile
 
     def insert_item(self, name, path, parent=""):
+        """
+        Añade un archivo o carpeta a la lista y retorna el identificador
+        del ítem.
+        """
         iid = self.treeview.insert(parent,
             tk.END, text=name,
             tags=("fstag",)+(("folder",) if isdir(path) else ()),
@@ -429,6 +352,10 @@ class Extracion(ttk.Frame):
         return iid
 
     def load_tree(self, path, parent=""):
+        """
+        Carga el contenido del directorio especificado y lo añade
+        a la lista como ítemes hijos del ítem "parent".
+        """
         for fsobj in listdir(path):
             fullpath = join(path, fsobj)
             child = self.insert_item(fsobj, fullpath, parent)
@@ -438,11 +365,20 @@ class Extracion(ttk.Frame):
                                      child)
 
     def load_subitems(self, iid):
+        """
+        Cargar el contenido de todas las carpetas hijas del directorio
+        que se corresponde con el ítem especificado.
+        """
+
         for child_iid in self.treeview.get_children(iid):
             if isdir(self.fsobjects[child_iid]):
-                self.load_tree(self.fsobjects[child_iid],parent=child_iid)
+                self.load_tree(self.fsobjects[child_iid],
+                               parent=child_iid)
 
     def item_opened(self, event):
+        """
+        Evento invocado cuando el contenido de una carpeta es abierto.
+        """
         iid = self.treeview.selection()[0]
         self.load_subitems(iid)
 
@@ -469,10 +405,6 @@ class Extracion(ttk.Frame):
             self.colour_line()
             self.colour_line2()
 
-    def cadena_valida(self, cadena):
-        patron = "^\/*.*?\*/$"
-        INTR = re.search(patron, cadena)
-
     def colour_line(self):
         indx = '1.0'
         indx3 = '1.0'
@@ -482,12 +414,8 @@ class Extracion(ttk.Frame):
         line1 = "+-------------------------------------------------------------------------------------+"
         line3 = "CONTESTAR NO"
         line4 = "CONTESTAR N/A"
-        # patron = "^\/*.*?\*/$"
-        # i = 0
-        # texto = self.txt.get("1.0", END)
-        # for i in texto:
-        #     INTR = re.search(patron, texto)
-        #     print(INTR)
+        line5 = "---AD"
+        line6 = "---IZ"
         if line1:
             while True:
                 indx = self.txt.search(line1, indx, nocase=1, stopindex=tk.END)
@@ -499,7 +427,7 @@ class Extracion(ttk.Frame):
             self.txt.tag_config(
                 'found1',
                 foreground='dodgerblue',
-                font=(fuente_texto, 17, font.BOLD)
+                font=("Consolas", 14, font.BOLD)
             )
         if line3:
             while True:
@@ -510,13 +438,11 @@ class Extracion(ttk.Frame):
                 lastidx3 = '%s+%dc' % (indx3, len(line3))
                 self.txt.tag_add('found3', indx3, lastidx3)
                 indx3 = lastidx3
-
-            #? COLOR CONTESTAR NO
             self.txt.tag_config(
                 'found3',
-                background='#FFE6E6',
-                foreground='#FF2626',
-                font=(fuente_texto, tamñ_texto, font.BOLD)
+                background='black',
+                foreground="red",
+                font=("Consolas", 14, font.BOLD)
             )
         if line4:
             while True:
@@ -527,71 +453,38 @@ class Extracion(ttk.Frame):
                 lastidx4 = '%s+%dc' % (indx4, len(line4))
                 self.txt.tag_add('found4', indx4, lastidx4)
                 indx4 = lastidx4
-
-            #? COLOR CONTESTAR N/A
             self.txt.tag_config(
                 'found4',
-                background='#FFCB91',
-                foreground='#FF5F00',
-                font=(fuente_texto, tamñ_texto, font.BOLD)
+                background='black',
+                foreground="ORANGE",
+                font=("Consolas", 14, font.BOLD)
             )
-
-        PST_EXT.txt.tag_configure(
-            "titulo",
-            background="#EDEDED",
-            # foreground="#990033",
-            selectbackground=default_select_bg,
-            selectforeground=default_select_fg,
-            font=_Font_Texto_bold
-        )
-
-        PST_EXT.txt.tag_configure(
-            "coment",
-            #background="#E9D5DA",
-            foreground="#ECB365",
-            selectbackground=default_select_bg,
-            selectforeground=default_select_fg,
-            font=_Font_Texto_bold
-        )
-
-        PST_EXT.txt.tag_configure(
-            "coment2",
-            #background="#E9D5DA",
-            foreground="#064663",
-            selectbackground=default_select_bg,
-            selectforeground=default_select_fg,
-            font=_Font_Texto_bold
-        )
-
-        PST_EXT.txt.tag_configure(
-            "codigo",
-            background="#FDEFF4",
-            foreground="#990033",
-            selectbackground=default_select_bg,
-            selectforeground=default_select_fg,
-            font=_Font_Texto_codigo
-        )
-
-        end = PST_EXT.txt.index("end")
-        line_count = int(end.split(".", 1)[0])
-        for line in range(1, line_count+1):
-            startline = f"{line}.0"
-            # if not (PST_EXT.txt.search("#", startline, stopindex=f"{line}.1")) and not(PST_EXT.txt.search("//", startline, stopindex=f"{line}.1")) and not (PST_EXT.txt.search("\"", startline, stopindex=f"{line}.1")) and not (PST_EXT.txt.search("---", startline, stopindex=f"{line}.1")) and not (PST_EXT.txt.search("/*", startline, stopindex=f"{line}.1")) and not (PST_EXT.txt.search("+-", startline, stopindex=f"{line}.1")):
-            #     endline = f"{line}.end"
-            #     PST_EXT.txt.tag_add(
-            #         "codigo", startline, endline)
-            if (PST_EXT.txt.search("---", startline, stopindex=f"{line}.1")):
-                endline = f"{line}.end"
-                PST_EXT.txt.tag_add(
-                    "titulo", startline, endline)
-            if (PST_EXT.txt.search("\"", startline, stopindex=f"{line}.1")):
-                endline = f"{line}.end"
-                PST_EXT.txt.tag_add(
-                    "coment", startline, endline)
-            if (PST_EXT.txt.search("//", startline, stopindex=f"{line}.1")):
-                endline = f"{line}.end"
-                PST_EXT.txt.tag_add(
-                    "coment2", startline, endline)
+        if line5:
+            while True:
+                indx5 = self.txt.search(
+                    line5, indx5, nocase=1, stopindex=tk.END)
+                if not indx5:
+                    break
+                lastidx5 = '%s+%dc' % (indx5, len(line5)+27)
+                self.txt.tag_add('found5', indx5, lastidx5)
+                indx5 = lastidx5
+            self.txt.tag_config(
+                'found5',
+                font=("Consolas", 14, font.BOLD)
+            )
+        if line6:
+            while True:
+                indx6 = self.txt.search(
+                    line6, indx6, nocase=1, stopindex=tk.END)
+                if not indx6:
+                    break
+                lastidx6 = '%s+%dc' % (indx6, len(line6)+27)
+                self.txt.tag_add('found6', indx6, lastidx6)
+                indx6 = lastidx6
+            self.txt.tag_config(
+                'found6',
+                font=("Consolas", 14, font.BOLD)
+            )
 
     def colour_line2(self):
         indx2 = '1.0'
@@ -603,86 +496,119 @@ class Extracion(ttk.Frame):
             lastidx2 = '%s+%dc' % (indx2, len(line2))
             self.txt.tag_add('found2', indx2, lastidx2)
             indx2 = lastidx2
-
-        #? COLOR CONTESTAR YES
         self.txt.tag_config(
             'found2',
-            background='#000000',
-            foreground='#357C3C',
-            font=(fuente_texto, tamñ_texto, font.BOLD)
+            background="black",
+            foreground='#4E9F3D',
+            font=("Consolas", 14, font.BOLD)
         )
 
-    def widgets_SoloLectura(self, event):
-        if(20 == event.state and event.keysym == 'c' or event.keysym == 'Down' or event.keysym == 'Up' or 20 == event.state and event.keysym == 'f' or 20 == event.state and event.keysym == 'a'):
-            return
-        else:
-            return "break"
+    def ampliador(self):
+        self.frame3 = tk.Frame(
+            self
+        )
+        self.frame3.config(
+            border=0,
+            background="blue",
+            width=1
+        )
+        self.frame3.grid(row=0, column=1, sticky="nsew")
+
+    def text(self):
+        global delimiters
+        self.frame2 = tk.Frame(self)
+        self.frame2.grid(row=0, column=2, sticky="nsew", padx=5, pady=(10,0))
+        self.frame2.columnconfigure(0, weight=1)
+        self.frame2.rowconfigure(0, weight=1)
+        self.txt = st.ScrolledText(
+            self.frame2,
+            font=_Font_Texto,
+        )
+        self.txt.config(
+            font=_Font_Texto,
+            wrap=tk.WORD,
+            highlightcolor=default_hglcolor,
+            borderwidth=0,
+            highlightthickness=hhtk,
+            insertbackground=default_hglcolor,
+            insertwidth=hlh_def,
+            selectbackground=default_select_bg,
+            selectforeground=default_select_fg,
+            background=default_scrText_bg,
+            foreground=default_scrText_fg,
+            state='normal'
+        )
+        self.txt.grid(row=0, column=0, sticky="nsew")
+        self.txt.bind("<Key>", lambda e: self.app.widgets_SoloLectura(e))
+        self.txt.bind("<Button-3><ButtonRelease-3>",self._display_menu_clickDerecho)
+        self.txt.bind("<Motion>", lambda e: self.desactiveFocus(e))
 
     def _menu_clickDerecho(self):
+        self.text_font = font.Font(family='Courier', size=14, font=font.BOLD)
         self.menu_Contextual = tk.Menu(self, tearoff=0)
         self.menu_Contextual.add_command(
             label="  Buscar",
             accelerator='Ctrl+F',
-            background=bg_submenu, foreground=fg_submenu,
-            activebackground=default_select_bg, activeforeground=default_select_fg,
-            font=_Font_Menu,
+            background='#ccffff', foreground='black',
+            activebackground='#004c99', activeforeground='white',
+            font=self.text_font,
             command=lambda e=self.txt: self.searchPanel(e)
         )
-        self.menu_Contextual.add_separator(background=bg_submenu)
+        self.menu_Contextual.add_separator(background='#ccffff')
         self.menu_Contextual.add_command(
             label="  Copiar",
             accelerator='Ctrl+C',
-            background=bg_submenu, foreground=fg_submenu,
-            activebackground=default_select_bg, activeforeground=default_select_fg,
-            font=_Font_Menu,
+            background='#ccffff', foreground='black',
+            activebackground='#004c99', activeforeground='white',
+            font=self.text_font,
             state="disabled",
             command=self.copiar_texto_seleccionado
         )
-        self.menu_Contextual.add_separator(background=bg_submenu)
+        self.menu_Contextual.add_separator(background='#ccffff')
         self.menu_Contextual.add_command(
             label="  Seleccionar todo",
             accelerator='Ctrl+A',
-            background=bg_submenu, foreground=fg_submenu,
-            activebackground=default_select_bg, activeforeground=default_select_fg,
-            font=_Font_Menu,
+            background='#ccffff', foreground='black',
+            activebackground='#004c99', activeforeground='white',
+            font=self.text_font,
             command=self.seleccionar_todo
         )
         self.menu_Contextual.add_command(
             label="  Limpiar Busqueda",
             accelerator='Ctrl+X',
-            background=bg_submenu, foreground=fg_submenu,
-            activebackground=default_select_bg, activeforeground=default_select_fg,
-            font=_Font_Menu,
+            background='#ccffff', foreground='black',
+            activebackground='#004c99', activeforeground='white',
+            font=self.text_font,
             state="disabled",
             command=self.limpiar_busqueda
         )
-        self.menu_Contextual.add_separator(background=bg_submenu)
+        self.menu_Contextual.add_separator(background='#ccffff')
         self.menu_Contextual.add_command(
             label="  Ocultar Panel",
             accelerator='Ctrl+L',
             compound=tk.LEFT,
-            background=bg_submenu, foreground=fg_submenu,
-            activebackground=default_select_bg, activeforeground=default_select_fg,
-            font=_Font_Menu,
-            command=partial(self.hide_btn_nav)
+            background='#ccffff', foreground='black',
+            activebackground='#004c99', activeforeground='white',
+            font=self.text_font,
+            command=self.hide_btn_nav
         )
         self.menu_Contextual.add_command(
             label="  Mostrar Panel",
             state="disabled",
             accelerator='Ctrl+L',
             compound=tk.LEFT,
-            background=bg_submenu, foreground=fg_submenu,
-            activebackground=default_select_bg, activeforeground=default_select_fg,
-            font=_Font_Menu,
-            command=self.show_btn_nav
+            background='#ccffff', foreground='black',
+            activebackground='#004c99', activeforeground='white',
+            font=self.text_font,
+            command=self.hide_btn_nav
         )
-        self.menu_Contextual.add_separator(background=bg_submenu)
+        self.menu_Contextual.add_separator(background='#ccffff')
         self.menu_Contextual.add_command(
             label="  Cerrar pestaña",
             compound=tk.LEFT,
-            background=bg_submenu, foreground=fg_submenu,
-            activebackground=default_select_bg, activeforeground=default_select_fg,
-            font=_Font_Menu,
+            background='#ccffff', foreground='black',
+            activebackground='#004c99', activeforeground='white',
+            font=self.text_font,
             command=self.cerrar_vtn_desviacion
         )
 
@@ -698,8 +624,9 @@ class Extracion(ttk.Frame):
         self.var_entry_bsc.set("")
         self.menu_Contextual.entryconfig(
             '  Limpiar Busqueda', state='disabled')
-        self.txt.tag_remove('found', '1.0', tk.END)
-        self.txt.tag_remove('found_prev_next', '1.0', tk.END)
+        PST_EXT.txt.tag_remove('found', '1.0', tk.END)
+        PST_EXT.txt.tag_remove('found_prev_next', '1.0', tk.END)
+        self.defaultEntry()
 
     def _limpiar_busqueda(self, event):
         txt_event = event.widget
@@ -708,6 +635,7 @@ class Extracion(ttk.Frame):
             '  Limpiar Busqueda', state='disabled')
         txt_event.tag_remove('found', '1.0', tk.END)
         txt_event.tag_remove('found_prev_next', '1.0', tk.END)
+        self.defaultEntry()
 
     def copiar_texto_seleccionado(self):
         seleccion = self.txt.tag_ranges(tk.SEL)
@@ -740,21 +668,34 @@ class Extracion(ttk.Frame):
     def cerrar_vtn_desviacion(self):
         self.app.cerrar_vtn_desviacion()
 
-    def hide_btn_nav(self):
+    def hide_btn_nav(self, *args):
         global parar
-        global on
-        self.menu_Contextual.entryconfig('  Ocultar Panel', state='disable')
-        self.menu_Contextual.entryconfig('  Mostrar Panel', state='normal')
-        self.closeFrame(event=None)
-        #self.createFrameClose()
-        parar = False
+        if self.hidden == 0:
+            self.frameMain.destroy()
+            self.btn_nav.grid(row=0, column=0, sticky="nw", pady=10)
+            self.menu_Contextual.entryconfig(
+                "  Ocultar Panel", state="disabled")
+            self.menu_Contextual.entryconfig("  Mostrar Panel", state="normal")
+            self.hidden = 1
+            parar = False
+        elif self.hidden == 1:
+            self.menu()
+            self.menu_Contextual.entryconfig("  Ocultar Panel", state="normal")
+            self.menu_Contextual.entryconfig(
+                "  Mostrar Panel", state="disabled")
+            self.btn_nav.grid_forget()
+            self.hidden = 0
+            parar = False
 
     def show_btn_nav(self):
         global parar
-        global on
-        self.menu_Contextual.entryconfig('  Ocultar Panel', state='normal')
-        self.menu_Contextual.entryconfig('  Mostrar Panel', state='disabled')
-        self.closeFrame(event=None)
+        if self.hidden == 1:
+            self.menu()
+            self.btn_nav.grid_forget()
+            self.menu_Contextual.entryconfig("  Ocultar Panel", state="normal")
+            self.menu_Contextual.entryconfig(
+                "  Mostrar Panel", state="disabled")
+            self.hidden = 0
         parar = False
 
     def elim_tags(self, l_tags):
@@ -791,6 +732,7 @@ class Extracion(ttk.Frame):
 
     @indice_ocurrencia_actual.setter
     def indice_ocurrencia_actual(self, idx):
+        # establecer la marca distintiva para la ocurrencia a etiquetar
         self.elim_tags(['found_prev_next'])
         self.txt.tag_config('found_prev_next', background='orangered')
 
@@ -806,39 +748,124 @@ class Extracion(ttk.Frame):
     def ocurrencias_encontradas(self):
         return self._ocurrencias_encontradas
 
+    def _menu_entry(self):
+        self.text_font = font.Font(family='Consolas', size=13)
+        self.menu_opciones = tk.Menu(self, tearoff=0)
+        self.menu_opciones.add_command(
+            label="  Deshacer",
+            command=self.entr_str.deshacer,
+            accelerator='Ctrl+Z',
+            background='#ccffff',
+            foreground='black',
+            activebackground='#004c99',
+            activeforeground='white',
+            font=self.text_font,
+        )
+        self.menu_opciones.add_command(
+            label="  Rehacer",
+            command=self.entr_str.rehacer,
+            accelerator='Ctrl+Y',
+            background='#ccffff',
+            foreground='black',
+            activebackground='#004c99',
+            activeforeground='white',
+            font=self.text_font,
+        )
+        self.menu_opciones.add_separator(background='#ccffff')
+        self.menu_opciones.add_command(
+            label="  Cortar",
+            accelerator='Ctrl+X',
+            background='#ccffff', foreground='black',
+            activebackground='#004c99', activeforeground='white',
+            font=self.text_font,
+            state='disabled',
+            command=lambda e=self.entr_str: self._popup_cut(e)
+        )
+        self.menu_opciones.add_command(
+            label="  Copiar",
+            accelerator='Ctrl+C',
+            background='#ccffff', foreground='black',
+            activebackground='#004c99', activeforeground='white',
+            font=self.text_font,
+            state='disable',
+            command=lambda e=self.entr_str: self.popup_copy(e)
+        )
+        self.menu_opciones.add_command(
+            label="  Pegar",
+            accelerator='Ctrl+V',
+            background='#ccffff',
+            foreground='black',
+            activebackground='#004c99',
+            activeforeground='white',
+            font=self.text_font,
+            command=lambda e=self.entr_str: self.popup_paste(e)
+        )
+        self.menu_opciones.add_separator(background='#ccffff')
+        self.menu_opciones.add_command(
+            label="  Selecionar todo",
+            accelerator='Ctrl+A',
+            compound=tk.LEFT,
+            background='#ccffff', foreground='black',
+            activebackground='#004c99', activeforeground='white',
+            font=self.text_font,
+        )
+
     def searchPanel(self, event=None):
+        self.y_alto_btn = 115
+        self.x_ancho_btn = 680
+        self.hg_btn = int(self.y_alto_btn-30)
+        self.wd_btn = int(self.x_ancho_btn-30)
+        from RadioBotton import RadioFrame
         global _estado_actual
+        global _activeFocus
+        _activeFocus = True
         if not _estado_actual:
             self.busca_top = tk.Toplevel(self.frame2)
-
-            window_width = 680
-            window_height = 100
+            window_width =  self.x_ancho_btn
+            window_height = self.y_alto_btn
             bus_reem_top_msg_w = 240
-            self.busca_top.overrideredirect(True)
+            self.busca_top.attributes('-type', 'splash')            #self.busca_top.overrideredirect(True)
             screen_width = (self.app.root.winfo_x() + 640)
             screen_height = (self.app.root.winfo_y()+40)
             position_top = int(screen_height)
             position_right = int(screen_width)
-            self.busca_top.geometry(
-                f'{window_width}x{window_height}+{position_right}+{position_top}')
-            #self.busca_top.transient(self)
+            self.busca_top.geometry(f'{window_width}x{window_height}+{position_right}+{position_top}')
+            self.busca_top.transient(self)
 
             self.busca_top.config(
                 bg=default_bottom_app,
-                padx=5,
-                pady=5
             )
-             #self.busca_top.resizable(0, 0)
-
-            self.busca_frm_tit = tk.Frame(
+            self.busca_top.resizable(0, 0)
+            self.frameRadio = RadioFrame(
                 self.busca_top,
+                alto=self.y_alto_btn,
+                ancho=self.x_ancho_btn,
+                radio=25,
+                width=3,
+                bg_color=None
+            )
+            self.frameRadio.pack()
+
+            self.framePanel = tk.Frame(
+                self.frameRadio,
+                background=default_bottom_app
+            )
+            self.framePanel.place(
+            relx=0.5,
+            rely=0.5,
+            anchor=tk.CENTER,
+            height=self.hg_btn,
+            width=self.wd_btn
+            )
+            self.busca_frm_tit = tk.Frame(
+                self.framePanel,
             )
             self.busca_frm_tit.pack(fill='x', expand=1)
 
             self.busca_frm_content = tk.Frame(
-                self.busca_top,
-                bg=default_panelBg,
-                padx=5,
+                self.framePanel,
+                bg=default_bottom_app,
+                #padx=5,
                 pady=10
             )
             self.busca_frm_content.pack(fill='x', expand=1)
@@ -850,13 +877,13 @@ class Extracion(ttk.Frame):
             self.buscar_01_msg = tk.Message(
                 self.busca_frm_tit,
                 textvariable=self.bus_reem_num_results,
-                padx=10,
-                pady=0
+                # padx=10,
+                # pady=0
             )
             self.buscar_01_msg.pack(fill='both', expand=1)
             self.buscar_01_msg.config(
                 width=bus_reem_top_msg_w,
-                background=acdefault_panelBg,
+                background=default_bottom_app,
                 foreground="black",
                 justify='center',
                 font=(fuente_texto, 14, 'bold')
@@ -872,117 +899,121 @@ class Extracion(ttk.Frame):
                 self.busca_frm_content,
                 textvariable=self.var_entry_bsc,
             )
-            self.entr_str.grid(row=0, column=0, padx=5, sticky="nsew")
+            self.entr_str.grid(row=0, column=0, sticky="nsew")
 
             self.entr_str.configure(
-                width=43,
+                width=40,
                 highlightcolor=default_hglcolor,
                 insertbackground=default_hglcolor,
-                insertwidth=5,
+                insertwidth=1,
                 selectbackground=default_select_bg,
-                highlightthickness=hhtk,
+                highlightthickness=1,
                 font=(fuente_texto, 14)
             )
 
-            self.btn_cerrar_buscar = tk.Button(
+            self.buttonClosePanel = tk.Button(
                 self.busca_frm_content,
                 text='X',
-                image=self.btn_x,
+                image=self.app.iconoClose,
                 command=self._on_closing_busca_top
             )
-            self.btn_cerrar_buscar.config(
-                background=default_panelBg,
+            self.buttonClosePanel.config(
+                background=default_bottom_app,
                 highlightcolor=default_hglcolor,
-                activebackground=acdefault_panelBg,
+                activebackground=default_bottom_app,
                 border=0,
-                highlightbackground=default_panelBg,
+                highlightbackground=default_bottom_app,
             )
-            self.btn_cerrar_buscar.grid(row=0, column=4, padx=5, pady=5)
+            self.buttonClosePanel.grid(row=0, column=4, padx=10, pady=5)
 
-## --- Botom Limpiar
-            self.btn_limpiar = tk.Button(
+#--- Botom Limpiar
+            self.buttonClosePanel = tk.Button(
                 self.busca_frm_content,
                 text='<<',
-                image=self.btn_lmp,
+                image=self.app.iconoClear,
                 command=self.limpiar_busqueda
             )
 
-            self.btn_limpiar.config(
-                background=default_panelBg,
+            self.buttonClosePanel.config(
+                background=default_bottom_app,
                 highlightcolor=default_hglcolor,
-                activebackground=acdefault_panelBg,
+                activebackground=default_bottom_app,
                 border=0,
-                highlightbackground=default_panelBg,
+                highlightbackground=default_bottom_app,
             )
 
-            self.btn_limpiar.grid(
-                row=0, column=1, padx=(5, 0), pady=5, sticky="nsew")
+            self.buttonClosePanel.grid(
+                row=0, column=1, padx=5, pady=5, sticky="nsew")
 
-## --- Botom anterior
+#--- Botom anterior
             self.btn_buscar_prev = tk.Button(
                 self.busca_frm_content,
                 text='<|',
-                image=self.flecha_up,
+                image=self.app.iconoArrowUp,
                 command=self._buscar_anterior
             )
 
             self.btn_buscar_prev.config(
-                background=default_panelBg,
+                background=default_bottom_app,
                 highlightcolor=default_hglcolor,
-                activebackground=acdefault_panelBg,
+                activebackground=default_bottom_app,
                 border=0,
-                highlightbackground=default_panelBg,
+                highlightbackground=default_bottom_app,
             )
 
             self.btn_buscar_prev.grid(
-                row=0, column=2, padx=(5, 0), pady=5, sticky="nsew")
+                row=0, column=2, padx=5, pady=5, sticky="nsew")
 
-## --- Botom siguiente
+#--- Botom siguiente
             self.btn_buscar_next = tk.Button(
                 self.busca_frm_content,
                 text='|>',
-                image=self.flecha_down,
+                image=self.app.iconoArrowDown,
                 command=self._buscar_siguiente
             )
 
             self.btn_buscar_next.config(
-                background=default_panelBg,
+                background=default_bottom_app,
                 highlightcolor=default_hglcolor,
-                activebackground=acdefault_panelBg,
+                activebackground=default_bottom_app,
                 border=0,
-                highlightbackground=default_panelBg,
+                highlightbackground=default_bottom_app,
             )
 
             self.btn_buscar_next.grid(
-                row=0, column=3, padx=(5, 0), pady=5, sticky="nsew")
+                row=0, column=3, padx=(5, 10), pady=5, sticky="nsew")
 
-## --- Activa el focu en el ENTRY
+#--- Activa el focu en el ENTRY
             self.entr_str.focus_set()
 
-## --- Busca palabras al escribir, y activa el panel
+#--- Busca palabras al escribir, y activa el panel
             self.entr_str.bind('<Any-KeyRelease>', self.on_entr_str_busca_key_release)
+            self.txt.bind("<Button-1>", lambda e: self.activeFocus(e))
+            self.txt.bind("<Motion>", lambda e: self.desactiveFocus(e))
+            self.entr_str.bind("<Motion>", lambda e: self.desactiveFocus(e))
+            self.entr_str.bind("<Button-1>", lambda e: self._Focus(e))
+            
+            self.app.MODE_DARK()
+
             _estado_actual = True
         else:
             self._buscar_focus(self.entr_str)
             _estado_actual = True
             return 'break'
 
-## --- Activa el motion en cada widget del panel
-        self.busca_top.bind("<Motion>", lambda e: self._activar_Focus(e))
+    def start_move(self, event):
+        self._a = event.x
+        self._b = event.y
 
-    # def start_move(self, event):
-    #     self._x = event.x
-    #     self._y = event.y
-
-    # def stop_move(self, event):
-    #     self._x = None
-    #     self._y = None
+    def stop_move(self, event):
+        self._a = None
+        self._b = None
 
     def on_move(self, event):
-        deltax = event.x - self._x
-        deltay = event.y - self._y
+        deltax = event.x - self._a
+        deltay = event.y - self._b
         new_pos = "+{}+{}".format(self.busca_top.winfo_x() + deltax, self.busca_top.winfo_y() + deltay)
-        #self.app.root.geometry(new_pos)
+        self.app.root.geometry(new_pos)
         self.busca_top.geometry(new_pos)
 
     def _buscar_focus(self, event):
@@ -991,39 +1022,68 @@ class Extracion(ttk.Frame):
     def _on_closing_busca_top(self):
         global PST_EXT
         global _estado_actual
+        #self.menu_Contextual.entryconfig(    "  Limpiar Busqueda", state="disabled")
+        #self.limpiar_busqueda()
         _estado_actual = False
         PST_EXT.busca_top.destroy()
 
 ## --- Activa el focu de los widgets del PANEL
-    def _activar_Focus(self, event):
-        pnl_buscar = event.widget
-        pnl_buscar.focus()
+    def activeFocus(self, event):
+        global _activeFocus
+        _activeFocus = False
 
-## --- Activa el FOCU del TXT principal
-    def activar_Focus(self, event):
-        txt_active = event.widget
-        txt_active.focus()
+    def _Focus(self, event):
+        global _activeFocus
+        _activeFocus = True
+
+    def desactiveFocus(self, event):
+        global _activeFocus
+        if _activeFocus ==  True:
+            try:
+                PST_EXT.entr_str.focus()
+            except TclError:
+                _activeFocus = False
+            except AttributeError:
+                _activeFocus = False
+        else:
+            self.txt.focus()
+
 
 ## --- Al escribir en el ENTRY del PANEL, busca concurrencias
     def on_entr_str_busca_key_release(self, event):
         if event.keysym != "F2" and event.keysym != "F3":  # F2 y F3
             self._buscar()
-            return "break"
+            # return "break"
 
     def _buscar(self, event=None):
         self.buscar_todo(self.entr_str.get().strip())
         if self.ocurrencias_encontradas:
             self.bus_reem_num_results.set('~ {} de {} ~'.format(
                 self.numero_ocurrencia_actual, self.numero_ocurrencias))
-            self.entr_str.configure(
-                highlightthickness=hhtk,
-                highlightcolor='blue')
+            self.foundEntry()
         else:
             self.bus_reem_num_results.set('~ {} ~'.format('No hay resultados'))
-            self.entr_str.configure(
-                highlightthickness=hhtk,
-                highlightcolor='red')
+            if self.var_entry_bsc.get() == "":
+                self.defaultEntry()
+            else:
+                self.noFoundEntry()
 
+    def foundEntry(self):
+        self.entr_str.configure(
+                highlightthickness=2,
+                highlightcolor='#003482')
+
+    def noFoundEntry(self):
+        self.entr_str.configure(
+                    highlightthickness=2,
+                    highlightcolor='orange red')
+
+    def defaultEntry(self):
+        self.entr_str.configure(
+                highlightthickness=1,
+                highlightcolor=default_hglcolor)
+        self.bus_reem_num_results.set('~ {} ~'.format('No hay resultados'))
+    
     def buscar_todo(self, txt_buscar=None):
         '''Buscar todas las ocurrencias en el Entry de MainApp'''
         # eliminar toda marca establecida, si existiera, antes de plasmar nuevos resultados
@@ -1065,25 +1125,25 @@ class Extracion(ttk.Frame):
         if self.ocurrencias_encontradas:
             self.bus_reem_num_results.set('~ {} de {} ~'.format(
                 self.numero_ocurrencia_actual, self.numero_ocurrencias))
-            self.entr_str.configure(
-                highlightthickness=hhtk,
-                highlightcolor='blue')
+            # self.entr_str.configure(
+            #     highlightthickness=2,
+            #     highlightcolor='blue')
         else:
             self.bus_reem_num_results.set('~ {} ~'.format('No hay resultados'))
-            self.entr_str.configure(
-                highlightthickness=hhtk,
-                highlightcolor='red')
+            # self.entr_str.configure(
+            #     highlightthickness=2,
+            #     highlightcolor='red')
 
     def _buscar_anterior(self, event=None):
         self.buscar_prev()
         if self.ocurrencias_encontradas:
             self.bus_reem_num_results.set('~ {} de {} ~'.format(
                 self.numero_ocurrencia_actual, self.numero_ocurrencias))
-            self.entr_str.configure(
-                highlightthickness=hhtk,
-                highlightcolor='blue')
+            # self.entr_str.configure(
+            #     highlightthickness=2,
+            #     highlightcolor='blue')
         else:
             self.bus_reem_num_results.set('~ {} ~'.format('No hay resultados'))
-            self.entr_str.configure(
-                highlightthickness=hhtk,
-                highlightcolor='red')
+            # self.entr_str.configure(
+            #     highlightthickness=2,
+            #     highlightcolor='red')

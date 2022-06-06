@@ -24,8 +24,6 @@ class ScrollableNotebook(ttk.Frame):
         self._active = None
         self.xLocation = 0
         self.app = application
-        self.WorkSpac_icon = ImageTk.PhotoImage(Image.open(pathIcon+r"workspace.png").resize((20, 20)))
-        self.novo = ImageTk.PhotoImage(Image.open(pathIcon+r"novo.png").resize((25, 25)))
         self.notebookContent = ttk.Notebook(self,**kwargs)
         self.notebookContent.pack(fill="both", expand=True)
         self.notebookTab = ttk.Notebook(self,**kwargs)
@@ -66,7 +64,7 @@ class ScrollableNotebook(ttk.Frame):
 
         self.buttonTab_novo = ttk.Label(
             slideFrame, 
-            image=self.novo,
+            image=self.app.iconoAdd,
         )
         self.buttonTab_novo.bind("<1>",self._bottomMenu_novo)
         self.buttonTab_novo.pack(side=tk.LEFT, fill=tk.BOTH, expand=1, padx=10)
@@ -224,7 +222,7 @@ class ScrollableNotebook(ttk.Frame):
                                     activeforeground=default_select_fg)
         tabListMenu.entryconfig('WorkSpace  ', 
                                 accelerator="ALT+W",
-                                image=self.WorkSpac_icon, 
+                                image=self.app.iconoWorkSpace, 
                                 compound='left', 
                                 label='  WorkSpace')
         try: 
