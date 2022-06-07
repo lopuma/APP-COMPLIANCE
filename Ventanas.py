@@ -5,7 +5,7 @@ from tkinter import ttk
 from tkinter import scrolledtext as st
 from PIL import Image, ImageTk
 from Compliance import   hlh_def, default_Framework, default_select_fg, default_select_bg, mypath, parse, pathIcon, pathConfig, pers_scrText_fg, modo_dark, hhtk, default_scrText_bg, default_bottom_app, default_scrText_fg, default_scrText_bg, bg_submenu, default_scrText_fg, fuente_texto, fg_submenu, default_scrText_fg, default_color_titulos, _Font_Texto, default_scrText_fg, default_scrText_bg, default_scrText_fg, default_hglcolor, _Font_Menu, oddrow, evenrow
-from Extraciones import MyEntry
+from DataExtraction import MyEntry
 
 def beep_error(f):
     def applicator(*args, **kwargs):
@@ -63,30 +63,30 @@ class Ventana(ttk.Frame):
         self.srcImpact.bind("<Key>", lambda e: self.desviacion.widgets_SoloLectura(e))
         self.srcVariable.bind("<Key>", lambda e: self.desviacion.widgets_SoloLectura(e))
         self.cbxUser.bind("<Key>", lambda e: self.desviacion.widgets_SoloLectura(e))
-        self.textBuscar.bind("<Any-KeyRelease>", self.on_entr_str_busca_key_release)
+        self.VTN_entry.bind("<Any-KeyRelease>", self.on_entr_str_busca_key_release)
         #self.vtn_ventanas.bind("<Motion>", lambda e:desviacion.activar_Focus(e))
         self.srcImpact.bind("<Button-3>", self.display_menu_clickDerecho)
         self.srcRisk.bind("<Button-3>", self.display_menu_clickDerecho)
         self.srcVariable.bind("<Button-3>", self.display_menu_clickDerecho)
-        self.textBuscar.bind("<Button-3>", self.display_menu_clickDerecho)
+        self.VTN_entry.bind("<Button-3>", self.display_menu_clickDerecho)
         self.listServer.bind("<Button-3>", self.display_menuLis_clickDerecho)
-        self.textBuscar.bind("<Motion>", lambda x :self.act_elemt_text(x))
+        self.VTN_entry.bind("<Motion>", lambda x :self.act_elemt_text(x))
         self.srcImpact.bind("<Motion>", lambda x :self.act_elemt_src(x))
         self.srcRisk.bind("<Motion>", lambda x :self.act_elemt_src(x))
         self.srcVariable.bind("<Motion>", lambda x :self.act_elemt_src(x))
         self.listServer.bind("<Motion>", lambda x :self.act_elemt_list(x))
-        self.textBuscar.bind("<FocusIn>", lambda e: self.clear_bsq(e))
-        self.textBuscar.bind("<FocusOut>", lambda e: self.clear_bsq(e))    
-        self.textBuscar.bind("<KeyPress>", lambda e: self.clear_bsq_buttom(e))    
-        self.textBuscar.bind("<Control-v>",lambda e:self.sel_text(e))
-        self.textBuscar.bind("<Control-V>",lambda e:self.sel_text(e))
+        self.VTN_entry.bind("<FocusIn>", lambda e: self.clear_bsq(e))
+        self.VTN_entry.bind("<FocusOut>", lambda e: self.clear_bsq(e))    
+        self.VTN_entry.bind("<KeyPress>", lambda e: self.clear_bsq_buttom(e))    
+        self.VTN_entry.bind("<Control-v>",lambda e:self.sel_text(e))
+        self.VTN_entry.bind("<Control-V>",lambda e:self.sel_text(e))
         ## --- Selecionar elemento hacia abajo
         self.tree.bind("<Down>", lambda e:self.TreeDown(e))
         self.tree.bind("<Up>", lambda e:self.TreeUp(e))
-        self.textBuscar.bind("<Control-x>",self.limpiar_bsq2)
-        self.textBuscar.bind("<Control-X>",self.limpiar_bsq2)
-        self.textBuscar.bind("<Control-f>",self._buscar_focus)        
-        self.textBuscar.bind("<Control-F>",self._buscar_focus)              
+        self.VTN_entry.bind("<Control-x>",self.limpiar_bsq2)
+        self.VTN_entry.bind("<Control-X>",self.limpiar_bsq2)
+        self.VTN_entry.bind("<Control-f>",self._buscar_focus)        
+        self.VTN_entry.bind("<Control-F>",self._buscar_focus)              
         self.srcRisk.bind("<Control-a>",lambda e:self._seleccionar_todo(e))
         self.srcImpact.bind("<Control-a>",lambda e:self._seleccionar_todo(e))
         self.srcVariable.bind("<Control-a>",lambda e:self._seleccionar_todo(e))
@@ -169,8 +169,8 @@ class Ventana(ttk.Frame):
         #customer = PST_DESV.varClient.get()
         self.var_ent_buscar.set("Buscar Directories / File ...")
         #self.var_ent_buscar.set("")
-        self.textBuscar.focus()
-        self.textBuscar.icursor(0)
+        self.VTN_entry.focus()
+        self.VTN_entry.icursor(0)
         self.btnLimpiar.grid_forget()
         self.btnBuscar.grid(row=0, column=1, sticky=tk.W)
         self.menu_Contextual.entryconfig("  Limpiar", state="disabled")
@@ -179,8 +179,8 @@ class Ventana(ttk.Frame):
     
     def limpiar_bsq2(self, event=None):
         self.var_ent_buscar.set("")
-        self.textBuscar.focus()
-        self.textBuscar.icursor(0)
+        self.VTN_entry.focus()
+        self.VTN_entry.icursor(0)
         self.btnLimpiar.grid_forget()
         self.btnBuscar.grid(row=0, column=1, sticky=tk.W)
         self.menu_Contextual.entryconfig("  Limpiar", state="disabled")
@@ -188,17 +188,17 @@ class Ventana(ttk.Frame):
         self.limpiar_widgets()
     
     def on_entr_str_busca_key_release(self, event):
-        textBuscar_Event = event.widget
+        VTN_entry_Event = event.widget
         #customer = PST_DESV.varClient.get()
-        self._buscar(textBuscar_Event)
-        if len(textBuscar_Event.get()) == 0:
+        self._buscar(VTN_entry_Event)
+        if len(VTN_entry_Event.get()) == 0:
             self.cargar_ventanas(self.customer)
         return 'break'
 
     def _buscar(self, event=None):
-        textBuscar_Event = event
-        textBuscar_Event.focus()
-        self._buscar_todo(textBuscar_Event.get().strip())
+        VTN_entry_Event = event
+        VTN_entry_Event.focus()
+        self._buscar_todo(VTN_entry_Event.get().strip())
 
     def _buscar_todo(self, txt_buscar=None):
         valor_aBuscar = txt_buscar
@@ -323,8 +323,8 @@ class Ventana(ttk.Frame):
             self.menu_Contextual.entryconfig("  Limpiar", state="disabled")
     
     def act_buscar(self, event=None):
-        self.textBuscar.select_range(0,tk.END)
-        self.textBuscar.focus_set()
+        self.VTN_entry.select_range(0,tk.END)
+        self.VTN_entry.focus_set()
         return 'break'
 
     def _buscar_focus(self, event):
@@ -433,8 +433,8 @@ class Ventana(ttk.Frame):
         self.menu_Contextual.tk_popup(event.x_root, event.y_root)
         self.srcEvent = event.widget
         self.srcEvent.focus()
-        if str(self.srcEvent) == str(self.textBuscar):
-            if len(self.textBuscar.get()) > 0:
+        if str(self.srcEvent) == str(self.VTN_entry):
+            if len(self.VTN_entry.get()) > 0:
                 self.menu_Contextual.entryconfig('  Limpiar', state='normal')
             else:
                 self.menu_Contextual.entryconfig('  Limpiar', state='disabled')
@@ -624,14 +624,14 @@ class Ventana(ttk.Frame):
         self.otros_datos.rowconfigure(0, weight=1)
 
         self.var_ent_buscar = tk.StringVar(self)
-        self.textBuscar = MyEntry(
+        self.VTN_entry = MyEntry(
             self.buscador,
             textvariable=self.var_ent_buscar,
         )
         self.var_ent_buscar.set("Buscar Directories / File ...")
-        self.textBuscar.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
+        self.VTN_entry.grid(row=0, column=0, ipady=8, padx=10, pady=10, sticky='nsew')
 
-        self.textBuscar.config(
+        self.VTN_entry.config(
             foreground="gray75",
             font=(fuente_texto, 14)
         )
@@ -640,7 +640,7 @@ class Ventana(ttk.Frame):
             self.buscador,
             text='Buscar',
             image=self.buscar_icon,
-            command=lambda:self._buscar(self.textBuscar)
+            command=lambda:self._buscar(self.VTN_entry)
         )
         self.btnBuscar.grid(row=0, column=1, pady=10, sticky=tk.W)
 
@@ -652,12 +652,19 @@ class Ventana(ttk.Frame):
         )
         self.btnLimpiar.grid(row=0, column=1, pady=10, sticky=tk.W)
 
-        self.btnCerrar = ttk.Button(
+        self.btnCerrar = tk.Button(
             self.buscador,
             text='Cerrar',
-            image=self.cerrar_icon,
+            image=self.app.iconoClose,
             command=self.cerrar_vtn
         )
+        self.btnCerrar.config(
+                background=default_bottom_app,
+                highlightcolor=default_hglcolor,
+                activebackground=default_bottom_app,
+                border=0,
+                highlightbackground=default_bottom_app,
+            )
         self.btnCerrar.grid(row=0, column=2, padx=10, pady=10, sticky=tk.E)
         
         # ## ====================================================================================
@@ -842,7 +849,7 @@ class Ventana(ttk.Frame):
             justify='center',
         )
         self.cbxUser.set('CONTACTOS')
-        self.cbxUser.grid(row=3, column=2, padx=10, pady=10, ipady=7, sticky='new')
+        self.cbxUser.grid(row=3, column=2, padx=10, pady=10, ipady=8, sticky='new')
 
         ## --- VARIABLE
         self.lbl4 = ttk.Label(

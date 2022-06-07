@@ -12,7 +12,7 @@ import time
 import subprocess
 import sys
 from getpass import getuser
-from tkinter import OptionMenu, Tcl, TclError, scrolledtext as st
+from tkinter import TclError, scrolledtext as st
 from tkinter import messagebox as mb
 from tkinter import font
 from PIL import Image, ImageTk
@@ -581,6 +581,7 @@ class Expandir(ttk.Frame):
             PST_EXP.EXP_btnIdrsa.grid(row=0, column=0, sticky='ne')
 
     def WIDGETS_EXPANDIR(self):
+        from DataExtraction import MyScrollText
         self.EXP_lblWidget = ttk.Label(
             self.vtn_expandir,
             text=self.titulo,
@@ -588,23 +589,11 @@ class Expandir(ttk.Frame):
         )
         self.EXP_lblWidget.grid(row=0, column=0, padx=20, pady=10, sticky='w')
 
-        self.EXP_scrExpandir = st.ScrolledText(
+        self.EXP_scrExpandir = MyScrollText(
             self.vtn_expandir,
+            app
         )
-        self.EXP_scrExpandir.config(
-            font=_Font_txt_exp,
-            wrap=tk.WORD,
-            highlightcolor=default_hglcolor,
-            borderwidth=0,
-            highlightthickness=hhtk,
-            highlightbackground=default_Framework,
-            insertbackground=default_hglcolor,
-            insertwidth=hlh_def,
-            selectbackground=default_select_bg,
-            selectforeground=default_select_fg,
-            background=default_scrText_bg,
-            foreground=default_scrText_fg,
-        )
+
         self.EXP_scrExpandir.insert('1.0', self.txt_Expan)
 
         self.EXP_btnDirectory = RadioButton(
@@ -769,7 +758,7 @@ class Expandir(ttk.Frame):
             highlightbackground=default_bottom_app,
             activebackground=default_bottom_app,
         )
-        self.EXP_btn_Siguiente.grid(row=0, column=2, pady=10, padx=(0,10), sticky='ns')
+        self.EXP_btn_Siguiente.grid(row=0, column=2, pady=15, padx=(0,10), sticky='ne')
 
         self.EXP_btn_Anterior = tk.Button(
             self.vtn_expandir,
@@ -784,7 +773,7 @@ class Expandir(ttk.Frame):
             highlightbackground=default_bottom_app,
             activebackground=default_bottom_app,
         )
-        self.EXP_btn_Anterior.grid(row=0, column=1, pady=10, padx=10, sticky='ns')
+        self.EXP_btn_Anterior.grid(row=0, column=1, pady=15, padx=10, sticky='ne')
 
         self.EXP_btnCopyALL = ttk.Button(
             self.vtn_expandir,
@@ -793,7 +782,7 @@ class Expandir(ttk.Frame):
             state="disabled",
             command=lambda e=self.EXP_scrExpandir: self.copiarALL(e),
         )
-        self.EXP_btnCopyALL.grid(row=0, column=4, pady=15, sticky='ns')
+        self.EXP_btnCopyALL.grid(row=0, column=4, pady=15, sticky='ne')
 
         self.EXP_btnScreamEvidencia = ttk.Button(
             self.vtn_expandir,
@@ -806,11 +795,18 @@ class Expandir(ttk.Frame):
 
         self.EXP_btnReducir = ttk.Button(
             self.vtn_expandir,
-            image=desviacion.icono_reducir,
-            #style='APP.TButton',
+            image=app.iconoCloseExpand,
+            style='APP.TButton',
             command=self.cerrar_vtn_expandir,
         )
-        self.EXP_btnReducir.grid(row=0, column=6, padx=20, pady=17, sticky='ne')
+        # self.EXP_btnReducir.config(
+        #         background=default_bottom_app,
+        #         highlightcolor=default_hglcolor,
+        #         activebackground=default_bottom_app,
+        #         border=0,
+        #         highlightbackground=default_bottom_app,
+        #     )
+        self.EXP_btnReducir.grid(row=0, column=6, padx=(0,20), pady=15, sticky='ne')
 
         self.EXP_scrExpandir.grid(
             row=1, column=0, padx=5, pady=5, sticky='nsew', columnspan=7)
@@ -1193,15 +1189,15 @@ class Desviacion(ttk.Frame):
         #self.DESVfr2_lblDescripcion.bind("<Motion>",lambda e:self.activar_Focus(e))
         self.DESV_scrCheck.bind(
             "<Motion>", lambda e: self.activar_Focus(e))
-        self.DESVfr2_srcBackup.bind(
+        self.DESV_scrBackup.bind(
             "<Motion>", lambda e: self.activar_Focus(e))
         self.DESV_scrEdit.bind(
             "<Motion>", lambda e: self.activar_Focus(e))
-        self.DESVfr3_srcRefrescar.bind(
+        self.DESV_scrRefresh.bind(
             "<Motion>", lambda e: self.activar_Focus(e))
         self.DESV_scrEvidencia.bind(
             "<Motion>", lambda e: self.activar_Focus(e))
-        self.DESV_entryModule.bind(
+        self.DESV_entry.bind(
             "<Motion>", lambda e: self._act_focus_ent(e))
         #*app.cuaderno.bind("<Motion>", lambda e: self.activar_Focus(e))
         self.DESV_ListBox.bind("<Motion>", lambda e: self._activar_Focus(e))
@@ -1209,11 +1205,11 @@ class Desviacion(ttk.Frame):
 ## --- MOSTRAR MENU DERECHO  --- ##
         self.DESV_scrCheck.bind(
             "<Button-3><ButtonRelease-3>", self._display_menu_clickDerecho)
-        self.DESVfr2_srcBackup.bind(
+        self.DESV_scrBackup.bind(
             "<Button-3><ButtonRelease-3>", self._display_menu_clickDerecho)
         self.DESV_scrEdit.bind(
             "<Button-3><ButtonRelease-3>", self._display_menu_clickDerecho)
-        self.DESVfr3_srcRefrescar.bind(
+        self.DESV_scrRefresh.bind(
             "<Button-3><ButtonRelease-3>", self._display_menu_clickDerecho)
         self.DESV_scrEvidencia.bind(
             "<Button-3><ButtonRelease-3>", self._display_menu_clickDerecho)
@@ -1221,11 +1217,11 @@ class Desviacion(ttk.Frame):
 ## --- ACTIVAR MODO SOLO LECTURA --- ##
         self.DESV_scrCheck.bind(
             "<Key>", lambda e: app.widgets_SoloLectura(e))
-        self.DESVfr2_srcBackup.bind(
+        self.DESV_scrBackup.bind(
             "<Key>", lambda e: app.widgets_SoloLectura(e))
         self.DESV_scrEdit.bind(
             "<Key>", lambda e: app.widgets_SoloLectura(e))
-        self.DESVfr3_srcRefrescar.bind(
+        self.DESV_scrRefresh.bind(
             "<Key>", lambda e: app.widgets_SoloLectura(e))
         self.DESV_scrEvidencia.bind(
             "<Key>", lambda e: app.widgets_SoloLectura(e))
@@ -1234,62 +1230,62 @@ class Desviacion(ttk.Frame):
 ## --- SELECCIONAR TOD --- ##
         self.DESV_scrCheck.bind(
             '<Control-a>', lambda e: self._seleccionar_todo(e))
-        self.DESVfr2_srcBackup.bind(
+        self.DESV_scrBackup.bind(
             '<Control-a>', lambda e: self._seleccionar_todo(e))
 
 ## --- BIND --- ##
-        self.DESV_entryModule.bind(
-            "<Return>", lambda event=None: self.findModule(self.DESV_entryModule.get()))
-        self.DESV_entryModule.bind(
+        self.DESV_entry.bind(
+            "<Return>", lambda event=None: self.findModule(self.DESV_entry.get()))
+        self.DESV_entry.bind(
             "<KeyPress>", lambda e: self.clear_bsq_buttom(e))
         self.DESV_ListBox.bind('<Control-f>', lambda e: self.buscar(e))
         self.DESV_ListBox.bind('<Control-F>', lambda e: self.buscar(e))
         self.DESV_ListBox.bind("<Down>", lambda e: self.ListDown(e))
         self.DESV_ListBox.bind("<Up>", lambda e: self.ListUp(e))
-        self.DESV_entryModule.bind(
+        self.DESV_entry.bind(
             '<Control-x>', lambda e: self._clear_busqueda(e))
-        self.DESV_entryModule.bind(
+        self.DESV_entry.bind(
             "<FocusIn>", lambda e: self.clear_busqueda(e))
-        self.DESV_entryModule.bind(
+        self.DESV_entry.bind(
             "<FocusOut>", lambda e: self.clear_busqueda(e))
 
         self.DESV_scrCheck.bind(
             '<Control-f>', lambda e: self.buscar(e))
-        self.DESVfr2_srcBackup.bind('<Control-f>', lambda e: self.buscar(e))
+        self.DESV_scrBackup.bind('<Control-f>', lambda e: self.buscar(e))
         self.DESV_scrCheck.bind(
             '<Control-F>', lambda e: self.buscar(e))
-        self.DESVfr2_srcBackup.bind('<Control-F>', lambda e: self.buscar(e))
+        self.DESV_scrBackup.bind('<Control-F>', lambda e: self.buscar(e))
         self.DESV_scrCheck.bind(
             '<Control-c>', lambda e: self._copiar_texto_seleccionado(e))
-        self.DESVfr2_srcBackup.bind(
+        self.DESV_scrBackup.bind(
             '<Control-c>', lambda e: self._copiar_texto_seleccionado(e))
         self.DESV_scrCheck.bind(
             '<Control-C>', lambda e: self._copiar_texto_seleccionado(e))
-        self.DESVfr2_srcBackup.bind(
+        self.DESV_scrBackup.bind(
             '<Control-C>', lambda e: self._copiar_texto_seleccionado(e))
         self.DESV_scrEdit.bind(
             '<Control-a>', lambda e: self._seleccionar_todo(e))
-        self.DESVfr3_srcRefrescar.bind(
+        self.DESV_scrRefresh.bind(
             '<Control-a>', lambda e: self._seleccionar_todo(e))
         self.DESV_scrEvidencia.bind(
             '<Control-a>', lambda e: self._seleccionar_todo(e))
         self.DESV_scrEdit.bind('<Control-F>', lambda e: self.buscar(e))
-        self.DESVfr3_srcRefrescar.bind('<Control-F>', lambda e: self.buscar(e))
+        self.DESV_scrRefresh.bind('<Control-F>', lambda e: self.buscar(e))
         self.DESV_scrEvidencia.bind('<Control-F>', lambda e: self.buscar(e))
         self.DESV_scrEdit.bind(
             '<Control-c>', lambda e: self._copiar_texto_seleccionado(e))
-        self.DESVfr3_srcRefrescar.bind(
+        self.DESV_scrRefresh.bind(
             '<Control-c>', lambda e: self._copiar_texto_seleccionado(e))
         self.DESV_scrEvidencia.bind(
             '<Control-c>', lambda e: self._copiar_texto_seleccionado(e))
         self.DESV_scrEdit.bind(
             '<Control-C>', lambda e: self._copiar_texto_seleccionado(e))
-        self.DESVfr3_srcRefrescar.bind(
+        self.DESV_scrRefresh.bind(
             '<Control-C>', lambda e: self._copiar_texto_seleccionado(e))
         self.DESV_scrEvidencia.bind(
             '<Control-C>', lambda e: self._copiar_texto_seleccionado(e))
         self.DESV_scrEdit.bind('<Control-f>', lambda e: self.buscar(e))
-        self.DESVfr3_srcRefrescar.bind('<Control-f>', lambda e: self.buscar(e))
+        self.DESV_scrRefresh.bind('<Control-f>', lambda e: self.buscar(e))
         self.DESV_scrEvidencia.bind('<Control-f>', lambda e: self.buscar(e))
 
 ## --- DESHABILITAR BOTONES --- ##
@@ -1354,9 +1350,9 @@ class Desviacion(ttk.Frame):
         # self.txtWidget.select_range(0,tk.END)
         self.txtWidget.focus_set()
         self.DESV_scrCheck.tag_remove("sel", "1.0", "end")
-        self.DESVfr2_srcBackup.tag_remove("sel", "1.0", "end")
+        self.DESV_scrBackup.tag_remove("sel", "1.0", "end")
         self.DESV_scrEdit.tag_remove("sel", "1.0", "end")
-        self.DESVfr3_srcRefrescar.tag_remove("sel", "1.0", "end")
+        self.DESV_scrRefresh.tag_remove("sel", "1.0", "end")
         self.DESV_scrEvidencia.tag_remove("sel", "1.0", "end")
         return 'break'
 
@@ -1365,22 +1361,22 @@ class Desviacion(ttk.Frame):
         global txtWidget_focus
         global PST_DESV
         txtWidget = event.widget
-        if txtWidget == PST_DESV.DESV_entryModule:
+        if txtWidget == PST_DESV.DESV_entry:
             txtWidget.focus()
             PST_DESV.DESV_scrCheck.tag_remove("sel", "1.0", "end")
-            PST_DESV.DESVfr2_srcBackup.tag_remove("sel", "1.0", "end")
+            PST_DESV.DESV_scrBackup.tag_remove("sel", "1.0", "end")
             PST_DESV.DESV_scrEdit.tag_remove("sel", "1.0", "end")
-            PST_DESV.DESVfr3_srcRefrescar.tag_remove("sel", "1.0", "end")
+            PST_DESV.DESV_scrRefresh.tag_remove("sel", "1.0", "end")
             PST_DESV.DESV_scrEvidencia.tag_remove("sel", "1.0", "end")
         elif txtWidget == PST_DESV.DESV_scrCheck:
             # srcCom = txtWidget
             txtWidget.focus()
             txtWidget_focus = True
-            PST_DESV.DESVfr2_srcBackup.tag_remove("sel", "1.0", "end")
+            PST_DESV.DESV_scrBackup.tag_remove("sel", "1.0", "end")
             PST_DESV.DESV_scrEdit.tag_remove("sel", "1.0", "end")
-            PST_DESV.DESVfr3_srcRefrescar.tag_remove("sel", "1.0", "end")
+            PST_DESV.DESV_scrRefresh.tag_remove("sel", "1.0", "end")
             PST_DESV.DESV_scrEvidencia.tag_remove("sel", "1.0", "end")
-        elif txtWidget == PST_DESV.DESVfr2_srcBackup:
+        elif txtWidget == PST_DESV.DESV_scrBackup:
             # srcBac = txtWidget
             txtWidget.focus()
             txtWidget_focus = True
@@ -1389,10 +1385,10 @@ class Desviacion(ttk.Frame):
             txtWidget.focus()
             txtWidget_focus = True
             PST_DESV.DESV_scrCheck.tag_remove("sel", "1.0", "end")
-            PST_DESV.DESVfr2_srcBackup.tag_remove("sel", "1.0", "end")
-            PST_DESV.DESVfr3_srcRefrescar.tag_remove("sel", "1.0", "end")
+            PST_DESV.DESV_scrBackup.tag_remove("sel", "1.0", "end")
+            PST_DESV.DESV_scrRefresh.tag_remove("sel", "1.0", "end")
             PST_DESV.DESV_scrEvidencia.tag_remove("sel", "1.0", "end")
-        elif txtWidget == PST_DESV.DESVfr3_srcRefrescar:
+        elif txtWidget == PST_DESV.DESV_scrRefresh:
             # srcRes = txtWidget
             txtWidget.focus()
             txtWidget_focus = True
@@ -1474,7 +1470,7 @@ class Desviacion(ttk.Frame):
             background=bg_submenu, foreground=fg_submenu,
             activebackground=default_select_bg, activeforeground=default_select_fg,
             font=_Font_Menu,
-            command=lambda e=self.DESV_entryModule: self._buscar(e),
+            command=lambda e=self.DESV_entry: self._buscar(e),
             state='disabled',
         )
         self.menu_Contextual.add_separator(background=bg_submenu)
@@ -1494,7 +1490,7 @@ class Desviacion(ttk.Frame):
             background=bg_submenu, foreground=fg_submenu,
             activebackground=default_select_bg, activeforeground=default_select_fg,
             font=_Font_Menu,
-            #command=lambda e=self.DESV_entryModule:self.pegar_texto_seleccionado(e),
+            #command=lambda e=self.DESV_entry:self.pegar_texto_seleccionado(e),
         )
 
         self.menu_Contextual.add_separator(background=bg_submenu)
@@ -1531,13 +1527,13 @@ class Desviacion(ttk.Frame):
         self.menu_Contextual.tk_popup(event.x_root, event.y_root)
         self.scrEvent = event.widget
         self.scrEvent.focus()
-        if str(self.scrEvent) == str(self.DESV_entryModule):
+        if str(self.scrEvent) == str(self.DESV_entry):
             self.menu_Contextual.entryconfig('  Buscar', state='disabled')
             self.menu_Contextual.entryconfig('  Pegar', state='normal')
             self.menu_Contextual.entryconfig('  Copiar', state='disabled')
             self.menu_Contextual.entryconfig(
                 '  Seleccionar todo', state='disabled')
-            if len(self.DESV_entryModule.get()) > 0:
+            if len(self.DESV_entry.get()) > 0:
                 self.menu_Contextual.entryconfig('  Limpiar', state='normal')
             else:
                 self.menu_Contextual.entryconfig('  Limpiar', state='disabled')
@@ -1588,7 +1584,7 @@ class Desviacion(ttk.Frame):
             pass
 
     def buscar(self, event):
-        self.DESV_entryModule.focus()
+        self.DESV_entry.focus()
         self._buscar_Ativate_focus()
 
     def _buscar_focus(self, event):
@@ -1598,8 +1594,8 @@ class Desviacion(ttk.Frame):
         return 'break'
 
     def _buscar_Ativate_focus(self):
-        self.DESV_entryModule.select_range(0, tk.END)
-        self.DESV_entryModule.focus_set()
+        self.DESV_entry.select_range(0, tk.END)
+        self.DESV_entry.focus_set()
         return 'break'
 
     def _buscar(self, event):
@@ -1613,14 +1609,15 @@ class Desviacion(ttk.Frame):
         self.DESVfr2_lblModulo['text'] = 'MODULO'
         self.DESVfr2_lblDescripcion['text'] = ''
         self.DESV_scrCheck.delete('1.0', tk.END)
-        self.DESVfr2_srcBackup.delete('1.0', tk.END)
+        self.DESV_scrBackup.delete('1.0', tk.END)
         self.DESV_scrEdit.delete('1.0', tk.END)
-        self.DESVfr3_srcRefrescar.delete('1.0', tk.END)
+        self.DESV_scrRefresh.delete('1.0', tk.END)
         self.DESV_scrEvidencia.delete('1.0', tk.END)
 
 # --- SELECIONA UN ELEMNETO DEL LIST BOX ACTUAL
     def selectModule(self, event):
         global value
+        #PST_DESV.DESV_scrCheck.colourText(PST_DESV.DESV_scrCheck)
         customer = PST_DESV.varClient.get()
         list_event = event.widget
         index = list_event.curselection()
@@ -1671,7 +1668,7 @@ class Desviacion(ttk.Frame):
             PST_DESV.DESV_btn1Expandir.config(state='disabled')
 
         if md['copia'] is not None:
-            PST_DESV.DESVfr2_srcBackup.insert(tk.END, md['copia'])
+            PST_DESV.DESV_scrBackup.insert(tk.END, md['copia'])
             PST_DESV.DESV_btn2Expandir.config(state='normal')
         else:
             PST_DESV.DESV_btn2Expandir.config(state='disabled')
@@ -1683,7 +1680,7 @@ class Desviacion(ttk.Frame):
             PST_DESV.DESV_btn3Expandir.config(state='disabled')
 
         if md['refrescar'] is not None:
-            PST_DESV.DESVfr3_srcRefrescar.insert(tk.END, md['refrescar'])
+            PST_DESV.DESV_scrRefresh.insert(tk.END, md['refrescar'])
             PST_DESV.DESV_btn4Expandir.config(state='normal')
         else:
             PST_DESV.DESV_btn4Expandir.config(state='disabled')
@@ -1717,7 +1714,7 @@ class Desviacion(ttk.Frame):
             self.DESV_btn1Expandir.config(state='disabled')
 
         if md['copia'] is not None:
-            self.DESVfr2_srcBackup.insert(tk.END, md['copia'])
+            self.DESV_scrBackup.insert(tk.END, md['copia'])
             self.DESV_btn2Expandir.config(state='normal')
         else:
             self.DESV_btn2Expandir.config(state='disabled')
@@ -1730,7 +1727,7 @@ class Desviacion(ttk.Frame):
 
         if md['refrescar'] is not None:
             self.DESV_btn4Expandir.config(state='normal')
-            self.DESVfr3_srcRefrescar.insert(tk.END, md['refrescar'])
+            self.DESV_scrRefresh.insert(tk.END, md['refrescar'])
         else:
             self.DESV_btn4Expandir.config(state='disabled')
 
@@ -1744,17 +1741,17 @@ class Desviacion(ttk.Frame):
 
     def llamada_colores(self):
         if modo_dark == 'False':
-            PST_DESV.colourLineCheck(default_scrText_bg, default_colourCodeBg, default_colourCodeFg, default_colourNoteFg)
-            PST_DESV.colour_line_bak(default_scrText_bg, default_colourCodeBg, default_colourCodeFg)
-            PST_DESV.colour_line_edi(default_scrText_bg, default_colourCodeBg, default_colourCodeFg)
-            PST_DESV.colour_line_ref(default_scrText_bg, default_colourCodeBg, default_colourCodeFg)
-            PST_DESV.colour_line_evi(default_scrText_bg, default_colourCodeBg, default_colourCodeFg)
+            PST_DESV.DESV_scrCheck.colourText(default_scrText_bg, default_colourCodeBg, default_colourCodeFg, default_colourNoteFg)
+            PST_DESV.DESV_scrBackup.colourText(default_scrText_bg, default_colourCodeBg, default_colourCodeFg, default_colourNoteFg)
+            PST_DESV.DESV_scrEdit.colourText(default_scrText_bg, default_colourCodeBg, default_colourCodeFg, default_colourNoteFg)
+            PST_DESV.DESV_scrRefresh.colourText(default_scrText_bg, default_colourCodeBg, default_colourCodeFg, default_colourNoteFg)
+            PST_DESV.DESV_scrEvidencia.colourText(default_scrText_bg, default_colourCodeBg, default_colourCodeFg, default_colourNoteFg)
         elif modo_dark == 'True':
-            PST_DESV.colourLineCheck(pers_scrText_bg, pers_scrText_bg, pers_colourCodeFg, pers_colourNoteFg)
-            PST_DESV.colour_line_bak(pers_scrText_bg, pers_scrText_bg, pers_colourCodeFg)
-            PST_DESV.colour_line_edi(pers_scrText_bg, pers_scrText_bg, pers_colourCodeFg)
-            PST_DESV.colour_line_ref(pers_scrText_bg, pers_scrText_bg, pers_colourCodeFg)
-            PST_DESV.colour_line_evi(pers_scrText_bg, pers_scrText_bg, pers_colourCodeFg)
+            PST_DESV.DESV_scrCheck.colourText(pers_scrText_bg, pers_scrText_bg, pers_colourCodeFg, pers_colourNoteFg)
+            PST_DESV.DESV_scrBackup.colourText(pers_scrText_bg, pers_scrText_bg, pers_colourCodeFg, pers_colourNoteFg)
+            PST_DESV.DESV_scrEdit.colourText(pers_scrText_bg, pers_scrText_bg, pers_colourCodeFg, pers_colourNoteFg)
+            PST_DESV.DESV_scrRefresh.colourText(pers_scrText_bg, pers_scrText_bg, pers_colourCodeFg, pers_colourNoteFg)
+            PST_DESV.DESV_scrEvidencia.colourText(pers_scrText_bg, pers_scrText_bg, pers_colourCodeFg, pers_colourNoteFg)
 
     def showButtonsModule(self, modulo_selecionado):  # TODO añadir demas botones
         global PST_DESV
@@ -1864,7 +1861,7 @@ class Desviacion(ttk.Frame):
             PST_DESV.DESV_btnCommand.grid_forget()
             PST_DESV.DESV_btnIdrsa.grid_forget()
             PST_DESV.DESV_btnRecortar.grid(
-                row=2, column=2, padx=5, pady=15, sticky='ne')
+                row=2, column=2, padx=5, pady=10, sticky='ne')
 # --- DISABLED ALL
         else:
             self._disabled_buttons()
@@ -1961,7 +1958,7 @@ class Desviacion(ttk.Frame):
             PST_DESV.DESV_btnIdrsa.grid_forget()
             PST_DESV.DESV_btnAccount.grid(row=2, column=1, padx=5)
             PST_DESV.DESV_btnRecortar.grid(
-                row=2, column=2, padx=5, pady=15, sticky='ne')
+                row=2, column=2, padx=5, pady=10, sticky='ne')
 # --- MINAGE
         elif keyFound == "MINAGE":
             self.activeBtnDir = False
@@ -1977,7 +1974,7 @@ class Desviacion(ttk.Frame):
             PST_DESV.DESV_btnIdrsa.grid_forget()
             PST_DESV.DESV_btnAccount.grid_forget()
             self.DESV_btnRecortar.grid(
-                row=2, column=2, padx=5, pady=15, sticky='ne')
+                row=2, column=2, padx=5, pady=10, sticky='ne')
 # --- DISABLED ALL
         else:
             self._disabled_buttons()
@@ -2027,7 +2024,7 @@ class Desviacion(ttk.Frame):
 # TODO --- SI NO EXISTE, MODULO O CLAVE
         if len(keyFound) == 0 and len(moduleFound) == 0:
             self.DESV_ListBox.select_clear(tk.ANCHOR)
-            self.DESV_entryModule.focus()
+            self.DESV_entry.focus()
             self._disabled_buttons()
             self.disabled_btn_expandir()
             self.DESV_ListBox.selection_clear(0, tk.END)
@@ -2041,7 +2038,7 @@ class Desviacion(ttk.Frame):
                 listPathCustomer = []
                 for client in listClient:
                     listPathCustomer.append(pathFiles.format(client))
-                moduleToFind = PST_DESV.DESV_entryModule.get()
+                moduleToFind = PST_DESV.DESV_entry.get()
                 moduleToFind = self.solve(moduleToFind)
 # --- ABRIR TODOS LOS JSON" DE LOS CLIENTESmd_a_buscar
                 for openFile in listPathCustomer:
@@ -2230,7 +2227,7 @@ class Desviacion(ttk.Frame):
                 row=1, column=1, pady=5, padx=5, sticky='nsw')
 
     def limpiar_busqueda(self):
-        widget_event = self.DESV_entryModule
+        widget_event = self.DESV_entry
         widget_event.delete(0, tk.END)
         widget_event.focus()
         widget_event.icursor(0)
@@ -2256,13 +2253,13 @@ class Desviacion(ttk.Frame):
 
     def enabled_Widgets(self):
         self.DESV_ListBox.config(state="normal")
-        self.DESV_entryModule.config(state="normal")
-        self.DESV_entryModule.focus()
+        self.DESV_entry.config(state="normal")
+        self.DESV_entry.focus()
         self.DESVfr1_btnBuscar.config(state="normal")
         self.DESV_scrCheck.config(state="normal")
-        self.DESVfr2_srcBackup.config(state="normal")
+        self.DESV_scrBackup.config(state="normal")
         self.DESV_scrEdit.config(state="normal")
-        self.DESVfr3_srcRefrescar.config(state="normal")
+        self.DESV_scrRefresh.config(state="normal")
         self.DESV_scrEvidencia.config(state="normal")
         self.DESV_btnRiskImpact.config(state='normal')
         self.DESV_btn1Expandir.config(state='normal')
@@ -2282,7 +2279,7 @@ class Desviacion(ttk.Frame):
         self.varClient.set(customer)
         self.renameNameTab(customer)
         # --- LIMPIAR -----------------------------
-        self.DESV_entryModule.delete(0, tk.END)
+        self.DESV_entry.delete(0, tk.END)
         self.DESV_ListBox.delete(0, tk.END)
         self.limpiar_Widgets()
         self._disabled_buttons()
@@ -2300,202 +2297,6 @@ class Desviacion(ttk.Frame):
                     listKeys.append(md['clave'])
         listModulo.sort()
         self.DESV_ListBox.insert(tk.END, *listModulo)
-
-    def colourLineCheck(self, bg_color, bg_codigo, fg_codigo, fg_nota):
-        PST_DESV.DESV_scrCheck.tag_configure(
-            "codigo",
-            background=bg_codigo,
-            foreground=fg_codigo,
-            selectbackground=default_select_bg,
-            selectforeground=default_select_fg,
-            font=_Font_Texto_codigo
-        )
-
-        PST_DESV.DESV_scrCheck.tag_configure(
-            "line",
-            background=bg_color,
-            foreground=default_color_line_fg,
-            selectbackground=default_select_bg,
-            selectforeground=default_select_fg,
-            font=_Font_Texto_bold
-        )
-
-        PST_DESV.DESV_scrCheck.tag_configure(
-            "nota",
-            background='#D4EFEE',
-            foreground='#000000',
-            selectbackground=default_select_bg,
-            selectforeground=default_select_fg,
-            font=_Font_Texto
-        )
-
-        PST_DESV.DESV_scrCheck.tag_configure(
-            "server",
-            background='#7BB3A4',
-            foreground='#000000',
-            selectbackground=default_select_bg,
-            selectforeground=default_select_fg,
-            font=_Font_Texto
-        )
-        PST_DESV.DESV_scrCheck.tag_configure(
-            "coment",
-            background=pers_scrText_bg,
-            foreground='#EFB810',
-            selectbackground=default_select_bg,
-            selectforeground=default_select_fg,
-            font=_Font_Texto
-        )
-
-        end = PST_DESV.DESV_scrCheck.index("end")
-        line_count = int(end.split(".", 1)[0])
-        for line in range(1, line_count+1):
-            startline = f"{line}.0"
-            if not (PST_DESV.DESV_scrCheck.search("##", startline, stopindex=f"{line}.1")) and not (PST_DESV.DESV_scrCheck.search("// NOTA", startline, stopindex=f"{line}.1")):
-                endline = f"{line}.end"
-                PST_DESV.DESV_scrCheck.tag_add(
-                    "codigo", startline, endline)
-            if (PST_DESV.DESV_scrCheck.search("+-", startline, stopindex=f"{line}.1")):
-                endline = f"{line}.end"
-                PST_DESV.DESV_scrCheck.tag_add(
-                    "line", startline, endline)
-            if (PST_DESV.DESV_scrCheck.search("//", startline, stopindex=f"{line}.1")):
-                endline = f"{line}.end"
-                PST_DESV.DESV_scrCheck.tag_add(
-                    "nota", startline, endline)
-            if (PST_DESV.DESV_scrCheck.search("[", startline, stopindex=f"{line}.1")):
-                endline = f"{line}.end"
-                PST_DESV.DESV_scrCheck.tag_add(
-                    "server", startline, endline)
-            if (PST_DESV.DESV_scrCheck.search("\"", startline, stopindex=f"{line}.1")):
-                endline = f"{line}.end"
-                PST_DESV.DESV_scrCheck.tag_add(
-                    "coment", startline, endline)
-
-    def colour_line_bak(self, bg_color, bg_codigo, fg_codigo):
-        PST_DESV.DESVfr2_srcBackup.tag_configure(
-            "codigo",
-            background=bg_codigo,
-            foreground=fg_codigo,
-            selectbackground=default_select_bg,
-            selectforeground=default_select_fg,
-            font=_Font_Texto_codigo
-        )
-
-        PST_DESV.DESVfr2_srcBackup.tag_configure(
-            "line",
-            background=bg_color,
-            foreground=default_color_line_fg,
-            selectbackground=default_select_bg,
-            selectforeground=default_select_fg,
-            font=_Font_Texto_bold
-        )
-        end = PST_DESV.DESVfr2_srcBackup.index("end")
-        line_count = int(end.split(".", 1)[0])
-        for line in range(1, line_count+1):
-            startline = f"{line}.0"
-            if not (PST_DESV.DESVfr2_srcBackup.search("##", startline, stopindex=f"{line}.1")) or not (PST_DESV.DESVfr2_srcBackup.search("##", startline, stopindex=f"{line}.1")):
-                endline = f"{line}.end"
-
-                PST_DESV.DESVfr2_srcBackup.tag_add(
-                    "codigo", startline, endline)
-
-            if (PST_DESV.DESVfr2_srcBackup.search("+-", startline, stopindex=f"{line}.1")):
-                endline = f"{line}.end"
-                PST_DESV.DESVfr2_srcBackup.tag_add(
-                    "line", startline, endline)
-
-    def colour_line_ref(self, bg_color, bg_codigo, fg_codigo):
-        PST_DESV.DESVfr3_srcRefrescar.tag_configure(
-            "codigo",
-            background=bg_codigo,
-            foreground=fg_codigo,
-            selectbackground=default_select_bg,
-            selectforeground=default_select_fg,
-            font=_Font_Texto_codigo
-        )
-
-        PST_DESV.DESVfr3_srcRefrescar.tag_configure(
-            "line",
-            background=bg_color,
-            foreground=default_color_line_fg,
-            selectbackground=default_select_bg,
-            selectforeground=default_select_fg,
-            font=_Font_Texto_bold
-        )
-        end = PST_DESV.DESVfr3_srcRefrescar.index("end")
-        line_count = int(end.split(".", 1)[0])
-        for line in range(1, line_count+1):
-            startline = f"{line}.0"
-            if not (PST_DESV.DESVfr3_srcRefrescar.search("##", startline, stopindex=f"{line}.1")):
-                endline = f"{line}.end"
-                PST_DESV.DESVfr3_srcRefrescar.tag_add(
-                    "codigo", startline, endline)
-            if (PST_DESV.DESVfr3_srcRefrescar.search("+-", startline, stopindex=f"{line}.1")):
-                endline = f"{line}.end"
-                PST_DESV.DESVfr3_srcRefrescar.tag_add(
-                    "line", startline, endline)
-
-    def colour_line_edi(self, bg_color, bg_codigo, fg_codigo):
-        PST_DESV.DESV_scrEdit.tag_configure(
-            "codigo",
-            background=bg_codigo,
-            foreground=fg_codigo,
-            selectbackground=default_select_bg,
-            selectforeground=default_select_fg,
-            font=_Font_Texto_codigo
-        )
-
-        PST_DESV.DESV_scrEdit.tag_configure(
-            "line",
-            background=bg_color,
-            foreground=default_color_line_fg,
-            selectbackground=default_select_bg,
-            selectforeground=default_select_fg,
-            font=_Font_Texto_bold
-        )
-        end = PST_DESV.DESV_scrEdit.index("end")
-        line_count = int(end.split(".", 1)[0])
-        for line in range(1, line_count+1):
-            startline = f"{line}.0"
-            if not (PST_DESV.DESV_scrEdit.search("##", startline, stopindex=f"{line}.1")):
-                endline = f"{line}.end"
-                PST_DESV.DESV_scrEdit.tag_add(
-                    "codigo", startline, endline)
-            if (PST_DESV.DESV_scrEdit.search("+-", startline, stopindex=f"{line}.1")):
-                endline = f"{line}.end"
-                PST_DESV.DESV_scrEdit.tag_add(
-                    "line", startline, endline)
-
-    def colour_line_evi(self, bg_color, bg_codigo, fg_codigo):
-        PST_DESV.DESV_scrEvidencia.tag_configure(
-            "codigo",
-            background=bg_codigo,
-            foreground=fg_codigo,
-            selectbackground=default_select_bg,
-            selectforeground=default_select_fg,
-            font=_Font_Texto_codigo
-        )
-
-        PST_DESV.DESV_scrEvidencia.tag_configure(
-            "line",
-            background=bg_color,
-            foreground=default_color_line_fg,
-            selectbackground=default_select_bg,
-            selectforeground=default_select_fg,
-            font=_Font_Texto_bold
-        )
-        end = PST_DESV.DESV_scrEvidencia.index("end")
-        line_count = int(end.split(".", 1)[0])
-        for line in range(1, line_count+1):
-            startline = f"{line}.0"
-            if not (PST_DESV.DESV_scrEvidencia.search("##", startline, stopindex=f"{line}.1")):
-                endline = f"{line}.end"
-                PST_DESV.DESV_scrEvidencia.tag_add(
-                    "codigo", startline, endline)
-            if (PST_DESV.DESV_scrEvidencia.search("+-", startline, stopindex=f"{line}.1")):
-                endline = f"{line}.end"
-                PST_DESV.DESV_scrEvidencia.tag_add(
-                    "line", startline, endline)
 
     def _disabled_buttons(self):
         global PST_DESV
@@ -2521,10 +2322,10 @@ class Desviacion(ttk.Frame):
         PST_DESV.DESV_btn5Expandir.config(state='disabled')
 
     def ScreamEvidencia(self):
-        app.root.withdraw()
+        #app.root.withdraw()
         os.popen('gtk-launch capture.desktop')
         time.sleep(2)
-        app.root.deiconify()
+        #app.root.deiconify()
 
     def Risk_Impact(self):
         opener = "open" if sys.platform == "darwin" else "xdg-open"
@@ -2546,7 +2347,7 @@ class Desviacion(ttk.Frame):
             event.tag_remove("sel", "1.0", "end")
 
     def WIDGETS_DESVIACION(self):
-        from DataExtraction import MyEntry
+        from DataExtraction import MyEntry, MyScrollText
 
 # --- DEFINIMOS LOS LABEL FRAMEs, QUE CONTENDRAN LOS WIDGETS --------------------------#
         self.DESV_frame1 = ttk.LabelFrame(
@@ -2622,22 +2423,22 @@ class Desviacion(ttk.Frame):
 # -----------------------------------------------------------------------------#
 # TODO --- ENTRY DE BUSQUEDA
         self.var_entry_bsc = tk.StringVar(self)
-        self.DESV_entryModule = MyEntry(
+        self.DESV_entry = MyEntry(
             self.DESV_frame1,
             textvariable=self.var_entry_bsc,
         )
-        self.DESV_entryModule.configure(
-            state='disabled',
+        self.DESV_entry.configure(
+            state='disabled'
         )
-        self.DESV_entryModule.grid(
-            row=1, column=0, pady=5, padx=(5, 0), sticky='nsew')
+        self.DESV_entry.grid(
+            row=1, column=0, pady=5, ipady=8, padx=(5, 0), sticky='nsew')
 
 # TODO --- BOTON BUSCAR DESVIACION
         self.DESVfr1_btnBuscar = ttk.Button(
             self.DESV_frame1,
             image=self.BuscarModulo_icon,
             state='disabled',
-            command=lambda: self.findModule(self.DESV_entryModule.get()),
+            command=lambda: self.findModule(self.DESV_entry.get()),
         )
         self.DESVfr1_btnBuscar.grid(
             row=1, column=1, pady=5, padx=5, sticky='nsw')
@@ -2859,25 +2660,24 @@ class Desviacion(ttk.Frame):
             command=self.RecortarMinMax,
         )
 
-        self.DESV_scrCheck = st.ScrolledText(self.DESV_frame2)
-        self.DESV_scrCheck.config(
-            font=_Font_Texto,
-            wrap=tk.WORD,
-            highlightcolor=default_hglcolor,
-            borderwidth=0,
-            highlightbackground=default_Framework,
-            highlightthickness=hhtk,
-            insertbackground=default_hglcolor,
-            insertwidth=hlh_def,
-            selectbackground=default_select_bg,
-            selectforeground=default_select_fg,
-            background=default_scrText_bg,
-            foreground=default_scrText_fg,
-            state='disabled',
-        )
+        self.DESV_scrCheck = MyScrollText(self.DESV_frame2, app)
+        # self.DESV_scrCheck.config(
+        #     font=_Font_Texto,
+        #     wrap=tk.WORD,
+        #     highlightcolor=default_hglcolor,
+        #     borderwidth=0,
+        #     highlightbackground=default_Framework,
+        #     highlightthickness=hhtk,
+        #     insertbackground=default_hglcolor,
+        #     insertwidth=hlh_def,
+        #     selectbackground=default_select_bg,
+        #     selectforeground=default_select_fg,
+        #     background=default_scrText_bg,
+        #     foreground=default_scrText_fg,
+        #     state='disabled',
+        # )
         self.DESV_scrCheck.grid(
             row=3, column=0, padx=5, pady=5, sticky='new', columnspan=5)
-
         self.DESV_btnRiskImpact = ttk.Button(
             self.DESV_frame2,
             text="Risk e Impact",
@@ -2887,7 +2687,7 @@ class Desviacion(ttk.Frame):
             command=self.Risk_Impact,
         )
         self.DESV_btnRiskImpact.grid(
-            row=2, column=3, padx=5, pady=15, sticky='ne')
+            row=2, column=3, padx=5, pady=10, sticky='ne')
 
         self.varComprobacion = "COMPROBACION"
         self.DESV_btn1Expandir = ttk.Button(
@@ -2900,7 +2700,7 @@ class Desviacion(ttk.Frame):
             #command=lambda x=self.DESV_scrCheck: self.expandir(x, self.varComprobacion),
         )
         self.DESV_btn1Expandir.grid(
-            row=2, column=4, padx=(0, 20), pady=15, sticky='ne')
+            row=2, column=4, padx=(0, 20), pady=10, sticky='ne')
 
 # --- BACKUP ----------------------------------------------------------------------------------------------------
         self.DESVfr2_lblBackup = ttk.Label(
@@ -2910,25 +2710,12 @@ class Desviacion(ttk.Frame):
         self.DESVfr2_lblBackup.grid(
             row=4, column=0, padx=5, pady=5, sticky='ew', columnspan=4)
 
-        self.DESVfr2_srcBackup = st.ScrolledText(
+        self.DESV_scrBackup = MyScrollText(
             self.DESV_frame2,
+            app
         )
-        self.DESVfr2_srcBackup.config(
-            font=_Font_Texto,
-            wrap=tk.WORD,
-            highlightcolor=default_hglcolor,
-            borderwidth=0,
-            highlightthickness=hhtk,
-            insertbackground=default_hglcolor,
-            highlightbackground=default_Framework,
-            insertwidth=hlh_def,
-            selectbackground=default_select_bg,
-            selectforeground=default_select_fg,
-            background=default_scrText_bg,
-            foreground=default_scrText_fg,
-            state='disabled',
-        )
-        self.DESVfr2_srcBackup.grid(
+        
+        self.DESV_scrBackup.grid(
             row=5, column=0, padx=5, pady=5, sticky='new', columnspan=5)
 
         self.varBackup = "BACKUP"
@@ -2938,7 +2725,7 @@ class Desviacion(ttk.Frame):
             image=self.icono_expandir,
             style='APP.TButton',
             state='disabled',
-            command=lambda x=self.DESVfr2_srcBackup: self.expandir(
+            command=lambda x=self.DESV_scrBackup: self.expandir(
                 x, self.varBackup),
         )
         self.DESV_btn2Expandir.grid(row=4, column=4, padx=(
@@ -2954,22 +2741,8 @@ class Desviacion(ttk.Frame):
         self.DESVfr3_lblEditar.grid(
             row=0, column=0, padx=5, pady=5, sticky='w')
 
-        self.DESV_scrEdit = st.ScrolledText(self.DESV_frame3)
-        self.DESV_scrEdit.config(
-            font=_Font_Texto,
-            wrap=tk.WORD,
-            highlightcolor=default_hglcolor,
-            borderwidth=0,
-            highlightthickness=hhtk,
-            insertbackground=default_hglcolor,
-            highlightbackground=default_Framework,
-            insertwidth=hlh_def,
-            selectbackground=default_select_bg,
-            selectforeground=default_select_fg,
-            background=default_scrText_bg,
-            foreground=default_scrText_fg,
-            state='disabled',
-        )
+        self.DESV_scrEdit = MyScrollText(self.DESV_frame3, app)
+            
         self.DESV_scrEdit.grid(
             row=1, column=0, padx=5, pady=5, sticky='new', columnspan=4)
 
@@ -2994,23 +2767,8 @@ class Desviacion(ttk.Frame):
         self.DESVfr3_lblRefrescar.grid(
             row=2, column=0, padx=5, pady=5, sticky='w', columnspan=2)
 
-        self.DESVfr3_srcRefrescar = st.ScrolledText(self.DESV_frame3)
-        self.DESVfr3_srcRefrescar.config(
-            font=_Font_Texto,
-            wrap=tk.WORD,
-            highlightcolor=default_hglcolor,
-            borderwidth=0,
-            highlightthickness=hhtk,
-            insertbackground=default_hglcolor,
-            highlightbackground=default_Framework,
-            insertwidth=hlh_def,
-            selectbackground=default_select_bg,
-            selectforeground=default_select_fg,
-            background=default_scrText_bg,
-            foreground=default_scrText_fg,
-            state='disabled',
-        )
-        self.DESVfr3_srcRefrescar.grid(
+        self.DESV_scrRefresh = MyScrollText(self.DESV_frame3, app)
+        self.DESV_scrRefresh.grid(
             row=3, column=0, padx=5, pady=5, sticky='new', columnspan=4)
 
         self.DESV_btn1CopyALL = ttk.Button(
@@ -3019,7 +2777,7 @@ class Desviacion(ttk.Frame):
             image=self.icono_copiar,
             style='APP.TButton',
             state='disabled',
-            command=lambda e=self.DESVfr3_srcRefrescar: self.copiarALL(e),
+            command=lambda e=self.DESV_scrRefresh: self.copiarALL(e),
         )
         self.DESV_btn1CopyALL.grid(row=2, column=2, padx=5, pady=5, sticky='e')
 
@@ -3030,7 +2788,7 @@ class Desviacion(ttk.Frame):
             image=self.icono_expandir,
             style='APP.TButton',
             state='disabled',
-            command=lambda x=self.DESVfr3_srcRefrescar: self.expandir(
+            command=lambda x=self.DESV_scrRefresh: self.expandir(
                 x, self.varRefrescar),
         )
         self.DESV_btn4Expandir.grid(
@@ -3044,22 +2802,7 @@ class Desviacion(ttk.Frame):
         self.DESVfr3_lblEvidencia.grid(
             row=4, column=0, padx=5, pady=5, sticky='w')
 
-        self.DESV_scrEvidencia = st.ScrolledText(self.DESV_frame3)
-        self.DESV_scrEvidencia.config(
-            font=_Font_Texto,
-            wrap=tk.WORD,
-            highlightcolor=default_hglcolor,
-            borderwidth=0,
-            highlightthickness=hhtk,
-            insertbackground=default_hglcolor,
-            highlightbackground=default_Framework,
-            insertwidth=hlh_def,
-            selectbackground=default_select_bg,
-            selectforeground=default_select_fg,
-            background=default_scrText_bg,
-            foreground=default_scrText_fg,
-            state='disabled',
-        )
+        self.DESV_scrEvidencia = MyScrollText(self.DESV_frame3, app)
         self.DESV_scrEvidencia.grid(
             row=5, column=0, padx=5, pady=5, sticky='new', columnspan=4)
 
@@ -3102,13 +2845,13 @@ class Desviacion(ttk.Frame):
         # self.DESVfr2_lblComprobacion.bind('<Motion>', app.activeDefault)
         # self.DESVfr2_lblBackup.bind('<Motion>', app.activeDefault)
         # self.DESV_scrCheck.bind('<Motion>', app.activeDefault)
-        # self.DESVfr2_srcBackup.bind('<Motion>', app.activeDefault)
+        # self.DESV_scrBackup.bind('<Motion>', app.activeDefault)
         # self.DESVfr3_lblEditar.bind('<Motion>', app.activeDefault)
         # self.DESVfr3_lblEvidencia.bind('<Motion>', app.activeDefault)
         # self.DESVfr3_lblRefrescar.bind('<Motion>', app.activeDefault)
         # self.DESV_scrEdit.bind('<Motion>', app.activeDefault)
         # self.DESV_scrEvidencia.bind('<Motion>', app.activeDefault)
-        # self.DESVfr3_srcRefrescar.bind('<Motion>', app.activeDefault)
+        # self.DESV_scrRefresh.bind('<Motion>', app.activeDefault)
 
         # self.DESV_frame1.bind('<Motion>', app.activeDefault)
         # self.DESV_frame2.bind('<Motion>', app.activeDefault)
@@ -3140,9 +2883,9 @@ class Desviacion(ttk.Frame):
         PST_DESV.DESV_frame2['text'] = 'SISTEMA OPERATIVO'
         PST_DESV.DESVfr2_lblDescripcion['text'] = ''
         PST_DESV.DESV_scrCheck.delete('1.0', tk.END)
-        PST_DESV.DESVfr2_srcBackup.delete('1.0', tk.END)
+        PST_DESV.DESV_scrBackup.delete('1.0', tk.END)
         PST_DESV.DESV_scrEdit.delete('1.0', tk.END)
-        PST_DESV.DESVfr3_srcRefrescar.delete('1.0', tk.END)
+        PST_DESV.DESV_scrRefresh.delete('1.0', tk.END)
         PST_DESV.DESV_scrEvidencia.delete('1.0', tk.END)
         PST_DESV.DESVfr2_lblModulo['text'] = 'MODULO'
 
@@ -3577,6 +3320,10 @@ class Aplicacion():
         tk.PhotoImage("iconoClose", data='''
             iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAABmJLR0QA/wD/AP+gvaeTAAAD2ElEQVRIie2WXUxbZRzGf2/POYW2lB7aInSsAyl0HzBHwgAD2USco4kxakxmJNli4hKMi4kYo4m6XcyPm8WYmMUbp15oXFzM/GTJoiMCCtiBw6kkkODcWBEYUJzQQr+OF3gSgistH97tuXzO8z5P/u/7f8//hdtIjh2AmkKTDdRuVKAKvJ1rlHqBN1JojwD9gLzeUG+mJHre25XfF/R5NFWR/EB+Eq3BKIT/4GZrG/DcekItZoPov1xfOBb0ebSgz6Od2e26BJxKon+gMdfSMdXoieUoUg+wZSVzwwrf5uYT2rmPRm4O68T9TnNFsVnZCty1XCwJjpwoc3gNAumLKleOJHgXkNYSTAKOnhgOTnw+Ntuvc59UutyS4PVl0u0lFqPqzlTyAHZmZ3ifKVKNwNE1BQNxDQ42/zwR/j0UDQCUWJTCPQ6TBfDpIgHHT5bf4Vy68MVSe7UsaCJJo6UKBpiNaNqhe7uuj4diWhjgg4r8CkXwMotbeXeZ1bhpt5pRunRRQ1egN6bRAsRuZZr0DJZheiGhjbZOzJYc3mJzZxqEaTKaGO77a8EoCZ4+X1PgVRXJqotbBibbvr0x9w3wfjLDdIMBhqYiiTtjGvJeh8l9j9NUcPLKjLfBaYkcLrSV66Ivx+d6jw9OBTR4diUzsYpgAIMs+Lq1pqC0Ws0s6Q6GB7ZnZbhVxWAFuBKKjNR0jlyLaviA2Y0MBsgzy6L1t/qiUlU2ZOtkRNMWtrVd7Q9G44eAoVQmq9lqHXPRBBlXQzHHw/lZhTr5kP/PzqG5yDtAezoma/mnFlhk8cSbO3I9OjETi093BcMycDpdk3Su01IYZSE+bK0qUO1Gg00nVVmy1+aYYsBj/1fwW69tc1h22TKKATRI7O8JtA+HooGzVa5auyK1sDg+NzT4+cZcy87mQlu1Tjx1efy7izPzffu6A2OAoaN2s9soxClSz+208WS51fjDtM+T0CfV6UrXTwI+ZfFmPH6f09IR9Hm0M5WuSwI+S1VUqq4WwAslWUpTR527WhJCApiIxG/s/zEwHdc4AISBX/8IRR/ZYzeJeqe57Fo4NvrL35Ei0uzwW6H1UVdWx2SjJ65XOu3zJDZlyl1A9TKtJ88o+//VJerspgtAUzLjVGf81cBsRIpqWlQnjg1OtY/Ox84B/mXa4fFI7PzHgZu9gDhb5aqTBS2rKPI/OJBrlP2j+4pDgw1FE7IQ7SS//9k2Rbo41ehJvLrV3gm8sp5ggAc9ZuX7BqfpArA3hfalY15Ht9kg+lh8da4b+gsyFawCrgPNGxGqIytNXSlrmwO3sfH4B6pPOCB2MOAbAAAAAElFTkSuQmCC
         '''))
+        self.iconoCloseExpand = (
+        tk.PhotoImage("iconoCloseExpand", data='''
+            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
+        '''))
         self.iconoMenu = (
         tk.PhotoImage("iconoMenu", data='''
             iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAABmJLR0QA/wD/AP+gvaeTAAADR0lEQVRIie2WTUgUYRjHn33bd2Zidmed3DE2WGdJVxTHiLAuq7WgbuSlPSwZhCCrdaguHaTrXJc+bmFZaEVEBxE8lCdbtpNgRISBlMpuC3nYdATdj9x1posr77zTiER48g97eJ7n93zM7LwfAIc6IDlox+Dg4Ll0On0RAAAhlA+FQqOqqm6STCwWu6Zp2kkAAI/HszQ5OfmajCcSCXcymbxeLpd5AABZlqfHxsY+2k4xMDBwFiGkA4BR/Xm93kWSURRlhIwDgKEoyiOS8Xq9y2QcIaT39/e3kwwijXQ6fV7XddNb2NjY8JF2Lpc7TQ+cy+XOUDnHSVvXdUc2m71g23ifsvw9Nr49ZWrsdDp/Wyo6HIYpAaEtSxHKR+cAADAMU7Rt3NHR8VySpCWGYYoY4yLLsvmGhoaXJNPY2PiA53kNY1zEGBd5nteamprukUwgEHjFsmweY1xkGKYoSdJST0/PC+tzH+oAZPkaFUUZ0TTtlMPhAACoBIPBh8lkcqoaj8fjJ2ZmZp5tb297AACcTud6JBIZGh0dXaky4XA4uri4eAcAnIZhgCiKn+fn52/ZThGNRq8AtTm4XK41kpFleZpmZFl+RzI8z6/RzE7tXZm+6vX1dT89TLlcZkm7VCqJNFMqlY6RdqVSYWmGrv0vG8h/kalxTU1NlgYwxiXS5jhujWY4jvtF5Vg2IlEUf5D2EdJYWFj42tbWJmGMKx6PJysIwnJra+vdTCbzrcr09fW9X11dbXG5XDlBELK1tbVfent7h+bm5nZPsFAotFCpVHyCIPx0u93ZQCAwlUql7ts//6EOSolEwi1J0jLDMAWMcYFl2c3m5ubHJBMOh6M7h0QBY1zgeX6ts7PzMsm0tLQ8ZVl2E2NcYBimIEnSkqqqLtvG3d3dt4Fa+BzHma49Pp/vA83s+Ha1k2NiIpHITZIxLae/LXzDMEzbqq7rDM3QPjoHAGBra+uobeN9ynLI2/j2lKmx3+9PIYRMRQRBWCFtSZI+0UXq6upMN0g6ByGk+/3+FOmzvJJ4PN6eyWQuAQBgjPNdXV1PhoeH8yQTi8WuapoWBAAQRfH7xMTEGzKuqqprdnb2RvV6W19f/3Z8fNwy8KEORH8AASkseKBxpNIAAAAASUVORK5CYII=
@@ -3634,7 +3381,12 @@ class Aplicacion():
             'APP.TButton',
             background=default_bottom_app,
             foreground=default_boton_fg,
-            font=(fuente_boton, tamñ_boton, weight_DF),
+            relief="flat",
+            border=0,
+            highlightthickness=0,
+            highlightbackground=default_bottom_app,
+            activebackground=default_bottom_app,
+            #font=(fuente_boton, tamñ_boton, weight_DF),
             borderwidth=0,
         )
         self.style.map(
@@ -3642,6 +3394,11 @@ class Aplicacion():
             background=[("active", default_bottom_app)],
             foreground=[("active", default_boton_fg)],
             borderwidth=[("active", 0)],
+            highlightbackground=[("active", default_bottom_app)],
+            relief=[("active", "flat")],
+            activebackground=[("active", default_boton_fg)],
+            border=[("active", 0)],
+            highlightthickness=[("active", 0)],
         )
 
         self.style.configure('TButton',
@@ -3918,8 +3675,6 @@ class Aplicacion():
         global APP_EXT
         APP_EXT = PST_EXT
         self.MODE_DARK()
-        print("<-- PST EXT --> ", PST_EXT)
-        print("<-- APP EXT --> ", APP_EXT)
         
 
     def openButtonAutomatizacion(self):
@@ -4094,13 +3849,13 @@ class Aplicacion():
             for md in data:
                 listModulo.append(md['modulo'])
                 listClave.append(md['clave'])
-        listModulo.sort()
+        #listModulo.sort()
         self._list_modulo.insert(tk.END, *listModulo)
         self._list_clave.insert(tk.END, *listClave)
 
     def on_select(self, event):
         global listbox_list
-
+        print("select")
         widget = event.widget
         items = widget.curselection()
         for listbox in listbox_list:
@@ -4726,28 +4481,13 @@ class Aplicacion():
                         APP_EXT.frameRadio.canvas.config(background=pers_scrText_bg)
                         APP_EXT.frameRadio.canvas.itemconfig(
                         1,
-                        outline=default_Outline
+                        outline=pers_Outline
                         )
                     except AttributeError:
                         pass
                 except TclError:
                     pass
-                    # APP_EXT.txt.config(
-                    # foreground=pers_scrText_fg,
-                    # background=pers_scrText_bg,
-                    # highlightbackground=pers_Framework,
-                    # highlightcolor=pers_hglcolor,
-                    # highlightthickness=hhtk,
-                    # insertbackground=pers_hglcolor
-                    # )
-                    # try:
-                    #     APP_EXT.frameRadio.canvas.config(background=pers_scrText_bg)
-                    #     APP_EXT.frameRadio.canvas.itemconfig(
-                    #     1,
-                    #     outline=default_Outline
-                    #     )
-                    # except TclError:
-                    #     pass
+
             if PST_DESV != "":
                 if PST_VTN != "":
                     try:
@@ -4814,7 +4554,7 @@ class Aplicacion():
                     fill=pers_bottom_app,
                     outline=default_Outline
                     )
-                PST_DESV.DESV_entryModule.config(
+                PST_DESV.DESV_entry.config(
                     background=pers_scrText_bg,
                     foreground=pers_scrText_fg,
                     highlightbackground=pers_Framework,
@@ -4847,7 +4587,7 @@ class Aplicacion():
                     highlightthickness=hhtk,
                     insertbackground=pers_hglcolor
                 )
-                PST_DESV.DESVfr2_srcBackup.configure(
+                PST_DESV.DESV_scrBackup.configure(
                     foreground=pers_scrText_fg,
                     background=pers_scrText_bg,
                     highlightbackground=pers_Framework,
@@ -4871,7 +4611,7 @@ class Aplicacion():
                     highlightthickness=hhtk,
                     insertbackground=pers_hglcolor
                 )
-                PST_DESV.DESVfr3_srcRefrescar.configure(
+                PST_DESV.DESV_scrRefresh.configure(
                     foreground=pers_scrText_fg,
                     background=pers_scrText_bg,
                     highlightbackground=pers_Framework,
@@ -4952,22 +4692,6 @@ class Aplicacion():
                         pass
                 except TclError:
                     pass
-                    # APP_EXT.txt.config(
-                    #     foreground=default_scrText_fg,
-                    #     background=default_scrText_bg,
-                    #     highlightbackground=default_Framework,
-                    #     highlightcolor=default_hglcolor,
-                    #     highlightthickness=hhtk,
-                    #     insertbackground=default_hglcolor
-                    # )
-                    # try:
-                    #     APP_EXT.frameRadio.canvas.config(background="gray90")
-                    #     APP_EXT.frameRadio.canvas.itemconfig(
-                    #     1,
-                    #     outline=default_scrText_fg
-                    #     )
-                    # except TclError:
-                    #     pass
             if PST_DESV != "":
                 if PST_VTN != "":
                     try:
@@ -5034,7 +4758,7 @@ class Aplicacion():
                     fill=default_bottom_app,
                     outline=default_Outline
                 )
-                PST_DESV.DESV_entryModule.config(
+                PST_DESV.DESV_entry.config(
                     background=default_scrText_bg,
                     foreground=default_scrText_fg,
                     highlightbackground=default_Framework,
@@ -5059,46 +4783,11 @@ class Aplicacion():
                     foreground='gray60',
                     background=default_bottom_app,
                 )
-                PST_DESV.DESV_scrCheck.configure(
-                    foreground=default_scrText_fg,
-                    background=default_scrText_bg,
-                    highlightbackground=default_Framework,
-                    highlightcolor=default_hglcolor,
-                    highlightthickness=hhtk,
-                    insertbackground=default_hglcolor
-                )
-                PST_DESV.DESVfr2_srcBackup.configure(
-                    foreground=default_scrText_fg,
-                    background=default_scrText_bg,
-                    highlightbackground=default_Framework,
-                    highlightcolor=default_hglcolor,
-                    highlightthickness=hhtk,
-                    insertbackground=default_hglcolor
-                )
-                PST_DESV.DESV_scrEdit.configure(
-                    foreground=default_scrText_fg,
-                    background=default_scrText_bg,
-                    highlightbackground=default_Framework,
-                    highlightcolor=default_hglcolor,
-                    highlightthickness=hhtk,
-                    insertbackground=default_hglcolor
-                )
-                PST_DESV.DESV_scrEvidencia.configure(
-                    foreground=default_scrText_fg,
-                    background=default_scrText_bg,
-                    highlightbackground=default_Framework,
-                    highlightcolor=default_hglcolor,
-                    highlightthickness=hhtk,
-                    insertbackground=default_hglcolor
-                )
-                PST_DESV.DESVfr3_srcRefrescar.configure(
-                    foreground=default_scrText_fg,
-                    background=default_scrText_bg,
-                    highlightbackground=default_Framework,
-                    highlightcolor=default_hglcolor,
-                    highlightthickness=hhtk,
-                    insertbackground=default_hglcolor
-                )
+                PST_DESV.DESV_scrCheck.configr()
+                PST_DESV.DESV_scrBackup.configr()
+                PST_DESV.DESV_scrEdit.configr()
+                PST_DESV.DESV_scrRefresh.configr()
+                PST_DESV.DESV_scrEvidencia.configr()
                 PST_DESV.asignar_iconos()
         self.changeTextButton(text_btnMode)
 
@@ -5129,12 +4818,6 @@ class Aplicacion():
                             highlightthickness=hhtk,
                             insertbackground=default_hglcolor
                             )
-        # PST_DESV.cambiar_icono(PST_EXP._btn_expDIR_, app.icono_account)
-        # PST_DESV.cambiar_icono(PST_EXP._btn_expAUT_, app.icono_account)
-        # PST_DESV.cambiar_icono(PST_EXP._btn_expACC_, app.icono_account)
-        # PST_DESV.cambiar_icono(PST_EXP._btn_expSER_, app.icono_account)
-        # PST_DESV.cambiar_icono(PST_EXP._btn_expCMD_, app.icono_account)
-        # PST_DESV.cambiar_icono(PST_EXP._btn_expIDR_, app.icono_account)
         PST_EXP.EXP_btnDirectory.canvas.itemconfig(1,
                         fill=default_bottom_app,
                         outline=default_Outline)
@@ -5186,13 +4869,6 @@ class Aplicacion():
                             highlightthickness=hhtk,
                             insertbackground=pers_hglcolor
                             )
-        # PST_DESV.cambiar_icono(PST_EXP._btn_expDIR_, app.icono_account1)
-        # PST_DESV.cambiar_icono(PST_EXP._btn_expAUT_, app.icono_account1)
-        # PST_DESV.cambiar_icono(PST_EXP._btn_expACC_, app.icono_account1)
-        # PST_DESV.cambiar_icono(PST_EXP._btn_expSER_, app.icono_account1)
-        # PST_DESV.cambiar_icono(PST_EXP._btn_expCMD_, app.icono_account1)
-        # PST_DESV.cambiar_icono(PST_EXP._btn_expIDR_, app.icono_account1)
-
         PST_EXP.EXP_btnDirectory.canvas.itemconfig(1,
                         fill=pers_bottom_app,
                         outline=default_Outline)
@@ -5262,7 +4938,7 @@ class Aplicacion():
             highlightcolor=pers_hglcolor,
             highlightthickness=hhtk,
         )
-        PST_VTN.textBuscar.config(
+        PST_VTN.VTN_entry.config(
             background=pers_scrText_bg,
             foreground='gray75',
             highlightbackground=pers_Framework,
@@ -5306,7 +4982,7 @@ class Aplicacion():
             highlightcolor=default_hglcolor,
             highlightthickness=hhtk,
         )
-        PST_VTN.textBuscar.config(
+        PST_VTN.VTN_entry.config(
             background=default_scrText_bg,
             foreground=default_scrText_fg,
             highlightbackground=default_Framework,

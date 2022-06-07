@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from functools import partial
 import os
 import time
 import tkinter as tk
@@ -8,13 +9,13 @@ from tkinter import  TclError, ttk
 from tkinter import scrolledtext as st
 from tkinter import font
 from threading import Thread
-from Compliance import pathExtraction, hlh_def, pers_menu_bg, pers_scrText_bg, pathConfig, parse, pers_bottom_app, activar_modo, mypath, hhtk, default_scrText_bg, default_bottom_app, bg_submenu, default_scrText_fg, default_menu_bg, fg_submenu, _Font_Menu, _Font_Texto, default_select_bg, default_select_fg, default_bottom_app, default_hglcolor, default_select_bg, default_select_fg, fuente_texto, tamñ_texto, _Font_Texto_bold, _Font_Texto_codigo
+from Compliance import pathExtraction, default_color_line_fg, default_Framework, default_select_fg, hlh_def, pers_menu_bg, pers_scrText_bg, pathConfig, parse, pers_bottom_app, activar_modo, mypath, hhtk, default_scrText_bg, default_colourCodeBg, default_colourCodeFg, default_colourNoteFg, default_bottom_app, bg_submenu, default_scrText_fg, default_menu_bg, fg_submenu, _Font_Menu, _Font_Texto, default_select_bg, default_bottom_app, default_hglcolor, fuente_texto, tamñ_texto, _Font_Texto_bold, _Font_Texto_codigo
 parar = False
 _estado_actual = False
 PST_EXT = ""
 HIDDEN = 0
 _activeFocus = False
-delimiters=[]
+
 def beep_error(f):
     def applicator(*args, **kwargs):
         try:
@@ -23,6 +24,100 @@ def beep_error(f):
             if args and isinstance(args[0], tk.Widget):
                 args[0].bell()
     return applicator
+
+class MyScrollText(st.ScrolledText):
+    def __init__(self, parent, app, *args, **kwargs):
+        st.ScrolledText.__init__(self, parent, *args, **kwargs)
+        self.parent = parent
+        self.app = app
+        self.configr()
+
+    def configr(self):
+        self.config( 
+            font=_Font_Texto,
+            wrap=tk.WORD,
+            highlightcolor=default_hglcolor,
+            borderwidth=0,
+            highlightthickness=hhtk,
+            highlightbackground=default_Framework,
+            insertbackground=default_hglcolor,
+            insertwidth=hlh_def,
+            selectbackground=default_select_bg,
+            selectforeground=default_select_fg,
+            background=default_scrText_bg,
+            foreground=default_scrText_fg,
+        )
+    
+    def colourText(self, bg_color, bg_codigo, fg_codigo, fg_nota):
+        self.tag_configure(
+            "codigo",
+            background=bg_codigo,
+            foreground=fg_codigo,
+            selectbackground=default_select_bg,
+            selectforeground=default_select_fg,
+            font=_Font_Texto_codigo
+        )
+
+        self.tag_configure(
+            "line",
+            background=bg_color,
+            foreground=default_color_line_fg,
+            selectbackground=default_select_bg,
+            selectforeground=default_select_fg,
+            font=_Font_Texto_bold
+        )
+
+        self.tag_configure(
+            "nota",
+            background='#D4EFEE',
+            foreground='#000000',
+            selectbackground=default_select_bg,
+            selectforeground=default_select_fg,
+            font=_Font_Texto
+        )
+
+        self.tag_configure(
+            "server",
+            background='#7BB3A4',
+            foreground='#000000',
+            selectbackground=default_select_bg,
+            selectforeground=default_select_fg,
+            font=_Font_Texto
+        )
+        self.tag_configure(
+            "coment",
+            background=pers_scrText_bg,
+            foreground='#EFB810',
+            selectbackground=default_select_bg,
+            selectforeground=default_select_fg,
+            font=_Font_Texto
+        )
+
+        end = self.index("end")
+        print("END ", end)
+        line_count = int(end.split(".", 1)[0])
+        for line in range(1, line_count+1):
+            startline = f"{line}.0"
+            if not (self.search("##", startline, stopindex=f"{line}.1")) and not (self.search("// NOTA", startline, stopindex=f"{line}.1")):
+                endline = f"{line}.end"
+                self.tag_add(
+                    "codigo", startline, endline)
+            if (self.search("+-", startline, stopindex=f"{line}.1")):
+                endline = f"{line}.end"
+                self.tag_add(
+                    "line", startline, endline)
+            if (self.search("//", startline, stopindex=f"{line}.1")):
+                endline = f"{line}.end"
+                self.tag_add(
+                    "nota", startline, endline)
+            if (self.search("[", startline, stopindex=f"{line}.1")):
+                endline = f"{line}.end"
+                self.tag_add(
+                    "server", startline, endline)
+            if (self.search("\"", startline, stopindex=f"{line}.1")):
+                endline = f"{line}.end"
+                self.tag_add(
+                    "coment", startline, endline)
 
 class MyEntry(tk.Entry):
     def __init__(self, parent=None, *args, **kwargs):
@@ -40,13 +135,14 @@ class MyEntry(tk.Entry):
             insertbackground=default_hglcolor,
             insertwidth=hlh_def,
             selectbackground=default_select_bg,
-            highlightthickness=hhtk,        )
+            highlightthickness=hhtk,        
+            )
         self.mostrar_menu()
 
-        self.bind('<Control-a>', self.seleccionar_todo)
-        self.bind('<Control-A>', self.seleccionar_todo)
-        self.bind('<Control-f>', self.seleccionar_todo)
-        self.bind('<Control-F>', self.seleccionar_todo)
+        self.bind('<Control-a>', self.selectedAll)
+        self.bind('<Control-A>', self.selectedAll)
+        self.bind('<Control-f>', self.selectedAll)
+        self.bind('<Control-F>', self.selectedAll)
         self.bind('<Control-x>', self.cortar)
         self.bind('<Control-X>', self.cortar)
         self.bind('<Control-c>', self.copiar)
@@ -118,7 +214,7 @@ class MyEntry(tk.Entry):
         self.menu_opciones.add_separator(background=bg_submenu)
         self.menu_opciones.add_command(# --- SELECT ALL
             label="  Selecionar todo",
-            command=self.seleccionar_todo,
+            command=self.selectedAll,
             accelerator='Ctrl+A',
             compound=tk.LEFT,
             background=bg_submenu,
@@ -145,13 +241,15 @@ class MyEntry(tk.Entry):
 
     def copiar(self, event=None):
         self.event_generate("<<Copy>>")
-        #self.see("insert")
         return 'break'
 
     def cortar(self, event=None):
-        PST_EXT.entr_str.select_range(0, tk.END)
+        self.select_range(0, tk.END)
         self.event_generate("<<Cut>>")
-        self.defaultEntry()
+        try:
+            PST_EXT.defaultEntry()
+        except:
+            pass
         return 'break'
 
     def pegar(self, event=None):
@@ -162,12 +260,12 @@ class MyEntry(tk.Entry):
             self.event_generate("<<Paste>>")
         return 'break'
 
-    def seleccionar_todo(self, event=None):
+    def selectedAll(self, event=None):
         self.select_range(0, tk.END)
         self.focus_set()
         return 'break'
 
-    #@beep_error
+    @beep_error
     def deshacer(self, event=None):
         if self.steps != 0:
             self.steps -= 1
@@ -175,7 +273,7 @@ class MyEntry(tk.Entry):
             self.insert(tk.END, self.changes[self.steps])
             self.menu_opciones.entryconfig("  Rehacer", state="normal")
 
-    #@beep_error
+    @beep_error
     def rehacer(self, event=None):
         if self.steps < len(self.changes):
             self.delete(0, tk.END)
@@ -205,9 +303,9 @@ class Extracion(ttk.Frame):
         self.txt.bind('<Control-f>', lambda x: self.searchPanel(x))
         self.txt.bind('<Control-F>', lambda x: self.searchPanel(x))
         self.txt.bind('<Control-l>', lambda x: self.hide_btn_nav(x))
-        self.txt.bind('<Control-c>', lambda x: self._copiar_texto_seleccionado(x))
-        self.txt.bind('<Control-C>', lambda x: self._copiar_texto_seleccionado(x))
-        self.txt.bind('<Control-a>', lambda e: self._seleccionar_todo(e))
+        self.txt.bind('<Control-c>', lambda x: self.copyTextSelected(x))
+        self.txt.bind('<Control-C>', lambda x: self.copyTextSelected(x))
+        self.txt.bind('<Control-a>', lambda e: self.selectedAll(e))
         self.txt.bind('<Control-x>', lambda e: self._limpiar_busqueda(e))
         self.txt.bind('<Control-X>', lambda e: self._limpiar_busqueda(e))
         self._ocurrencias_encontradas = []
@@ -220,7 +318,9 @@ class Extracion(ttk.Frame):
             image=self.app.iconoMenu,
             command=self.show_btn_nav,
         )
-
+        self.btn_nav.bind("<Motion>", partial(self.app.openTooltip, self.btn_nav, "Show Panel"))
+        self.btn_nav.bind("<Leave>", self.app._hide_event)
+        
     def EXT_motion(self, event):
         global PST_EXT
         PST_EXT = event.widget
@@ -295,6 +395,20 @@ class Extracion(ttk.Frame):
             "<Button-1>", lambda e: Thread(target=self.reducir, daemon=True).start())
         self.min.bind("<ButtonRelease-1>", self._parar_)
 
+    def text(self):
+        self.frame2 = tk.Frame(self)
+        self.frame2.grid(row=0, column=2, sticky="nsew", padx=5, pady=(10,0))
+        self.frame2.columnconfigure(0, weight=1)
+        self.frame2.rowconfigure(0, weight=1)
+        self.txt = MyScrollText(
+            self.frame2,
+            self.app
+        )
+        self.txt.grid(row=0, column=0, sticky="nsew")
+        self.txt.bind("<Key>", lambda e: self.app.widgets_SoloLectura(e))
+        self.txt.bind("<Button-3><ButtonRelease-3>",self._display_menu_clickDerecho)
+        self.txt.bind("<Motion>", lambda e: self.desactiveFocus(e))
+
     def ampliar(self):
         global parar
         parar = False
@@ -315,7 +429,7 @@ class Extracion(ttk.Frame):
         parar = False
         while not parar:
             time.sleep(0.01)
-            if self.wd > 190:
+            if self.wd > 240:
                 self.wd -= 3
                 self.frameMain.config(width=self.wd)
             else:
@@ -402,33 +516,16 @@ class Extracion(ttk.Frame):
                 break
         if len(path) != 0:
             self.seleccionar_plantilla(path)
+            #todo LLMADA A COLORES
+            #PST_EXT.txt.colourText(default_scrText_bg, default_colourCodeBg, default_colourCodeFg, default_colourNoteFg)
             self.colour_line()
             self.colour_line2()
 
     def colour_line(self):
-        indx = '1.0'
         indx3 = '1.0'
         indx4 = '1.0'
-        indx5 = '1.0'
-        indx6 = '1.0'
-        line1 = "+-------------------------------------------------------------------------------------+"
         line3 = "CONTESTAR NO"
         line4 = "CONTESTAR N/A"
-        line5 = "---AD"
-        line6 = "---IZ"
-        if line1:
-            while True:
-                indx = self.txt.search(line1, indx, nocase=1, stopindex=tk.END)
-                if not indx:
-                    break
-                lastidx = '%s+%dc' % (indx, len(line1))
-                self.txt.tag_add('found1', indx, lastidx)
-                indx = lastidx
-            self.txt.tag_config(
-                'found1',
-                foreground='dodgerblue',
-                font=("Consolas", 14, font.BOLD)
-            )
         if line3:
             while True:
                 indx3 = self.txt.search(
@@ -438,11 +535,13 @@ class Extracion(ttk.Frame):
                 lastidx3 = '%s+%dc' % (indx3, len(line3))
                 self.txt.tag_add('found3', indx3, lastidx3)
                 indx3 = lastidx3
+
+            #? COLOR CONTESTAR NO
             self.txt.tag_config(
                 'found3',
-                background='black',
-                foreground="red",
-                font=("Consolas", 14, font.BOLD)
+                background='#FFE6E6',
+                foreground='#FF2626',
+                font=(fuente_texto, tamñ_texto, font.BOLD)
             )
         if line4:
             while True:
@@ -453,38 +552,71 @@ class Extracion(ttk.Frame):
                 lastidx4 = '%s+%dc' % (indx4, len(line4))
                 self.txt.tag_add('found4', indx4, lastidx4)
                 indx4 = lastidx4
+
+            #? COLOR CONTESTAR N/A            
             self.txt.tag_config(
                 'found4',
-                background='black',
-                foreground="ORANGE",
-                font=("Consolas", 14, font.BOLD)
+                background='#FFCB91',
+                foreground='#FF5F00',
+                font=(fuente_texto, tamñ_texto, font.BOLD)
             )
-        if line5:
-            while True:
-                indx5 = self.txt.search(
-                    line5, indx5, nocase=1, stopindex=tk.END)
-                if not indx5:
-                    break
-                lastidx5 = '%s+%dc' % (indx5, len(line5)+27)
-                self.txt.tag_add('found5', indx5, lastidx5)
-                indx5 = lastidx5
-            self.txt.tag_config(
-                'found5',
-                font=("Consolas", 14, font.BOLD)
-            )
-        if line6:
-            while True:
-                indx6 = self.txt.search(
-                    line6, indx6, nocase=1, stopindex=tk.END)
-                if not indx6:
-                    break
-                lastidx6 = '%s+%dc' % (indx6, len(line6)+27)
-                self.txt.tag_add('found6', indx6, lastidx6)
-                indx6 = lastidx6
-            self.txt.tag_config(
-                'found6',
-                font=("Consolas", 14, font.BOLD)
-            )
+        
+        PST_EXT.txt.tag_configure(
+            "titulo",
+            background="#EDEDED",
+            # foreground="#990033",
+            selectbackground=default_select_bg,
+            selectforeground=default_select_fg,
+            font=_Font_Texto_bold
+        )
+
+        PST_EXT.txt.tag_configure(
+            "coment",
+            #background="#E9D5DA",
+            foreground="#ECB365",
+            selectbackground=default_select_bg,
+            selectforeground=default_select_fg,
+            font=_Font_Texto_bold
+        )
+
+        PST_EXT.txt.tag_configure(
+            "coment2",
+            #background="#E9D5DA",
+            foreground="#064663",
+            selectbackground=default_select_bg,
+            selectforeground=default_select_fg,
+            font=_Font_Texto_bold
+        )
+
+        PST_EXT.txt.tag_configure(
+            "codigo",
+            background="#FDEFF4",
+            foreground="#990033",
+            selectbackground=default_select_bg,
+            selectforeground=default_select_fg,
+            font=_Font_Texto_codigo
+        )
+        
+        end = PST_EXT.txt.index("end")
+        line_count = int(end.split(".", 1)[0])
+        for line in range(1, line_count+1):
+            startline = f"{line}.0"
+            # if not (PST_EXT.txt.search("#", startline, stopindex=f"{line}.1")) and not(PST_EXT.txt.search("//", startline, stopindex=f"{line}.1")) and not (PST_EXT.txt.search("\"", startline, stopindex=f"{line}.1")) and not (PST_EXT.txt.search("---", startline, stopindex=f"{line}.1")) and not (PST_EXT.txt.search("/*", startline, stopindex=f"{line}.1")) and not (PST_EXT.txt.search("+-", startline, stopindex=f"{line}.1")):
+            #     endline = f"{line}.end"
+            #     PST_EXT.txt.tag_add(
+            #         "codigo", startline, endline)
+            if (PST_EXT.txt.search("---", startline, stopindex=f"{line}.1")):
+                endline = f"{line}.end"
+                PST_EXT.txt.tag_add(
+                    "titulo", startline, endline)
+            if (PST_EXT.txt.search("\"", startline, stopindex=f"{line}.1")):
+                endline = f"{line}.end"
+                PST_EXT.txt.tag_add(
+                    "coment", startline, endline)
+            if (PST_EXT.txt.search("//", startline, stopindex=f"{line}.1")):
+                endline = f"{line}.end"
+                PST_EXT.txt.tag_add(
+                    "coment2", startline, endline)
 
     def colour_line2(self):
         indx2 = '1.0'
@@ -496,100 +628,67 @@ class Extracion(ttk.Frame):
             lastidx2 = '%s+%dc' % (indx2, len(line2))
             self.txt.tag_add('found2', indx2, lastidx2)
             indx2 = lastidx2
+        
+        #? COLOR CONTESTAR YES
         self.txt.tag_config(
             'found2',
-            background="black",
-            foreground='#4E9F3D',
-            font=("Consolas", 14, font.BOLD)
+            background='#000000',
+            foreground='#357C3C',
+            font=(fuente_texto, tamñ_texto, font.BOLD)
         )
 
-    def ampliador(self):
-        self.frame3 = tk.Frame(
-            self
-        )
-        self.frame3.config(
-            border=0,
-            background="blue",
-            width=1
-        )
-        self.frame3.grid(row=0, column=1, sticky="nsew")
-
-    def text(self):
-        global delimiters
-        self.frame2 = tk.Frame(self)
-        self.frame2.grid(row=0, column=2, sticky="nsew", padx=5, pady=(10,0))
-        self.frame2.columnconfigure(0, weight=1)
-        self.frame2.rowconfigure(0, weight=1)
-        self.txt = st.ScrolledText(
-            self.frame2,
-            font=_Font_Texto,
-        )
-        self.txt.config(
-            font=_Font_Texto,
-            wrap=tk.WORD,
-            highlightcolor=default_hglcolor,
-            borderwidth=0,
-            highlightthickness=hhtk,
-            insertbackground=default_hglcolor,
-            insertwidth=hlh_def,
-            selectbackground=default_select_bg,
-            selectforeground=default_select_fg,
-            background=default_scrText_bg,
-            foreground=default_scrText_fg,
-            state='normal'
-        )
-        self.txt.grid(row=0, column=0, sticky="nsew")
-        self.txt.bind("<Key>", lambda e: self.app.widgets_SoloLectura(e))
-        self.txt.bind("<Button-3><ButtonRelease-3>",self._display_menu_clickDerecho)
-        self.txt.bind("<Motion>", lambda e: self.desactiveFocus(e))
-
+    def widgets_SoloLectura(self, event):
+        if(20 == event.state and event.keysym == 'c' or event.keysym == 'Down' or event.keysym == 'Up' or 20 == event.state and event.keysym == 'f' or 20 == event.state and event.keysym == 'a'):
+            return
+        else:
+            return "break"
+    
     def _menu_clickDerecho(self):
-        self.text_font = font.Font(family='Courier', size=14, font=font.BOLD)
         self.menu_Contextual = tk.Menu(self, tearoff=0)
         self.menu_Contextual.add_command(
             label="  Buscar",
             accelerator='Ctrl+F',
-            background='#ccffff', foreground='black',
-            activebackground='#004c99', activeforeground='white',
-            font=self.text_font,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=default_select_bg, activeforeground=default_select_fg,
+            font=_Font_Menu,
             command=lambda e=self.txt: self.searchPanel(e)
         )
-        self.menu_Contextual.add_separator(background='#ccffff')
+        self.menu_Contextual.add_separator(background=bg_submenu)
         self.menu_Contextual.add_command(
             label="  Copiar",
             accelerator='Ctrl+C',
-            background='#ccffff', foreground='black',
-            activebackground='#004c99', activeforeground='white',
-            font=self.text_font,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=default_select_bg, activeforeground=default_select_fg,
+            font=_Font_Menu,
             state="disabled",
-            command=self.copiar_texto_seleccionado
+            command=self.copyTextSelected,
         )
-        self.menu_Contextual.add_separator(background='#ccffff')
+        self.menu_Contextual.add_separator(background=bg_submenu)
         self.menu_Contextual.add_command(
             label="  Seleccionar todo",
             accelerator='Ctrl+A',
-            background='#ccffff', foreground='black',
-            activebackground='#004c99', activeforeground='white',
-            font=self.text_font,
-            command=self.seleccionar_todo
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=default_select_bg, activeforeground=default_select_fg,
+            font=_Font_Menu,
+            command=self.selectedAll
         )
         self.menu_Contextual.add_command(
             label="  Limpiar Busqueda",
             accelerator='Ctrl+X',
-            background='#ccffff', foreground='black',
-            activebackground='#004c99', activeforeground='white',
-            font=self.text_font,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=default_select_bg, activeforeground=default_select_fg,
+            font=_Font_Menu,
             state="disabled",
             command=self.limpiar_busqueda
         )
-        self.menu_Contextual.add_separator(background='#ccffff')
+        self.menu_Contextual.add_separator(background=bg_submenu)
         self.menu_Contextual.add_command(
             label="  Ocultar Panel",
             accelerator='Ctrl+L',
             compound=tk.LEFT,
-            background='#ccffff', foreground='black',
-            activebackground='#004c99', activeforeground='white',
-            font=self.text_font,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=default_select_bg, activeforeground=default_select_fg,
+            font=_Font_Menu,
             command=self.hide_btn_nav
         )
         self.menu_Contextual.add_command(
@@ -597,18 +696,18 @@ class Extracion(ttk.Frame):
             state="disabled",
             accelerator='Ctrl+L',
             compound=tk.LEFT,
-            background='#ccffff', foreground='black',
-            activebackground='#004c99', activeforeground='white',
-            font=self.text_font,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=default_select_bg, activeforeground=default_select_fg,
+            font=_Font_Menu,
             command=self.hide_btn_nav
         )
-        self.menu_Contextual.add_separator(background='#ccffff')
+        self.menu_Contextual.add_separator(background=bg_submenu)
         self.menu_Contextual.add_command(
             label="  Cerrar pestaña",
             compound=tk.LEFT,
-            background='#ccffff', foreground='black',
-            activebackground='#004c99', activeforeground='white',
-            font=self.text_font,
+            background=bg_submenu, foreground=fg_submenu,
+            activebackground=default_select_bg, activeforeground=default_select_fg,
+            font=_Font_Menu,
             command=self.cerrar_vtn_desviacion
         )
 
@@ -637,16 +736,8 @@ class Extracion(ttk.Frame):
         txt_event.tag_remove('found_prev_next', '1.0', tk.END)
         self.defaultEntry()
 
-    def copiar_texto_seleccionado(self):
-        seleccion = self.txt.tag_ranges(tk.SEL)
-        if seleccion:
-            self.app.root.clipboard_clear()
-            self.app.root.clipboard_append(self.txt.get(*seleccion).strip())
-            self.txt.tag_remove("sel", "1.0", "end")
-            return 'break'
-
-    def _copiar_texto_seleccionado(self, event):
-        scrText = event.widget
+    def copyTextSelected(self, *args):
+        scrText = PST_EXT.txt
         seleccion = scrText.tag_ranges(tk.SEL)
         if seleccion:
             self.app.root.clipboard_clear()
@@ -656,13 +747,9 @@ class Extracion(ttk.Frame):
         else:
             pass
 
-    def seleccionar_todo(self):
-        self.txt.tag_add("sel", "1.0", "end")
-        return 'break'
-
-    def _seleccionar_todo(self, event):
-        scr_Event = event.widget
-        scr_Event.tag_add("sel", "1.0", "end")
+    def selectedAll(self, *args):
+        scrText = PST_EXT.txt
+        scrText.tag_add("sel", "1.0", "end")
         return 'break'
 
     def cerrar_vtn_desviacion(self):
@@ -747,68 +834,6 @@ class Extracion(ttk.Frame):
     @property
     def ocurrencias_encontradas(self):
         return self._ocurrencias_encontradas
-
-    def _menu_entry(self):
-        self.text_font = font.Font(family='Consolas', size=13)
-        self.menu_opciones = tk.Menu(self, tearoff=0)
-        self.menu_opciones.add_command(
-            label="  Deshacer",
-            command=self.entr_str.deshacer,
-            accelerator='Ctrl+Z',
-            background='#ccffff',
-            foreground='black',
-            activebackground='#004c99',
-            activeforeground='white',
-            font=self.text_font,
-        )
-        self.menu_opciones.add_command(
-            label="  Rehacer",
-            command=self.entr_str.rehacer,
-            accelerator='Ctrl+Y',
-            background='#ccffff',
-            foreground='black',
-            activebackground='#004c99',
-            activeforeground='white',
-            font=self.text_font,
-        )
-        self.menu_opciones.add_separator(background='#ccffff')
-        self.menu_opciones.add_command(
-            label="  Cortar",
-            accelerator='Ctrl+X',
-            background='#ccffff', foreground='black',
-            activebackground='#004c99', activeforeground='white',
-            font=self.text_font,
-            state='disabled',
-            command=lambda e=self.entr_str: self._popup_cut(e)
-        )
-        self.menu_opciones.add_command(
-            label="  Copiar",
-            accelerator='Ctrl+C',
-            background='#ccffff', foreground='black',
-            activebackground='#004c99', activeforeground='white',
-            font=self.text_font,
-            state='disable',
-            command=lambda e=self.entr_str: self.popup_copy(e)
-        )
-        self.menu_opciones.add_command(
-            label="  Pegar",
-            accelerator='Ctrl+V',
-            background='#ccffff',
-            foreground='black',
-            activebackground='#004c99',
-            activeforeground='white',
-            font=self.text_font,
-            command=lambda e=self.entr_str: self.popup_paste(e)
-        )
-        self.menu_opciones.add_separator(background='#ccffff')
-        self.menu_opciones.add_command(
-            label="  Selecionar todo",
-            accelerator='Ctrl+A',
-            compound=tk.LEFT,
-            background='#ccffff', foreground='black',
-            activebackground='#004c99', activeforeground='white',
-            font=self.text_font,
-        )
 
     def searchPanel(self, event=None):
         self.y_alto_btn = 115
@@ -895,13 +920,12 @@ class Extracion(ttk.Frame):
 
             self.var_entry_bsc = tk.StringVar(self)
 
-            self.entr_str = MyEntry(
+            self.EXT_entry = MyEntry(
                 self.busca_frm_content,
                 textvariable=self.var_entry_bsc,
             )
-            self.entr_str.grid(row=0, column=0, sticky="nsew")
 
-            self.entr_str.configure(
+            self.EXT_entry.configure(
                 width=40,
                 highlightcolor=default_hglcolor,
                 insertbackground=default_hglcolor,
@@ -910,6 +934,8 @@ class Extracion(ttk.Frame):
                 highlightthickness=1,
                 font=(fuente_texto, 14)
             )
+
+            self.EXT_entry.grid(row=0, column=0, ipady=8, sticky="nsew")
 
             self.buttonClosePanel = tk.Button(
                 self.busca_frm_content,
@@ -984,20 +1010,20 @@ class Extracion(ttk.Frame):
                 row=0, column=3, padx=(5, 10), pady=5, sticky="nsew")
 
 #--- Activa el focu en el ENTRY
-            self.entr_str.focus_set()
+            self.EXT_entry.focus_set()
 
 #--- Busca palabras al escribir, y activa el panel
-            self.entr_str.bind('<Any-KeyRelease>', self.on_entr_str_busca_key_release)
+            self.EXT_entry.bind('<Any-KeyRelease>', self.on_EXT_entry_busca_key_release)
             self.txt.bind("<Button-1>", lambda e: self.activeFocus(e))
             self.txt.bind("<Motion>", lambda e: self.desactiveFocus(e))
-            self.entr_str.bind("<Motion>", lambda e: self.desactiveFocus(e))
-            self.entr_str.bind("<Button-1>", lambda e: self._Focus(e))
+            self.EXT_entry.bind("<Motion>", lambda e: self.desactiveFocus(e))
+            self.EXT_entry.bind("<Button-1>", lambda e: self._Focus(e))
             
             self.app.MODE_DARK()
 
             _estado_actual = True
         else:
-            self._buscar_focus(self.entr_str)
+            self._buscar_focus(self.EXT_entry)
             _estado_actual = True
             return 'break'
 
@@ -1017,7 +1043,7 @@ class Extracion(ttk.Frame):
         self.busca_top.geometry(new_pos)
 
     def _buscar_focus(self, event):
-        MyEntry.seleccionar_todo(event)
+        self.EXT_entry.selectedAll(event)
 
     def _on_closing_busca_top(self):
         global PST_EXT
@@ -1040,7 +1066,7 @@ class Extracion(ttk.Frame):
         global _activeFocus
         if _activeFocus ==  True:
             try:
-                PST_EXT.entr_str.focus()
+                PST_EXT.EXT_entry.focus()
             except TclError:
                 _activeFocus = False
             except AttributeError:
@@ -1048,15 +1074,14 @@ class Extracion(ttk.Frame):
         else:
             self.txt.focus()
 
-
 ## --- Al escribir en el ENTRY del PANEL, busca concurrencias
-    def on_entr_str_busca_key_release(self, event):
+    def on_EXT_entry_busca_key_release(self, event):
         if event.keysym != "F2" and event.keysym != "F3":  # F2 y F3
             self._buscar()
-            # return "break"
+            return "break"
 
     def _buscar(self, event=None):
-        self.buscar_todo(self.entr_str.get().strip())
+        self.buscar_todo(self.EXT_entry.get().strip())
         if self.ocurrencias_encontradas:
             self.bus_reem_num_results.set('~ {} de {} ~'.format(
                 self.numero_ocurrencia_actual, self.numero_ocurrencias))
@@ -1069,17 +1094,17 @@ class Extracion(ttk.Frame):
                 self.noFoundEntry()
 
     def foundEntry(self):
-        self.entr_str.configure(
+        self.EXT_entry.configure(
                 highlightthickness=2,
                 highlightcolor='#003482')
 
     def noFoundEntry(self):
-        self.entr_str.configure(
+        self.EXT_entry.configure(
                     highlightthickness=2,
                     highlightcolor='orange red')
 
     def defaultEntry(self):
-        self.entr_str.configure(
+        self.EXT_entry.configure(
                 highlightthickness=1,
                 highlightcolor=default_hglcolor)
         self.bus_reem_num_results.set('~ {} ~'.format('No hay resultados'))
@@ -1109,7 +1134,7 @@ class Extracion(ttk.Frame):
             self.txt.tag_config('found', background='dodgerblue')
             # FUNCIONA
 
-            # self.buscar_next(self.entr_str.get().strip())
+            # self.buscar_next(self.EXT_entry.get().strip())
             self.menu_Contextual.entryconfig(
                 '  Limpiar Busqueda', state='normal')
         else:
@@ -1125,25 +1150,16 @@ class Extracion(ttk.Frame):
         if self.ocurrencias_encontradas:
             self.bus_reem_num_results.set('~ {} de {} ~'.format(
                 self.numero_ocurrencia_actual, self.numero_ocurrencias))
-            # self.entr_str.configure(
+            # self.EXT_entry.configure(
             #     highlightthickness=2,
             #     highlightcolor='blue')
         else:
             self.bus_reem_num_results.set('~ {} ~'.format('No hay resultados'))
-            # self.entr_str.configure(
-            #     highlightthickness=2,
-            #     highlightcolor='red')
 
     def _buscar_anterior(self, event=None):
         self.buscar_prev()
         if self.ocurrencias_encontradas:
             self.bus_reem_num_results.set('~ {} de {} ~'.format(
                 self.numero_ocurrencia_actual, self.numero_ocurrencias))
-            # self.entr_str.configure(
-            #     highlightthickness=2,
-            #     highlightcolor='blue')
         else:
             self.bus_reem_num_results.set('~ {} ~'.format('No hay resultados'))
-            # self.entr_str.configure(
-            #     highlightthickness=2,
-            #     highlightcolor='red')

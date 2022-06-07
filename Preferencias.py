@@ -3,7 +3,7 @@ import tkinter as tk
 from tkinter import StringVar, ttk
 from tkinter import font
 from getpass import getuser
-from Extraciones import MyEntry
+from DataExtraction import MyEntry
 from Compliance import default_bottom_app, hhtk
 
 class SelectFont(tk.Toplevel):

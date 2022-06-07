@@ -44,7 +44,7 @@ class RadioButton(ttk.Frame):
             points = (x1+r, y1, x1+r, y1, x2-r, y1, x2-r, y1, x2, y1, x2, y1+r, x2, y1+r, x2, y2-r, x2, y2-r, x2, y2, x2-r, y2, x2-r, y2, x1+r, y2, x1+r, y2, x1, y2, x1, y2-r, x1, y2-r, x1, y1+r, x1, y1+r, x1, y1)
             return obj.create_polygon(points, **kwargs, smooth=True)
         
-        round_rectangle(self.canvas, 5, 5, ancho - 5, alto - 5, radio, outline=default_Outline, width=width, fill=bg_cl, activewidth=width)
+        round_rectangle(self.canvas, 1, 1, ancho - 2, alto - 2, radio, outline=default_Outline, width=width, fill=bg_cl, activewidth=width)
 
 class RadioFrame(ttk.Frame):
     def __init__(self, *args,
