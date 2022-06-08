@@ -6,6 +6,7 @@ try:
     import tkinter as tk
 except ImportError:
     import Tkinter as tk
+from ast import keyword
 import json
 import os
 import time
@@ -16,6 +17,7 @@ from tkinter import TclError, scrolledtext as st
 from tkinter import messagebox as mb
 from tkinter import font
 from PIL import Image, ImageTk
+from cairo import PSSurface
 from ScrollableNotebook import *
 from RadioBotton import RadioButton
 from functools import partial
@@ -32,6 +34,9 @@ pathFiles = mypath+"Compliance/file/desviaciones_{}.json"
 pathFilesGl = mypath+"Compliance/file/{}.json"
 pathConfig = mypath+"Compliance/.conf/{}"
 pathRisk = mypath+"Compliance/file/Riesgo_Impacto/{}"
+pathModuleButton = mypath+"Compliance/.conf/module_buttons/{}"
+pathFilesButton = "Compliance/file/{}"
+
 
 #? Arrays
 listClient = []
@@ -41,6 +46,7 @@ listButton = [
     #"AUTOMATIZACION"
 ]
 # --- VARIABLE GLOBAL ---
+createOn = False
 idOpenTab = 0
 tooltip = False
 listModulo = []
@@ -1132,7 +1138,7 @@ class TextSimilar(ttk.Frame):
                         desviacion.limpiar_Widgets()
                         ## ------------------------------------------------- ##
                         desviacion.asignarValor_aWidgets(md)
-            desviacion.showButtonsModule(moduleFound)
+            #desviacion.showButtonsModule(moduleFound, keyword=None)
             desviacion.DESV_ListBox.selection_clear(0, tk.END)
             moduleLoaded = desviacion.DESV_ListBox.get(0, tk.END)
             index = moduleLoaded.index(value)
@@ -1633,8 +1639,8 @@ class Desviacion(ttk.Frame):
                 if 'modulo' in md:
                     if selectionValue in md['modulo']:
                         self.limpiar_Widgets()
-                        self._asignarValor_aWidgets(md)
-                        self.showButtonsModule(selectionValue)
+                        self.asignarValor_aWidgets(md)
+                        self.showButtonsModule(selectionValue, keyword=None)
 
     def _loadSelectItem(self, selectionValue, customer):  # TODO CARGAR MODULO
         data = []
@@ -1645,11 +1651,10 @@ class Desviacion(ttk.Frame):
                     if selectionValue in md['modulo']:
                         self.limpiar_Widgets()
                         self.asignarValor_aWidgets(md)
-            self.showButtonsModule(selectionValue)
+            #self.showButtonsModule(selectionValue, keyword=None)
 
-#  --- ASIGNACION DE VALORES A WIDGETS SRC, AL CAMBIAR DE PESTAÑA
-#  --- Y al buscar mas de un modulo en el mismo cliente
     def asignarValor_aWidgets(self, md):
+        print("load ")
         global sis_oper
         global PST_DESV
         if md['SO'] is not None:
@@ -1694,51 +1699,6 @@ class Desviacion(ttk.Frame):
         #? llamada a colores
         self.llamada_colores()
 
-# --- ASIGANACION DE VALORES A WIDGETS SRC
-    def _asignarValor_aWidgets(self, md):
-        global sis_oper
-        if md['SO'] is not None:
-            sis_oper = md['SO']
-            self.DESV_frame2['text'] = md['SO']
-
-        if md['modulo'] is not None:
-            self.DESVfr2_lblModulo['text'] = md['modulo']
-
-        if md['descripcion'] is not None:
-            self.DESVfr2_lblDescripcion['text'] = md['descripcion']
-
-        if md['comprobacion'] is not None:
-            self.DESV_scrCheck.insert(tk.END, md['comprobacion'])
-            self.DESV_btn1Expandir.config(state='normal')
-        else:
-            self.DESV_btn1Expandir.config(state='disabled')
-
-        if md['copia'] is not None:
-            self.DESV_scrBackup.insert(tk.END, md['copia'])
-            self.DESV_btn2Expandir.config(state='normal')
-        else:
-            self.DESV_btn2Expandir.config(state='disabled')
-
-        if md['editar'] is not None:
-            self.DESV_scrEdit.insert(tk.END, md['editar'])
-            self.DESV_btn3Expandir.config(state='normal')
-        else:
-            self.DESV_btn3Expandir.config(state='disabled')
-
-        if md['refrescar'] is not None:
-            self.DESV_btn4Expandir.config(state='normal')
-            self.DESV_scrRefresh.insert(tk.END, md['refrescar'])
-        else:
-            self.DESV_btn4Expandir.config(state='disabled')
-
-        if md['evidencia'] is not None:
-            self.DESV_scrEvidencia.insert(tk.END, md['evidencia'])
-            self.DESV_btn5Expandir.config(state='normal')
-        else:
-            self.DESV_btn5Expandir.config(state='disabled')
-
-        self.llamada_colores()
-
     def llamada_colores(self):
         if modo_dark == 'False':
             PST_DESV.DESV_scrCheck.colourText(default_scrText_bg, default_colourCodeBg, default_colourCodeFg, default_colourNoteFg)
@@ -1753,231 +1713,84 @@ class Desviacion(ttk.Frame):
             PST_DESV.DESV_scrRefresh.colourText(pers_scrText_bg, pers_scrText_bg, pers_colourCodeFg, pers_colourNoteFg)
             PST_DESV.DESV_scrEvidencia.colourText(pers_scrText_bg, pers_scrText_bg, pers_colourCodeFg, pers_colourNoteFg)
 
-    def showButtonsModule(self, modulo_selecionado):  # TODO añadir demas botones
+    def showButtonsModule(self, modulo_selecionado, **kwargs):  # TODO añadir demas botones
         global PST_DESV
-# --- DIRECTORY ---------------------------------
-        if str(modulo_selecionado) == "Protecting Resources-mixed/Ensure sticky bit is set on all world-writable directories" or str(modulo_selecionado) == "Protecting Resources-OSRs/CRON Command WW Permissions" or str(modulo_selecionado) == "Protecting Resources-OSRs/OSR /TMP Files Restrictions" or str(modulo_selecionado) == "Protecting Resources-OSRs/OSR /VAR Files Restrictions" or str(modulo_selecionado) == "Protecting Resources-OSRs/OSR /OPT Files Restrictions" or str(modulo_selecionado) == "Protecting Resources-OSRs/OSR /ETC Restrictions" or str(modulo_selecionado) == "Protecting Resources-OSRs/OSR /USR Restrictions" or str(modulo_selecionado) == "Protecting Resources-OSRs/CRON Command Group Permissions":
-            self.activeBtnDir = True
-            self.activeBtnAuth = False
-            self.activeBtnSer = False
-            self.activeBtnAcc = False
-            self.activeBtnCmd = False
-            self.activeBtnIdr = False
-            PST_DESV.DESV_btnAuthorized.grid_forget()
-            PST_DESV.DESV_btnService.grid_forget()
-            PST_DESV.DESV_btnAccount.grid_forget()
-            PST_DESV.DESV_btnCommand.grid_forget()
-            PST_DESV.DESV_btnIdrsa.grid_forget()
-            PST_DESV.DESV_btnRecortar.grid_forget()
-            PST_DESV.DESV_btnDirectory.grid(row=2, column=1, padx=5)
-# --- AUTHORIZED
-        elif str(modulo_selecionado) == "Password Requirements/Private Key File Restriction" or str(modulo_selecionado) == "Identify and Authenticate Users/Public Key Authentication" or str(modulo_selecionado) == "AV.1.1.6 Password Requirements" or str(modulo_selecionado) == "Identify and Authenticate Users/Public Key Label" or str(modulo_selecionado) == "AV.1.1.7 Password Requirements":
-            self.activeBtnDir = False
-            self.activeBtnAuth = True
-            self.activeBtnSer = False
-            self.activeBtnAcc = False
-            self.activeBtnCmd = False
-            self.activeBtnIdr = False
-            PST_DESV.DESV_btnDirectory.grid_forget()
-            PST_DESV.DESV_btnService.grid_forget()
-            PST_DESV.DESV_btnAccount.grid_forget()
-            PST_DESV.DESV_btnCommand.grid_forget()
-            PST_DESV.DESV_btnIdrsa.grid_forget()
-            PST_DESV.DESV_btnRecortar.grid_forget()
-            PST_DESV.DESV_btnAuthorized.grid(row=2, column=1, padx=5)
-# --- SERVICE
-        elif str(modulo_selecionado) == "Network Settings/Ensure LDAP Server is not enabled" or str(modulo_selecionado) == "Network Settings/NFS root restrictions" or str(modulo_selecionado) == "E.1.5.22.3 Network Settings" or str(modulo_selecionado) == "Password Requirements/SSH PermitRootLogin Restriction" or str(modulo_selecionado) == "Network Settings/Prohibited Processes" or str(modulo_selecionado) == "Identify and Authenticate Users/PermitRootLogin Restriction" or str(modulo_selecionado) == "Network Settings/Disable NFS server":
-            self.activeBtnDir = False
-            self.activeBtnAuth = False
-            self.activeBtnSer = True
-            self.activeBtnAcc = False
-            self.activeBtnCmd = False
-            self.activeBtnIdr = False
-            PST_DESV.DESV_btnDirectory.grid_forget()
-            PST_DESV.DESV_btnAuthorized.grid_forget()
-            PST_DESV.DESV_btnAccount.grid_forget()
-            PST_DESV.DESV_btnCommand.grid_forget()
-            PST_DESV.DESV_btnIdrsa.grid_forget()
-            PST_DESV.DESV_btnRecortar.grid_forget()
-            PST_DESV.DESV_btnService.grid(row=2, column=1, padx=5)
-# --- ACCOUNT
-        elif str(modulo_selecionado) == "Password Requirements/Password MAX Age /etc/shadow" or str(modulo_selecionado) == "Password Requirements/Password MAX Age /etc/shadow - Linux" or str(modulo_selecionado) == "Password Requirements/Password MAX Age /etc/shadow - Aix" or str(modulo_selecionado) == "Password Requirements/Password MAX Age" or str(modulo_selecionado) == "AD.1.1.1.2 Password Requirements":
-            self.activeBtnDir = False
-            self.activeBtnAuth = False
-            self.activeBtnSer = False
-            self.activeBtnAcc = True
-            self.activeBtnCmd = False
-            self.activeBtnIdr = False
+        moduleButton = []
+        keywordButton = []
+        print("que trae args : ", kwargs['keyword'])
+        print("que trae MODULE : ", modulo_selecionado)
+        clave_selecionada = kwargs['keyword']
+        with open (pathModuleButton.format("buttons.json")) as b:
+            data = json.load(b)
+            for md in data:
+                if modulo_selecionado in md['module']:
+                    nameModule = md['module']
+                    keyword = md['keyword']
+                    pathScript = md['script']
+                    nameButton = md['nameButton']
+                    active = md['active']
+                    print("SE VA A CREAR EL BOTON CON DATOS : ","\n\t Modulo :", nameModule,"\n\t Clave :", keyword,"\n\t Button :", nameButton,"\n\t Activo :", active, "\n\t PATH ", pathScript )
+                    self.newButtonModule(nameModule, keyword, nameButton, pathScript, active)
+                    return 'break'
+                else:
+                    print ("print NO EXISTE este modulo ", modulo_selecionado)
+                    try:
+                        PST_DESV.rbModule.grid_forget()
+                        print("NO se ha creado um nuevo button : ", PST_DESV.rbModule, "\n\t Modulo :", nameModulo,"\n\t Clave :", keyword,"\n\t Button :", nameButton,"\n\t Activo :", active)
+                    except:
+                        pass
 
-            PST_DESV.DESV_btnDirectory.grid_forget()
-            PST_DESV.DESV_btnAuthorized.grid_forget()
-            PST_DESV.DESV_btnService.grid_forget()
-            PST_DESV.DESV_btnCommand.grid_forget()
-            PST_DESV.DESV_btnIdrsa.grid_forget()
-            PST_DESV.DESV_btnAccount.grid(row=2, column=1, padx=5)
-            PST_DESV.DESV_btnRecortar.grid(row=2, column=2, padx=5)
-# --- COMMAND
-        elif str(modulo_selecionado) == "protecting Resources-OSRs/SUDO Command WW Permissions":
-            self.activeBtnDir = False
-            self.activeBtnAuth = False
-            self.activeBtnSer = False
-            self.activeBtnAcc = False
-            self.activeBtnCmd = True
-            self.activeBtnIdr = False
-            PST_DESV.DESV_btnDirectory.grid_forget()
-            PST_DESV.DESV_btnAuthorized.grid_forget()
-            PST_DESV.DESV_btnService.grid_forget()
-            PST_DESV.DESV_btnAccount.grid_forget()
-            PST_DESV.DESV_btnIdrsa.grid_forget()
-            PST_DESV.DESV_btnRecortar.grid_forget()
-            PST_DESV.DESV_btnCommand.grid(row=2, column=1, padx=5)
-# --- ID RSA
-        elif str(modulo_selecionado) == "Password Requirements/NULL Passphrase" or str(modulo_selecionado) == "Password Requirements/Private Key Passphrase":
-            self.activeBtnDir = False
-            self.activeBtnAuth = False
-            self.activeBtnSer = False
-            self.activeBtnAcc = False
-            self.activeBtnCmd = False
-            self.activeBtnIdr = True
-            PST_DESV.DESV_btnDirectory.grid_forget()
-            PST_DESV.DESV_btnAuthorized.grid_forget()
-            PST_DESV.DESV_btnService.grid_forget()
-            PST_DESV.DESV_btnAccount.grid_forget()
-            PST_DESV.DESV_btnCommand.grid_forget()
-            PST_DESV.DESV_btnRecortar.grid_forget()
-            PST_DESV.DESV_btnIdrsa.grid(row=2, column=1, padx=5)
-# --- MINAGE
-        elif str(modulo_selecionado) == "Password Requirements/Password MIN Age Shadow":
-            self.activeBtnDir = False
-            self.activeBtnAuth = False
-            self.activeBtnSer = False
-            self.activeBtnAcc = False
-            self.activeBtnCmd = False
-            self.activeBtnIdr = True
-            PST_DESV.DESV_btnDirectory.grid_forget()
-            PST_DESV.DESV_btnAuthorized.grid_forget()
-            PST_DESV.DESV_btnService.grid_forget()
-            PST_DESV.DESV_btnAccount.grid_forget()
-            PST_DESV.DESV_btnCommand.grid_forget()
-            PST_DESV.DESV_btnIdrsa.grid_forget()
-            PST_DESV.DESV_btnRecortar.grid(
-                row=2, column=2, padx=5, pady=10, sticky='ne')
-# --- DISABLED ALL
-        else:
-            self._disabled_buttons()
+    def newButtonModule(self, nameModulo, keyword, nameButton, pathScript, active):
+        global createOn
+        print("CREADOR ", createOn)
+        createOn = True
+        if createOn:
+            try:
+                PST_DESV.rbModule.grid_forget()
+            except AttributeError:
+                pass
+            if active == "True":
+                PST_DESV.rbModule = RadioButton(
+                    self.DESV_frame2,
+                    alto=Desviacion.y_alto_btn,
+                    ancho=Desviacion.x_ancho_btn,
+                    radio=25,
+                    width=3,
+                    bg_color=default_bottom_app,
+                )
+                PST_DESV.btnModule = ttk.Button(
+                    PST_DESV.rbModule,
+                    text=nameButton,
+                    compound=tk.RIGHT,
+                    image=self.icono_expandir,
+                    style='APP.TButton',
+                    command=partial(self.openWindow, nameButton, pathScript),
+                )
+                PST_DESV.btnModule.place(
+                    relx=0.5,
+                    rely=0.5,
+                    anchor=tk.CENTER,
+                    height=Desviacion.hg_btn,
+                    width=Desviacion.wd_btn
+                )
+                PST_DESV.rbModule.grid(row=2, column=1, padx=5)
 
-    def mostrar_buttons_clave(self, keyFound):
-        global PST_DESV
-# --- DIRECTORY ---------------------------------
-        if keyFound == "STICKY" or keyFound == "OSRsCRON" or keyFound == "OSRTMP" or keyFound == "OSRCRON" or keyFound == "OSRVAR" or keyFound == "OSROPT" or keyFound == "OSRETC" or keyFound == "OSRUSR":
-            self.activeBtnDir = True
-            self.activeBtnAuth = False
-            self.activeBtnSer = False
-            self.activeBtnAcc = False
-            self.activeBtnCmd = False
-            self.activeBtnIdr = False
-            PST_DESV.DESV_btnAuthorized.grid_forget()
-            PST_DESV.DESV_btnService.grid_forget()
-            PST_DESV.DESV_btnAccount.grid_forget()
-            PST_DESV.DESV_btnCommand.grid_forget()
-            PST_DESV.DESV_btnIdrsa.grid_forget()
-            PST_DESV.DESV_btnRecortar.grid_forget()
-            PST_DESV.DESV_btnDirectory.grid(row=2, column=1, padx=5)
-# --- COMMAND
-        elif keyFound == "COMMAND":
-            self.activeBtnDir = False
-            self.activeBtnAuth = False
-            self.activeBtnSer = False
-            self.activeBtnAcc = False
-            self.activeBtnCmd = True
-            self.activeBtnIdr = False
-            PST_DESV.DESV_btnAuthorized.grid_forget()
-            PST_DESV.DESV_btnService.grid_forget()
-            PST_DESV.DESV_btnAccount.grid_forget()
-            PST_DESV.DESV_btnDirectory.grid_forget()
-            PST_DESV.DESV_btnIdrsa.grid_forget()
-            PST_DESV.DESV_btnRecortar.grid_forget()
-            PST_DESV.DESV_btnCommand.grid(row=2, column=1, padx=5)
-# --- ID RSA
-        elif keyFound == "IDRSA" or keyFound == "NOT PASSPHRASE":
-            self.activeBtnDir = False
-            self.activeBtnAuth = False
-            self.activeBtnSer = False
-            self.activeBtnAcc = False
-            self.activeBtnCmd = False
-            self.activeBtnIdr = True
-            PST_DESV.DESV_btnCommand.grid_forget()
-            PST_DESV.DESV_btnAuthorized.grid_forget()
-            PST_DESV.DESV_btnService.grid_forget()
-            PST_DESV.DESV_btnAccount.grid_forget()
-            PST_DESV.DESV_btnDirectory.grid_forget()
-            PST_DESV.DESV_btnRecortar.grid_forget()
-            PST_DESV.DESV_btnIdrsa.grid(row=2, column=1, padx=5)
-# --- SERVICE
-        elif keyFound == "PERMITROOTLOGIN" or keyFound == "LDAP" or keyFound == "PROCESSES" or keyFound == "NFS":
-            self.activeBtnDir = False
-            self.activeBtnAuth = False
-            self.activeBtnSer = True
-            self.activeBtnAcc = False
-            self.activeBtnCmd = False
-            self.activeBtnIdr = False
-            PST_DESV.DESV_btnIdrsa.grid_forget()
-            PST_DESV.DESV_btnCommand.grid_forget()
-            PST_DESV.DESV_btnAuthorized.grid_forget()
-            PST_DESV.DESV_btnAccount.grid_forget()
-            PST_DESV.DESV_btnDirectory.grid_forget()
-            PST_DESV.DESV_btnRecortar.grid_forget()
-            PST_DESV.DESV_btnService.grid(row=2, column=1, padx=5)
-# --- AUTHORIZED
-        elif keyFound == "AUTHORIZED_KEY" or keyFound == "PUBLICKEY" or keyFound == "LABEL":
-            self.activeBtnDir = False
-            self.activeBtnAuth = True
-            self.activeBtnSer = False
-            self.activeBtnAcc = False
-            self.activeBtnCmd = False
-            self.activeBtnIdr = False
-            PST_DESV.DESV_btnDirectory.grid_forget()
-            PST_DESV.DESV_btnService.grid_forget()
-            PST_DESV.DESV_btnAccount.grid_forget()
-            PST_DESV.DESV_btnCommand.grid_forget()
-            PST_DESV.DESV_btnIdrsa.grid_forget()
-            PST_DESV.DESV_btnRecortar.grid_forget()
-            PST_DESV.DESV_btnAuthorized.grid(row=2, column=1, padx=5)
-# --- MAXAGE
-        elif keyFound == "MAXAGE":
-            self.activeBtnDir = False
-            self.activeBtnAuth = False
-            self.activeBtnSer = False
-            self.activeBtnAcc = True
-            self.activeBtnCmd = False
-            self.activeBtnIdr = False
-            PST_DESV.DESV_btnDirectory.grid_forget()
-            PST_DESV.DESV_btnAuthorized.grid_forget()
-            PST_DESV.DESV_btnService.grid_forget()
-            PST_DESV.DESV_btnCommand.grid_forget()
-            PST_DESV.DESV_btnIdrsa.grid_forget()
-            PST_DESV.DESV_btnAccount.grid(row=2, column=1, padx=5)
-            PST_DESV.DESV_btnRecortar.grid(
-                row=2, column=2, padx=5, pady=10, sticky='ne')
-# --- MINAGE
-        elif keyFound == "MINAGE":
-            self.activeBtnDir = False
-            self.activeBtnAuth = False
-            self.activeBtnSer = False
-            self.activeBtnAcc = True
-            self.activeBtnCmd = False
-            self.activeBtnIdr = False
-            PST_DESV.DESV_btnDirectory.grid_forget()
-            PST_DESV.DESV_btnAuthorized.grid_forget()
-            PST_DESV.DESV_btnService.grid_forget()
-            PST_DESV.DESV_btnCommand.grid_forget()
-            PST_DESV.DESV_btnIdrsa.grid_forget()
-            PST_DESV.DESV_btnAccount.grid_forget()
-            self.DESV_btnRecortar.grid(
-                row=2, column=2, padx=5, pady=10, sticky='ne')
-# --- DISABLED ALL
+                print("se ha creado um nuevo button : ", PST_DESV.rbModule , "\n\t Modulo :", nameModulo,"\n\t Clave :", keyword,"\n\t Button :", nameButton,"\n\t Activo :", active)
+                createOn = True
+    
+    def openWindow(self, nameButton, pathScript):
+        from Ventanas import Ventana
+        global PST_VTN
+        print("PATH QUE RECIVO ", pathScript)
+        nameWindow = nameButton
+        path = pathFilesButton.format(pathScript)
+        customer = PST_DESV.varClient.get()
+        print(nameWindow, path, customer)
+        PST_VTN = Ventana(self, app, nameWindow, customer, path )
+        if modo_dark == 'True':
+            app.windowModeDark()
         else:
-            self._disabled_buttons()
+            app.windowModeDefault()
 
     def solve(self, moduloBuscado):
         words = moduloBuscado.split()
@@ -2025,7 +1838,6 @@ class Desviacion(ttk.Frame):
         if len(keyFound) == 0 and len(moduleFound) == 0:
             self.DESV_ListBox.select_clear(tk.ANCHOR)
             self.DESV_entry.focus()
-            self._disabled_buttons()
             self.disabled_btn_expandir()
             self.DESV_ListBox.selection_clear(0, tk.END)
             listModuleFound = []
@@ -2080,7 +1892,7 @@ class Desviacion(ttk.Frame):
                             # self.enabled_Widgets()
                             value = md['modulo']
                             self.asignarValor_aWidgets(md)
-                            self.mostrar_buttons_clave(keyFound)
+                            #self.showButtonsModule(modulo_selecionado=None, keyword=keyFound)
                 self.DESV_ListBox.selection_clear(0, tk.END)
                 moduleLoaded = self.DESV_ListBox.get(0, tk.END)
                 index = moduleLoaded.index(value)
@@ -2117,7 +1929,7 @@ class Desviacion(ttk.Frame):
                         if moduleFound in md['modulo']:
                             value = md['modulo']
                             self.asignarValor_aWidgets(md)
-                self.showButtonsModule(moduleFound)
+                #self.showButtonsModule(moduleFound, keyword=None)
                 self.DESV_ListBox.selection_clear(0, tk.END)
                 moduleLoaded = self.DESV_ListBox.get(0, tk.END)
                 index = moduleLoaded.index(value)
@@ -2274,6 +2086,8 @@ class Desviacion(ttk.Frame):
     def loadModule(self, clt_modulo=None, *args):
         global listModulo
         global listKeys
+        global createOn 
+        createOn = False
         self.enabled_Widgets()
         customer = clt_modulo
         self.varClient.set(customer)
@@ -2282,7 +2096,6 @@ class Desviacion(ttk.Frame):
         self.DESV_entry.delete(0, tk.END)
         self.DESV_ListBox.delete(0, tk.END)
         self.limpiar_Widgets()
-        self._disabled_buttons()
         self.disabled_btn_expandir()
         ## ----------------------------------------- ##
         with open(pathFiles.format(customer)) as g:
@@ -2297,22 +2110,6 @@ class Desviacion(ttk.Frame):
                     listKeys.append(md['clave'])
         listModulo.sort()
         self.DESV_ListBox.insert(tk.END, *listModulo)
-
-    def _disabled_buttons(self):
-        global PST_DESV
-        self.activeBtnDir = False
-        self.activeBtnAuth = False
-        self.activeBtnSer = False
-        self.activeBtnAcc = False
-        self.activeBtnCmd = False
-        self.activeBtnIdr = False
-        PST_DESV.DESV_btnDirectory.grid_forget()
-        PST_DESV.DESV_btnAuthorized.grid_forget()
-        PST_DESV.DESV_btnService.grid_forget()
-        PST_DESV.DESV_btnAccount.grid_forget()
-        PST_DESV.DESV_btnCommand.grid_forget()
-        PST_DESV.DESV_btnIdrsa.grid_forget()
-        PST_DESV.DESV_btnRecortar.grid_forget()
 
     def disabled_btn_expandir(self):
         PST_DESV.DESV_btn1Expandir.config(state='disabled')
@@ -2392,13 +2189,13 @@ class Desviacion(ttk.Frame):
         #-----------------------------------------------------------------------------#
         ## ======================== FRAME 1 ========================================= ##
         # ---------------- OptionMenu, lista de clientes ---------------------------- ##
-        self.DESV_OptionMenu = tk.OptionMenu(
+        self.DESV_optionMenu = tk.OptionMenu(
             self.DESV_frame1,
             self.varClient,
             *listClient,
             command=self.loadModule,
         )
-        self.DESV_OptionMenu.config(
+        self.DESV_optionMenu.config(
             justify=tk.CENTER,
             anchor=tk.CENTER,
             background=default_menu_bg,
@@ -2410,14 +2207,14 @@ class Desviacion(ttk.Frame):
             borderwidth=0,
             width=20
         )
-        self.DESV_OptionMenu["menu"].config(
+        self.DESV_optionMenu["menu"].config(
             background=bg_submenu,
             activebackground=default_select_bg,
             activeforeground=default_select_fg,
             foreground=fg_submenu,
             font=_Font_Texto,
         )
-        self.DESV_OptionMenu.grid(row=0, column=0, padx=5,
+        self.DESV_optionMenu.grid(row=0, column=0, padx=5,
                                 pady=5, sticky='new', columnspan=2)
 
 # -----------------------------------------------------------------------------#
@@ -2508,150 +2305,6 @@ class Desviacion(ttk.Frame):
         self.DESVfr2_lblComprobacion.grid(
             row=2, column=0, padx=5, pady=5, sticky='ew')
 
-        self.DESV_btnDirectory = RadioButton(
-            self.DESV_frame2,
-            alto=Desviacion.y_alto_btn,
-            ancho=Desviacion.x_ancho_btn,
-            radio=25,
-            width=3,
-            bg_color=default_bottom_app,
-        )
-        self._btnDir_ = ttk.Button(
-            self.DESV_btnDirectory,
-            text='Permissions  ',
-            compound=tk.RIGHT,
-            image=self.icono_expandir,
-            style='APP.TButton',
-            command=self.abrir_DIRECTORY,
-        )
-        self._btnDir_.place(
-            relx=0.5,
-            rely=0.5,
-            anchor=tk.CENTER,
-            height=Desviacion.hg_btn,
-            width=Desviacion.wd_btn
-        )
-
-        self.DESV_btnService = RadioButton(
-            self.DESV_frame2,
-            alto=Desviacion.y_alto_btn,
-            ancho=Desviacion.x_ancho_btn,
-            radio=25,
-            width=3,
-            bg_color=default_bottom_app,
-        )
-        self._btnSer_ = ttk.Button(
-            self.DESV_btnService,
-            text='Service  ',
-            compound=tk.RIGHT,
-            image=self.icono_expandir,
-            style='APP.TButton',
-            command=self.abrir_SERVICE,
-        )
-        self._btnSer_.place(
-            relx=0.5,
-            rely=0.5,
-            anchor=tk.CENTER,
-            height=Desviacion.hg_btn,
-            width=Desviacion.wd_btn
-        )
-
-        self.DESV_btnAuthorized = RadioButton(
-            self.DESV_frame2,
-            alto=Desviacion.y_alto_btn,
-            ancho=Desviacion.x_ancho_btn,
-            radio=25,
-            width=3,
-            bg_color=default_bottom_app,
-        )
-        self._btnAuth_ = ttk.Button(
-            self.DESV_btnAuthorized,
-            text='Authorized  ',
-            compound=tk.RIGHT,
-            image=self.icono_expandir,
-            style='APP.TButton',
-            command=self.abrir_AUTHORIZED,
-        )
-        self._btnAuth_.place(
-            relx=0.5,
-            rely=0.5,
-            anchor=tk.CENTER,
-            height=Desviacion.hg_btn,
-            width=Desviacion.wd_btn
-        )
-
-        self.DESV_btnAccount = RadioButton(
-            self.DESV_frame2,
-            alto=Desviacion.y_alto_btn,
-            ancho=Desviacion.x_ancho_btn,
-            radio=25,
-            width=3,
-            bg_color=default_bottom_app,
-        )
-        self._btnAcc_ = ttk.Button(
-            self.DESV_btnAccount,
-            text='Account  ',
-            compound=tk.RIGHT,
-            image=app.icono_account,
-            style='APP.TButton',
-            command=self.abrir_ACCOUNT,
-        )
-        self._btnAcc_.place(
-            relx=0.5,
-            rely=0.5,
-            anchor=tk.CENTER,
-            height=Desviacion.hg_btn,
-            width=Desviacion.wd_btn
-        )
-
-        self.DESV_btnCommand = RadioButton(
-            self.DESV_frame2,
-            alto=Desviacion.y_alto_btn,
-            ancho=Desviacion.x_ancho_btn,
-            radio=25,
-            width=3,
-            bg_color=default_bottom_app,
-        )
-        self._btnComm_ = ttk.Button(
-            self.DESV_btnCommand,
-            text='Command  ',
-            compound=tk.RIGHT,
-            image=self.icono_expandir,
-            style='APP.TButton',
-            command=self.abrir_COMMAND,
-        )
-        self._btnComm_.place(
-            relx=0.5,
-            rely=0.5,
-            anchor=tk.CENTER,
-            height=Desviacion.hg_btn,
-            width=Desviacion.wd_btn
-        )
-
-        self.DESV_btnIdrsa = RadioButton(
-            self.DESV_frame2,
-            alto=Desviacion.y_alto_btn,
-            ancho=Desviacion.x_ancho_btn,
-            radio=25,
-            width=3,
-            bg_color=None,
-        )
-        self._btnIdr_ = ttk.Button(
-            self.DESV_btnIdrsa,
-            text='Id_Rsa  ',
-            compound=tk.RIGHT,
-            image=self.icono_expandir,
-            style='APP.TButton',
-            command=self.abrir_IDRSA,
-        )
-        self._btnIdr_.place(
-            relx=0.5,
-            rely=0.5,
-            anchor=tk.CENTER,
-            height=Desviacion.hg_btn,
-            width=Desviacion.wd_btn
-        )
-
         self.DESV_btnRecortar = ttk.Button(
             self.DESV_frame2,
             text='Script Cut Text',
@@ -2661,21 +2314,6 @@ class Desviacion(ttk.Frame):
         )
 
         self.DESV_scrCheck = MyScrollText(self.DESV_frame2, app)
-        # self.DESV_scrCheck.config(
-        #     font=_Font_Texto,
-        #     wrap=tk.WORD,
-        #     highlightcolor=default_hglcolor,
-        #     borderwidth=0,
-        #     highlightbackground=default_Framework,
-        #     highlightthickness=hhtk,
-        #     insertbackground=default_hglcolor,
-        #     insertwidth=hlh_def,
-        #     selectbackground=default_select_bg,
-        #     selectforeground=default_select_fg,
-        #     background=default_scrText_bg,
-        #     foreground=default_scrText_fg,
-        #     state='disabled',
-        # )
         self.DESV_scrCheck.grid(
             row=3, column=0, padx=5, pady=5, sticky='new', columnspan=5)
         self.DESV_btnRiskImpact = ttk.Button(
@@ -2840,23 +2478,7 @@ class Desviacion(ttk.Frame):
         )
         self.DESV_btn5Expandir.grid(
             row=4, column=3, padx=(5, 20), pady=5, sticky='ne')
-
-        # self.DESVfr2_lblDescripcion.bind('<Motion>', app.activeDefault)
-        # self.DESVfr2_lblComprobacion.bind('<Motion>', app.activeDefault)
-        # self.DESVfr2_lblBackup.bind('<Motion>', app.activeDefault)
-        # self.DESV_scrCheck.bind('<Motion>', app.activeDefault)
-        # self.DESV_scrBackup.bind('<Motion>', app.activeDefault)
-        # self.DESVfr3_lblEditar.bind('<Motion>', app.activeDefault)
-        # self.DESVfr3_lblEvidencia.bind('<Motion>', app.activeDefault)
-        # self.DESVfr3_lblRefrescar.bind('<Motion>', app.activeDefault)
-        # self.DESV_scrEdit.bind('<Motion>', app.activeDefault)
-        # self.DESV_scrEvidencia.bind('<Motion>', app.activeDefault)
-        # self.DESV_scrRefresh.bind('<Motion>', app.activeDefault)
-
-        # self.DESV_frame1.bind('<Motion>', app.activeDefault)
-        # self.DESV_frame2.bind('<Motion>', app.activeDefault)
-        # self.DESV_frame3.bind('<Motion>', app.activeDefault)
-
+        
         self.DESV_btnRecortar.bind("<Leave>", app._hide_event)
         self.DESV_btnRiskImpact.bind("<Leave>", app._hide_event)
         self.DESV_btnCopyALL.bind("<Leave>", app._hide_event)
@@ -2867,13 +2489,6 @@ class Desviacion(ttk.Frame):
         self.DESV_btn3Expandir.bind("<Leave>", app._hide_event)
         self.DESV_btn4Expandir.bind("<Leave>", app._hide_event)
         self.DESV_btn5Expandir.bind("<Leave>", app._hide_event)
-        self._btnAcc_.bind("<Leave>", app._hide_event)
-        self._btnAuth_.bind("<Leave>", app._hide_event)
-        self._btnDir_.bind("<Leave>", app._hide_event)
-        self._btnIdr_.bind("<Leave>", app._hide_event)
-        self._btnComm_.bind("<Leave>", app._hide_event)
-        self._btnSer_.bind("<Leave>", app._hide_event)
-
         self.asignar_iconos()
         self.changeColorActiveToolTipRB()
 
@@ -2899,13 +2514,7 @@ class Desviacion(ttk.Frame):
         name_vtn = "PERMISSIONS"
         path = "Compliance/file/directory.json"
         customer = PST_DESV.varClient.get()
-        PST_VTN = Ventana(
-            self,
-            name_vtn, customer,
-            app,
-            desviacion,
-            path
-        )
+        PST_VTN = Ventana(self, app, name_vtn, customer, path)
         if modo_dark == 'True':
             app.windowModeDark()
         else:
@@ -2917,14 +2526,7 @@ class Desviacion(ttk.Frame):
         name_vtn = "COMMAND"
         path = "Compliance/file/command.json"
         customer = PST_DESV.varClient.get()
-        PST_VTN = Ventana(
-            self,
-            name_vtn,
-            customer,
-            app,
-            desviacion,
-            path
-        )
+        PST_VTN = Ventana(self, app, name_vtn, customer, path)
         if modo_dark == 'True':
             app.windowModeDark()
         else:
@@ -2936,14 +2538,7 @@ class Desviacion(ttk.Frame):
         name_vtn = "AUTHORIZED"
         path = "Compliance/file/authorized_keys.json"
         customer = PST_DESV.varClient.get()
-        PST_VTN = Ventana(
-            self,
-            name_vtn,
-            customer,
-            app,
-            desviacion,
-            path
-        )
+        PST_VTN = Ventana(self, app, name_vtn, customer, path )
         if modo_dark == 'True':
             app.windowModeDark()
         else:
@@ -2955,14 +2550,7 @@ class Desviacion(ttk.Frame):
         name_vtn = "ACCOUNT"
         path = "Compliance/file/account.json"
         customer = PST_DESV.varClient.get()
-        PST_VTN = Ventana(
-            self,
-            name_vtn,
-            customer,
-            app,
-            desviacion,
-            path
-        )
+        PST_VTN = Ventana(self, app, name_vtn, customer, path )
         if modo_dark == 'True':
             app.windowModeDark()
         else:
@@ -2974,14 +2562,7 @@ class Desviacion(ttk.Frame):
         name_vtn = "SERVICE"
         path = "Compliance/file/service.json"
         customer = PST_DESV.varClient.get()
-        PST_VTN = Ventana(
-            self,
-            name_vtn,
-            customer,
-            app,
-            desviacion,
-            path
-        )
+        PST_VTN = Ventana(self, app, name_vtn, customer, path )
         if modo_dark == 'True':
             app.windowModeDark()
         else:
@@ -2993,14 +2574,7 @@ class Desviacion(ttk.Frame):
         name_vtn = "ID_RSA"
         path = "Compliance/file/idrsa.json"
         customer = PST_DESV.varClient.get()
-        PST_VTN = Ventana(
-            self,
-            name_vtn,
-            customer,
-            app,
-            desviacion,
-            path
-        )
+        PST_VTN = Ventana(self, app, name_vtn, customer, path )
         if modo_dark == 'True':
             app.windowModeDark()
         else:
@@ -3046,18 +2620,7 @@ class Desviacion(ttk.Frame):
             self.cambiar_icono, self.DESV_btn1CopyALL, icon_copy))
 
     def changeColorActiveToolTipRB(self):
-        self._btnDir_.bind('<Motion>', partial(
-            app.active_radio_botton, self.DESV_btnDirectory, self._btnDir_))
-        self._btnSer_.bind('<Motion>', partial(
-            app.active_radio_botton, self.DESV_btnService, self._btnSer_))
-        self._btnAuth_.bind('<Motion>', partial(
-            app.active_radio_botton, self.DESV_btnAuthorized, self._btnAuth_))
-        self._btnAcc_.bind('<Motion>', partial(
-            app.active_radio_botton, self.DESV_btnAccount, self._btnAcc_))
-        self._btnComm_.bind('<Motion>', partial(
-            app.active_radio_botton, self.DESV_btnCommand, self._btnComm_))
-        self._btnIdr_.bind('<Motion>', partial(
-            app.active_radio_botton, self.DESV_btnIdrsa, self._btnIdr_))
+        print("EN CONSTRUNCION NO FOUND 404")
 
 class Aplicacion():
     #Ancho y Alto de la APP
@@ -3131,54 +2694,12 @@ class Aplicacion():
             self.rbOpenDesv.canvas.itemconfig(
                 1, fill=default_bottom_app, outline=default_Outline)
         if 'desviacion' in globals():
+
+            #TODO AQUI LINE COLOR DEFAULT
             if modo_dark == 'True':
-                PST_DESV.DESV_btnAccount.canvas.itemconfig(
-                    1,
-                    fill=pers_bottom_app,
-                    outline=default_Outline
-                )
-                #PST_DESV.DESV_btnAccount.bind("<Leave>", self._hide_event)
-                PST_DESV.DESV_btnCommand.canvas.itemconfig(
-                    1,
-                    fill=pers_bottom_app,
-                    outline=default_Outline
-                )
-                PST_DESV.DESV_btnIdrsa.canvas.itemconfig(
-                    1,
-                    fill=pers_bottom_app,
-                    outline=default_Outline
-                )
-                PST_DESV.DESV_btnDirectory.canvas.itemconfig(
-                    1,
-                    fill=pers_bottom_app,
-                    outline=default_Outline
-                )
-                PST_DESV.DESV_btnAuthorized.canvas.itemconfig(
-                    1,
-                    fill=pers_bottom_app,
-                    outline=default_Outline
-                )
-                PST_DESV.DESV_btnService.canvas.itemconfig(
-                    1,
-                    fill=pers_bottom_app,
-                    outline=default_Outline
-                )
+                pass
             elif modo_dark == 'False':
-                PST_DESV.DESV_btnAccount.canvas.itemconfig(
-                    1,
-                    fill=default_bottom_app,
-                    outline=default_Outline
-                )
-                PST_DESV.DESV_btnCommand.canvas.itemconfig(
-                    1, fill=default_bottom_app, outline=default_Outline)
-                PST_DESV.DESV_btnIdrsa.canvas.itemconfig(
-                    1, fill=default_boton_bg, outline=default_Outline)
-                PST_DESV.DESV_btnDirectory.canvas.itemconfig(
-                1, fill=default_bottom_app, outline=default_Outline)
-                PST_DESV.DESV_btnService.canvas.itemconfig(
-                    1, fill=default_bottom_app, outline=default_Outline)
-                PST_DESV.DESV_btnAuthorized.canvas.itemconfig(
-                    1, fill=default_bottom_app, outline=default_Outline)
+                pass
 
             if PST_DESV.DESV_btnRiskImpact:
                 PST_DESV.DESV_btnRiskImpact['image'] = PST_DESV.icono_riesgos
@@ -3675,7 +3196,6 @@ class Aplicacion():
         APP_EXT = PST_EXT
         self.MODE_DARK()
         
-
     def openButtonAutomatizacion(self):
         from Scripts import Automatizar
         global idpTab
@@ -4498,61 +4018,8 @@ class Aplicacion():
                         self.expandirModeDark()
                     except TclError:
                         pass
-                PST_DESV.cambiar_icono(PST_DESV._btnAuth_, app.icono_account1)
-                PST_DESV.cambiar_icono(PST_DESV._btnAcc_, app.icono_account1)
-                PST_DESV.cambiar_icono(PST_DESV._btnComm_, app.icono_account1)
-                PST_DESV.cambiar_icono(PST_DESV._btnDir_, app.icono_account1)
-                PST_DESV.cambiar_icono(PST_DESV._btnIdr_, app.icono_account1)
-                PST_DESV.cambiar_icono(PST_DESV._btnSer_, app.icono_account1)
+                #TODO AQUI CAMBAIR BUTTON COLOR
                 app._hide_event()
-                PST_DESV.DESV_btnAccount.canvas.config(
-                    background=pers_bottom_app,
-                )
-                PST_DESV.DESV_btnAccount.canvas.itemconfig(
-                    1,
-                    fill=pers_bottom_app,
-                    outline=default_Outline
-                )
-                PST_DESV.DESV_btnCommand.canvas.config(
-                    background=pers_bottom_app,
-                )
-                PST_DESV.DESV_btnCommand.canvas.itemconfig(
-                    1,
-                    fill=pers_bottom_app,
-                    outline=default_Outline
-                )
-                PST_DESV.DESV_btnDirectory.canvas.config(
-                    background=pers_bottom_app,
-                )
-                PST_DESV.DESV_btnDirectory.canvas.itemconfig(
-                    1,
-                    fill=pers_bottom_app,
-                    outline=default_Outline
-                )
-                PST_DESV.DESV_btnAuthorized.canvas.config(
-                    background=pers_bottom_app,
-                )
-                PST_DESV.DESV_btnAuthorized.canvas.itemconfig(
-                    1,
-                    fill=pers_bottom_app,
-                    outline=default_Outline
-                )
-                PST_DESV.DESV_btnIdrsa.canvas.config(
-                    background=pers_bottom_app,
-                )
-                PST_DESV.DESV_btnIdrsa.canvas.itemconfig(
-                    1,
-                    fill=pers_bottom_app,
-                    outline=default_Outline
-                    )
-                PST_DESV.DESV_btnService.canvas.config(
-                    background=pers_bottom_app,
-                )
-                PST_DESV.DESV_btnService.canvas.itemconfig(
-                    1,
-                    fill=pers_bottom_app,
-                    outline=default_Outline
-                    )
                 PST_DESV.DESV_entry.config(
                     background=pers_scrText_bg,
                     foreground=pers_scrText_fg,
@@ -4568,7 +4035,7 @@ class Aplicacion():
                     highlightcolor=pers_hglcolor,
                     highlightthickness=hhtk,
                 )
-                PST_DESV.DESV_OptionMenu.config(
+                PST_DESV.DESV_optionMenu.config(
                     background=pers_menu_bg,
                     foreground=pers_scrText_fg,
                     highlightbackground=pers_menu_bg,
@@ -4702,61 +4169,8 @@ class Aplicacion():
                         self.expandirModeDefault()
                     except TclError:
                         pass
-                PST_DESV.cambiar_icono(PST_DESV._btnAcc_, app.icono_account)
-                PST_DESV.cambiar_icono(PST_DESV._btnAuth_, app.icono_account)
-                PST_DESV.cambiar_icono(PST_DESV._btnComm_, app.icono_account)
-                PST_DESV.cambiar_icono(PST_DESV._btnDir_, app.icono_account)
-                PST_DESV.cambiar_icono(PST_DESV._btnIdr_, app.icono_account)
-                PST_DESV.cambiar_icono(PST_DESV._btnSer_, app.icono_account)
+                #todo AQUI CAMBIAR BUTTON COLOR
                 app._hide_event()
-                PST_DESV.DESV_btnAccount.canvas.config(
-                    background=default_bottom_app,
-                )
-                PST_DESV.DESV_btnAccount.canvas.itemconfig(
-                    1,
-                    fill=default_bottom_app,
-                    outline=default_Outline
-                )
-                PST_DESV.DESV_btnCommand.canvas.config(
-                    background=default_bottom_app,
-                )
-                PST_DESV.DESV_btnCommand.canvas.itemconfig(
-                    1,
-                    fill=default_bottom_app,
-                    outline=default_Outline
-                )
-                PST_DESV.DESV_btnDirectory.canvas.config(
-                    background=default_bottom_app,
-                )
-                PST_DESV.DESV_btnDirectory.canvas.itemconfig(
-                    1,
-                    fill=default_bottom_app,
-                    outline=default_Outline
-                )
-                PST_DESV.DESV_btnAuthorized.canvas.config(
-                    background=default_bottom_app,
-                )
-                PST_DESV.DESV_btnAuthorized.canvas.itemconfig(
-                    1,
-                    fill=default_bottom_app,
-                    outline=default_Outline
-                )
-                PST_DESV.DESV_btnIdrsa.canvas.config(
-                    background=default_bottom_app,
-                )
-                PST_DESV.DESV_btnIdrsa.canvas.itemconfig(
-                    1,
-                    fill=default_bottom_app,
-                    outline=default_Outline
-                )
-                PST_DESV.DESV_btnService.canvas.config(
-                    background=default_bottom_app,
-                )
-                PST_DESV.DESV_btnService.canvas.itemconfig(
-                    1,
-                    fill=default_bottom_app,
-                    outline=default_Outline
-                )
                 PST_DESV.DESV_entry.config(
                     background=default_scrText_bg,
                     foreground=default_scrText_fg,
@@ -4772,7 +4186,7 @@ class Aplicacion():
                     highlightcolor=default_hglcolor,
                     highlightthickness=hhtk,
                 )
-                PST_DESV.DESV_OptionMenu.config(
+                PST_DESV.DESV_optionMenu.config(
                     background=default_menu_bg,
                     foreground=default_scrText_fg,
                     highlightbackground=default_Framework,

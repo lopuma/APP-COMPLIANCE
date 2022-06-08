@@ -17,12 +17,11 @@ def beep_error(f):
     return applicator
 
 class Ventana(ttk.Frame):
-    def __init__(self, parent, name_vtn, customer, app, desviacion, path, *args, **kwargs):
+    def __init__(self, parent, app, name_vtn, customer, path, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
         self.parent = parent
         self.customer = customer
         self.app = app
-        self.desviacion = desviacion
         self.path_ventanas = mypath+path
         self.tt_vtn = name_vtn
         self.click = True        
@@ -58,11 +57,11 @@ class Ventana(ttk.Frame):
         self.menuList_clickDerecho()
         self.cargar_ventanas(self.customer)
         self.tree.bind("<ButtonRelease-1>", self.selecionar_elemntFile)
-        self.tree.bind("<Key>", lambda e: self.desviacion.widgets_SoloLectura(e))
-        self.srcRisk.bind("<Key>", lambda e: self.desviacion.widgets_SoloLectura(e))
-        self.srcImpact.bind("<Key>", lambda e: self.desviacion.widgets_SoloLectura(e))
-        self.srcVariable.bind("<Key>", lambda e: self.desviacion.widgets_SoloLectura(e))
-        self.cbxUser.bind("<Key>", lambda e: self.desviacion.widgets_SoloLectura(e))
+        self.tree.bind("<Key>", lambda e: self.app.widgets_SoloLectura(e))
+        self.srcRisk.bind("<Key>", lambda e: self.app.widgets_SoloLectura(e))
+        self.srcImpact.bind("<Key>", lambda e: self.app.widgets_SoloLectura(e))
+        self.srcVariable.bind("<Key>", lambda e: self.app.widgets_SoloLectura(e))
+        self.cbxUser.bind("<Key>", lambda e: self.app.widgets_SoloLectura(e))
         self.VTN_entry.bind("<Any-KeyRelease>", self.on_entr_str_busca_key_release)
         #self.vtn_ventanas.bind("<Motion>", lambda e:desviacion.activar_Focus(e))
         self.srcImpact.bind("<Button-3>", self.display_menu_clickDerecho)
@@ -126,7 +125,6 @@ class Ventana(ttk.Frame):
     
     def clear_bsq_buttom(self, event):
         text_widget = event.widget
-        #customer = self.desviacion.varClient.get()
         entry = self.var_ent_buscar.get()
         long_entry = len(entry)
         if long_entry <=1:
