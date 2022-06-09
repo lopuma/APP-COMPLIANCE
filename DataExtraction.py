@@ -9,7 +9,7 @@ from tkinter import  TclError, ttk
 from tkinter import scrolledtext as st
 from tkinter import font
 from threading import Thread
-from Compliance import pathExtraction, default_color_line_fg, default_Framework, default_select_fg, hlh_def, pers_menu_bg, pers_scrText_bg, pathConfig, parse, pers_bottom_app, activar_modo, mypath, hhtk, default_scrText_bg, default_colourCodeBg, default_colourCodeFg, default_colourNoteFg, default_bottom_app, bg_submenu, default_scrText_fg, default_menu_bg, fg_submenu, _Font_Menu, _Font_Texto, default_select_bg, default_bottom_app, default_hglcolor, fuente_texto, tamñ_texto, _Font_Texto_bold, _Font_Texto_codigo
+from Compliance import pathExtractions, default_color_line_fg, default_Framework, default_select_fg, hlh_def, pers_menu_bg, pers_scrText_bg, pathConfig, parse, pers_bottom_app, activar_modo, mypath, hhtk, default_scrText_bg, default_colourCodeBg, default_colourCodeFg, default_colourNoteFg, default_bottom_app, bg_submenu, default_scrText_fg, default_menu_bg, fg_submenu, _Font_Menu, _Font_Texto, default_select_bg, default_bottom_app, default_hglcolor, fuente_texto, tamñ_texto, _Font_Texto_bold, _Font_Texto_codigo
 parar = False
 _estado_actual = False
 PST_EXT = ""
@@ -94,7 +94,6 @@ class MyScrollText(st.ScrolledText):
         )
 
         end = self.index("end")
-        print("END ", end)
         line_count = int(end.split(".", 1)[0])
         for line in range(1, line_count+1):
             startline = f"{line}.0"
@@ -387,7 +386,7 @@ class Extracion(ttk.Frame):
         self.min.grid(row=2, column=0, sticky="w")
 
         # Cargar el directorio raíz.
-        self.load_tree(abspath(pathExtraction))
+        self.load_tree(abspath(pathExtractions))
         self.max.bind(
             "<Button-1>", lambda e: Thread(target=self.ampliar, daemon=True).start())
         self.max.bind("<ButtonRelease-1>", self._parar_)
@@ -503,14 +502,14 @@ class Extracion(ttk.Frame):
         iid = self.treeview.selection()[0]
         records = self.treeview.get_children(iid)
         self.treeview.delete(*self.treeview.get_children())
-        self.load_tree(abspath(pathExtraction))
+        self.load_tree(abspath(pathExtractions))
 
     def select_extraction(self, event):
         treeSelect = event.widget
         iid = treeSelect.selection()[0]
         plantilla = treeSelect.item(iid, option="text")
         path = ''
-        for root, _, files in os.walk(pathExtraction):
+        for root, _, files in os.walk(pathExtractions):
             if plantilla in files:
                 path = os.path.join(root, plantilla)
                 break

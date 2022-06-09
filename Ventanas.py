@@ -218,10 +218,10 @@ class Ventana(ttk.Frame):
                                 else:
                                     self.tree.insert(parent='', index='end', iid=count, text='', value=(md['object'],md['owner'],md['tipo'],md['ownerGroup'],md['code']), tags=('oddrow'))
                                 count += 1
-                        self.limpiar_widgets()
-                    self.btnBuscar.forget()
-                    self.btnLimpiar.grid(row=0, column=1, sticky=tk.W)
-                    self.menu_Contextual.entryconfig("  Limpiar", state="normal")
+                self.limpiar_widgets()
+                self.btnBuscar.forget()
+                self.btnLimpiar.grid(row=0, column=1, sticky=tk.W)
+                self.menu_Contextual.entryconfig("  Limpiar", state="normal")
             else:
                 pass
 
