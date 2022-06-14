@@ -6,7 +6,6 @@ try:
     import tkinter as tk
 except ImportError:
     import Tkinter as tk
-
 import json
 import os
 import time
@@ -34,8 +33,8 @@ pathDesviations = mypath+dataIssues+"deviations_{}.json"
 pathIcon = mypath+"Compliance/image/"
 pathConfig = mypath+"Compliance/.conf/{}"
 pathRisk = mypath+"Compliance/deviations/riesgos/{}"
-pathModuleButton = mypath+"Compliance/.conf/module_buttons/{}"
-pathDesviationsButton = "Compliance/deviations/data/{}"
+pathModuleButton = mypath+"Compliance/.conf/{}"
+pathInclude = "Compliance/deviations/include/{}"
 pathDesviationsGl = mypath+"Compliance/deviations/{}.json"
 
 #* -------------------------------------------------------------------
@@ -389,7 +388,6 @@ class Expandir(ttk.Frame):
                                 self.EXP_scrExpandir.insert(
                                     tk.END, md['comprobacion'])
                                 self.varNum = 1
-                                self.activar_botones()
                             else:
                                 _tt_Desv = "EVIDENCIA"
                                 self.EXP_lblWidget['text'] = _tt_Desv
@@ -417,7 +415,6 @@ class Expandir(ttk.Frame):
                                 self.EXP_scrExpandir.delete('1.0', tk.END)
                                 self.EXP_scrExpandir.insert(tk.END, self._txt_Desv)
                                 self.varNum = 1
-                                self.activar_botones()
         if modo_dark == 'False':
             app.expandirModeDefault()
         else:
@@ -472,7 +469,6 @@ class Expandir(ttk.Frame):
                                 self.EXP_scrExpandir.delete('1.0', tk.END)
                                 self.EXP_scrExpandir.insert(tk.END, self._txt_Desv)
                                 self.varNum = 1
-                                self.activar_botones()
         elif self.varNum == 3:
             with open(pathDesviations.format(customer)) as g:
                 data = json.load(g)
@@ -487,7 +483,6 @@ class Expandir(ttk.Frame):
                                 self.EXP_scrExpandir.insert(
                                     tk.END, md['evidencia'])
                                 self.varNum = 1
-                                self.activar_botones()
                             else:
                                 _tt_Desv = "BACKUP"
                                 self.EXP_lblWidget['text'] = _tt_Desv
@@ -538,11 +533,11 @@ class Expandir(ttk.Frame):
         else:
             app.expandirModeDark()
 
-    def activar_botones(self):
+    def activeIncludeExpand(self):
         global PST_EXP
         global createOn
         selectedIndexListModule = value
-        with open (pathModuleButton.format("buttons.json")) as b:
+        with open (pathModuleButton.format("fs.json")) as b:
             data = json.load(b)
             for md in data:
                 pass
@@ -627,7 +622,7 @@ class Expandir(ttk.Frame):
         self.EXP_scrExpandir.grid(
             row=1, column=0, padx=5, pady=5, sticky='nsew', columnspan=7)
 
-        self.activar_botones()
+        self.activeIncludeExpand()
 
 class TextSimilar(ttk.Frame):
     def __init__(self, parent, titulo, modulo_clave, *args, **kwargs):
@@ -1041,12 +1036,6 @@ class Desviacion(ttk.Frame):
             Image.open(pathIcon+r"expandir1.png").resize((40, 40)))
         self.icono_expandir2 = ImageTk.PhotoImage(
             Image.open(pathIcon+r"expandir2.png").resize((40, 40)))
-        self.icono_recortar = ImageTk.PhotoImage(
-            Image.open(pathIcon+r"recortar.png").resize((40, 40)))
-        self.icono_recortar1 = ImageTk.PhotoImage(
-            Image.open(pathIcon+r"recortar1.png").resize((40, 40)))
-        self.icono_recortar2 = ImageTk.PhotoImage(
-            Image.open(pathIcon+r"recortar2.png").resize((40, 40)))
         self.icono_captura = ImageTk.PhotoImage(
             Image.open(pathIcon+r"captura.png").resize((40, 40)))
         self.icono_captura1 = ImageTk.PhotoImage(
@@ -1430,9 +1419,10 @@ class Desviacion(ttk.Frame):
         global PST_DESV
         global createOn
         clave_selecionada = kwargs['keyword']
+        print("\nMODULO : ", modulo_selecionado, "\nCLAVE : ", clave_selecionada)
         try:
             if len(clave_selecionada) > 0 or len(modulo_selecionado) > 0:
-                with open (pathModuleButton.format("buttons.json")) as b:
+                with open (pathModuleButton.format("fs.json")) as b:
                     data = json.load(b)
                     for md in data:
                         if modulo_selecionado in md['module'] or clave_selecionada in md['keyword']:
@@ -1473,7 +1463,7 @@ class Desviacion(ttk.Frame):
                     frame.rbModule,
                     text=nameButton,
                     compound=tk.RIGHT,
-                    image=self.icono_expandir,
+                    #image=self.icono_expandir,
                     style='APP.TButton',
                     command=partial(self.openWindow, nameButton, pathScript),
                 )
@@ -1486,11 +1476,16 @@ class Desviacion(ttk.Frame):
                 )
         frame.rbModule.grid(row=row, column=col, padx=5, sticky='ne')
 
+        frame.btnModule.bind('<Motion>', partial(
+            app.active_radio_botton, frame.rbModule, frame.btnModule))
+        frame.btnModule.bind("<Leave>", app._hide_event)
+        app.MODE_DARK()
+
     def openWindow(self, nameButton, pathScript):
         from Ventanas import Ventana
         global PST_VTN
         nameWindow = nameButton
-        path = pathDesviationsButton.format(pathScript)
+        path = pathInclude.format(pathScript)
         customer = PST_DESV.varClient.get()
         PST_VTN = Ventana(self, app, nameWindow, customer, path )
         if modo_dark == 'True':
@@ -1715,18 +1710,18 @@ class Desviacion(ttk.Frame):
     def ListDown(self, event):
         list_event = event.widget
         list_event.yview_scroll(1, "units")
-        selecion = list_event.curselection()[0]+1
-        modulo_selecionado = list_event.get(selecion)
-        customer =  PST_DESV.varClient.get()
-        self.loadSelectItem(modulo_selecionado, customer)
+        # selecion = list_event.curselection()[0]+1
+        # modulo_selecionado = list_event.get(selecion)
+        # customer =  PST_DESV.varClient.get()
+        #self.loadSelectItem(modulo_selecionado, customer)
 
     def ListUp(self, event):
         list_event = event.widget
         list_event.yview_scroll(-1, "units")
-        selecion = list_event.curselection()[0]-1
-        modulo_selecionado = list_event.get(selecion)
-        customer =  PST_DESV.varClient.get()
-        self.loadSelectItem(modulo_selecionado, customer)
+        # selecion = list_event.curselection()[0]-1
+        # modulo_selecionado = list_event.get(selecion)
+        # customer =  PST_DESV.varClient.get()
+        #self.loadSelectItem(modulo_selecionado, customer)
 
     def enabled_Widgets(self):
         self.DESV_ListBox.config(state="normal")
@@ -1808,10 +1803,6 @@ class Desviacion(ttk.Frame):
     def Risk_Impact(self):
         opener = "open" if sys.platform == "darwin" else "xdg-open"
         subprocess.call([opener, pathRisk.format("RISK_IMPACT.ods")])
-
-    def RecortarMinMax(self):
-        recortar = mypath+"Compliance/recortar.sh"
-        os.popen("gnome-terminal -e "+recortar)
 
     def copiarALL(self, event):
         event.focus()
@@ -1986,17 +1977,10 @@ class Desviacion(ttk.Frame):
         self.DESVfr2_lblComprobacion.grid(
             row=2, column=0, padx=5, pady=5, sticky='ew')
 
-        self.DESV_btnRecortar = ttk.Button(
-            self.DESV_frame2,
-            text='Script Cut Text',
-            image=self.icono_recortar,
-            style='APP.TButton',
-            command=self.RecortarMinMax,
-        )
-
         self.DESV_scrCheck = MyScrollText(self.DESV_frame2, app)
         self.DESV_scrCheck.grid(
             row=3, column=0, padx=5, pady=5, sticky='new', columnspan=5)
+
         self.DESV_btnRiskImpact = ttk.Button(
             self.DESV_frame2,
             text="Risk e Impact",
@@ -2159,8 +2143,6 @@ class Desviacion(ttk.Frame):
         )
         self.DESV_btn5Expandir.grid(
             row=4, column=3, padx=(5, 20), pady=5, sticky='ne')
-
-        self.DESV_btnRecortar.bind("<Leave>", app._hide_event)
         self.DESV_btnRiskImpact.bind("<Leave>", app._hide_event)
         self.DESV_btnCopyALL.bind("<Leave>", app._hide_event)
         self.DESV_btn1CopyALL.bind("<Leave>", app._hide_event)
@@ -2195,20 +2177,15 @@ class Desviacion(ttk.Frame):
 
     def asignar_iconos(self):
         if modo_dark == 'False':
-            icon_rec = self.icono_recortar1
             icon_risk = self.icono_riesgos1
             icon_exp = self.icono_expandir1
             icon_cap = self.icono_captura1
             icon_copy = self.icono_copiar1
         elif modo_dark == 'True':
-            icon_rec = self.icono_recortar2
             icon_risk = self.icono_riesgos2
             icon_exp = self.icono_expandir2
             icon_cap = self.icono_captura2
             icon_copy = self.icono_copiar2
-
-        self.DESV_btnRecortar.bind('<Motion>', partial(
-            self.cambiar_icono, self.DESV_btnRecortar, icon_rec, self.icono_recortar2))
         self.DESV_btnRiskImpact.bind('<Motion>', partial(
             self.cambiar_icono, self.DESV_btnRiskImpact, icon_risk))
         self.DESV_btn1Expandir.bind('<Motion>', partial(
@@ -2302,19 +2279,18 @@ class Aplicacion():
             self.rbOpenDesv.canvas.itemconfig(
                 1, fill=default_bottom_app, outline=default_Outline)
         if 'desviacion' in globals():
-
-            #TODO AQUI LINE COLOR DEFAULT
-            if modo_dark == 'True':
+            try:
+                PST_DESV.DESV_frame2.rbModule.canvas.itemconfig(1, outline=default_Outline)
+            except:
                 pass
-            elif modo_dark == 'False':
+            try:
+                PST_EXP.vtn_expandir.rbModule.canvas.itemconfig(1, outline=default_Outline)
+            except:
                 pass
-
             if PST_DESV.DESV_btnRiskImpact:
                 PST_DESV.DESV_btnRiskImpact['image'] = PST_DESV.icono_riesgos
             if PST_DESV.DESV_btn1Expandir:
                 PST_DESV.DESV_btn1Expandir['image'] = PST_DESV.icono_expandir
-            if PST_DESV.DESV_btnRecortar:
-                PST_DESV.DESV_btnRecortar['image'] = PST_DESV.icono_recortar
             if PST_DESV.DESV_btn2Expandir:
                 PST_DESV.DESV_btn2Expandir['image'] = PST_DESV.icono_expandir
             if PST_DESV.DESV_btn3Expandir:
@@ -2329,6 +2305,7 @@ class Aplicacion():
                 PST_DESV.DESV_btnCopyALL['image'] = PST_DESV.icono_copiar
             if PST_DESV.DESV_btn1CopyALL:
                 PST_DESV.DESV_btn1CopyALL['image'] = PST_DESV.icono_copiar
+            
 
     def openCustomer(self):
         global listClient
@@ -2369,6 +2346,10 @@ class Aplicacion():
         self.iconoIncident = (
         tk.PhotoImage("iconoIncident", data='''
             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
+        '''))
+        self.iconoScriptCrop = (
+        tk.PhotoImage("iconoScriptCrop", data='''
+            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
         '''))
         self.iconoFindBar = (
         tk.PhotoImage("iconoFindBar", data='''
@@ -3404,6 +3385,15 @@ class Aplicacion():
             compound=tk.LEFT,
             state="normal"
         )
+        self.verMenu.add_separator()
+        
+        self.verMenu.add_command(
+            label="  Script Crop Text",
+            command=self.RecortarMinMax,
+            image=self.iconoScriptCrop,
+            compound=tk.LEFT,
+            state="normal"
+        )
 
         #* MENU EDIT
         self.editMenu = tk.Menu(self.bar, tearoff=0)
@@ -3459,18 +3449,6 @@ class Aplicacion():
             canva.canvas.itemconfig(
                 1, outline=pers_Outline)
         name = button['text']
-        if name == "Account  ":
-            name = "Open Window Account"
-        elif name == "Command  ":
-            name = "Open Window Command"
-        elif name == "Id_Rsa  ":
-            name = "Open Window Id_Rsa"
-        elif name == "Service  ":
-            name = "Open Window Service"
-        elif name == "Authorized  ":
-            name = "Open Window Authorized"
-        elif name == "Permissions  ":
-            name = "Open Window Permissions"
         self.openTooltip(button, name)
 
     def _fontchooser(self):
@@ -3619,6 +3597,16 @@ class Aplicacion():
                         pass
                 #TODO AQUI CAMBAIR BUTTON COLOR
                 app._hide_event()
+                try:
+                    PST_DESV.DESV_frame2.rbModule.canvas.config(background=pers_bottom_app)
+                    PST_DESV.DESV_frame2.rbModule.canvas.itemconfig(1, fill=pers_bottom_app)
+                except:
+                    pass
+                try:
+                    PST_EXP.vtn_expandir.rbModule.canvas.config(background=pers_bottom_app)
+                    PST_EXP.vtn_expandir.rbModule.canvas.itemconfig(1, fill=pers_bottom_app)
+                except:
+                    pass
                 PST_DESV.DESV_entry.config(
                     background=pers_scrText_bg,
                     foreground=pers_scrText_fg,
@@ -3770,6 +3758,16 @@ class Aplicacion():
                         pass
                 #todo AQUI CAMBIAR BUTTON COLOR
                 app._hide_event()
+                try:
+                    PST_DESV.DESV_frame2.rbModule.canvas.config(background=default_bottom_app)
+                    PST_DESV.DESV_frame2.rbModule.canvas.itemconfig(1, fill=default_bottom_app)
+                except:
+                    pass
+                try:
+                    PST_EXP.vtn_expandir.rbModule.canvas.config(background=default_bottom_app)
+                    PST_EXP.vtn_expandir.rbModule.canvas.itemconfig(1, fill=default_bottom_app)
+                except:
+                    pass
                 PST_DESV.DESV_entry.config(
                     background=default_scrText_bg,
                     foreground=default_scrText_fg,
@@ -3963,6 +3961,10 @@ class Aplicacion():
         if tooltip == False:
             custom = CustomHovertip(object, text=text)
             tooltip = True
+
+    def RecortarMinMax(self):
+        recortar = mypath+"Compliance/deviations/include/recortar.sh"
+        os.popen("gnome-terminal -- "+recortar)
 
     def widgets_SoloLectura(self, event):
         if(20 == event.state and event.keysym == 'c' or event.keysym == 'Down' or event.keysym == 'Up' or 20 == event.state and event.keysym == 'f' or 20 == event.state and event.keysym == 'a'):
