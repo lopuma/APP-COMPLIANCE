@@ -636,7 +636,7 @@ class TextSimilar(ttk.Frame):
         self.titulo = titulo
         self.vtn_modulos = tk.Toplevel(self)
         self.vtn_modulos.config(background=default_bottom_app)
-        window_width = 1000
+        window_width = 1200
         window_height = 300
         screen_width = app.root.winfo_x()
         screen_height = app.root.winfo_y()
@@ -669,9 +669,10 @@ class TextSimilar(ttk.Frame):
         )
         self.frame2.pack(fill='both', side=tk.LEFT, expand=1, pady=5, padx=5)
         self.frame2.pack_propagate(1)
-        self.frame2.rowconfigure(0, weight=5)
-        self.frame2.columnconfigure(0, weight=5)
-
+        self.frame2.rowconfigure(0, weight=1)
+        self.frame2.columnconfigure(0, weight=4)
+        self.frame2.columnconfigure(1, weight=2)
+        #self.frame2.columnconfigure(2, weight=1)
 
 # --- LISTBOX MODULO - FRAME2
         self._list_modulo = tk.Listbox(
@@ -686,22 +687,22 @@ class TextSimilar(ttk.Frame):
             highlightcolor=default_hglcolor,
         )
 
-        self._list_modulo.grid(row=0, column=0, sticky='nsew', pady=5, padx=5)
+        self._list_modulo.grid(row=0, column=0, sticky='nsew', pady=10, padx=5)
 
 # --- FUNCIONES LIST MODULO A SCROLL
         self._list_modulo.bind("<Down>", lambda e: self._OnVsb_down(e))
         self._list_modulo.bind("<Up>", lambda e: self._OnVsb_up(e))
 
 # --- FRAME 3
-        self.frame3 = ttk.Frame(
-            self.vtn_modulos,
-        )
-        self.frame3.pack(fill='both', side='right', expand=0, pady=5, padx=5)
-        self.frame3.rowconfigure(0, weight=1)
+        # self.frame2 = ttk.Frame(
+        #     self.vtn_modulos,
+        # )
+        # self.frame2.pack(fill='both', side='right', expand=0, pady=5, padx=5)
+        # self.frame2.rowconfigure(0, weight=1)
 
 # --- LISTBOX CLAVE - FRAME 3
         self._list_clave = tk.Listbox(
-            self.frame3,
+            self.frame2,
             font=_Font_Texto,
             foreground=default_scrText_fg,
             selectbackground=default_select_bg,
@@ -709,14 +710,12 @@ class TextSimilar(ttk.Frame):
             exportselection=False,
             highlightthickness=hhtk,
             highlightcolor=default_hglcolor,
-            width=18,
-            height=18,
         )
-        self._list_clave.grid(row=0, column=0, sticky='nsew', pady=5, padx=5)
+        self._list_clave.grid(row=0, column=1, sticky='nsew', pady=10, padx=5)
 
 # --- LISTBOX SO - FRAME 2
         self._list_SO = tk.Listbox(
-            self.frame3,
+            self.frame2,
             font=_Font_Texto,
             foreground=default_scrText_fg,
             selectbackground=default_select_bg,
@@ -724,19 +723,18 @@ class TextSimilar(ttk.Frame):
             exportselection=False,
             highlightthickness=hhtk,
             highlightcolor=default_hglcolor,
-            width=12,
-            height=12,
+            width=10
         )
-        self._list_SO.grid(row=0, column=1, sticky='nsew', pady=5, padx=(0, 5))
+        self._list_SO.grid(row=0, column=2, sticky='nsew', pady=10, padx=5)
 
 # - CREAR SCROLL
         self.vsb_scroll = tk.Scrollbar(
-            self.frame3,
+            self.frame2,
             orient="vertical",
             command=self.yview
         )
 
-        self.vsb_scroll.grid(row=0, column=2, sticky='nsew')
+        self.vsb_scroll.grid(row=0, column=3, sticky='ns', pady=10)
 
 # --- list asociados a los SCROLL
         self._list_modulo.configure(yscrollcommand=self.yscroll_modulo)
@@ -1487,7 +1485,7 @@ class Desviacion(ttk.Frame):
                     width=Desviacion.wd_btn
                 )
         frame.rbModule.grid(row=row, column=col, padx=5, sticky='ne')
-    
+
     def openWindow(self, nameButton, pathScript):
         from Ventanas import Ventana
         global PST_VTN
@@ -1508,7 +1506,7 @@ class Desviacion(ttk.Frame):
         elif len(words) > 1:
             full_moduloBuscado = words
         return ' '.join(full_moduloBuscado)
-    
+
     def findModule(self, event=None):
         global value
         global no_exist
@@ -1753,7 +1751,7 @@ class Desviacion(ttk.Frame):
     def loadModule(self, clt_modulo=None, *args):
         global listModulo
         global listKeys
-        global createOn 
+        global createOn
         createOn = False
         self.enabled_Widgets()
         customer = clt_modulo
@@ -1763,6 +1761,7 @@ class Desviacion(ttk.Frame):
         self.DESV_entry.delete(0, tk.END)
         self.DESV_ListBox.delete(0, tk.END)
         self.limpiar_Widgets()
+        self.gridForget()
         self.disabled_btn_expandir()
         ## ----------------------------------------- ##
         try:
@@ -2034,7 +2033,7 @@ class Desviacion(ttk.Frame):
             self.DESV_frame2,
             app
         )
-        
+
         self.DESV_scrBackup.grid(
             row=5, column=0, padx=5, pady=5, sticky='new', columnspan=5)
 
@@ -2062,7 +2061,7 @@ class Desviacion(ttk.Frame):
             row=0, column=0, padx=5, pady=5, sticky='w')
 
         self.DESV_scrEdit = MyScrollText(self.DESV_frame3, app)
-            
+
         self.DESV_scrEdit.grid(
             row=1, column=0, padx=5, pady=5, sticky='new', columnspan=4)
 
@@ -2160,7 +2159,7 @@ class Desviacion(ttk.Frame):
         )
         self.DESV_btn5Expandir.grid(
             row=4, column=3, padx=(5, 20), pady=5, sticky='ne')
-        
+
         self.DESV_btnRecortar.bind("<Leave>", app._hide_event)
         self.DESV_btnRiskImpact.bind("<Leave>", app._hide_event)
         self.DESV_btnCopyALL.bind("<Leave>", app._hide_event)
@@ -2354,11 +2353,11 @@ class Aplicacion():
         self.iconoNew = (
         tk.PhotoImage("iconoNew", data='''
             iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAABmJLR0QA/wD/AP+gvaeTAAACQ0lEQVRIieWWTUhUURSAv/swtDEyZIyXC9+zDGkSgiJIwoVUkGJgbYPBAqPaBP1Rs65NW8EWbqIiqCRLC6oJgiyhiMAwNcHxmdmMmjY6TvOjz9eiHHR09M2fEn6rd88793yXey6XC2sNER3wer2FQINhGEWGYSz4vwTToVDosSzLl4UQ+nLJGdEBSZJuTE4GDrS2doJhmLZuyrFQut92fmRkxGoYRo0QYsnJC8S6rhd1dvTT8uQDO/fsMC3+3PiOr53fqKk9bPd4PH7gbFzi2e0tLFY4duKIafGPfjdPW96zLjOD4/aDZzRN86uqeilWvmS68jJIkiAcmqKpsY3mR23k5uZe7OnpuZZ28SzhUJjbt5y8fP4RWZYd7e3tV1dE/Fc+RUP9M96+6RCqql53Op210TkLepwo+eoWBvvdkfGMrnOzrhlF2SwKCgrOAQ+A8ZSLq+1VVNur5sXu1t3H7R5j2/Y8C2CdK07LVsdg3mWUsNjV1Yerqy/hVSQs7u3W6O3WVl6cLHEdrgmvj3AwDIDf9xuAn55RANZbssjemJ0e8b36h4wOjwHg++UD4MunLgDyZCunrtSkR3zacTLy7Wx6DcCho+XxlIjwf/R4LkLE80ZIoXhf+d7VEW/IMX+CF2PVerz2xDF7POAa5EXjq6SKD7gGoXSrObGu65qtRNlVUemP63m7GBWVu7GVKLjd34eBmSXFgUDgQjAYVMrKivOTsv5jfHxsyOFw3AGG5sZj3QJZgApkpsA9DQwAEymolTx/AAVIwo5raMlVAAAAAElFTkSuQmCC
-        ''')) 
+        '''))
         self.iconoCustomer = (
         tk.PhotoImage("iconoCustomer", data='''
             iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAABmJLR0QA/wD/AP+gvaeTAAAEhUlEQVRIieXWb0wbZRwH8O/1etfrtVcopToKFOi2Am4F3QbO/UtwKIsv1DdTE9SYDF+Q7I+OOXXGGP+9GUSzLCEZm5mLiX9CBjRm/zo0JvxnGSwIcTCgpaMtlpZxbUe767XnC6NxY6xd6xvj7+Xl+/w+z3N5nnsO+L8Vkcogu92+mWGYbQAQDAa7zGbzwL87rXtqbm7uyOLi4i2e56VAICAFAgGJ53nJ4/EE7Hb7Rw/TK+kV+3y+Tpqmd/p9AVw+P4ipCScAYE2xEc88VwltFgen03nFYrFUJtNPlkzI6/V+RdP0zt7uUbz/VjMyQnbs2a7Enu1KcMFpvHegGf3dYzAajRWdnZ0XkulJJgr4fL5cmqa/nrzhlp06dhbH6tegolgDnYaCTkNhfaEaVeUZaDw5iFLLahSZ8k0Mw/zc1dXlTGvFsVjsCEEQ5HenL2L/CwboNNSyjE5DY//zBnx7+gJUKpXMbDZ/lqhvQpiiqI3xuAS7fQ4b1nIr5jaaOUxNeRCPS9Dr9ebGxkZVWjAApSBEoVTIQRAr70WCIMAo5IgKIiiKovr7+x9NF/YwDA1BlBC5E18xFBZiEGMSFAwFr9d7W6vVCmnBS0tL7QDw1NZ1aO+ZXzHX3uPDlm3rAQDd3d3Xa2tr59KC8/LyToTD4cDLr1fj4rUgLg8tLMvYri7g0nAQL71WDYfDccdqtbZWVVWJD+qb1AfE7XbvUigU50PBCHG8qRW8fwFPmP7cO0NTIWj12dh3aDcUDCnV19e3hUKht2022820YQCYmZl5VaFQnGFZVuZ2+TE54QIArC3OQ44hC5FIRGpoaLg0Ojr6yfDwcF+ifknBDodjS0ZGxvckSebH4xImJ1zwuP0QxRh02RqUPlYABUOB53khHA5/msw5TgjPzs4e5DjuqCjGyLbWHpz7cRCMSgO5QgUQMkjRCAK35vH4htXY8+azyNSq4XQ6e8vKyramDHu93gMMw3zpm+eJD949A5LJhDbXDJKi78pJkoRbvzvBu27gQMOL2FRpxvj4+HBFRcWGh4bdbvcmtVrdN+/l5e8cPAVtbik43aoHzRNC+DY841dQv3cXKjeXYGBg4IeamppX7pdd8TgplcrWaFSUf/zhN8g0lCREAYBWqpBT8iSaj5+Da9aP8vLy3S0tLdVJwx6PZy9JkoXWtj6IMg6a7JyE6N84o4TOuA7HvrCCZVlZUVFRiyRJy97sfWGGYQ5FIgI6zvZCl1+SNPpXcbpVWAxEcW1oEhaLpbCuru7phPD09HQBSZLGrl9+hUZvAClffg0mU2p9Iazt/WBZltixY8eRhDDHcfsBED91joDNNKSEAgCX9Qiu/3YTghBFQUFB+eHDh++6U+X3DiBJcrMkSZhxzMG43gQhfDtlnFVnYHLCDYPBoOnt7TUDuLoiDIATBBEmUw7uLN5IGQWALC0NggAYhiFdLlfuA+FYLHacIIgTnx99I6V/7ntLkiR0dHQ4WZYN/vP5Mliv159samryq1SqfaIoqtOFR0ZGpm02m7WmpqZ7bGws3Xb/4foDR4WzhPac9+4AAAAASUVORK5CYII=
-        ''')) 
+        '''))
         self.iconoExit = (
         tk.PhotoImage("iconoExit", data='''
             iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAABmJLR0QA/wD/AP+gvaeTAAAFJ0lEQVRIiaWWW4wTZRSAv39m2k673W3ZG+Ju2wXKkgArGuQSQAgCicQECYlvJCoQ1Cgm+IB4QWNIiIIYMEafcE2M0SejL4JBSQy35bKbrbjIZUEuwV0oe2m7baedzvw+7EV2C7MFz9PMOec/3znJ+c/5BQ4ipVTOnj0bcPIpVZLJZGHx4sWp4X/h5PzSxlcPdd+Kr1BU9X+DrUKBRfPnr9q+fetBAM3J2TStYOP0KJOnNCCEQFEG85w7bwG6Vyc1kCKfMx2BihBMqJzArp27pWnma4b1juBhuXTxMtev36C6qhpV0+jtzaB7ddrb2sjnc45nDcNg46YNRfqSwEjJmrXPEagI8Ne5c8Ta2xBCRdVc+MsDuN36fY8mEz0UCoWHBAMuTSPaGCXaGGXDpg10/9NNa2srJ1tOcav7BrpehuZy4/X6UBRl3Hglg8dKXaiOulAdq9esJpFI0N4W42TLKTovdVLmL0dRNLy+MmdwLBYrE0K47zb09PSk9n/9XUlJBAIBli5bwtJlS7AKBc6dO8/eT/c5gzs6Ovzbtm5PCSRSDHatLaE6WP43mqenJPJdomoas5pmFumXr1ye7e3O/zICzmazukDyvjuFqWkoqsKfpsIxq1Bp3QPccuwEy1YsIxgMPlBCyURCTWsZP3AbYKQLhMfFjoyXfWld/pZ3S133Xr5XgNYjR/jqsy+QUt4XIoQgFA6P0p0+dcZt96UXDf+PgF2Kil9TrUXPLH/UXfPIxxnFdcjI5SalBzKkMxm6um7RebETI5+n9+oVDv180LHCpqYmR3tRV1+92vVkdc/NbdiSSS5NKn0ZBILMmeOcPXOc6VisC+R454cfmT5rBpFIpCiolJKDBw4w8ZFQ6eCKCs/luS6TaitP4wSfcKvWkGX0hNrsy/Dlnr18uPsjPB4P+Xye1tNtTI1Ooaa2Btu2HSsuuunXbnZv+DU/mE+/wxx+Qod5hSTf7W8G4Nvmz2k5/Ak7d3wwLhTGGSDx9OCoC3pcqKJ4kd3dX5ZlIfI5BFaR3wODJZLbaZPb6eLKL9kqLXo5O9a/CMC69ZvZ/naczVteebiRqQjNvmorfC99gwoxtLSHKlaRPC0MfsLPm+++ha4PLghd1/GW+QgESns3FIFnTJ+8pz1nWneQYiCTWRcMBuqijVOJRqcB8OM33/CtobDq+bVFHf36G69RVV3leMeLwKpiM1Cw1OOHj94EqKyqPFrweLrK/L66VDKFruvUh+vRXRr+qnoWLH2qKFhtbU2RblywZZjsCipY5FUAs3FSbO/5roUA/X399Pb2UB+u58kVK2ma3UQ2a6DrOXTdUzJsFNjr9RogeC/rh+x/hqlXulcBibEHFixcMPLd399HZWUlbrd7rNv44JkzZw7EYjH/fdbiCafDUkJPbx+BinJ8Pt+DgQFmz56dBtJjjete2DR+BClJJJJkMlnK/X48ntKqf+gXyFgxTZPevj4UIXC53Yjh3W7bXL92Ddu2R02gksGnT7WSy+WJRMLUTKwdCTxWbCkxDIOCaXIn3kUuZ5BKJpBy9BgtCTxl2mTit+P80R7jyO9HSaaShEIhIg0hQpEIkXAY3Tv6palpLubMeQyEIBCoKIrpDBYic7nzCtev3RillpbkwvkLXDh/YchNUDuxhoaGBsKRMOFIeHBbnWkfOWNkDdxuT/9IaCduc3OzHo/H5zsmNySJRDZ8M979rCrUFdlsrtLIGSya9/hyy7JsAJcrkNqy5eW2UmL9L+no6HBs738BCEj1jbPumaUAAAAASUVORK5CYII=
@@ -2377,7 +2376,7 @@ class Aplicacion():
         '''))
         self.iconoHelp = (
         tk.PhotoImage("iconoHelp", data='''
-            iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAABmJLR0QA/wD/AP+gvaeTAAAE9UlEQVRIieWWW3ATVRjH/5vsbnaTbpKmpSktoS0X24ECrYwXxjIgl9HhQaAIlOqDPHB5gFFUFIbCgx2dcRSvYL2h46WA+MSM4ogODHSAwSnlNlMLtJReoJA2bZLNZu+7PrSpCUlJOo7jg9/TyXe+7//b75yT8x3gPzJinPEkAG5kzAPQ/jUwS5LzSrLY1z02eko2TXEcRVopC4GQqpm6iWhE0ZSIpsqCbvQHJfnXO6LcCCDwT8DuUhd3aKXP+8iWspKcXBv9QKGopuN8IKh/29HTdyUY7rgVkV4SVPXSeMGFsz3O3w5VPVw2lXOMdzvgl2S8fKHV39I/9PVNQdyRKsaawsfNynadPLbosZmTHGwSVDVMXA3yaA4Ewas6chkaViIxzEGSqJ480cFR1OzrvFAckJWf0oJLndyRxvkVVUVZ9gQ1E8B7XX58IhgIzJ0HPPkULrEcGi63QYxGMYezJ1Uwx+O0BWV1SkdIuB3WtKvxcwniOQyzZPP0yYd3z56ec7/Ituu9mLF+IxYvX5EEOLjvY+SePYnNk3KT5gzTxMLj59r/GBiqACDE/Jb4oALW9vb2mVOToKf7g2Afn4/Fy1dAEkXs27Mbe1ZXY1dtDXq7ulC7ZSvOMU6E1eR/l4Ug8FZlWUlRln1ngj82oIC5C/M9JYzVkpTcJMhYsmYtIjyPXc+tQ23fDXxfkouGPBZf1A3rzVu5Ck3+waRcAKjK81i9DLMacVtLxgbT3NyL66f6slMlPu22480dr0HXNLzjdeAhzgEAcNMUaCkIALCxLGTDTAkGgJri/PwrwfACSdNOJFScRZIzZ7i4lElz3Rw+n5iFAz73KBQABmQFOucCAPx5pgmV2anzAWDV5AJnscO+IaliF02OnQUg/gIxAeztuoeLlANb976PCM+jt6UZJaWFY+Z7WRs4yjL9fjDlsJK2B4Hj7cuefjDV61C/tgayLKN+4wbU5bvS5rloyhkbx5ZaFQ1dzRR8VtKwbG0NIjyPuudrsZ3RMMOVlTbPYSUZjBQ7useyrouZgk16eHFO/XIMm1gTlRlAAcBJkwDgSAAHFS2aKThmxaVluChl3hmHZNXEyCXyd8WGecMvyRkJaMpwXFl5OTpUI2Mwr2kiRnr46Kn2S+KJy4Ph2qUFE9J2owragob6NyBFo1jKMRlBBU1Hnyh1x36Pggcl9fTxuwP+pQUTvOlEXi3y4kp3KwgCmJXvyQh8oL0rFBDF/UlgAO1n7g36DdP0WogHF31+iMfeQQmkYWA7YUl7uMKqhm86bt8IKPrRmC/hYvZL0kff3ewVklMTbf+AgPrDP6Lu4A941x9JF45tza19nYK4Kd6XAO6NSgc+bLvVmu6QkaaB7s5OCJEIWIx9PwNAY2dv5Iw/8FlUVVvi/anW1Dffm9P086JHi2hLcqcCgICs4NM7Q7itaNjpy4HPnvqANQdC2gtnL//eHuaXAYlfmHIzJ7BsVYWHO9z4RGWhkyJThaS1dl4wnz11oaUtxFcBkO6fT/XmQlTTuv2yevxoz70qwLSXu5020pL5m+9amDfWnG652BbiFyPu1RFv6dSIPJau9jLMK+VuzldTVFA4K9tJFIyxtIph4Kv2Hr7h+q0L10KRZzD86E8tnGkVAPLcDLUsn2YWWK3ENBdJspTV4qAtFpuVIIigomiCrvf3i9IHd0XlyDh0/yf2F7A64c4RDz8sAAAAAElFTkSuQmCC        
+            iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAABmJLR0QA/wD/AP+gvaeTAAAE9UlEQVRIieWWW3ATVRjH/5vsbnaTbpKmpSktoS0X24ECrYwXxjIgl9HhQaAIlOqDPHB5gFFUFIbCgx2dcRSvYL2h46WA+MSM4ogODHSAwSnlNlMLtJReoJA2bZLNZu+7PrSpCUlJOo7jg9/TyXe+7//b75yT8x3gPzJinPEkAG5kzAPQ/jUwS5LzSrLY1z02eko2TXEcRVopC4GQqpm6iWhE0ZSIpsqCbvQHJfnXO6LcCCDwT8DuUhd3aKXP+8iWspKcXBv9QKGopuN8IKh/29HTdyUY7rgVkV4SVPXSeMGFsz3O3w5VPVw2lXOMdzvgl2S8fKHV39I/9PVNQdyRKsaawsfNynadPLbosZmTHGwSVDVMXA3yaA4Ewas6chkaViIxzEGSqJ480cFR1OzrvFAckJWf0oJLndyRxvkVVUVZ9gQ1E8B7XX58IhgIzJ0HPPkULrEcGi63QYxGMYezJ1Uwx+O0BWV1SkdIuB3WtKvxcwniOQyzZPP0yYd3z56ec7/Ituu9mLF+IxYvX5EEOLjvY+SePYnNk3KT5gzTxMLj59r/GBiqACDE/Jb4oALW9vb2mVOToKf7g2Afn4/Fy1dAEkXs27Mbe1ZXY1dtDXq7ulC7ZSvOMU6E1eR/l4Ug8FZlWUlRln1ngj82oIC5C/M9JYzVkpTcJMhYsmYtIjyPXc+tQ23fDXxfkouGPBZf1A3rzVu5Ck3+waRcAKjK81i9DLMacVtLxgbT3NyL66f6slMlPu22480dr0HXNLzjdeAhzgEAcNMUaCkIALCxLGTDTAkGgJri/PwrwfACSdNOJFScRZIzZ7i4lElz3Rw+n5iFAz73KBQABmQFOucCAPx5pgmV2anzAWDV5AJnscO+IaliF02OnQUg/gIxAeztuoeLlANb976PCM+jt6UZJaWFY+Z7WRs4yjL9fjDlsJK2B4Hj7cuefjDV61C/tgayLKN+4wbU5bvS5rloyhkbx5ZaFQ1dzRR8VtKwbG0NIjyPuudrsZ3RMMOVlTbPYSUZjBQ7useyrouZgk16eHFO/XIMm1gTlRlAAcBJkwDgSAAHFS2aKThmxaVluChl3hmHZNXEyCXyd8WGecMvyRkJaMpwXFl5OTpUI2Mwr2kiRnr46Kn2S+KJy4Ph2qUFE9J2owragob6NyBFo1jKMRlBBU1Hnyh1x36Pggcl9fTxuwP+pQUTvOlEXi3y4kp3KwgCmJXvyQh8oL0rFBDF/UlgAO1n7g36DdP0WogHF31+iMfeQQmkYWA7YUl7uMKqhm86bt8IKPrRmC/hYvZL0kff3ewVklMTbf+AgPrDP6Lu4A941x9JF45tza19nYK4Kd6XAO6NSgc+bLvVmu6QkaaB7s5OCJEIWIx9PwNAY2dv5Iw/8FlUVVvi/anW1Dffm9P086JHi2hLcqcCgICs4NM7Q7itaNjpy4HPnvqANQdC2gtnL//eHuaXAYlfmHIzJ7BsVYWHO9z4RGWhkyJThaS1dl4wnz11oaUtxFcBkO6fT/XmQlTTuv2yevxoz70qwLSXu5020pL5m+9amDfWnG652BbiFyPu1RFv6dSIPJau9jLMK+VuzldTVFA4K9tJFIyxtIph4Kv2Hr7h+q0L10KRZzD86E8tnGkVAPLcDLUsn2YWWK3ENBdJspTV4qAtFpuVIIigomiCrvf3i9IHd0XlyDh0/yf2F7A64c4RDz8sAAAAAElFTkSuQmCC
         '''))
         self.iconoAbout = (
         tk.PhotoImage("iconoAbout", data='''
@@ -2425,7 +2424,7 @@ class Aplicacion():
         '''))
         self.iconoArrowUpDark = (
         tk.PhotoImage("iconoArrowUpDark", data='''
-            iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABmJLR0QA/wD/AP+gvaeTAAABuklEQVRIie2PsWsaURzHf/d7d++4e/dAJCD2gWY5TjKIyAmF4g0toma5oYtIBpFwS+ngUGf/g6zdOnSTjt1d2qlOHQrFpYNDKJRCgzGanNfpBxLaYBIJGfzCG977fX6f7x3ALrs8WKIo2pNSTqWU0yiK9rYq73a7T4QQPwEgAYDEtu1f7XY7vxV5q9XatyzrN8npmKb5p9FoePeSh2F4wDk/I6njOKeO45zSnXN+FobhwZ3k9Xq9zDmfkUxKOe10Oql+vy9TqdQPejcM47zZbD69lbxWqz0zDONiTf691+tZNB8MBjydTn+jua7ri2q1+mIjeRAEz3VdX9ByJpP5OhqN9OvccDhkSqnPxDHGlkEQHN4o933/EBEvaSmbzX5JkgT/xydJoimlPhGPiFfFYvHlP+FKpXKEiFcE5/P50Ua/DABKqY9rJXGpVDq+/uVdRIwJUkp92FROyeVy72lf07S4XC6/AgCAQqHwWtO0FQ1d1313WznF87y3ayUr13XfgBBihogrxljsed7JXeVrJSeMsRgRV0KImTaZTMz5fG4vl8uF7/vn9y0AABiPxzbn3LQsayu+XR55/gLZIoqjalg5SAAAAABJRU5ErkJggg==        
+            iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABmJLR0QA/wD/AP+gvaeTAAABuklEQVRIie2PsWsaURzHf/d7d++4e/dAJCD2gWY5TjKIyAmF4g0toma5oYtIBpFwS+ngUGf/g6zdOnSTjt1d2qlOHQrFpYNDKJRCgzGanNfpBxLaYBIJGfzCG977fX6f7x3ALrs8WKIo2pNSTqWU0yiK9rYq73a7T4QQPwEgAYDEtu1f7XY7vxV5q9XatyzrN8npmKb5p9FoePeSh2F4wDk/I6njOKeO45zSnXN+FobhwZ3k9Xq9zDmfkUxKOe10Oql+vy9TqdQPejcM47zZbD69lbxWqz0zDONiTf691+tZNB8MBjydTn+jua7ri2q1+mIjeRAEz3VdX9ByJpP5OhqN9OvccDhkSqnPxDHGlkEQHN4o933/EBEvaSmbzX5JkgT/xydJoimlPhGPiFfFYvHlP+FKpXKEiFcE5/P50Ua/DABKqY9rJXGpVDq+/uVdRIwJUkp92FROyeVy72lf07S4XC6/AgCAQqHwWtO0FQ1d1313WznF87y3ayUr13XfgBBihogrxljsed7JXeVrJSeMsRgRV0KImTaZTMz5fG4vl8uF7/vn9y0AABiPxzbn3LQsayu+XR55/gLZIoqjalg5SAAAAABJRU5ErkJggg==
         '''))
         self.iconoArrowDown = (
         tk.PhotoImage("iconoArrowDown", data='''
@@ -2433,7 +2432,7 @@ class Aplicacion():
         '''))
         self.iconoArrowDownDark = (
         tk.PhotoImage("iconoArrowDownDark", data='''
-            iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABmJLR0QA/wD/AP+gvaeTAAAA+ElEQVRIie3OsSuFYRTH8c+V4SYZDJKUwaAYDBaDxXA3k8lmM7Hd8i8YjCajwWg3yGC7k4FSlitRUkoGEV7LeetJXd7rfcf3W2d4zvmd73moqamCG2R4RqsCXytcGbqwlDTesFpCvoLXcL1gOR8s4DEGH1j/h3wN7+F4wuLPwCzuIvCFrT7kG/iM3QfM9wrO4DY50i4g34xshnvM/bUwhetYyLDzS3Y7yXUxXeBDYBwXyfIeGsm8gd1kfoXJovKcMZwnkgMMYgD7Sf8SE/3Kc0bRSWSHUfm7E5lSDOMkkeZ1hpGy8pwhHCfy0zhcKU0cRTWrltfU9OYbwP9Ih9s4LiMAAAAASUVORK5CYII=        
+            iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABmJLR0QA/wD/AP+gvaeTAAAA+ElEQVRIie3OsSuFYRTH8c+V4SYZDJKUwaAYDBaDxXA3k8lmM7Hd8i8YjCajwWg3yGC7k4FSlitRUkoGEV7LeetJXd7rfcf3W2d4zvmd73moqamCG2R4RqsCXytcGbqwlDTesFpCvoLXcL1gOR8s4DEGH1j/h3wN7+F4wuLPwCzuIvCFrT7kG/iM3QfM9wrO4DY50i4g34xshnvM/bUwhetYyLDzS3Y7yXUxXeBDYBwXyfIeGsm8gd1kfoXJovKcMZwnkgMMYgD7Sf8SE/3Kc0bRSWSHUfm7E5lSDOMkkeZ1hpGy8pwhHCfy0zhcKU0cRTWrltfU9OYbwP9Ih9s4LiMAAAAASUVORK5CYII=
         '''))
         self.iconoClear = (
         tk.PhotoImage("iconoClear", data='''
@@ -2452,7 +2451,7 @@ class Aplicacion():
         '''))
         self.iconoCloseMenu = (
         tk.PhotoImage("iconoCloseMenu", data='''
-            iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAABmJLR0QA/wD/AP+gvaeTAAADbUlEQVRIie2WPWgbZxjH//d9OZ/udJaceqgDhQPhgtFyvtLIn6nBHSxTo+EokjoI00nGoKFjehQEylIwGQxFeMiWd/PkrV7s4kGeVJMuGYKb4rp1bCEpij+Ut4suVVylsj7IlD+8wz33PO/vfZ7n5eEFPug9iWn+SCaTnxwcHHz1fwGKolR3dnZ+6uspJicnvwNA2625ublUryy+lZFl2bosy8fX7fV63Xd+fq7u7++7ADZ6hb+Rl7HP5ztq9X95eXmUZdk6+pB1y4zfpXw+/2RkZOSXw8PDid3d3R8DgcA3N421bfuHra2tn7sCA8D8/Py3Gxsbv9ZqNb1Wq03fNK5SqVgAugfn8/knY2Nj2ePj47Gb+J+enn55cXEhX7d3DAaAYrF4/6a+Pp/vqBWY7QbcD30A90WUUqZQKOjvBey6rt80zceqqp7wPH81Pj5+JgjCZaVSud02uN3kepempqbioii+QmOWMwxDeZ6/YhjmzXxXFKW0uLg42zfwzMxMwhujiqKUbNt+sL6+fhsAcrncnXA4/FCSpCoAynHcZTQanegZ7Lqu38t0eHj4N0LILUII1+xDCOFc1w0ahnEIgKqqerq9vf32/OgUbJrmYwB0YGCgRAi5ZVnW97quv3AcZxQAYrHYZ5qmnUUikfTq6upH3iFt2872BFZV9aSx0QNCCKfr+gsAVJblsuM4cVEUawBoMBh8DgChUOgRAOr3+591DaaUshzH1RmGoV5PHccZlWW5jKZHg6qqJysrKx8DQCaTuQuASpL0smvw3t6e1ri99Wa74zhx/Hu7X6dSqdl2MR2XWhCES4ZhaC6XuwMAS0tLn3vlZRjmNRplj8fjnwJAOp2+B4A2ev1fMMuyV4qi/NFueZuHw+GHlFJW07QzNMqbSqVmvbIHAoEjADBNkwCghmE8bQnudEmSVHVdNxiJRNJDQ0PPvZ46jjMaDAaPpqenv04kEibP8xcAqGVZ2Y6ft80SRZEpFov3q9WqPjg4+HsymbTW1tb+vO6XSCTMzc3NvXK5HNA07e9SqdR+jLbTwsLCFxzHXaLRu1Ao9CiTydwtFAp6Op2+Z5om8TIVBOE8FotZPUM9RaPRCVVVz9BU/uY5DYBqmvZXX6GeCCGcbdtZv9//TJKklzzP10VRfGUYxlPLsrKU0rfa+g/fZXcfiGBcQQAAAABJRU5ErkJggg==        
+            iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAABmJLR0QA/wD/AP+gvaeTAAADbUlEQVRIie2WPWgbZxjH//d9OZ/udJaceqgDhQPhgtFyvtLIn6nBHSxTo+EokjoI00nGoKFjehQEylIwGQxFeMiWd/PkrV7s4kGeVJMuGYKb4rp1bCEpij+Ut4suVVylsj7IlD+8wz33PO/vfZ7n5eEFPug9iWn+SCaTnxwcHHz1fwGKolR3dnZ+6uspJicnvwNA2625ublUryy+lZFl2bosy8fX7fV63Xd+fq7u7++7ADZ6hb+Rl7HP5ztq9X95eXmUZdk6+pB1y4zfpXw+/2RkZOSXw8PDid3d3R8DgcA3N421bfuHra2tn7sCA8D8/Py3Gxsbv9ZqNb1Wq03fNK5SqVgAugfn8/knY2Nj2ePj47Gb+J+enn55cXEhX7d3DAaAYrF4/6a+Pp/vqBWY7QbcD30A90WUUqZQKOjvBey6rt80zceqqp7wPH81Pj5+JgjCZaVSud02uN3kepempqbioii+QmOWMwxDeZ6/YhjmzXxXFKW0uLg42zfwzMxMwhujiqKUbNt+sL6+fhsAcrncnXA4/FCSpCoAynHcZTQanegZ7Lqu38t0eHj4N0LILUII1+xDCOFc1w0ahnEIgKqqerq9vf32/OgUbJrmYwB0YGCgRAi5ZVnW97quv3AcZxQAYrHYZ5qmnUUikfTq6upH3iFt2872BFZV9aSx0QNCCKfr+gsAVJblsuM4cVEUawBoMBh8DgChUOgRAOr3+591DaaUshzH1RmGoV5PHccZlWW5jKZHg6qqJysrKx8DQCaTuQuASpL0smvw3t6e1ri99Wa74zhx/Hu7X6dSqdl2MR2XWhCES4ZhaC6XuwMAS0tLn3vlZRjmNRplj8fjnwJAOp2+B4A2ev1fMMuyV4qi/NFueZuHw+GHlFJW07QzNMqbSqVmvbIHAoEjADBNkwCghmE8bQnudEmSVHVdNxiJRNJDQ0PPvZ46jjMaDAaPpqenv04kEibP8xcAqGVZ2Y6ft80SRZEpFov3q9WqPjg4+HsymbTW1tb+vO6XSCTMzc3NvXK5HNA07e9SqdR+jLbTwsLCFxzHXaLRu1Ao9CiTydwtFAp6Op2+Z5om8TIVBOE8FotZPUM9RaPRCVVVz9BU/uY5DYBqmvZXX6GeCCGcbdtZv9//TJKklzzP10VRfGUYxlPLsrKU0rfa+g/fZXcfiGBcQQAAAABJRU5ErkJggg==
         '''))
 
     def estilos(self):
@@ -2791,13 +2790,13 @@ class Aplicacion():
         self.cuaderno.add(extracion, text='Issues EXTRACIONES')
         #APP_EXT.bind("<Motion>", lambda e : self.EXT_motion(e))
         idpTab = self.cuaderno.index('current')
-    
+
     def EXT_motion(self):
         from DataExtraction import PST_EXT
         global APP_EXT
         APP_EXT = PST_EXT
         self.MODE_DARK()
-        
+
     def openButtonAutomatizacion(self):
         from Scripts import Automatizar
         global idpTab
@@ -3060,16 +3059,16 @@ class Aplicacion():
             row=1, column=0, sticky='nsew', pady=10, padx=(10, 0))
         listbox_list.append(self._list_modulo)
 
-        self.frame3 = ttk.Frame(
+        self.frame2 = ttk.Frame(
             self.fr2_gls,
             width=30
         )
-        self.frame3.pack(fill='both', side='right', expand=1, pady=10, padx=10)
-        self.frame3.columnconfigure(0, weight=1)
-        self.frame3.rowconfigure(1, weight=1)
+        self.frame2.pack(fill='both', side='right', expand=1, pady=10, padx=10)
+        self.frame2.columnconfigure(0, weight=1)
+        self.frame2.rowconfigure(1, weight=1)
 
         self.titulo_clave = ttk.Label(
-            self.frame3,
+            self.frame2,
             text='CLAVE',
             foreground=default_color_titulos,
             font=font.Font(family=fuente_titulos, size=16, weight='bold'),
@@ -3078,11 +3077,11 @@ class Aplicacion():
         self.titulo_clave.grid(
             row=0, column=0, sticky='nsew', pady=10, padx=5, columnspan=2)
 
-        self.ListClave_yScroll = tk.Scrollbar(self.frame3, orient=tk.VERTICAL)
+        self.ListClave_yScroll = tk.Scrollbar(self.frame2, orient=tk.VERTICAL)
 
         # LISTBOX CLAVE
         self._list_clave = tk.Listbox(
-            self.frame3,
+            self.frame2,
             font=_Font_Texto,
             foreground=default_scrText_fg,
             selectbackground=default_select_bg,
@@ -3298,7 +3297,7 @@ class Aplicacion():
         self.issuesMenu = tk.Menu(self.fileMenu, tearoff=0)
         self.preferenceMenu = tk.Menu(self.fileMenu, tearoff=0)
         #* -------------------------------------------------- #
-        
+
         #* AÑADIMOS SUB MENU A FILE
         self.fileMenu.add_cascade(
             label="  Abrir",
@@ -3423,7 +3422,7 @@ class Aplicacion():
             compound=tk.LEFT,
             state="disabled"
         )
-        
+
         #* MENU HELP
         self.helpMenu = tk.Menu(self.bar, tearoff=0)
         self.helpMenu.config(
@@ -3970,7 +3969,7 @@ class Aplicacion():
             return
         else:
             return "break"
-    
+
     def mainloop(self):
         self.root.mainloop()
 
