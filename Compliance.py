@@ -32,7 +32,7 @@ pathExtractions = mypath+"Compliance/extractions/"
 pathDesviations = mypath+dataIssues+"deviations_{}.json"
 pathIcon = mypath+"Compliance/image/"
 pathConfig = mypath+"Compliance/.conf/{}"
-pathRisk = mypath+"Compliance/deviations/riesgos/{}"
+pathRisk = mypath+"Compliance/deviations/risks/{}"
 pathModuleButton = mypath+"Compliance/.conf/{}"
 pathInclude = "Compliance/deviations/include/{}"
 pathDesviationsGl = mypath+"Compliance/deviations/{}.json"
@@ -1540,6 +1540,7 @@ class Desviacion(ttk.Frame):
             if MsgBox:
                 no_exist = True
                 self.gridForget()
+                print("MODULE FOUND ", moduleFound)
                 listModuleFound = []
                 listKeysFound = []
                 listCustomerFound = []
@@ -1549,10 +1550,16 @@ class Desviacion(ttk.Frame):
                 for client in listClient:
                     listPathCustomer.append(pathDesviations.format(client))
                 moduleToFind = PST_DESV.DESV_entry.get()
+                print("MODULE FIND 1 ", moduleToFind)
                 moduleToFind = self.solve(moduleToFind)
+                moduleToFind = moduleToFind.replace("\\", "/")
+                print("MODULE FIND 2 ", moduleToFind)
                 keyToFind = PST_DESV.DESV_entry.get()
+                print("KEY FIND 1 ", keyToFind)
                 keyToFind = keyToFind.upper().split()
+                print("KEY FIND 2 ", keyToFind)
                 keyToFind = str(keyToFind).replace("[", "").replace("]", "").replace("'", "")
+                print("KEY FIND 3 ", keyToFind)
                 for openFile in listPathCustomer:
                     try:
                         with open(openFile) as g:
@@ -1619,8 +1626,10 @@ class Desviacion(ttk.Frame):
         elif len(moduleFound) == 1 and len(keyFound) == 0:
             data = []
             no_exist = False
+            print("MODULE FIND-EXISTE 1 ", moduleFound)
             moduleFound = str(moduleFound).replace(
                 "[", "").replace("]", "").replace("'", "")
+            print("MODULE FIND-EXISTE 2  ", moduleFound)
             with open(pathDesviations.format(customer)) as g:
                 data = json.load(g)
                 for md in data[customer]:
