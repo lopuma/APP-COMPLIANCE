@@ -8,8 +8,8 @@ import time
 from tkinter import ttk
 from threading import Thread
 from PIL import Image, ImageTk
-from Compliance import _Font_Texto, listButton, pathIcon, fg_submenu, default_select_bg, default_menu_bg, default_select_fg, bg_submenu,default_bottom_app, _Font_pestañas, color_out_bg_pestaña, color_out_fg_pestaña, color_act_bg_pestaña, color_sel_fg_pestaña, color_act_fg_pestaña
-from RadioBotton import RadioFrame
+from Compliance import _Font_Texto, listButton, fg_submenu, default_select_bg, default_menu_bg, default_select_fg, bg_submenu,default_bottom_app, _Font_pestañas, color_out_bg_pestaña, color_out_fg_pestaña, color_act_bg_pestaña, color_sel_fg_pestaña, color_act_fg_pestaña
+from RadiusButton import RadioFrame
 release = True
 count = 0
 color_btn_tab = '#297F87'

@@ -1,5 +1,5 @@
 import tkinter as tk
-from RadioBotton import RadioButton
+from RadiusButton import CornerRadius
 
 class CustomHovertip(tk.Toplevel):
     y_alto_btn = 45
@@ -14,7 +14,7 @@ class CustomHovertip(tk.Toplevel):
         self.position_window(boton)
 
     def showcontents(self):
-        # self.frame_label = RadioButton(
+        # self.frame_label = CornerRadius(
         #     self,
         #     alto=self.y_alto_btn,
         #     ancho=self.x_ancho_btn,

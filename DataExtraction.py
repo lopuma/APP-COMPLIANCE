@@ -9,13 +9,14 @@ from tkinter import  TclError, ttk
 from tkinter import scrolledtext as st
 from tkinter import font
 from threading import Thread
+from webbrowser import get
 from Compliance import pathExtractions, default_color_line_fg, default_Framework, default_select_fg, hlh_def, pers_menu_bg, pers_scrText_bg, pathConfig, parse, pers_bottom_app, activar_modo, mypath, hhtk, default_scrText_bg, default_colourCodeBg, default_colourCodeFg, default_colourNoteFg, default_bottom_app, bg_submenu, default_scrText_fg, default_menu_bg, fg_submenu, _Font_Menu, _Font_Texto, default_select_bg, default_bottom_app, default_hglcolor, fuente_texto, tamñ_texto, _Font_Texto_bold, _Font_Texto_codigo
 parar = False
 _estado_actual = False
 PST_EXT = ""
 HIDDEN = 0
 _activeFocus = False
-
+switch = False
 def beep_error(f):
     def applicator(*args, **kwargs):
         try:
@@ -305,8 +306,8 @@ class Extracion(ttk.Frame):
         self.txt.bind('<Control-c>', lambda x: self.copyTextSelected(x))
         self.txt.bind('<Control-C>', lambda x: self.copyTextSelected(x))
         self.txt.bind('<Control-a>', lambda e: self.selectedAll(e))
-        self.txt.bind('<Control-x>', lambda e: self._limpiar_busqueda(e))
-        self.txt.bind('<Control-X>', lambda e: self._limpiar_busqueda(e))
+        self.txt.bind('<Control-x>', lambda e: self.limpiar_busqueda(e))
+        self.txt.bind('<Control-X>', lambda e: self.limpiar_busqueda(e))
         self._ocurrencias_encontradas = []
         self._numero_ocurrencia_actual = None
         _estado_actual = False
@@ -435,13 +436,28 @@ class Extracion(ttk.Frame):
                 self._parar_(event=None)
 
     def seleccionar_plantilla(self, plantilla):
+        global switch
+        switch = False
+
         self.plantilla = plantilla
         with open(plantilla) as g:
             data = g.read()
             self.txt.delete('1.0', tk.END)
             for md in data:
                 self.txt.insert(tk.END, md)
-
+        try:
+            print("SWITCH -", switch)
+            self._buscar_siguiente(None)
+            print("SWITCH ", switch)
+        except:
+            pass
+        # try:
+        #     if _estado_actual:
+        #         print("LLEGA ------------ ", switch)
+        #         self._buscar_siguiente(None)
+        #         print("PASA ------------ ", switch)
+        # except:
+        #     pass
     def listdir(self, path):
         try:
             return listdir(path)
@@ -452,10 +468,6 @@ class Extracion(ttk.Frame):
         return self.app.iconoFolder if isdir(path) else self.app.iconoFile
 
     def insert_item(self, name, path, parent=""):
-        """
-        Añade un archivo o carpeta a la lista y retorna el identificador
-        del ítem.
-        """
         iid = self.treeview.insert(parent,
             tk.END, text=name,
             tags=("fstag",)+(("folder",) if isdir(path) else ()),
@@ -635,12 +647,6 @@ class Extracion(ttk.Frame):
             foreground='#357C3C',
             font=(fuente_texto, tamñ_texto, font.BOLD)
         )
-
-    def widgets_SoloLectura(self, event):
-        if(20 == event.state and event.keysym == 'c' or event.keysym == 'Down' or event.keysym == 'Up' or 20 == event.state and event.keysym == 'f' or 20 == event.state and event.keysym == 'a'):
-            return
-        else:
-            return "break"
     
     def _menu_clickDerecho(self):
         self.menu_Contextual = tk.Menu(self, tearoff=0)
@@ -678,7 +684,7 @@ class Extracion(ttk.Frame):
             activebackground=default_select_bg, activeforeground=default_select_fg,
             font=_Font_Menu,
             state="disabled",
-            command=self.limpiar_busqueda
+            command=lambda: self.limpiar_busqueda(None)
         )
         self.menu_Contextual.add_separator(background=bg_submenu)
         self.menu_Contextual.add_command(
@@ -718,21 +724,13 @@ class Extracion(ttk.Frame):
         else:
             self.menu_Contextual.entryconfig("  Copiar", state="disabled")
 
-    def limpiar_busqueda(self):
-        self.var_entry_bsc.set("")
-        self.menu_Contextual.entryconfig(
+    def limpiar_busqueda(self, event):
+        print("LIMPIA :: ", event)
+        PST_EXT.var_entry_bsc.set("")
+        PST_EXT.menu_Contextual.entryconfig(
             '  Limpiar Busqueda', state='disabled')
         PST_EXT.txt.tag_remove('found', '1.0', tk.END)
         PST_EXT.txt.tag_remove('found_prev_next', '1.0', tk.END)
-        self.defaultEntry()
-
-    def _limpiar_busqueda(self, event):
-        txt_event = event.widget
-        self.var_entry_bsc.set("")
-        self.menu_Contextual.entryconfig(
-            '  Limpiar Busqueda', state='disabled')
-        txt_event.tag_remove('found', '1.0', tk.END)
-        txt_event.tag_remove('found_prev_next', '1.0', tk.END)
         self.defaultEntry()
 
     def copyTextSelected(self, *args):
@@ -797,7 +795,6 @@ class Extracion(ttk.Frame):
             'found', idx) or self.txt.tag_prevrange('found', self.txt.index(tk.END)) or None
 
     def buscar_next(self):
-        '''Buscar siguiente ocurrencia en el Entry de MainApp'''
         idx = self.indice_ocurrencia_actual[1] if self.indice_ocurrencia_actual else self.txt.index(
             tk.INSERT)
         self.indice_ocurrencia_actual = self.txt.tag_nextrange(
@@ -835,11 +832,13 @@ class Extracion(ttk.Frame):
         return self._ocurrencias_encontradas
 
     def searchPanel(self, event=None):
+        global switch
+        switch = False
         self.y_alto_btn = 115
         self.x_ancho_btn = 680
         self.hg_btn = int(self.y_alto_btn-30)
         self.wd_btn = int(self.x_ancho_btn-30)
-        from RadioBotton import RadioFrame
+        from RadiusButton import RadioFrame
         global _estado_actual
         global _activeFocus
         _activeFocus = True
@@ -919,12 +918,12 @@ class Extracion(ttk.Frame):
 
             self.var_entry_bsc = tk.StringVar(self)
 
-            self.EXT_entry = MyEntry(
+            self.entrySearch = MyEntry(
                 self.busca_frm_content,
                 textvariable=self.var_entry_bsc,
             )
 
-            self.EXT_entry.configure(
+            self.entrySearch.configure(
                 width=40,
                 highlightcolor=default_hglcolor,
                 insertbackground=default_hglcolor,
@@ -934,7 +933,7 @@ class Extracion(ttk.Frame):
                 font=(fuente_texto, 14)
             )
 
-            self.EXT_entry.grid(row=0, column=0, ipady=8, sticky="nsew")
+            self.entrySearch.grid(row=0, column=0, ipady=8, sticky="nsew")
 
             self.buttonClosePanel = tk.Button(
                 self.busca_frm_content,
@@ -956,7 +955,7 @@ class Extracion(ttk.Frame):
                 self.busca_frm_content,
                 text='<<',
                 image=self.app.iconoClear,
-                command=self.limpiar_busqueda
+                command=lambda: self.limpiar_busqueda(None)
             )
 
             self.buttonClosePanel.config(
@@ -1009,20 +1008,20 @@ class Extracion(ttk.Frame):
                 row=0, column=3, padx=(5, 10), pady=5, sticky="nsew")
 
 #--- Activa el focu en el ENTRY
-            self.EXT_entry.focus_set()
+            self.entrySearch.focus_set()
 
 #--- Busca palabras al escribir, y activa el panel
-            self.EXT_entry.bind('<Any-KeyRelease>', self.on_EXT_entry_busca_key_release)
+            self.entrySearch.bind('<Any-KeyRelease>', self.on_entrySearch_busca_key_release)
             self.txt.bind("<Button-1>", lambda e: self.activeFocus(e))
             self.txt.bind("<Motion>", lambda e: self.desactiveFocus(e))
-            self.EXT_entry.bind("<Motion>", lambda e: self.desactiveFocus(e))
-            self.EXT_entry.bind("<Button-1>", lambda e: self._Focus(e))
+            self.entrySearch.bind("<Motion>", lambda e: self.desactiveFocus(e))
+            self.entrySearch.bind("<Button-1>", lambda e: self._Focus(e))
             
             self.app.MODE_DARK()
 
             _estado_actual = True
         else:
-            self._buscar_focus(self.EXT_entry)
+            self._buscar_focus(self.entrySearch)
             _estado_actual = True
             return 'break'
 
@@ -1042,13 +1041,11 @@ class Extracion(ttk.Frame):
         self.busca_top.geometry(new_pos)
 
     def _buscar_focus(self, event):
-        self.EXT_entry.selectedAll(event)
+        self.entrySearch.selectedAll(event)
 
     def _on_closing_busca_top(self):
         global PST_EXT
         global _estado_actual
-        #self.menu_Contextual.entryconfig(    "  Limpiar Busqueda", state="disabled")
-        #self.limpiar_busqueda()
         _estado_actual = False
         PST_EXT.busca_top.destroy()
 
@@ -1065,7 +1062,7 @@ class Extracion(ttk.Frame):
         global _activeFocus
         if _activeFocus ==  True:
             try:
-                PST_EXT.EXT_entry.focus()
+                PST_EXT.entrySearch.focus()
             except TclError:
                 _activeFocus = False
             except AttributeError:
@@ -1074,36 +1071,44 @@ class Extracion(ttk.Frame):
             self.txt.focus()
 
 ## --- Al escribir en el ENTRY del PANEL, busca concurrencias
-    def on_EXT_entry_busca_key_release(self, event):
+    def on_entrySearch_busca_key_release(self, event):
         if event.keysym != "F2" and event.keysym != "F3":  # F2 y F3
             self._buscar()
             return "break"
 
     def _buscar(self, event=None):
-        self.buscar_todo(self.EXT_entry.get().strip())
+        global switch
+        switch = False
+        self.buscar_todo(self.entrySearch.get().strip())
         if self.ocurrencias_encontradas:
-            self.bus_reem_num_results.set('~ {} de {} ~'.format(
-                self.numero_ocurrencia_actual, self.numero_ocurrencias))
+            self.bus_reem_num_results.set(self.messageResult(self.numero_ocurrencia_actual, self.numero_ocurrencias))
             self.foundEntry()
         else:
-            self.bus_reem_num_results.set('~ {} ~'.format('No hay resultados'))
+            self.bus_reem_num_results.set(self.messageResult(None, None))
             if self.var_entry_bsc.get() == "":
                 self.defaultEntry()
             else:
                 self.noFoundEntry()
 
+    def messageResult(self, message1, message2):
+        print('~ {} ~ {}'.format(message1, message2))
+        if message1 == None or message2 == None:
+            return '~ {} ~'.format("No hay resultados")
+        else:
+            return '~ {} de {} ~'.format(message1, message2)
+
     def foundEntry(self):
-        self.EXT_entry.configure(
+        self.entrySearch.configure(
                 highlightthickness=2,
                 highlightcolor='#003482')
 
     def noFoundEntry(self):
-        self.EXT_entry.configure(
+        self.entrySearch.configure(
                     highlightthickness=2,
                     highlightcolor='orange red')
 
     def defaultEntry(self):
-        self.EXT_entry.configure(
+        self.entrySearch.configure(
                 highlightthickness=1,
                 highlightcolor=default_hglcolor)
         self.bus_reem_num_results.set('~ {} ~'.format('No hay resultados'))
@@ -1111,6 +1116,7 @@ class Extracion(ttk.Frame):
     def buscar_todo(self, txt_buscar=None):
         '''Buscar todas las ocurrencias en el Entry de MainApp'''
         # eliminar toda marca establecida, si existiera, antes de plasmar nuevos resultados
+        print("--- TXT BUSCAR ", txt_buscar)
         self.txt.tag_remove('found', '1.0', tk.END)
         self.txt.tag_remove('found_prev_next', '1.0', tk.END)
         if txt_buscar:
@@ -1133,7 +1139,7 @@ class Extracion(ttk.Frame):
             self.txt.tag_config('found', background='dodgerblue')
             # FUNCIONA
 
-            # self.buscar_next(self.EXT_entry.get().strip())
+            # self.buscar_next(self.entrySearch.get().strip())
             self.menu_Contextual.entryconfig(
                 '  Limpiar Busqueda', state='normal')
         else:
@@ -1145,20 +1151,20 @@ class Extracion(ttk.Frame):
         self.buscar_next()
 
     def _buscar_siguiente(self, event=None):
-        self.buscar_next()
-        if self.ocurrencias_encontradas:
-            self.bus_reem_num_results.set('~ {} de {} ~'.format(
-                self.numero_ocurrencia_actual, self.numero_ocurrencias))
-            # self.EXT_entry.configure(
-            #     highlightthickness=2,
-            #     highlightcolor='blue')
-        else:
-            self.bus_reem_num_results.set('~ {} ~'.format('No hay resultados'))
+        global switch
+        if not switch:
+            self.buscar_todo(PST_EXT.entrySearch.get())
+            switch = True
+        if switch:
+            self.buscar_next()
+            if self.ocurrencias_encontradas:
+                self.bus_reem_num_results.set(self.messageResult(self.numero_ocurrencia_actual, self.numero_ocurrencias))
+            else:
+                self.bus_reem_num_results.set(self.messageResult(None, None))
 
     def _buscar_anterior(self, event=None):
         self.buscar_prev()
         if self.ocurrencias_encontradas:
-            self.bus_reem_num_results.set('~ {} de {} ~'.format(
-                self.numero_ocurrencia_actual, self.numero_ocurrencias))
+            self.bus_reem_num_results.set(self.messageResult(self.numero_ocurrencia_actual, self.numero_ocurrencias))
         else:
-            self.bus_reem_num_results.set('~ {} ~'.format('No hay resultados'))
+            self.bus_reem_num_results.set(self.messageResult(None, None))

@@ -9,7 +9,7 @@ import subprocess
 from functools import partial
 from ScrollableNotebook  import *
 from Compliance import default_Outline, pathIcon, pathConfig, default_bottom_app, default_boton_acfg, default_boton_fg, hhtk, default_boton_bg
-from RadioBotton import RadioButton, BtnScripts
+from RadiusButton import CornerRadius, BtnScripts
 #* variable para actualizar la ventana
 PST_AUT = ""
 FR_POL = ""
@@ -108,7 +108,7 @@ class FramesPoliticas(ttk.Frame):
             logo_script_ico = ImageTk.PhotoImage(
                 Image.open(url.format(politica_icon)).resize((80, 60)))
             
-            self.buttons_POLITICA = RadioButton(
+            self.buttons_POLITICA = CornerRadius(
                 self.lb_frame_politica,
                 alto=y_alto_btn,
                 ancho=x_ancho_btn,
@@ -339,7 +339,7 @@ class FramesScripts(ttk.Frame):
         wd_btn = int(x_ancho_btn - 22)
 
         for l in lt_scr:
-            self.buttons_SCRIPT = RadioButton(
+            self.buttons_SCRIPT = CornerRadius(
                 self.lb_frame_script,
                 alto=y_alto_btn,
                 ancho=x_ancho_btn,
@@ -561,7 +561,7 @@ class Automatizar(ttk.Frame):
         with open(pathConfig.format("clientes.json")) as op:
             data = json.load(op)
             for clt in data:
-                self.buttons_clientes = RadioButton(
+                self.buttons_clientes = CornerRadius(
                     self.lb_frame_menu,
                     alto=y_alto_btn,
                     ancho=x_ancho_btn,

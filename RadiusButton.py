@@ -4,10 +4,9 @@
 
 import tkinter as tk
 from tkinter import ttk
-from turtle import bgcolor
 
 bg_cl = ''
-class RadioButton(ttk.Frame):
+class CornerRadius(ttk.Frame):
     def __init__(self, *args,
             alto, 
             ancho, 

@@ -17,7 +17,7 @@ from tkinter import messagebox as mb
 from tkinter import font
 from PIL import Image, ImageTk
 from ScrollableNotebook import *
-from RadioBotton import RadioButton
+from RadiusButton import CornerRadius
 from functools import partial
 from configparser import ConfigParser
 from Tooltip import CustomHovertip
@@ -1451,7 +1451,7 @@ class Desviacion(ttk.Frame):
                 createOn = True
 
     def addButton(self, frame, nameButton, pathScript, row, col):
-        frame.rbModule = RadioButton(
+        frame.rbModule = CornerRadius(
                     frame,
                     alto=Desviacion.y_alto_btn,
                     ancho=Desviacion.x_ancho_btn,
@@ -3127,7 +3127,7 @@ class Aplicacion():
         self.frameButtons.grid(row=0, column=0, pady=5, padx=5)
 
     # TODO BOTON DESVIACION
-        self.rbOpenDesv = RadioButton(
+        self.rbOpenDesv = CornerRadius(
             self.frameButtons,
             alto=Aplicacion.y_alto_btn,
             ancho=Aplicacion.x_ancho_btn,
@@ -3158,7 +3158,7 @@ class Aplicacion():
         )
 
 # TODO BOTON EXTRACION
-        self.rbOpenExt = RadioButton(
+        self.rbOpenExt = CornerRadius(
             self.frameButtons,
             alto=Aplicacion.y_alto_btn,
             ancho=Aplicacion.x_ancho_btn,
@@ -3189,7 +3189,7 @@ class Aplicacion():
         )
 
 # TODO BOTON AUTOMATIZAR
-        self.rbOpenAuto = RadioButton(
+        self.rbOpenAuto = CornerRadius(
             self.frameButtons,
             alto=Aplicacion.y_alto_btn,
             ancho=Aplicacion.x_ancho_btn,
