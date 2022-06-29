@@ -28,20 +28,9 @@ class ScrollableNotebook(ttk.Frame):
         self.notebookContent.pack(fill="both", expand=True)
         self.notebookTab = ttk.Notebook(self,**kwargs)
         self.notebookTab.bind("<<NotebookTabChanged>>",lambda e:self._tabChanger(e))
-        #self.notebookTab.bind('<Motion>', lambda e: self.activeToolTip(e))
-        # if wheelscroll==True: 
-        #     self.notebookTab.bind("<MouseWheel>", self._wheelscroll)
         self.notebookTab.bind("<Button-4>", self._wheelscroll)
         self.notebookTab.bind("<Button-5>", self._wheelscroll)
         slideFrame = ttk.Frame(self)
-        # slideFrame = RadioFrame(
-        #     self,
-        #     alto=100,
-        #     ancho=300,
-        #     radio=10,
-        #     width=0,
-        #     bg_color=default_bottom_app
-        # )
         slideFrame.config(
             border=0,
             borderwidth=0,
@@ -102,20 +91,26 @@ class ScrollableNotebook(ttk.Frame):
             image=self.app.iconoSwitchOff,
             command=self.app.activeModeDark,
             )
-        self.btnMode.pack(before=self.buttonTab_novo, side=tk.LEFT, fill=tk.BOTH, expand=1, padx=10)
+        self.btnMode.pack(before=self.buttonTab_novo, side=tk.LEFT, fill=tk.BOTH, expand=1)
+
+        self.iconButtonModeOff = ttk.Label(
+            slideFrame,
+            image=self.app.iconoOffDefault,
+        )
+        self.iconButtonModeOff.pack(before=self.btnMode, side=tk.LEFT,fill=tk.BOTH, expand=1, padx=(5,0))
+        
+        self.iconButtonModeOn = ttk.Label(
+            slideFrame,
+            image=self.app.iconoOnDefault,
+        )
+        self.iconButtonModeOn.pack(after=self.btnMode, side=tk.LEFT,fill=tk.BOTH, expand=1, padx=(0,5))
+
 
         self.notebookContent.bind("<Configure>", self._resetSlide)
         self.notebookTab.bind("<ButtonPress-1>", self.on_tab_close_press, True)
         self.notebookTab.bind("<ButtonRelease-1>", self.on_tab_close_release)
         self.notebookContent.bind("<ButtonPress-1>", self.on_tab_close_press, True)
         self.notebookContent.bind("<ButtonRelease-1>", self.on_tab_close_release)
-
-    # def activeToolTip(self, event):
-    #     name = self.identify(event.x, event.y)  
-    #     if name == "tab_btn_close":
-    #         print("Activa")
-    #         self.app.openTooltip(self.notebookTab, "Close")
-    #         self.notebookTab.bind('<Leave>', self.app._hide_event)
 
     def _release_callback(self, e):
         global release

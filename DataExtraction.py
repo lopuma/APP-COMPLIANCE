@@ -407,7 +407,6 @@ class Extracion(ttk.Frame):
         self.txt.grid(row=0, column=0, sticky="nsew")
         self.txt.bind("<Key>", lambda e: self.app.widgets_SoloLectura(e))
         self.txt.bind("<Button-3><ButtonRelease-3>",self._display_menu_clickDerecho)
-        self.txt.bind("<Motion>", lambda e: self.desactiveFocus(e))
 
     def ampliar(self):
         global parar
@@ -1015,7 +1014,7 @@ class Extracion(ttk.Frame):
             self.txt.bind("<Button-1>", lambda e: self.activeFocus(e))
             self.txt.bind("<Motion>", lambda e: self.desactiveFocus(e))
             self.entrySearch.bind("<Motion>", lambda e: self.desactiveFocus(e))
-            self.entrySearch.bind("<Button-1>", lambda e: self._Focus(e))
+            self.entrySearch.bind("<Button-1>", lambda e: self.activeFocus(e))
             
             self.app.MODE_DARK()
 
@@ -1051,12 +1050,29 @@ class Extracion(ttk.Frame):
 
 ## --- Activa el focu de los widgets del PANEL
     def activeFocus(self, event):
+        global modo_dark
         global _activeFocus
-        _activeFocus = False
-
-    def _Focus(self, event):
-        global _activeFocus
-        _activeFocus = True
+        PST_EXT.widgetActive = event.widget
+        parse.read(pathConfig.format("apariencia.ini"))
+        modo_dark = parse.get('dark', 'modo_dark')
+        if str(PST_EXT.widgetActive) == str(PST_EXT.entrySearch):
+            try:
+                if modo_dark == 'True':
+                    PST_EXT.frameRadio.canvas.config(background=pers_scrText_bg)
+                else:
+                    PST_EXT.frameRadio.canvas.config(background='gray77')
+            except:
+                pass
+            _activeFocus = True
+        else:
+            try:
+                if modo_dark == 'True':
+                    PST_EXT.frameRadio.canvas.config(background=pers_scrText_bg)
+                else:
+                    PST_EXT.frameRadio.canvas.config(background=default_scrText_bg)
+            except:
+                pass
+            _activeFocus = False
 
     def desactiveFocus(self, event):
         global _activeFocus
@@ -1068,7 +1084,7 @@ class Extracion(ttk.Frame):
             except AttributeError:
                 _activeFocus = False
         else:
-            self.txt.focus()
+            PST_EXT.txt.focus()
 
 ## --- Al escribir en el ENTRY del PANEL, busca concurrencias
     def on_entrySearch_busca_key_release(self, event):
