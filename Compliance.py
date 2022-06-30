@@ -26,7 +26,7 @@ user = getuser()
 mypath = os.path.expanduser("~/")
 
 # ? ROUTERS
-pathCustomer = mypath+"Compliance/.conf/customers.json"
+pathCustomer = mypath+"/Compliance/.conf/customers.json"
 dataIssues = "Compliance/deviations/dataIssues/"
 pathExtractions = mypath+"Compliance/extractions/"
 pathDesviations = mypath+dataIssues+"deviations_{}.json"
