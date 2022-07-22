@@ -15,6 +15,7 @@ from getpass import getuser
 from tkinter import TclError
 from tkinter import messagebox as mb
 from tkinter import font
+import PIL
 from PIL import Image, ImageTk
 from ScrollableNotebook import *
 from RadiusButton import CornerRadius
@@ -23,13 +24,24 @@ from configparser import ConfigParser
 from Tooltip import CustomHovertip
 #-----------------------------------------------------------#
 user = getuser()
-mypath = os.path.expanduser("~/")
-
 # ? ROUTERS
-pathCustomer = mypath+"/Compliance/.conf/customers.json"
+my_os = sys.platform
+if (my_os == 'linux'):
+    mypath = os.path.expanduser("~/")
+else:
+    mypath = os.path.expanduser("C:/")
+print("my os es ", my_os)
+print("myPath os es ", mypath)
+pathCustomer = mypath+"Compliance/.conf/customers.json"
+print("my path customer es ", pathCustomer)
 dataIssues = "Compliance/deviations/dataIssues/"
+print("my path dataIssues es ", dataIssues)
 pathExtractions = mypath+"Compliance/extractions/"
+print("my path pathExtractions es ", pathExtractions)
+
 pathDesviations = mypath+dataIssues+"deviations_{}.json"
+print("my path pathDesviations es ", pathDesviations)
+
 pathIcon = mypath+"Compliance/image/"
 pathConfig = mypath+"Compliance/.conf/{}"
 pathRisk = mypath+"Compliance/deviations/risks/{}"
@@ -44,7 +56,7 @@ listClient = []
 listButton = [
     "DESVIACIONES",
     "EXTRACIONES",
-    # "AUTOMATIZACION"
+    "AUTOMATIZACION"
 ]
 # --- VARIABLE GLOBAL ---
 createOn = False
