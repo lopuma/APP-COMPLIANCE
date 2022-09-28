@@ -5,7 +5,7 @@ import time
 import tkinter as tk
 from os import listdir
 from os.path import isdir, join, abspath
-from tkinter import  TclError, ttk
+from tkinter import TclError, ttk
 from tkinter import scrolledtext as st
 from tkinter import font
 from threading import Thread
@@ -17,6 +17,8 @@ PST_EXT = ""
 HIDDEN = 0
 _activeFocus = False
 switch = False
+
+
 def beep_error(f):
     def applicator(*args, **kwargs):
         try:
@@ -26,6 +28,7 @@ def beep_error(f):
                 args[0].bell()
     return applicator
 
+
 class MyScrollText(st.ScrolledText):
     def __init__(self, parent, app, *args, **kwargs):
         st.ScrolledText.__init__(self, parent, *args, **kwargs)
@@ -34,7 +37,7 @@ class MyScrollText(st.ScrolledText):
         self.configr()
 
     def configr(self):
-        self.config( 
+        self.config(
             font=_Font_Texto,
             wrap=tk.WORD,
             highlightcolor=default_hglcolor,
@@ -48,7 +51,8 @@ class MyScrollText(st.ScrolledText):
             background=default_scrText_bg,
             foreground=default_scrText_fg,
         )
-    
+
+    # FUNCION PARA APLICAR COLORES A LOS SCROLLNOTES
     def colourText(self, bg_color, bg_codigo, fg_codigo, fg_nota):
         self.tag_configure(
             "codigo",
@@ -78,6 +82,15 @@ class MyScrollText(st.ScrolledText):
         )
 
         self.tag_configure(
+            "required",
+            background=pers_scrText_bg,
+            foreground='red',
+            selectbackground=default_select_bg,
+            selectforeground=default_select_fg,
+            font=_Font_Texto
+        )
+
+        self.tag_configure(
             "server",
             background='#7BB3A4',
             foreground='#000000',
@@ -85,6 +98,7 @@ class MyScrollText(st.ScrolledText):
             selectforeground=default_select_fg,
             font=_Font_Texto
         )
+
         self.tag_configure(
             "coment",
             background=pers_scrText_bg,
@@ -118,6 +132,9 @@ class MyScrollText(st.ScrolledText):
                 endline = f"{line}.end"
                 self.tag_add(
                     "coment", startline, endline)
+            if (self.search("REQ", startline, stopindex=f"{line}.1")):
+                endline = f"{line}.end"
+                self.tag_add("required", startline, endline)
 
 class MyEntry(tk.Entry):
     def __init__(self, parent=None, *args, **kwargs):
@@ -235,7 +252,7 @@ class MyEntry(tk.Entry):
 
         if len(self.get()) > 0:
             self.menu_opciones.entryconfig("  Deshacer", state="normal")
-            #self.menu_opciones.entryconfig("  Rehacer", state="disabled")
+            # self.menu_opciones.entryconfig("  Rehacer", state="disabled")
         else:
             self.menu_opciones.entryconfig("  Deshacer", state="disabled")
 
@@ -343,7 +360,7 @@ class Extracion(ttk.Frame):
             self.frameMain.config(
                 background=pers_menu_bg,
             )
-            #self.txt.config(background=pers_scrText_bg,)
+            # self.txt.config(background=pers_scrText_bg,)
         self.frameMain.grid_propagate(False)
         self.frameMain.grid(row=0, column=0, sticky="nsew", pady=(10,0))
         self.frameMain.columnconfigure(0, weight=1)
@@ -526,8 +543,7 @@ class Extracion(ttk.Frame):
                 break
         if len(path) != 0:
             self.seleccionar_plantilla(path)
-            #todo LLMADA A COLORES
-            #PST_EXT.txt.colourText(default_scrText_bg, default_colourCodeBg, default_colourCodeFg, default_colourNoteFg)
+            # todo LLMADA A COLORES
             self.colour_line()
             self.colour_line2()
 
@@ -546,7 +562,7 @@ class Extracion(ttk.Frame):
                 self.txt.tag_add('found3', indx3, lastidx3)
                 indx3 = lastidx3
 
-            #? COLOR CONTESTAR NO
+            # ? COLOR CONTESTAR NO
             self.txt.tag_config(
                 'found3',
                 background='#FFE6E6',
@@ -563,7 +579,7 @@ class Extracion(ttk.Frame):
                 self.txt.tag_add('found4', indx4, lastidx4)
                 indx4 = lastidx4
 
-            #? COLOR CONTESTAR N/A            
+            # ? COLOR CONTESTAR N/A            
             self.txt.tag_config(
                 'found4',
                 background='#FFCB91',
@@ -582,7 +598,7 @@ class Extracion(ttk.Frame):
 
         PST_EXT.txt.tag_configure(
             "coment",
-            #background="#E9D5DA",
+            # background="#E9D5DA",
             foreground="#ECB365",
             selectbackground=default_select_bg,
             selectforeground=default_select_fg,
@@ -591,7 +607,7 @@ class Extracion(ttk.Frame):
 
         PST_EXT.txt.tag_configure(
             "coment2",
-            #background="#E9D5DA",
+            # background="#E9D5DA",
             foreground="#064663",
             selectbackground=default_select_bg,
             selectforeground=default_select_fg,
@@ -605,6 +621,15 @@ class Extracion(ttk.Frame):
             selectbackground=default_select_bg,
             selectforeground=default_select_fg,
             font=_Font_Texto_codigo
+        )
+
+        PST_EXT.txt.tag_configure(
+            "required",
+            background=pers_scrText_bg,
+            foreground='red',
+            selectbackground=default_select_bg,
+            selectforeground=default_select_fg,
+            font=_Font_Texto
         )
         
         end = PST_EXT.txt.index("end")
@@ -627,6 +652,10 @@ class Extracion(ttk.Frame):
                 endline = f"{line}.end"
                 PST_EXT.txt.tag_add(
                     "coment2", startline, endline)
+            if (PST_EXT.txt.search("REQUIRED", startline, stopindex=f"{line}.1")):
+                endline = f"{line}.end"
+                PST_EXT.txt.tag_add(
+                    "required", startline, endline)
 
     def colour_line2(self):
         indx2 = '1.0'
@@ -639,14 +668,14 @@ class Extracion(ttk.Frame):
             self.txt.tag_add('found2', indx2, lastidx2)
             indx2 = lastidx2
         
-        #? COLOR CONTESTAR YES
+        # ? COLOR CONTESTAR YES
         self.txt.tag_config(
             'found2',
             background='#000000',
             foreground='#357C3C',
             font=(fuente_texto, tamñ_texto, font.BOLD)
         )
-    
+
     def _menu_clickDerecho(self):
         self.menu_Contextual = tk.Menu(self, tearoff=0)
         self.menu_Contextual.add_command(
@@ -887,7 +916,7 @@ class Extracion(ttk.Frame):
             self.busca_frm_content = tk.Frame(
                 self.framePanel,
                 bg=default_bottom_app,
-                #padx=5,
+                # padx=5,
                 pady=10
             )
             self.busca_frm_content.pack(fill='x', expand=1)
@@ -949,7 +978,7 @@ class Extracion(ttk.Frame):
             )
             self.buttonClosePanel.grid(row=0, column=4, padx=10, pady=5)
 
-#--- Botom Limpiar
+# --- Botom Limpiar
             self.buttonClosePanel = tk.Button(
                 self.busca_frm_content,
                 text='<<',
@@ -968,7 +997,7 @@ class Extracion(ttk.Frame):
             self.buttonClosePanel.grid(
                 row=0, column=1, padx=5, pady=5, sticky="nsew")
 
-#--- Botom anterior
+# --- Botom anterior
             self.btn_buscar_prev = tk.Button(
                 self.busca_frm_content,
                 text='<|',
@@ -987,7 +1016,7 @@ class Extracion(ttk.Frame):
             self.btn_buscar_prev.grid(
                 row=0, column=2, padx=5, pady=5, sticky="nsew")
 
-#--- Botom siguiente
+# --- Botom siguiente
             self.btn_buscar_next = tk.Button(
                 self.busca_frm_content,
                 text='|>',
@@ -1006,10 +1035,10 @@ class Extracion(ttk.Frame):
             self.btn_buscar_next.grid(
                 row=0, column=3, padx=(5, 10), pady=5, sticky="nsew")
 
-#--- Activa el focu en el ENTRY
+# --- Activa el focu en el ENTRY
             self.entrySearch.focus_set()
 
-#--- Busca palabras al escribir, y activa el panel
+# --- Busca palabras al escribir, y activa el panel
             self.entrySearch.bind('<Any-KeyRelease>', self.on_entrySearch_busca_key_release)
             self.txt.bind("<Button-1>", lambda e: self.activeFocus(e))
             self.txt.bind("<Motion>", lambda e: self.desactiveFocus(e))
@@ -1048,7 +1077,7 @@ class Extracion(ttk.Frame):
         _estado_actual = False
         PST_EXT.busca_top.destroy()
 
-## --- Activa el focu de los widgets del PANEL
+# --- Activa el focu de los widgets del PANEL
     def activeFocus(self, event):
         global modo_dark
         global _activeFocus
@@ -1086,7 +1115,7 @@ class Extracion(ttk.Frame):
         else:
             PST_EXT.txt.focus()
 
-## --- Al escribir en el ENTRY del PANEL, busca concurrencias
+# --- Al escribir en el ENTRY del PANEL, busca concurrencias
     def on_entrySearch_busca_key_release(self, event):
         if event.keysym != "F2" and event.keysym != "F3":  # F2 y F3
             self._buscar()
@@ -1161,7 +1190,7 @@ class Extracion(ttk.Frame):
         else:
             self.menu_Contextual.entryconfig(
                 '  Limpiar Busqueda', state='disabled')
-            #MessageBox.showinfo('Info', 'Establecer algún criterior de búsqueda.')
+            # MessageBox.showinfo('Info', 'Establecer algún criterior de búsqueda.')
         tags = self.txt.tag_ranges('found')
         self._ocurrencias_encontradas = list(zip(*[iter(tags)] * 2))
         self.buscar_next()

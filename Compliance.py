@@ -482,7 +482,7 @@ class Expandir(ttk.Frame):
                 if selectedIndexListModule in md['module']:
                     createOn = True
         if createOn:
-            desviacion.addButton(    PST_EXP.vtn_expandir, PST_DESV.nameButtonCurrent, PST_DESV.pathScriptCurrent, 0, 0)
+            desviacion.addButton(PST_EXP.vtn_expandir, PST_DESV.nameButtonCurrent, PST_DESV.pathScriptCurrent, 0, 0)
 
     def WIDGETS_EXPANDIR(self):
         from DataExtraction import MyScrollText
@@ -531,7 +531,7 @@ class Expandir(ttk.Frame):
             image=desviacion.icono_copiar,
             style='APP.TButton',
             state="disabled",
-            command=lambda e=self.EXP_scrExpandir: self.copiarALL(e),
+            command=lambda e=self.EXP_scrExpandir: PST_DESV.copiarALL(e),
         )
         self.EXP_btnCopyALL.grid(row=0, column=4, pady=15, sticky='ne')
 
@@ -1094,7 +1094,6 @@ class Desviacion(ttk.Frame):
 
     def selectModule(self, event):
         global VALUE_DATA
-        # PST_DESV.DESV_scrCheck.colourText(PST_DESV.DESV_scrCheck)
         customer = PST_DESV.varClient.get()
         list_event = event.widget
         index = list_event.curselection()
@@ -1171,8 +1170,6 @@ class Desviacion(ttk.Frame):
         global PST_DESV
         global createOn
         clave_selecionada = kwargs['keyword']
-        print("\nMODULO : ", modulo_selecionado,
-              "\nCLAVE : ", clave_selecionada)
         try:
             if len(clave_selecionada) > 0 or len(modulo_selecionado) > 0:
                 with open(pathModuleButton.format("fs.json")) as b:
@@ -1211,6 +1208,7 @@ class Desviacion(ttk.Frame):
         createOn = True
         PST_DESV.nameButtonCurrent = nameButton
         PST_DESV.pathScriptCurrent = pathScript
+        print("HOLA--------------------")
         if createOn:
             self.gridForget()
             if active == "True":
@@ -1791,7 +1789,7 @@ class Desviacion(ttk.Frame):
             image=self.icono_copiar,
             style='APP.TButton',
             state='disabled',
-            command=lambda e=self.DESV_scrRefresh: self.copiarALL(e),
+            command=lambda e=self.DESV_scrRefresh: PST_DESV.copiarALL(e),
         )
         self.DESV_btn1CopyALL.grid(row=2, column=2, padx=5, pady=5, sticky='e')
 
