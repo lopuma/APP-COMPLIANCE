@@ -15,6 +15,7 @@ from getpass import getuser
 from tkinter import TclError
 from tkinter import messagebox as mb
 from tkinter import font
+import PIL
 from PIL import Image, ImageTk
 from ScrollableNotebook import *
 from RadiusButton import CornerRadius
@@ -23,10 +24,19 @@ from configparser import ConfigParser
 from Tooltip import CustomHovertip
 #-----------------------------------------------------------#
 user = getuser()
-mypath = os.path.expanduser("~/")
-
+os.system("cd ~/")
+print("---", os.system("cd ~/"))
 # ? ROUTERS
-pathCustomer = mypath+"/Compliance/.conf/customers.json"
+my_os = sys.platform
+if (my_os == 'linux'):
+    mypath = os.path.expanduser("~\/")
+else:
+    mypath = os.path.expanduser("C:\\")
+print("my os es ", my_os)
+print("myPath os es ", mypath)
+pathCustomer = mypath+"Users\JoseAlvaroCedenoPanc\Compliance\.conf\customers.json"
+rutasol = os.path.join(mypath, pathCustomer)
+print("*- ",rutasol)
 dataIssues = "Compliance/deviations/dataIssues/"
 pathExtractions = mypath+"Compliance/extractions/"
 pathDesviations = mypath+dataIssues+"deviations_{}.json"
