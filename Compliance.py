@@ -8,6 +8,8 @@ except ImportError:
     import Tkinter as tk
 import json
 import os
+from sqlite3 import connect
+from termios import TIOCPKT_DOSTOP
 import time
 import subprocess
 import sys
