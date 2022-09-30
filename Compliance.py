@@ -26,19 +26,16 @@ from configparser import ConfigParser
 from Tooltip import CustomHovertip
 #-----------------------------------------------------------#
 user = getuser()
-os.system("cd ~/")
-print("---", os.system("cd ~/"))
 # ? ROUTERS
 my_os = sys.platform
 if (my_os == 'linux'):
-    mypath = os.path.expanduser("~\/")
+    mypath = os.path.expanduser("~/")
 else:
     mypath = os.path.expanduser("C:\\Users\JoseAlvaroCedenoPanc")
 print("my os es ", my_os)
 print("myPath os es ", mypath)
-pathCustomer = mypath+"\Compliance\.conf\customers.json"
-rutasol = os.path.join(mypath, pathCustomer)
-print("*- ",rutasol)
+pathCustomer = mypath+"Compliance/.conf/customers.json"
+print("my path customer es ", pathCustomer)
 dataIssues = "Compliance/deviations/dataIssues/"
 print("my path dataIssues es ", dataIssues)
 pathExtractions = mypath+"Compliance/extractions/"
