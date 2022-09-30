@@ -8,8 +8,6 @@ except ImportError:
     import Tkinter as tk
 import json
 import os
-from sqlite3 import connect
-from termios import TIOCPKT_DOSTOP
 import time
 import subprocess
 import sys
@@ -30,26 +28,40 @@ user = getuser()
 my_os = sys.platform
 if (my_os == 'linux'):
     mypath = os.path.expanduser("~/")
+    pathCustomer = mypath+"Compliance/.conf/customers.json"
+    dataIssues = "Compliance/deviations/dataIssues/"
+    pathExtractions = mypath+"Compliance/extractions/"
+    pathDesviations = mypath+dataIssues+"deviations_{}.json"
+    pathIcon = mypath+"Compliance/image/"
+    pathConfig = mypath+"Compliance/.conf/{}"
+    pathRisk = mypath+"Compliance/deviations/risks/{}"
+    pathModuleButton = mypath+"Compliance/.conf/{}"
+    pathInclude = "Compliance/deviations/include/{}"
+    pathDesviationsGl = mypath+"Compliance/deviations/{}.json"
 else:
-    mypath = os.path.expanduser("C:\\Users\JoseAlvaroCedenoPanc")
-print("my os es ", my_os)
-print("myPath os es ", mypath)
-pathCustomer = mypath+"Compliance/.conf/customers.json"
-print("my path customer es ", pathCustomer)
-dataIssues = "Compliance/deviations/dataIssues/"
-print("my path dataIssues es ", dataIssues)
-pathExtractions = mypath+"Compliance/extractions/"
-print("my path pathExtractions es ", pathExtractions)
-
-pathDesviations = mypath+dataIssues+"deviations_{}.json"
-print("my path pathDesviations es ", pathDesviations)
-
-pathIcon = mypath+"Compliance/image/"
-pathConfig = mypath+"Compliance/.conf/{}"
-pathRisk = mypath+"Compliance/deviations/risks/{}"
-pathModuleButton = mypath+"Compliance/.conf/{}"
-pathInclude = "Compliance/deviations/include/{}"
-pathDesviationsGl = mypath+"Compliance/deviations/{}.json"
+    mypath = os.path.expanduser("C:\\Users\JoseAlvaroCedenoPanc\\")
+    pathCustomer = mypath+"Compliance\.conf\customers.json"
+    dataIssues = "Compliance\\deviations\\dataIssues\\"
+    pathExtractions = mypath+"Compliance\\extractions\\"
+    pathDesviations = mypath+dataIssues+"deviations_{}.json"
+    pathIcon = mypath+"Compliance\\image\\"
+    pathConfig = mypath+"Compliance\\.conf\\{}"
+    pathRisk = mypath+"Compliance\\deviations\\risks\\{}"
+    pathModuleButton = mypath+"Compliance\\.conf\\{}"
+    pathInclude = "Compliance\\deviations\\include\\{}"
+    pathDesviationsGl = mypath+"Compliance\\deviations\\{}.json"
+print("1 my os es ", my_os)
+print("2 myPath os es ", mypath)
+print("3 my path customer es ", pathCustomer)
+print("4 my path dataIssues es ", dataIssues)
+print("5 my path pathExtractions es ", pathExtractions)
+print("6 my path pathDesviations es ", pathDesviations)
+print("7 my path es ", pathIcon)
+print("8 my path es ", pathConfig)
+print("9 my path es ", pathRisk)
+print("10 my path es ", pathModuleButton)
+print("11 my path es ", pathInclude)
+print("12 my path es ", pathDesviationsGl)
 
 # * -------------------------------------------------------------------
 
