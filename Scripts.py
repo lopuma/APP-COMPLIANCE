@@ -103,6 +103,7 @@ class FramesPoliticas(ttk.Frame):
         x_ancho_btn = 300
         hg_btn = int(y_alto_btn - 22)
         wd_btn = int(x_ancho_btn - 22)
+        print("----------------", data['politica'])
         for pl in data['politica']:
             politica_icon = pl['icon']
             logo_script_ico = ImageTk.PhotoImage(
@@ -146,10 +147,11 @@ class FramesPoliticas(ttk.Frame):
             self.botones_politica.bind("<Button-1>", partial(self.on_enter_politica, self.botones_politica, self.buttons_POLITICA))
 
     def asignar_name_clt(self, name):
-        with open(pathConfig.format('clientes.json')) as pr_clt:
+        with open(pathConfig.format('scripts.json')) as pr_clt:
             data = json.load(pr_clt)
             for dt in data:
                 if dt['name'] == name:
+                    print("----DT ----", data)
                     self.format_response(dt)
     
     def FR_POL_motion(self, event):
@@ -558,7 +560,7 @@ class Automatizar(ttk.Frame):
         hg_btn = int(y_alto_btn - 22)
         wd_btn = int(x_ancho_btn - 22)
 # # * ----------- BOTOTNES DE CLIENTES ------------
-        with open(pathConfig.format("clientes.json")) as op:
+        with open(pathConfig.format("customers.json")) as op:
             data = json.load(op)
             for clt in data:
                 self.buttons_clientes = CornerRadius(
