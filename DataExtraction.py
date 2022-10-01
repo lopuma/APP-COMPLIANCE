@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+from base64 import encode
+import codecs
+from email.encoders import encode_7or8bit
 from functools import partial
 import os
 import time
@@ -456,7 +459,7 @@ class Extracion(ttk.Frame):
         switch = False
 
         self.plantilla = plantilla
-        with open(plantilla) as g:
+        with codecs.open(plantilla, encoding="utf8") as g:
             data = g.read()
             self.txt.delete('1.0', tk.END)
             for md in data:
@@ -529,6 +532,7 @@ class Extracion(ttk.Frame):
         """
         iid = self.treeview.selection()[0]
         records = self.treeview.get_children(iid)
+        print(records)
         self.treeview.delete(*self.treeview.get_children())
         self.load_tree(abspath(pathExtractions))
 
