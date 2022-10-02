@@ -11,12 +11,15 @@ from pathlib import Path
 import tkinter as tk
 filename_r = ""
 hostname = ""
+clear = ""
 my_os = sys.platform
 home = Path.home()
 if(my_os == 'Linux'):
     path = Path(home, "Downloads")
+    clear = "clear"
 else:
     path = Path(home, "Downloads")
+    clear = "cls"
 
 
 def menu():
@@ -65,7 +68,7 @@ def decorar_csv():
                         gd.write(FILE+"\n")
                         gd.write("+-----------------------------------------------------------+\n\n")
         try:
-            print("\033[0;32;43m"+"FICHERO GUARDADO CORRECTAMENTE {}.txt, para el SERVER [{}]".format(hostname, server)+"\033[0m")
+            print("\033[0;32m"+"FICHERO GUARDADO CORRECTAMENTE {}.txt, para el SERVER [{}]".format(hostname, server)+"\033[0m")
             guardado.close()
         except UnboundLocalError:
             print("")
@@ -75,15 +78,15 @@ def decorar_csv():
     else:
         print("")
         print("\033[1;31m"+"\nError, no as selecionado ningun archivo CSV\n"+"\033[0m")
-os.system('clear')
+os.system(clear)
 while True:
     menu()
     elecion = input('Elegir una opcion >> : ')
     if elecion == "1":
-        os.system('clear')
+        os.system(clear)
         open_file()
     elif elecion == "2":
-        os.system('clear')
+        os.system(clear)
         decorar_csv()
     elif elecion == "3":
         print("")
@@ -92,5 +95,5 @@ while True:
         break
     else:
         print("")
-        input("\033[0;33m"+"No as indicado ninguna opcion correcta...\n\npulsa una tecla para continuar...  "+"\033[0m")
-        os.system('clear')
+        input("\033[0;31m"+"No as indicado ninguna opcion correcta...\n\npulsa una tecla para continuar...  "+"\033[0m")
+        os.system(clear)
