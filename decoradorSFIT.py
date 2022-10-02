@@ -5,14 +5,19 @@
 # Version  2.0
 import csv
 import os
-from statistics import median
-from tkinter import *
+import sys
 from tkinter import filedialog
 from pathlib import Path
 import tkinter as tk
 filename_r = ""
 hostname = ""
-path = os.path.expanduser("~/Descargas/")
+my_os = sys.platform
+home = Path.home()
+if(my_os == 'Linux'):
+    path = Path(home, "Downloads")
+else:
+    path = Path(home, "Downloads")
+
 
 def menu():
     print("\n1. ABRIR FICHERO SFIT CSV\n")
@@ -22,7 +27,7 @@ def menu():
 def open_file():
     global filename_r
     global hostname
-    root = Tk()
+    root = tk.Tk()
     root.withdraw()
     filename_r = filedialog.askopenfilename(
         initialdir="~/Descargas/",
@@ -35,9 +40,9 @@ def open_file():
 
 def decorar_csv():
     if len(filename_r) > 0:
-        file_result = path+'{}.txt'.format(hostname)
-        guardado = open(file_result, 'w')
-        with open(filename_r) as file:
+        file_result = Path(path, '{}.txt'.format(hostname))
+        guardado = open(file_result, 'w', encoding='utf-8')
+        with open(filename_r, encoding='utf-8') as file:
             data = csv.reader(file, delimiter=',')
             for linea in data:
                 if linea[2] == 'WARNING' or linea[2] == 'ERROR':
@@ -48,25 +53,27 @@ def decorar_csv():
                     VALUE = "VALUE : "+linea[5]
                     DESCRIPTION = "DESCRIPTION : "+linea[6]
                     FILE = "FILE : "+linea[8]   
-                    guardado.write("+-----------------------------------------------------------+\n")
-                    guardado.write(MESSAGE_SEVERITY+"\n")
-                    guardado.write(ENTRY+"\n")
-                    guardado.write(LINE_NUMBER+"\n")
-                    guardado.write(VALUE+"\n")
-                    guardado.write(DESCRIPTION+"\n")
-                    guardado.write(FILE+"\n")
-                    guardado.write("+-----------------------------------------------------------+\n\n")
+                    with open(file_result, 'a', encoding='utf-8') as gd:
+                        
+                        gd.write("+-----------------------------------------------------------+\n")
+                    # guardado.write("+-----------------------------------------------------------+\n")
+                        gd.write(MESSAGE_SEVERITY+"\n")
+                        gd.write(ENTRY+"\n")
+                        gd.write(LINE_NUMBER+"\n")
+                        gd.write(VALUE+"\n")
+                        gd.write(DESCRIPTION+"\n")
+                        gd.write(FILE+"\n")
+                        gd.write("+-----------------------------------------------------------+\n\n")
         try:
-            print("\033[0;32m"+"FICHERO GUARDADO CORRECTAMENTE {}.txt, para el SERVER [{}]".format(hostname, server)+"\033[0m")
+            print("\033[0;32;43m"+"FICHERO GUARDADO CORRECTAMENTE {}.txt, para el SERVER [{}]".format(hostname, server)+"\033[0m")
             guardado.close()
         except UnboundLocalError:
-            print("")
-            print("\033[0;33m"+"No existen WARNING or ERROR, en el CSV : [ {} ]".format(hostname)+"\033[0m")
+            print("\031[0;35;43m"+"No existen WARNING or ERROR, en el CSV : [ {} ]".format(hostname)+"\033[0m")
             os.remove(file_result)
 
     else:
         print("")
-        print("\033[0;31m"+"\nError, no as selecionado ningun archivo CSV\n"+"\033[0m")
+        print("\033[1;31m"+"\nError, no as selecionado ningun archivo CSV\n"+"\033[0m")
 os.system('clear')
 while True:
     menu()
