@@ -5,6 +5,8 @@
 # Version  2.0
 import csv
 import os
+import sys
+
 from statistics import median
 from tkinter import *
 from tkinter import filedialog
@@ -12,7 +14,13 @@ from pathlib import Path
 import tkinter as tk
 filename_r = ""
 hostname = ""
-path = os.path.expanduser("~/Descargas/")
+my_os = sys.platform
+home = Path.home()
+if(my_os == 'Linux'):
+    path = Path(home, "Downloads")
+else:
+    path = Path(home, "Downloads")
+
 
 def menu():
     print("\n1. ABRIR FICHERO SFIT CSV\n")
@@ -35,9 +43,9 @@ def open_file():
 
 def decorar_csv():
     if len(filename_r) > 0:
-        file_result = path+'{}.txt'.format(hostname)
-        guardado = open(file_result, 'w')
-        with open(filename_r) as file:
+        file_result = Path(path, '{}.txt'.format(hostname))
+        guardado = open(file_result, 'w', encoding='utf-8')
+        with open(filename_r, encoding='utf-8') as file:
             data = csv.reader(file, delimiter=',')
             for linea in data:
                 if linea[2] == 'WARNING' or linea[2] == 'ERROR':
@@ -61,7 +69,7 @@ def decorar_csv():
             guardado.close()
         except UnboundLocalError:
             print("")
-            print("\033[0;33m"+"No existen WARNING or ERROR, en el CSV : [ {} ]".format(hostname)+"\033[0m")
+            print("\033[0;31;43m"+"No existen WARNING or ERROR, en el CSV : [ {} ]".format(hostname)+"\033[0m")
             os.remove(file_result)
 
     else:

@@ -28,7 +28,7 @@ user = getuser()
 my_os = sys.platform
 if (my_os == 'linux'):
     mypath = os.path.expanduser("~/")
-    pathCustomer = mypath+"Compliance/.conf/customers.json"
+    pathCustomer = os.path.join(mypath, "Compliance/.conf/customers.json")
     dataIssues = "Compliance/deviations/dataIssues/"
     pathExtractions = mypath+"Compliance/extractions/"
     pathDesviations = mypath+dataIssues+"deviations_{}.json"
@@ -39,8 +39,8 @@ if (my_os == 'linux'):
     pathInclude = "Compliance/deviations/include/{}"
     pathDesviationsGl = mypath+"Compliance/deviations/{}.json"
 else:
-    mypath = os.path.expanduser("C:\\Users\JoseAlvaroCedenoPanc\\")
-    pathCustomer = mypath+"Compliance\.conf\customers.json"
+    mypath = os.path.expanduser("C:\\Users\\JoseAlvaroCedenoPanc\\")
+    pathCustomer = mypath+"Compliance\\.conf\\customers.json"
     dataIssues = "Compliance\\deviations\\dataIssues\\"
     pathExtractions = mypath+"Compliance\\extractions\\"
     pathDesviations = mypath+dataIssues+"deviations_{}.json"

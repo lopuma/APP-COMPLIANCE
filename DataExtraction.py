@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-from base64 import encode
 import codecs
-from email.encoders import encode_7or8bit
 from functools import partial
 import os
 import time
@@ -500,7 +498,7 @@ class Extracion(ttk.Frame):
         Carga el contenido del directorio especificado y lo añade
         a la lista como ítemes hijos del ítem "parent".
         """
-        for fsobj in listdir(path):
+        for fsobj in listdir(path, encode='utf_8'):
             fullpath = join(path, fsobj)
             child = self.insert_item(fsobj, fullpath, parent)
             if isdir(fullpath):
