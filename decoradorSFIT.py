@@ -6,9 +6,6 @@
 import csv
 import os
 import sys
-
-from statistics import median
-from tkinter import *
 from tkinter import filedialog
 from pathlib import Path
 import tkinter as tk
@@ -30,7 +27,7 @@ def menu():
 def open_file():
     global filename_r
     global hostname
-    root = Tk()
+    root = tk.Tk()
     root.withdraw()
     filename_r = filedialog.askopenfilename(
         initialdir="~/Descargas/",
@@ -56,16 +53,19 @@ def decorar_csv():
                     VALUE = "VALUE : "+linea[5]
                     DESCRIPTION = "DESCRIPTION : "+linea[6]
                     FILE = "FILE : "+linea[8]   
-                    guardado.write("+-----------------------------------------------------------+\n")
-                    guardado.write(MESSAGE_SEVERITY+"\n")
-                    guardado.write(ENTRY+"\n")
-                    guardado.write(LINE_NUMBER+"\n")
-                    guardado.write(VALUE+"\n")
-                    guardado.write(DESCRIPTION+"\n")
-                    guardado.write(FILE+"\n")
-                    guardado.write("+-----------------------------------------------------------+\n\n")
+                    with open(file_result, 'a', encoding='utf-8') as gd:
+                        
+                        gd.write("+-----------------------------------------------------------+\n")
+                    # guardado.write("+-----------------------------------------------------------+\n")
+                        gd.write(MESSAGE_SEVERITY+"\n")
+                        gd.write(ENTRY+"\n")
+                        gd.write(LINE_NUMBER+"\n")
+                        gd.write(VALUE+"\n")
+                        gd.write(DESCRIPTION+"\n")
+                        gd.write(FILE+"\n")
+                        gd.write("+-----------------------------------------------------------+\n\n")
         try:
-            print("\033[0;32m"+"FICHERO GUARDADO CORRECTAMENTE {}.txt, para el SERVER [{}]".format(hostname, server)+"\033[0m")
+            print("\033[0;32;43m"+"FICHERO GUARDADO CORRECTAMENTE {}.txt, para el SERVER [{}]".format(hostname, server)+"\033[0m")
             guardado.close()
         except UnboundLocalError:
             print("")
@@ -74,7 +74,7 @@ def decorar_csv():
 
     else:
         print("")
-        print("\033[0;31m"+"\nError, no as selecionado ningun archivo CSV\n"+"\033[0m")
+        print("\033[1;31m"+"\nError, no as selecionado ningun archivo CSV\n"+"\033[0m")
 os.system('clear')
 while True:
     menu()
