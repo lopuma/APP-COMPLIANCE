@@ -10,15 +10,14 @@ from tkinter import TclError, ttk
 from tkinter import scrolledtext as st
 from tkinter import font
 from threading import Thread
-from webbrowser import get
-from Compliance import pathExtractions, default_color_line_fg, default_Framework, default_select_fg, hlh_def, pers_menu_bg, pers_scrText_bg, pathConfig, parse, pers_bottom_app, activar_modo, mypath, hhtk, default_scrText_bg, default_colourCodeBg, default_colourCodeFg, default_colourNoteFg, default_bottom_app, bg_submenu, default_scrText_fg, default_menu_bg, fg_submenu, _Font_Menu, _Font_Texto, default_select_bg, default_bottom_app, default_hglcolor, fuente_texto, tamñ_texto, _Font_Texto_bold, _Font_Texto_codigo
+from Compliance import pathExtractions, default_color_line_fg, default_Framework, default_select_fg, hlh_def, pers_menu_bg, pers_scrText_bg, pathConfig, parse, pers_bottom_app, activar_modo, home, hhtk, default_scrText_bg, default_colourCodeBg, default_colourCodeFg, default_colourNoteFg, default_bottom_app, bg_submenu, default_scrText_fg, default_menu_bg, fg_submenu, _Font_Menu, _Font_Texto, default_select_bg, default_bottom_app, default_hglcolor, fuente_texto, tamñ_texto, _Font_Texto_bold, _Font_Texto_codigo
 parar = False
 _estado_actual = False
 PST_EXT = ""
 HIDDEN = 0
 _activeFocus = False
 switch = False
-
+fileApariencaIni = str(pathConfig).format("apariencia.ini")
 
 def beep_error(f):
     def applicator(*args, **kwargs):
@@ -346,7 +345,7 @@ class Extracion(ttk.Frame):
         PST_EXT.app.EXT_motion()
 
     def menu(self):
-        parse.read(pathConfig.format("apariencia.ini"))
+        parse.read(fileApariencaIni, encoding="utf-8")
         modo_dark = parse.get('dark', 'modo_dark')
         self.text_font = font.Font(family='Consolas', size=14, weight="bold")
         self.frameMain = tk.Frame(
@@ -498,7 +497,7 @@ class Extracion(ttk.Frame):
         Carga el contenido del directorio especificado y lo añade
         a la lista como ítemes hijos del ítem "parent".
         """
-        for fsobj in listdir(path, encode='utf_8'):
+        for fsobj in listdir(path):
             fullpath = join(path, fsobj)
             child = self.insert_item(fsobj, fullpath, parent)
             if isdir(fullpath):
@@ -1084,7 +1083,7 @@ class Extracion(ttk.Frame):
         global modo_dark
         global _activeFocus
         PST_EXT.widgetActive = event.widget
-        parse.read(pathConfig.format("apariencia.ini"))
+        parse.read(fileApariencaIni, encoding="utf-8")
         modo_dark = parse.get('dark', 'modo_dark')
         if str(PST_EXT.widgetActive) == str(PST_EXT.entrySearch):
             try:

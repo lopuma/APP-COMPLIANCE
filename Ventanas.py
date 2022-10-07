@@ -4,8 +4,11 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import scrolledtext as st
 from PIL import Image, ImageTk
-from Compliance import   hlh_def, default_Framework, default_select_fg, default_select_bg, mypath, parse, pathIcon, pathConfig, pers_scrText_fg, modo_dark, hhtk, default_scrText_bg, default_bottom_app, default_scrText_fg, default_scrText_bg, bg_submenu, default_scrText_fg, fuente_texto, fg_submenu, default_scrText_fg, default_color_titulos, _Font_Texto, default_scrText_fg, default_scrText_bg, default_scrText_fg, default_hglcolor, _Font_Menu, oddrow, evenrow
+from Compliance import   hlh_def, default_Framework, default_select_fg, default_select_bg, home, parse, pathIcon, pathConfig, pers_scrText_fg, modo_dark, hhtk, default_scrText_bg, default_bottom_app, default_scrText_fg, default_scrText_bg, bg_submenu, default_scrText_fg, fuente_texto, fg_submenu, default_scrText_fg, default_color_titulos, _Font_Texto, default_scrText_fg, default_scrText_bg, default_scrText_fg, default_hglcolor, _Font_Menu, oddrow, evenrow
 from DataExtraction import MyEntry
+from pathlib import Path
+
+fileApariencaIni = str(pathConfig).format("apariencia.ini")
 
 def beep_error(f):
     def applicator(*args, **kwargs):
@@ -22,7 +25,7 @@ class Ventana(ttk.Frame):
         self.parent = parent
         self.customer = customer
         self.app = app
-        self.path_ventanas = mypath+path
+        self.path_ventanas = Path(home,path)
         self.tt_vtn = name_vtn
         self.click = True        
 
@@ -36,14 +39,14 @@ class Ventana(ttk.Frame):
         screen_height= self.app.root.winfo_y()
         position_top = int(screen_height)
         position_right = int(screen_width+150)
-        parse.read(pathConfig.format("apariencia.ini"))
+        parse.read(fileApariencaIni, encoding="utf-8")
         window_width = parse.get('medidas_ventana', 'width')
         window_height = parse.get('medidas_ventana', 'height')
         self.vtn_ventanas.geometry(f'{window_width}x{window_height}+{position_right}+{position_top}')
         self.vtn_ventanas.resizable(0,0)
 
         self.vtn_ventanas.title('{} for client {}'.format(self.tt_vtn, self.customer))
-        self.vtn_ventanas.tk.call('wm', 'iconphoto', self.vtn_ventanas._w, tk.PhotoImage(file=pathIcon+r'ventanas.png'))       
+        self.vtn_ventanas.tk.call('wm', 'iconphoto', self.vtn_ventanas._w, tk.PhotoImage(file=pathIcon.format(r'ventanas.png')))       
 
         #self.vtn_ventanas.transient(self)
         #self.vtn_ventanas.grab_set()
@@ -112,13 +115,13 @@ class Ventana(ttk.Frame):
         
     def iconos(self):
         self.buscar_icon = ImageTk.PhotoImage(
-                    Image.open(pathIcon+r"buscar.png").resize((25, 25)))
+                    Image.open(pathIcon.format(r"buscar.png")).resize((25, 25)))
         self.cerrar_icon = ImageTk.PhotoImage(
-                    Image.open(pathIcon+r"reduce.png").resize((25, 25)))
+                    Image.open(pathIcon.format(r"reduce.png")).resize((25, 25)))
         self.copiar_icon = ImageTk.PhotoImage(
-                    Image.open(pathIcon+r"copiarALL.png").resize((20, 20)))
+                    Image.open(pathIcon.format(r"copiarALL.png")).resize((20, 20)))
         self.limpiar_icon = ImageTk.PhotoImage(
-                    Image.open(pathIcon+r"limpiar.png").resize((25, 25)))
+                    Image.open(pathIcon.format(r"limpiar.png")).resize((25, 25)))
     
     def cerrar_vtn(self):
         self.vtn_ventanas.destroy()
@@ -137,7 +140,7 @@ class Ventana(ttk.Frame):
         text_widget = event.widget
         entry = self.var_ent_buscar.get()
         if entry == "Buscar Directories / File ...":
-            parse.read(pathConfig.format("apariencia.ini"))
+            parse.read(fileApariencaIni, encoding="utf-8")
             modo_dark = parse.get('dark', 'modo_dark')
             if modo_dark == 'True':
                 text_widget.config(
@@ -207,7 +210,7 @@ class Ventana(ttk.Frame):
             valor_Buscado = [n for n in self.ventanas if valor_aBuscar in n]
             if valor_aBuscar:
                 self.limpiar_tree()
-                with open(self.path_ventanas) as g:
+                with open(self.path_ventanas, encoding='utf-8') as g:
                     data = json.load(g)
                     count = 0
                     for md in sorted(data[self.customer], key=lambda md:md['object']):
@@ -231,7 +234,7 @@ class Ventana(ttk.Frame):
         #limpiando el arbol de vistas
         self.limpiar_tree()
         #Cargar datos desde el archivo JSON
-        with open(self.path_ventanas) as g:
+        with open(self.path_ventanas, encoding='utf-8') as g:
             data = json.load(g)
             count = 0
             try:
@@ -265,7 +268,7 @@ class Ventana(ttk.Frame):
             pass
     
     def cargar_elemt_seleccionado(self, dir):
-        with open(self.path_ventanas) as g:
+        with open(self.path_ventanas, encoding='utf-8') as g:
                 data = json.load(g)
                 for md in data[self.customer]:
                     if dir == md['object']:
@@ -585,7 +588,7 @@ class Ventana(ttk.Frame):
         
         parse.set('medidas_ventana', 'width', window_width)
         parse.set('medidas_ventana', 'height', window_height)
-        with open(pathConfig.format("apariencia.ini"), 'w') as configfile:
+        with open(fileApariencaIni, 'w', encoding='utf-8') as configfile:
             parse.write(configfile)
 
     def WIDGETS_VENTANA(self):

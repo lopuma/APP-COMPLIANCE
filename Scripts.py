@@ -147,7 +147,7 @@ class FramesPoliticas(ttk.Frame):
             self.botones_politica.bind("<Button-1>", partial(self.on_enter_politica, self.botones_politica, self.buttons_POLITICA))
 
     def asignar_name_clt(self, name):
-        with open(pathConfig.format('scripts.json')) as pr_clt:
+        with open(pathConfig.format('scripts.json'), encoding='utf-8') as pr_clt:
             data = json.load(pr_clt)
             for dt in data:
                 if dt['name'] == name:
@@ -560,7 +560,7 @@ class Automatizar(ttk.Frame):
         hg_btn = int(y_alto_btn - 22)
         wd_btn = int(x_ancho_btn - 22)
 # # * ----------- BOTOTNES DE CLIENTES ------------
-        with open(pathConfig.format("customers.json")) as op:
+        with open(pathConfig.format("customers.json"), encoding='utf-8') as op:
             data = json.load(op)
             for clt in data:
                 self.buttons_clientes = CornerRadius(

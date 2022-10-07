@@ -1,7 +1,7 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+#!/usr/bin/python
 # Copyright (c) Jose Alvaro Cedeño 2022
-# For license see LICENSE
+# For license see FREE LICENSE
 try:
     import tkinter as tk
 except ImportError:
@@ -11,11 +11,11 @@ import os
 import time
 import subprocess
 import sys
+from pathlib import Path
 from getpass import getuser
 from tkinter import TclError
 from tkinter import messagebox as mb
 from tkinter import font
-import PIL
 from PIL import Image, ImageTk
 from ScrollableNotebook import *
 from RadiusButton import CornerRadius
@@ -24,44 +24,19 @@ from configparser import ConfigParser
 from Tooltip import CustomHovertip
 #-----------------------------------------------------------#
 user = getuser()
+myOs = sys.platform
+ventanasExpandir = [];
 # ? ROUTERS
-my_os = sys.platform
-if (my_os == 'linux'):
-    mypath = os.path.expanduser("~/")
-    pathCustomer = os.path.join(mypath, "Compliance/.conf/customers.json")
-    dataIssues = "Compliance/deviations/dataIssues/"
-    pathExtractions = mypath+"Compliance/extractions/"
-    pathDesviations = mypath+dataIssues+"deviations_{}.json"
-    pathIcon = mypath+"Compliance/image/"
-    pathConfig = mypath+"Compliance/.conf/{}"
-    pathRisk = mypath+"Compliance/deviations/risks/{}"
-    pathModuleButton = mypath+"Compliance/.conf/{}"
-    pathInclude = "Compliance/deviations/include/{}"
-    pathDesviationsGl = mypath+"Compliance/deviations/{}.json"
-else:
-    mypath = os.path.expanduser("C:\\Users\\JoseAlvaroCedenoPanc\\")
-    pathCustomer = mypath+"Compliance\\.conf\\customers.json"
-    dataIssues = "Compliance\\deviations\\dataIssues\\"
-    pathExtractions = mypath+"Compliance\\extractions\\"
-    pathDesviations = mypath+dataIssues+"deviations_{}.json"
-    pathIcon = mypath+"Compliance\\image\\"
-    pathConfig = mypath+"Compliance\\.conf\\{}"
-    pathRisk = mypath+"Compliance\\deviations\\risks\\{}"
-    pathModuleButton = mypath+"Compliance\\.conf\\{}"
-    pathInclude = "Compliance\\deviations\\include\\{}"
-    pathDesviationsGl = mypath+"Compliance\\deviations\\{}.json"
-print("1 my os es ", my_os)
-print("2 myPath os es ", mypath)
-print("3 my path customer es ", pathCustomer)
-print("4 my path dataIssues es ", dataIssues)
-print("5 my path pathExtractions es ", pathExtractions)
-print("6 my path pathDesviations es ", pathDesviations)
-print("7 my path es ", pathIcon)
-print("8 my path es ", pathConfig)
-print("9 my path es ", pathRisk)
-print("10 my path es ", pathModuleButton)
-print("11 my path es ", pathInclude)
-print("12 my path es ", pathDesviationsGl)
+home = Path.home();
+fileConfig = str(Path(home, "APPCompliance",".conf","apariencia.ini"))
+fileCustomer = str(Path(home, "APPCompliance",".conf","customers.json"))
+pathExtractions = str(Path(home, "APPCompliance","extractions"))
+pathDesviations = str(Path(home, "APPCompliance","deviations","dataIssues", "deviations_{}.json"))
+pathIcon = str(Path(home, "APPCompliance","images","{}"))
+pathRisk = str(Path(home, "APPCompliance","deviations","risks","{}"))
+pathConfig = str(Path(home, "APPCompliance",".conf","{}"))
+pathInclude = str(Path(home, "APPCompliance","deviations","include","{}"))
+pathScripts = str(Path(home, "APPCompliance","scripts","{}"))
 
 # * -------------------------------------------------------------------
 
@@ -70,8 +45,9 @@ listClient = []
 listButton = [
     "DESVIACIONES",
     "EXTRACIONES",
-    "AUTOMATIZACION"
+    # "AUTOMATIZACION"
 ]
+listScripts = []
 # --- VARIABLE GLOBAL ---
 createOn = False
 idOpenTab = 0
@@ -96,7 +72,7 @@ extracion = ""
 
 # * Configuracion de APARIENCIA INICIAL
 parse = ConfigParser()
-parse.read(pathConfig.format("apariencia.ini"))
+parse.read(fileConfig)
 
 # COLOR MENU
 default_menu_bg = parse.get('menu', 'background')
@@ -152,7 +128,7 @@ fuente_texto = parse.get('app', 'fuente_texto')
 fuente_texto_cdg = 'Courier New'
 tamñ_texto = parse.get('app', 'tamano_texto')
 fuente_menu = parse.get('menu', 'fuente_menu')
-tamñ_menu = parse.get('menu', 'tamano_menu')
+sizeMenu = parse.get('menu', 'tamano_menu')
 fuente_boton = parse.get('boton', 'fuente_boton')
 tamñ_boton = parse.get('boton', 'tamano_boton')
 tamñ_texto_exp = parse.get('expand', 'tamano_text_expand')
@@ -160,8 +136,8 @@ tamñ_pestaña = parse.get('pestana', 'tamano_pestana')
 fuente_pestañas = parse.get('pestana', 'fuente_pestana')
 
 # COMBINACIONES DE FUENTES
-_Font_Menu = (fuente_menu, tamñ_menu)
-_Font_Menu_bold = (fuente_menu, tamñ_menu)
+_Font_Menu = (fuente_menu, sizeMenu)
+_Font_Menu_bold = (fuente_menu, sizeMenu)
 _Font_Texto = (fuente_texto, tamñ_texto)
 _Font_Texto_codigo = (fuente_texto_cdg, tamñ_texto)
 _Font_Texto_bold = (fuente_texto, tamñ_texto, weight_DF)
@@ -212,6 +188,7 @@ class Expandir(ttk.Frame):
     def __init__(self, parent, text_EXP, widget_EXP, customer, titulo, so, varNum, *args, **kwargs):
         super().__init__(*args, **kwargs)
         global PST_EXP
+        global ventanasExpandir
         PST_EXP = self
         self.parent = parent
         self.customer = customer
@@ -221,8 +198,9 @@ class Expandir(ttk.Frame):
         self.widget_EXP = widget_EXP
         self.varNum = varNum
         self.vtn_expandir = tk.Toplevel(self)
+        ventanasExpandir.append(self.vtn_expandir)
         self.vtn_expandir.config(background=default_bottom_app)
-        parse.read(pathConfig.format("apariencia.ini"))
+        parse.read(fileConfig)
         window_width = parse.get('medidas_expandir', 'width')
         window_height = parse.get('medidas_expandir', 'height')
         screen_width = app.root.winfo_x()
@@ -230,12 +208,13 @@ class Expandir(ttk.Frame):
         position_top = int(screen_height+70)
         position_right = int(screen_width+150)
         self.vtn_expandir.geometry(f'{window_width}x{window_height}+{position_right}+{position_top}')
-        #self.vtn_expandir.tk.call('wm', 'iconphoto', self.vtn_expandir._w, tk.PhotoImage(file=pathIcon+r'expandir1.png'))
+        #self.vtn_expandir.tk.call('wm', 'iconphoto', self.vtn_expandir._w, tk.PhotoImage(file=Path(pathIcon,'expandir1.png'))
         self.vtn_expandir.transient(self.parent)
         self.vtn_expandir.title("DESVIACIONES : {} - {}".format(self.customer, self.so))
         self.vtn_expandir.columnconfigure(0, weight=1)
         self.vtn_expandir.rowconfigure(1, weight=1)
-        self.vtn_expandir.resizable(False, False)
+        self.vtn_expandir.resizable(0,0)
+        #self.vtn_expandir.resizable(False, False)
         # ----------------------------------------------------------------
         #self.menu_clickDerecho()
         self.WIDGETS_EXPANDIR()
@@ -259,15 +238,24 @@ class Expandir(ttk.Frame):
         except AttributeError:
             pass
         self.vtn_expandir.destroy()
+        
+        # #TODO PRUEBA de cerrar y abrir
+        # print("ARRAY DE VENTANAS {}".format(ventanasExpandir))        
+        # print(ventanasExpandir[0])
+        # abrir = Expandir(self, PST_DESV.phase, PST_DESV.widget_Expan,
+        #                     "Nuevo", "Nuevo", PST_DESV.system , varNum)
+        # abrir.config(width=300, height=200)
+        # # *************************************************
+        
         createOn = False
-
+        
     def _siguiente(self, customer):
         global _tt_Desv
         modo_dark = parse.get('dark', 'modo_dark')
         self.EXP_btnScreamEvidencia.config(state="disabled")
         self.EXP_btnCopyALL.config(state="disabled")
         if self.varNum == 1:
-            with open(pathDesviations.format(customer)) as g:
+            with open(str(pathDesviations).format(customer), encoding="utf-8") as g:
                 data = json.load(g)
                 for md in data[customer]:
                     if 'modulo' in md:
@@ -289,7 +277,7 @@ class Expandir(ttk.Frame):
                                 self.EXP_scrExpandir.insert(tk.END, self._txt_Desv)
                                 self.varNum = 2
         elif self.varNum == 2:
-            with open(pathDesviations.format(customer)) as g:
+            with open(str(pathDesviations).format(customer), encoding="utf-8") as g:
                 data = json.load(g)
                 for md in data[customer]:
                     if 'modulo' in md:
@@ -309,7 +297,7 @@ class Expandir(ttk.Frame):
                                 self.EXP_scrExpandir.insert(tk.END, self._txt_Desv)
                                 self.varNum = 3
         elif self.varNum == 3:
-            with open(pathDesviations.format(customer)) as g:
+            with open(str(pathDesviations).format(customer), encoding="utf-8") as g:
                 data = json.load(g)
                 for md in data[customer]:
                     if 'modulo' in md:
@@ -331,7 +319,7 @@ class Expandir(ttk.Frame):
                                 self.EXP_btnCopyALL.config(state="normal")
                                 self.varNum = 4
         elif self.varNum == 4:
-            with open(pathDesviations.format(customer)) as g:
+            with open(str(pathDesviations).format(customer), encoding="utf-8") as g:
                 data = json.load(g)
                 for md in data[customer]:
                     if 'modulo' in md:
@@ -352,7 +340,7 @@ class Expandir(ttk.Frame):
                                 self.EXP_btnCopyALL.config(state="normal")
                                 self.varNum = 5
         elif self.varNum == 5:
-            with open(pathDesviations.format(customer)) as g:
+            with open(str(pathDesviations).format(customer), encoding="utf-8") as g:
                 data = json.load(g)
                 for md in data[customer]:
                     if 'modulo' in md:
@@ -380,7 +368,7 @@ class Expandir(ttk.Frame):
         self.EXP_btnScreamEvidencia.config(state="disabled")
         self.EXP_btnCopyALL.config(state="disabled")
         if self.varNum == 1:
-            with open(pathDesviations.format(customer)) as g:
+            with open(str(pathDesviations).format(customer), encoding='utf-8') as g:
                 data = json.load(g)
                 for md in data[customer]:
                     if 'modulo' in md:
@@ -402,7 +390,7 @@ class Expandir(ttk.Frame):
                                 self.EXP_btnCopyALL.config(state="normal")
                                 self.varNum = 5
         elif self.varNum == 2:
-            with open(pathDesviations.format(customer)) as g:
+            with open(str(pathDesviations).format(customer), encoding='utf-8') as g:
                 data = json.load(g)
                 for md in data[customer]:
                     if 'modulo' in md:
@@ -423,7 +411,7 @@ class Expandir(ttk.Frame):
                                 self.EXP_scrExpandir.insert(tk.END, self._txt_Desv)
                                 self.varNum = 1
         elif self.varNum == 3:
-            with open(pathDesviations.format(customer)) as g:
+            with open(str(pathDesviations).format(customer), encoding='utf-8') as g:
                 data = json.load(g)
                 for md in data[customer]:
                     if 'modulo' in md:
@@ -442,7 +430,7 @@ class Expandir(ttk.Frame):
                                 self.EXP_scrExpandir.insert(tk.END, self._txt_Desv)
                                 self.varNum = 2
         elif self.varNum == 4:
-            with open(pathDesviations.format(customer)) as g:
+            with open(str(pathDesviations).format(customer), encoding='utf-8') as g:
                 data = json.load(g)
                 for md in data[customer]:
                     if 'modulo' in md:
@@ -461,7 +449,7 @@ class Expandir(ttk.Frame):
                                 self.EXP_scrExpandir.insert(tk.END, self._txt_Desv)
                                 self.varNum = 3
         elif self.varNum == 5:
-            with open(pathDesviations.format(customer)) as g:
+            with open(str(pathDesviations).format(customer), encoding='utf-8') as g:
                 data = json.load(g)
                 for md in data[customer]:
                     if 'modulo' in md:
@@ -489,7 +477,7 @@ class Expandir(ttk.Frame):
         global PST_EXP
         global createOn
         selectedIndexListModule = VALUE_DATA
-        with open(pathModuleButton.format("fs.json")) as b:
+        with open(str(pathConfig).format("fs.json"), encoding='utf-8') as b:
             data = json.load(b)
             for md in data:
                 pass
@@ -568,7 +556,6 @@ class Expandir(ttk.Frame):
         self.EXP_scrExpandir.grid(row=1, column=0, padx=5, pady=5, sticky='nsew', columnspan=7)
 
         self.activeIncludeExpand()
-
 
 class TextSimilar(ttk.Frame):
     def __init__(self, parent, titulo, modulo_clave, *args, **kwargs):
@@ -776,7 +763,7 @@ class TextSimilar(ttk.Frame):
         desviacion.varClient.set(customer)
         #desviacion._findModule(moduleFound, customer)
         # desviacion.varClient.set(customer)
-        with open(pathDesviations.format(customer)) as g:
+        with open(str(pathDesviations).format(customer), encoding='utf-8') as g:
             data = json.load(g)
             listModulo = []
             listKeys = []
@@ -787,7 +774,7 @@ class TextSimilar(ttk.Frame):
         desviacion.DESV_ListBox.insert(tk.END, *listModulo)
         moduleFound = str(moduleFound).replace("[", "").replace("]", "").replace("'", "")
         #data = []
-        with open(pathDesviations.format(customer)) as g:
+        with open(str(pathDesviations).format(customer), encoding='utf-8') as g:
             data = json.load(g)
             for md in data[customer]:
                 if moduleFound in md['modulo']:
@@ -818,7 +805,6 @@ class TextSimilar(ttk.Frame):
         PST_DESV.DESV_ListBox.selection_set(index)
         self.vtn_modulos.destroy()
         desviacion.loadSelectItem(VALUE_DATA, customer)
-
 
 class Desviacion(ttk.Frame):
     y_alto_btn = 55
@@ -910,20 +896,20 @@ class Desviacion(ttk.Frame):
         self.llamada_colores()
 
     def iconos(self):  # TODO ICONOS DE VENTANA DESVIACION
-        self.BuscarModulo_icon = ImageTk.PhotoImage(Image.open(pathIcon+r"buscar.png").resize((25, 25)))
-        self.LimpiarModulo_icon = ImageTk.PhotoImage(Image.open(pathIcon+r"limpiar.png").resize((25, 25)))
-        self.icono_expandir = ImageTk.PhotoImage(Image.open(pathIcon+r"expandir.png").resize((40, 40)))
-        self.icono_expandir1 = ImageTk.PhotoImage(Image.open(pathIcon+r"expandir1.png").resize((40, 40)))
-        self.icono_expandir2 = ImageTk.PhotoImage(Image.open(pathIcon+r"expandir2.png").resize((40, 40)))
-        self.icono_captura = ImageTk.PhotoImage(Image.open(pathIcon+r"captura.png").resize((40, 40)))
-        self.icono_captura1 = ImageTk.PhotoImage(Image.open(pathIcon+r"captura1.png").resize((40, 40)))
-        self.icono_captura2 = ImageTk.PhotoImage(Image.open(pathIcon+r"captura2.png").resize((40, 40)))
-        self.icono_copiar = ImageTk.PhotoImage(Image.open(pathIcon+r"copiar.png").resize((40, 40)))
-        self.icono_copiar1 = ImageTk.PhotoImage(Image.open(pathIcon+r"copiar1.png").resize((40, 40)))
-        self.icono_copiar2 = ImageTk.PhotoImage(Image.open(pathIcon+r"copiar2.png").resize((40, 40)))
-        self.icono_riesgos = ImageTk.PhotoImage(Image.open(pathIcon+r"riesgos.png").resize((40, 40)))
-        self.icono_riesgos1 = ImageTk.PhotoImage(Image.open(pathIcon+r"riesgos1.png").resize((40, 40)))
-        self.icono_riesgos2 = ImageTk.PhotoImage(Image.open(pathIcon+r"riesgos2.png").resize((40, 40)))
+        self.BuscarModulo_icon = ImageTk.PhotoImage(Image.open(pathIcon.format(r"buscar.png")).resize((25, 25)))
+        self.LimpiarModulo_icon = ImageTk.PhotoImage(Image.open(pathIcon.format(r"limpiar.png")).resize((25, 25)))
+        self.icono_expandir = ImageTk.PhotoImage(Image.open(pathIcon.format(r"expandir.png")).resize((40, 40)))
+        self.icono_expandir1 = ImageTk.PhotoImage(Image.open(pathIcon.format(r"expandir1.png")).resize((40, 40)))
+        self.icono_expandir2 = ImageTk.PhotoImage(Image.open(pathIcon.format(r"expandir2.png")).resize((40, 40)))
+        self.icono_captura = ImageTk.PhotoImage(Image.open(pathIcon.format(r"captura.png")).resize((40, 40)))
+        self.icono_captura1 = ImageTk.PhotoImage(Image.open(pathIcon.format(r"captura1.png")).resize((40, 40)))
+        self.icono_captura2 = ImageTk.PhotoImage(Image.open(pathIcon.format(r"captura2.png")).resize((40, 40)))
+        self.icono_copiar = ImageTk.PhotoImage(Image.open(pathIcon.format(r"copiar.png")).resize((40, 40)))
+        self.icono_copiar1 = ImageTk.PhotoImage(Image.open(pathIcon.format(r"copiar1.png")).resize((40, 40)))
+        self.icono_copiar2 = ImageTk.PhotoImage(Image.open(pathIcon.format(r"copiar2.png")).resize((40, 40)))
+        self.icono_riesgos = ImageTk.PhotoImage(Image.open(pathIcon.format(r"riesgos.png")).resize((40, 40)))
+        self.icono_riesgos1 = ImageTk.PhotoImage(Image.open(pathIcon.format(r"riesgos1.png")).resize((40, 40)))
+        self.icono_riesgos2 = ImageTk.PhotoImage(Image.open(pathIcon.format(r"riesgos2.png")).resize((40, 40)))
 
 ## --- ADJUTAR EL TEXT DE LOS LABEL -------------------------- ##
     def label_resize(self, event):
@@ -1116,14 +1102,14 @@ class Desviacion(ttk.Frame):
 
     def loadSelectItem(self, selectionValue, customer):  # TODO CARGAR MODULO
         data = []
-        with open(pathDesviations.format(customer)) as g:
+        with open(str(pathDesviations).format(customer), encoding="utf-8") as g:
             data = json.load(g)
             for md in data[customer]:
                 if 'modulo' in md:
                     if selectionValue in md['modulo']:
                         self.cleanWidgets()
                         self.assigningWidgetsData(md)
-                        self.showButtonsModule(    selectionValue, keyword=md['clave'])
+                        self.showButtonsModule(selectionValue, keyword=md['clave'])
 
     def cleanWidgets(self):
         #self.DESV_ListBox.selection_clear(0, tk.END)
@@ -1186,14 +1172,14 @@ class Desviacion(ttk.Frame):
         clave_selecionada = kwargs['keyword']
         try:
             if len(clave_selecionada) > 0 or len(modulo_selecionado) > 0:
-                with open(pathModuleButton.format("fs.json")) as b:
+                with open(str(pathConfig).format("fs.json"), encoding='utf-8') as b:
                     data = json.load(b)
                     for md in data:
                         if modulo_selecionado in md['module'] or clave_selecionada in md['keyword']:
                             pathScript = md['script']
                             nameButton = md['nameButton']
                             active = md['active']
-                            self.newButtonModule(        nameButton, pathScript, active)
+                            self.newButtonModule(nameButton, pathScript, active)
                             return 'break'
                         else:
                             self.gridForget()
@@ -1222,7 +1208,6 @@ class Desviacion(ttk.Frame):
         createOn = True
         PST_DESV.nameButtonCurrent = nameButton
         PST_DESV.pathScriptCurrent = pathScript
-        print("HOLA--------------------")
         if createOn:
             self.gridForget()
             if active == "True":
@@ -1287,7 +1272,7 @@ class Desviacion(ttk.Frame):
         global VALUE_DATA
         global no_exist
         customer = PST_DESV.varClient.get()
-        with open(pathDesviations.format(customer)) as g:
+        with open(str(pathDesviations).format(customer), encoding='utf-8') as g:
             data = json.load(g)
             listModulo = []
             listKeys = []
@@ -1340,7 +1325,7 @@ class Desviacion(ttk.Frame):
                 print("KEY FIND 3 ", keyToFind)
                 for openFile in listPathCustomer:
                     try:
-                        with open(openFile) as g:
+                        with open(openFile, encoding='utf-8') as g:
                             data = json.load(g)
                             for md in data:
                                 for ml in data[md]:
@@ -1367,7 +1352,7 @@ class Desviacion(ttk.Frame):
             data = []
             no_exist = False
             keyFound = str(keyFound).replace(    "[", "").replace("]", "").replace("'", "")
-            with open(pathDesviations.format(customer)) as g:
+            with open(str(pathDesviations).format(customer), encoding='utf-8') as g:
                 data = json.load(g)
                 for md in data[customer]:
                     if 'clave' in md:
@@ -1387,7 +1372,7 @@ class Desviacion(ttk.Frame):
             data = []
             no_exist = False
             self.DESV_ListBox.selection_clear(0, tk.END)
-            with open(pathDesviations.format(customer)) as g:
+            with open(str(pathDesviations).format(customer), encoding='utf-8') as g:
                 data = json.load(g)
                 for md in data[customer]:
                     for n in keyFound:
@@ -1405,7 +1390,7 @@ class Desviacion(ttk.Frame):
             print("MODULE FIND-EXISTE 1 ", moduleFound)
             moduleFound = str(moduleFound).replace(    "[", "").replace("]", "").replace("'", "")
             print("MODULE FIND-EXISTE 2  ", moduleFound)
-            with open(pathDesviations.format(customer)) as g:
+            with open(str(pathDesviations).format(customer), encoding='utf-8') as g:
                 data = json.load(g)
                 for md in data[customer]:
                     if moduleFound in md['modulo']:
@@ -1423,7 +1408,7 @@ class Desviacion(ttk.Frame):
             data = []
             no_exist = False
             self.DESV_ListBox.selection_clear(0, tk.END)
-            with open(pathDesviations.format(customer)) as g:
+            with open(str(pathDesviations).format(customer), encoding='utf-8') as g:
                 data = json.load(g)
                 for md in data[customer]:
                     for n in moduleFound:
@@ -1439,7 +1424,7 @@ class Desviacion(ttk.Frame):
             data = []
             no_exist = False
             self.DESV_ListBox.selection_clear(0, tk.END)
-            with open(pathDesviations.format(customer)) as g:
+            with open(str(pathDesviations).format(customer), encoding='utf-8') as g:
                 data = json.load(g)
                 for md in data[customer]:
                     for n in moduleFound:
@@ -1529,7 +1514,7 @@ class Desviacion(ttk.Frame):
         self.disabled_btn_expandir()
         ## ----------------------------------------- ##
         try:
-            with open(pathDesviations.format(customer)) as g:
+            with open(str(pathDesviations).format(customer), encoding='utf-8') as g:
                 data = json.load(g)
                 listModulo = []
                 listKeys = []
@@ -1544,7 +1529,7 @@ class Desviacion(ttk.Frame):
             PST_DESV.DESV_ListBox.config(state="disabled")
             PST_DESV.DESV_entry.config(state="disabled")
             customer = PST_DESV.varClient.get()
-            mb.showerror("No such file or directory", "No existe un fichero de modulos, para el cliente : [ {} ], crear un fichero con el formato : [deviations_{}.json].\n\nEn \n{}".format(    customer, customer, mypath+dataIssues))
+            mb.showerror("No such file or directory", "No existe un fichero de modulos, para el cliente : [ {} ], crear un fichero con el formato : [deviations_{}.json].\n\nEn \n{}".format(customer, customer, Path(pathDesviations).parent))
 
     def gridForget(self):
         try:
@@ -1565,13 +1550,13 @@ class Desviacion(ttk.Frame):
 
     def ScreamEvidencia(self):
         # app.root.withdraw()
-        os.popen('gtk-launch capture.desktop')
+        os.popen('gtk-launch APPCapture.desktop')
         time.sleep(2)
         # app.root.deiconify()
 
     def Risk_Impact(self):
         opener = "open" if sys.platform == "darwin" else "xdg-open"
-        subprocess.call([opener, pathRisk.format("RISK_IMPACT.ods")])
+        subprocess.call([opener, str(pathRisk).format("RISK_IMPACT.ods")])
 
     def copiarALL(self, event):
         event.focus()
@@ -1895,7 +1880,6 @@ class Desviacion(ttk.Frame):
     def changeColorActiveToolTipRB(self):
         print("EN CONSTRUNCION NO FOUND 404")
 
-
 class Aplicacion():
     WIDTH = 1360
     HEIGHT = 650
@@ -1908,8 +1892,7 @@ class Aplicacion():
 
     def __init__(self):
         self.root = tk.Tk()
-        self._Font_Titulo_bold = font.Font(family=fuente_titulos, size=tamñ_titulo, weight=weight_DF)
-        self.root.title("CONTINUOUS COMPLIANCE")
+        self.root.title("APPCompliance - CONTINUOUS COMPLIANCE")
         screen_width = self.root.winfo_screenwidth()
         screen_height = self.root.winfo_screenheight()
         position_top = int(screen_height/2 - Aplicacion.HEIGHT/2)
@@ -1919,7 +1902,10 @@ class Aplicacion():
         self.root.configure(background=default_bottom_app,
                             borderwidth=0, border=0)
         self.root.tk.call('wm', 'iconphoto', self.root._w,
-                          tk.PhotoImage(file=pathIcon+r'compliance.png'))
+                          tk.PhotoImage(file=pathIcon.format(r'APPCompliance.png')))
+
+        #LLAMADAS A METODOS
+        self.Fonts()
         self.openCustomer()
         self.iconos()
         self.cuaderno = ScrollableNotebook(self.root, wheelscroll=False, tabmenu=True, application=self)
@@ -1953,6 +1939,13 @@ class Aplicacion():
         self.sizegrid.grid(row=1, column=0, pady=5, sticky='nsew')
         self.changeTextButton(text_btnMode)
 
+    def Fonts(self):
+        self._Font_Titulo_bold = font.Font(family=fuente_titulos, size=tamñ_titulo, weight=weight_DF)
+        if (myOs == 'linux'):
+            self._fontUser = font.Font(family='Comfortaa', size=20)
+        else:
+            self._fontUser = font.Font(family='Comic Sans MS', size=20)
+            
     def changeTextButton(self, text_btnMode):
         self.cuaderno.btnMode.bind("<Motion>", partial(self.openTooltip, self.cuaderno.btnMode, text_btnMode))
         self.cuaderno.btnMode.bind("<Leave>", self._hide_event)
@@ -2016,21 +2009,17 @@ class Aplicacion():
 
     def openCustomer(self):
         global listClient
-        with open(pathCustomer, 'r', encoding='UTF-8') as fileCustomer:
-            data = json.load(fileCustomer)
+        with open(fileCustomer, 'r', encoding='UTF-8') as filecustomer:
+            data = json.load(filecustomer)
             for customer in data:
                 listClient.append(customer['name'])
         listClient = list(listClient)
         listClient.sort()
 
-        # except FileNotFoundError:
-        #     customer = PST_DESV.varClient.get()
-        #     mb.showerror("No such file or directory", "No existe un fichero de modulos, para el cliente : [ {} ], formato : [deviations_{}]".format(customer, customer))
-
     def iconos(self):
-        self.Desviaciones_icon = ImageTk.PhotoImage(Image.open(pathIcon+r"openDesviaciones.png").resize((80, 80)))
-        self.Extracion_icon = ImageTk.PhotoImage(Image.open(pathIcon+r"openExtraciones.png").resize((80, 80)))
-        self.Automatizar_icon = ImageTk.PhotoImage(Image.open(pathIcon+r"automatizar.png").resize((80, 80)))
+        self.Desviaciones_icon = ImageTk.PhotoImage(Image.open(pathIcon.format(r"openDesviaciones.png")).resize((80, 80)))
+        self.Extracion_icon = ImageTk.PhotoImage(Image.open(pathIcon.format(r"openExtraciones.png")).resize((80, 80)))
+        self.Automatizar_icon = ImageTk.PhotoImage(Image.open(pathIcon.format(r"automatizar.png")).resize((80, 80)))
         self.iconoNew = (tk.PhotoImage("iconoNew", data='''
             iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAABmJLR0QA/wD/AP+gvaeTAAACQ0lEQVRIieWWTUhUURSAv/swtDEyZIyXC9+zDGkSgiJIwoVUkGJgbYPBAqPaBP1Rs65NW8EWbqIiqCRLC6oJgiyhiMAwNcHxmdmMmjY6TvOjz9eiHHR09M2fEn6rd88793yXey6XC2sNER3wer2FQINhGEWGYSz4vwTToVDosSzLl4UQ+nLJGdEBSZJuTE4GDrS2doJhmLZuyrFQut92fmRkxGoYRo0QYsnJC8S6rhd1dvTT8uQDO/fsMC3+3PiOr53fqKk9bPd4PH7gbFzi2e0tLFY4duKIafGPfjdPW96zLjOD4/aDZzRN86uqeilWvmS68jJIkiAcmqKpsY3mR23k5uZe7OnpuZZ28SzhUJjbt5y8fP4RWZYd7e3tV1dE/Fc+RUP9M96+6RCqql53Op210TkLepwo+eoWBvvdkfGMrnOzrhlF2SwKCgrOAQ+A8ZSLq+1VVNur5sXu1t3H7R5j2/Y8C2CdK07LVsdg3mWUsNjV1Yerqy/hVSQs7u3W6O3WVl6cLHEdrgmvj3AwDIDf9xuAn55RANZbssjemJ0e8b36h4wOjwHg++UD4MunLgDyZCunrtSkR3zacTLy7Wx6DcCho+XxlIjwf/R4LkLE80ZIoXhf+d7VEW/IMX+CF2PVerz2xDF7POAa5EXjq6SKD7gGoXSrObGu65qtRNlVUemP63m7GBWVu7GVKLjd34eBmSXFgUDgQjAYVMrKivOTsv5jfHxsyOFw3AGG5sZj3QJZgApkpsA9DQwAEymolTx/AAVIwo5raMlVAAAAAElFTkSuQmCC
         '''))
@@ -2064,10 +2053,10 @@ class Aplicacion():
         self.iconoWorkSpaceDark = (tk.PhotoImage("iconoWorkSpaceDark", data='''
             iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAA20lEQVRYhe2VTQ6CMBCF3xBPgO7Q6+DCe7Cjh+lKTmKix4FtzzAu1KR/AikTIbHfpul03vSlLQyQWRmyJ/qhL8TUMbga0QzE1LTn9iahLZxlxnWiAAAcmbgLoonawk+YKPDhFCueovUN/JxsIBvYnIFhpq6PxJK0jgFiamYU6rngxg8u0Wb+G7F27KPv2gAoARhVq8O3PLl2HFK+x/1YkmQ7TmL1P+FOqpB157E1tqbOm5A8gejmEZw3IWnApOSJXYH/qdnHrmpFoeLF6o9Qsh0vNyDcUo03ZrbJE/4AXihh4fWRAAAAAElFTkSuQmCC
         '''))
-        self.icono_account = ImageTk.PhotoImage(Image.open(pathIcon+r"account.png").resize((20, 20)))
-        self.icono_account1 = ImageTk.PhotoImage(Image.open(pathIcon+r"account1.png").resize((20, 20)))
-        self.previous_icon = ImageTk.PhotoImage(Image.open(pathIcon+r"previous.png").resize((40, 40)))
-        self.next_icon = ImageTk.PhotoImage(Image.open(pathIcon+r"next.png").resize((40, 40)))
+        self.icono_account = ImageTk.PhotoImage(Image.open(pathIcon.format(r"account.png")).resize((20, 20)))
+        self.icono_account1 = ImageTk.PhotoImage(Image.open(pathIcon.format(r"account1.png")).resize((20, 20)))
+        self.previous_icon = ImageTk.PhotoImage(Image.open(pathIcon.format(r"previous.png")).resize((40, 40)))
+        self.next_icon = ImageTk.PhotoImage(Image.open(pathIcon.format(r"next.png")).resize((40, 40)))
         self.iconoSwitchOn = (tk.PhotoImage("switchOn", data='''
             iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAABmJLR0QA/wD/AP+gvaeTAAACEklEQVRYhe3XT4sSYQDH8d88/sknbRZWFAtUOtXBYA9jdvDspYO3Yk/bJXoLQS+ge69glaDDQp0EoYOXhQgNLFcECaVWqWlx1bWZR9TneTrEym65i+CfOex8b888Dw8fhnmYGcDOzs7uaqecHRSLxTsA7hNCqBUYIQQTQnxMJBL102tTYKVSeRUIBJ55PB4XAEVKaYVRmqbJu93ubiwWezoFlkqle+Fw+BOl1GWF6t/a7Tav1+vb6XR6zwkAiqI8oJS6JhOOne2XGJwMLYGpKsXum+cIhUKOXC73qFAovHMCgJSSAoDgAoOTIZI7Q9ANsVYc6xPsZ/4a3Ndc0HXd5/f7bzhnLd64KeDdXC/Qff38WEqpMMbITOCibdIwbql351p7ZDSh//564fxKgEHvbWyFHs619kB/fymQLAu1qmzgotnARbOBi2YDF20lb5JfRhPln7m51h4ZzUvnVwI8Zoc4ZodL2WsmsP+DYGQuZf+5Y/3ZT9vpByuTUoI4CFSVYj+zVts0VaVwOB3gnENKOZoChRAfDMOY+Hw+5+u9F9boztRoNESv1/s2Ho9HTgCIx+MH1Wo10+l0ngSDQQch1hxuIQRarZbIZrNfotHo52QyOTj325nP59O1Wu2xrutezrly0UarinM+Mk3zeyQSqaRSqbeapvX/Q0gpSblcVhljltxGt9s91DRtzUfUzs7uCvcH1IDLM1dhnewAAAAASUVORK5CYII=
         '''))
@@ -2276,9 +2265,6 @@ class Aplicacion():
             font=_Font_Menu,
             command=lambda e=self._list_clave: self._copiar_select_GLS_clave(e)
         )
-
-    # def displayMenuClickRight_GLS(self, event):
-    #     self.menu_Contextual_GLS.tk_popup(event.x_root, event.y_root)
 
     @beep_error
     def _copiar_select_GLS_clave(self, event):
@@ -2491,14 +2477,14 @@ class Aplicacion():
         position_top = int(screen_height+70)
         position_right = int(screen_width+150)
         self.vtn_acerca_de.geometry(f'{window_wh}x{window_hg}+{position_right}+{position_top}')
-        self.vtn_acerca_de.tk.call('wm', 'iconphoto', self.vtn_acerca_de._w, tk.PhotoImage(file=pathIcon+r'acercaDe.png'))
+        self.vtn_acerca_de.tk.call('wm', 'iconphoto', self.vtn_acerca_de._w, tk.PhotoImage(file=str(Path(pathIcon,"acercaDe.png"))))
         self.vtn_acerca_de.transient(self.root)
         self.vtn_acerca_de.resizable(False, False)
         self.vtn_acerca_de.title("Acerca de")
 
-        self.close_icon = ImageTk.PhotoImage(Image.open(pathIcon+r"close1.png").resize((80, 60)))
+        self.close_icon = ImageTk.PhotoImage(Image.open(pathIcon.format(r"close1.png")).resize((80, 60)))
 
-        self.icono_Acerca_de = ImageTk.PhotoImage(Image.open(pathIcon+r"img_acerca_de.png").resize((200, 200)))
+        self.icono_Acerca_de = ImageTk.PhotoImage(Image.open(pathIcon.format(r"img_acerca_de.png")).resize((200, 200)))
 
         self.AcercaDe_ico_frame = ttk.Frame(self.vtn_acerca_de,
             width=300,
@@ -2600,7 +2586,7 @@ class Aplicacion():
         )
 
     def _cargar_modulo_glosario(self, *args):
-        with open(pathDesviationsGl.format('GLOSARIO')) as g:
+        with open(str(pathInclude).format('include_glosario.json'), encoding='utf-8') as g:
             data = json.load(g)
             listModulo = []
             listClave = []
@@ -2630,12 +2616,12 @@ class Aplicacion():
         position_top = int(screen_height+70)
         position_right = int(screen_width+150)
         self.vtn_glosario.geometry(f'{window_width}x{window_height}+{position_right}+{position_top}')
-        self.vtn_glosario.tk.call('wm', 'iconphoto', self.vtn_glosario._w, tk.PhotoImage(file=pathIcon+r'acercaDe.png'))
+        self.vtn_glosario.tk.call('wm', 'iconphoto', self.vtn_glosario._w, tk.PhotoImage(file=Path(pathIcon,'acercaDe.png')))
         self.vtn_glosario.transient(self.root)
         self.vtn_glosario.resizable(False, False)
         self.vtn_glosario.title("Ayuda")
 
-        self.close_icon_gls = ImageTk.PhotoImage(Image.open(pathIcon+r"close1.png").resize((80, 60)))
+        self.close_icon_gls = ImageTk.PhotoImage(Image.open(pathIcon.format(r"close1.png")).resize((80, 60)))
 
         self.fr1_gls = ttk.Frame(self.vtn_glosario,
             height=20,
@@ -2866,6 +2852,7 @@ class Aplicacion():
 
         self.lbl_Bienvenido = ttk.Label(self.frameLabel,
             style='APP.TLabel',
+            font=self._fontUser,
             text='Bienvenido : '+user.upper(),
             anchor='center',
         )
@@ -2987,20 +2974,52 @@ class Aplicacion():
             activebackground=default_select_bg,
             activeforeground=default_select_fg,
         )
-        self.verMenu.add_command(label="  Incidencias Criticas",
+        # self.verMenu.add_command(label="  Incidencias Criticas",
+        #     command=self.bsc,
+        #     image=self.iconoIncident,
+        #     compound=tk.LEFT,
+        #     state="normal"
+        # )
+        # self.verMenu.add_separator()
+        # self.verMenu.add_command(label="  Script Crop Text",
+        #     command=self.RecortarMinMax,
+        #     image=self.iconoScriptCrop,
+        #     compound=tk.LEFT,
+        #     state="normal"
+        # )
+        # self.verMenu.add_command(label="  Decorador SFIT SUDO",
+        #     command=self.DecorarSfit,
+        #     image=self.iconoScriptCrop,
+        #     compound=tk.LEFT,
+        #     state="normal"
+        # )
+        #TODO PRUEBAS
+        #***************************
+        global listScripts
+        with open(str(pathConfig).format("scripts.json"), encoding='utf-8') as fileScripts:
+            data = json.load(fileScripts)
+            for customer in data:
+                listScripts.append(customer['name'])
+        listScripts = list(listScripts)
+        listScripts.sort()
+        print(listScripts)
+
+        self.scriptsVar = tk.IntVar()
+        self.verMenu.add_command(label="  "+"Incidencias Criticas",
             command=self.bsc,
             image=self.iconoIncident,
             compound=tk.LEFT,
             state="normal"
         )
-        self.verMenu.add_separator()
-
-        self.verMenu.add_command(label="  Script Crop Text",
-            command=self.RecortarMinMax,
-            image=self.iconoScriptCrop,
-            compound=tk.LEFT,
-            state="normal"
-        )
+        for m in listScripts:
+            self.verMenu.add_command(
+                label="  "+m,
+                image=self.iconoScriptCrop,
+                compound=tk.LEFT,
+                state="normal",
+                command=partial(self.openScripts, m)
+            )
+        #***************************
 
         # * MENU EDIT
         self.editMenu = tk.Menu(self.bar, tearoff=0)
@@ -3075,14 +3094,14 @@ class Aplicacion():
             activar_modo = 'True'
             parse['dark'] = {"activar_modo": activar_modo,
                              "modo_dark": modo_dark}
-            with open(pathConfig.format("apariencia.ini"), 'w') as configfile:
+            with open(fileConfig, 'w', encoding='utf-8') as configfile:
                 parse.write(configfile)
         elif activar_modo == 'True':
             modo_dark = 'False'
             activar_modo = 'False'
             parse['dark'] = {"activar_modo": activar_modo,
                              "modo_dark": modo_dark}
-            with open(pathConfig.format("apariencia.ini"), 'w') as configfile:
+            with open(fileConfig, 'w', encoding='utf-8') as configfile:
                 parse.write(configfile)
         if 'desviacion' in globals():
             desviacion.llamada_colores()
@@ -3538,9 +3557,21 @@ class Aplicacion():
             custom = CustomHovertip(object, text=text)
             tooltip = True
 
-    def RecortarMinMax(self):
-        recortar = mypath+"Compliance/deviations/include/recortar.sh"
-        os.popen("gnome-terminal -- "+recortar)
+    def execSript(self, command, script):
+        try:
+            res = str(pathScripts).format(script)
+            os.popen(command+" "+res)
+        except:
+            mb.showerror("Error Scripts", "Por favor revisa si existe ese comando o script")
+
+    def openScripts(self, name):
+        with open(str(pathConfig).format("scripts.json"), encoding='utf-8') as fileScripts:
+            data = json.load(fileScripts)
+            for md in data:
+                if name in md['name']:
+                    command = md['command']
+                    script = md['script']
+                    self.execSript(command, script)
 
     def widgets_SoloLectura(self, event):
         if(20 == event.state and event.keysym == 'c' or event.keysym == 'Down' or event.keysym == 'Up' or 20 == event.state and event.keysym == 'f' or 20 == event.state and event.keysym == 'a'):

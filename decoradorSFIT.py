@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 # Copyright (c) Jose Alvaro Cedeño 2022
 # For license see LICENSE
@@ -14,13 +14,12 @@ hostname = ""
 clear = ""
 my_os = sys.platform
 home = Path.home()
-if(my_os == 'Linux'):
-    path = Path(home, "Downloads")
+path = Path(home, "Downloads")
+print(my_os)
+if(my_os == 'linux'):
     clear = "clear"
 else:
-    path = Path(home, "Downloads")
     clear = "cls"
-
 
 def menu():
     print("\n1. ABRIR FICHERO SFIT CSV\n")
@@ -44,7 +43,6 @@ def open_file():
 def decorar_csv():
     if len(filename_r) > 0:
         file_result = Path(path, '{}.txt'.format(hostname))
-        guardado = open(file_result, 'w', encoding='utf-8')
         with open(filename_r, encoding='utf-8') as file:
             data = csv.reader(file, delimiter=',')
             for linea in data:
@@ -59,7 +57,6 @@ def decorar_csv():
                     with open(file_result, 'a', encoding='utf-8') as gd:
                         
                         gd.write("+-----------------------------------------------------------+\n")
-                    # guardado.write("+-----------------------------------------------------------+\n")
                         gd.write(MESSAGE_SEVERITY+"\n")
                         gd.write(ENTRY+"\n")
                         gd.write(LINE_NUMBER+"\n")
@@ -69,12 +66,10 @@ def decorar_csv():
                         gd.write("+-----------------------------------------------------------+\n\n")
         try:
             print("\033[0;32m"+"FICHERO GUARDADO CORRECTAMENTE {}.txt, para el SERVER [{}]".format(hostname, server)+"\033[0m")
-            guardado.close()
         except UnboundLocalError:
             print("")
             print("\033[0;31;43m"+"No existen WARNING or ERROR, en el CSV : [ {} ]".format(hostname)+"\033[0m")
             os.remove(file_result)
-
     else:
         print("")
         print("\033[1;31m"+"\nError, no as selecionado ningun archivo CSV\n"+"\033[0m")
