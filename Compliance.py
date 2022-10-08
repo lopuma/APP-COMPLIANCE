@@ -3574,7 +3574,8 @@ class Aplicacion():
                 if name in md['name']:
                     command = md['command']
                     script = md['script']
-                    self.execSript(command, script)
+                    hilo = Thread(target=self.execSript(command, script))
+                    hilo.start()
 
     def widgets_SoloLectura(self, event):
         if(20 == event.state and event.keysym == 'c' or event.keysym == 'Down' or event.keysym == 'Up' or 20 == event.state and event.keysym == 'f' or 20 == event.state and event.keysym == 'a'):
