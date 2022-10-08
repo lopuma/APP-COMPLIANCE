@@ -1555,8 +1555,9 @@ class Desviacion(ttk.Frame):
         # app.root.deiconify()
 
     def Risk_Impact(self):
-        opener = "open" if sys.platform == "darwin" else "xdg-open"
-        subprocess.call([opener, str(pathRisk).format("RISK_IMPACT.ods")])
+        fileRisk = str(pathRisk).format("RISK_IMPACT.ods")
+        opener = "xdg-open" if sys.platform == "linux" else "start"
+        os.system(opener+" "+fileRisk)
 
     def copiarALL(self, event):
         event.focus()
@@ -3558,9 +3559,11 @@ class Aplicacion():
             tooltip = True
 
     def execSript(self, command, script):
+        #TODO OPENER ES EL EJECUTADOR Y COMAND DEPENDE SI ES UN EJECUTABLE O UN .PY
         try:
+            opener = "gnome-terminal --" if sys.platform == "linux" else "start"
             res = str(pathScripts).format(script)
-            os.popen(command+" "+res)
+            os.system(opener+" "+command+" "+res)
         except:
             mb.showerror("Error Scripts", "Por favor revisa si existe ese comando o script")
 

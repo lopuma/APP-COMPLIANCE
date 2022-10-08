@@ -876,7 +876,8 @@ class Extracion(ttk.Frame):
             window_width =  self.x_ancho_btn
             window_height = self.y_alto_btn
             bus_reem_top_msg_w = 240
-            self.busca_top.attributes('-type', 'splash')            #self.busca_top.overrideredirect(True)
+            ##WINDOWS no FUNCIONA
+            #self.busca_top.attributes('-type', 'splash')            #self.busca_top.overrideredirect(True)
             screen_width = (self.app.root.winfo_x() + 640)
             screen_height = (self.app.root.winfo_y()+40)
             position_top = int(screen_height)
