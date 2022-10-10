@@ -9,7 +9,6 @@ except ImportError:
 import json
 import os
 import time
-import subprocess
 import sys
 from pathlib import Path
 from getpass import getuser

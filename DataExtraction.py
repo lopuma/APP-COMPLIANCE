@@ -2,6 +2,7 @@
 import codecs
 from functools import partial
 import os
+import sys
 import time
 import tkinter as tk
 from os import listdir
@@ -18,6 +19,7 @@ HIDDEN = 0
 _activeFocus = False
 switch = False
 fileApariencaIni = str(pathConfig).format("apariencia.ini")
+myOs = sys.platform
 
 def beep_error(f):
     def applicator(*args, **kwargs):
@@ -877,8 +879,9 @@ class Extracion(ttk.Frame):
             window_height = self.y_alto_btn
             bus_reem_top_msg_w = 240
             ##WINDOWS no FUNCIONA
-            #self.busca_top.attributes('-type', 'splash')    
-            self.busca_top.overrideredirect(True)
+            #self.busca_top.attributes('-type', 'splash')
+            if(myOs=='linux'): 
+                self.busca_top.overrideredirect(True)
             screen_width = (self.app.root.winfo_x() + 640)
             screen_height = (self.app.root.winfo_y()+40)
             position_top = int(screen_height)
