@@ -956,9 +956,12 @@ class Extracion(ttk.Frame):
                 self.busca_frm_content,
                 textvariable=self.var_entry_bsc,
             )
-
+            if(myOs == 'linux'):
+                widthSearch = 40
+            else:
+                widthSearch = 49
             self.entrySearch.configure(
-                width=40,
+                width=widthSearch,
                 highlightcolor=default_hglcolor,
                 insertbackground=default_hglcolor,
                 insertwidth=1,
