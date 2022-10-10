@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-#!/usr/bin/python
 # Copyright (c) Jose Alvaro Cedeño 2022
 # For license see FREE LICENSE
 try:
