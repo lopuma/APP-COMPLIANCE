@@ -1048,7 +1048,6 @@ class Desviacion(ttk.Frame):
         PST_DESV.widgetActive = event.widget
         PST_DESV.menu_Contextual.tk_popup(event.x_root, event.y_root)
         PST_DESV.widgetActive.focus()
-        print(PST_DESV.widgetActive)
         if str(PST_DESV.widgetActive) != str(PST_DESV.DESV_entry):
             self.menu_Contextual.entryconfig('  Pegar', state='disabled')
             self.menu_Contextual.entryconfig('  Buscar', state='normal')
@@ -1303,7 +1302,6 @@ class Desviacion(ttk.Frame):
             if MsgBox:
                 no_exist = True
                 self.gridForget()
-                print("MODULE FOUND ", moduleFound)
                 listModuleFound = []
                 listKeysFound = []
                 listCustomerFound = []
@@ -1313,16 +1311,11 @@ class Desviacion(ttk.Frame):
                 for client in listClient:
                     listPathCustomer.append(pathDesviations.format(client))
                 moduleToFind = PST_DESV.DESV_entry.get()
-                print("MODULE FIND 1 ", moduleToFind)
                 moduleToFind = self.solve(moduleToFind)
                 moduleToFind = moduleToFind.replace("\\", "/")
-                print("MODULE FIND 2 ", moduleToFind)
                 keyToFind = PST_DESV.DESV_entry.get()
-                print("KEY FIND 1 ", keyToFind)
                 keyToFind = keyToFind.upper().split()
-                print("KEY FIND 2 ", keyToFind)
                 keyToFind = str(keyToFind).replace(        "[", "").replace("]", "").replace("'", "")
-                print("KEY FIND 3 ", keyToFind)
                 for openFile in listPathCustomer:
                     try:
                         with open(openFile, encoding='utf-8') as g:
@@ -1387,9 +1380,7 @@ class Desviacion(ttk.Frame):
         elif len(moduleFound) == 1 and len(keyFound) == 0:
             data = []
             no_exist = False
-            print("MODULE FIND-EXISTE 1 ", moduleFound)
             moduleFound = str(moduleFound).replace(    "[", "").replace("]", "").replace("'", "")
-            print("MODULE FIND-EXISTE 2  ", moduleFound)
             with open(str(pathDesviations).format(customer), encoding='utf-8') as g:
                 data = json.load(g)
                 for md in data[customer]:
@@ -1851,7 +1842,7 @@ class Desviacion(ttk.Frame):
         
         self.menuRightClick()
         self.asignar_iconos()
-        self.changeColorActiveToolTipRB()
+        #self.changeColorActiveToolTipRB()
 
     def renameNameTab(self, customer):
         app.cuaderno.tab(idOpenTab, option=None, text='DESVIACIONES : {} '.format(customer))
@@ -1878,8 +1869,8 @@ class Desviacion(ttk.Frame):
         self.DESV_btnCopyALL.bind('<Motion>', partial(self.cambiar_icono, self.DESV_btnCopyALL, icon_copy))
         self.DESV_btn1CopyALL.bind('<Motion>', partial(self.cambiar_icono, self.DESV_btn1CopyALL, icon_copy))
 
-    def changeColorActiveToolTipRB(self):
-        print("EN CONSTRUNCION NO FOUND 404")
+    # def changeColorActiveToolTipRB(self):
+    #     print("EN CONSTRUNCION NO FOUND 404")
 
 class Aplicacion():
     WIDTH = 1360
@@ -2478,7 +2469,7 @@ class Aplicacion():
         position_top = int(screen_height+70)
         position_right = int(screen_width+150)
         self.vtn_acerca_de.geometry(f'{window_wh}x{window_hg}+{position_right}+{position_top}')
-        self.vtn_acerca_de.tk.call('wm', 'iconphoto', self.vtn_acerca_de._w, tk.PhotoImage(file=str(Path(pathIcon,"acercaDe.png"))))
+        self.vtn_acerca_de.tk.call('wm', 'iconphoto', self.vtn_acerca_de._w, tk.PhotoImage(file=str(pathIcon).format("acercaDe.png")))
         self.vtn_acerca_de.transient(self.root)
         self.vtn_acerca_de.resizable(False, False)
         self.vtn_acerca_de.title("Acerca de")
@@ -2577,10 +2568,11 @@ class Aplicacion():
         self.boton = tk.Button(self.AcercaDe_txt_frame,
             text='Close',
             image=self.close_icon,
-            command=self.cerrar_vtn
+            command=self.cerrar_vtn,
         )
         self.boton.grid(row=8, column=0, sticky='e', pady=10, padx=10)
-        self.boton.config(background=default_bottom_app,
+        self.boton.config(
+            background=default_bottom_app,
             activebackground=default_bottom_app,
             borderwidth=0,
             highlightbackground=default_bottom_app
@@ -2617,7 +2609,7 @@ class Aplicacion():
         position_top = int(screen_height+70)
         position_right = int(screen_width+150)
         self.vtn_glosario.geometry(f'{window_width}x{window_height}+{position_right}+{position_top}')
-        self.vtn_glosario.tk.call('wm', 'iconphoto', self.vtn_glosario._w, tk.PhotoImage(file=Path(pathIcon,'acercaDe.png')))
+        self.vtn_glosario.tk.call('wm', 'iconphoto', self.vtn_glosario._w, tk.PhotoImage(file=str(pathIcon).format('acercaDe.png')))
         self.vtn_glosario.transient(self.root)
         self.vtn_glosario.resizable(False, False)
         self.vtn_glosario.title("Ayuda")
@@ -2953,12 +2945,12 @@ class Aplicacion():
                 value=i,
                 command=self.nameOpenButton
             )
-        self.preferenceMenu.add_command(label="  Titulo",
-            # image=self.preference,
-            compound=tk.LEFT,
-            command=self._fontchooser
-        )
-        self.preferenceMenu.add_separator()
+        # self.preferenceMenu.add_command(label="  Titulo",
+        #     # image=self.preference,
+        #     compound=tk.LEFT,
+        #     command=self._fontchooser
+        # )
+        #self.preferenceMenu.add_separator()
         self.preferenceMenu.add_command(label="  Modo Dark",
             image=self.iconoModeDark,
             # state='disable',
@@ -2975,25 +2967,6 @@ class Aplicacion():
             activebackground=default_select_bg,
             activeforeground=default_select_fg,
         )
-        # self.verMenu.add_command(label="  Incidencias Criticas",
-        #     command=self.bsc,
-        #     image=self.iconoIncident,
-        #     compound=tk.LEFT,
-        #     state="normal"
-        # )
-        # self.verMenu.add_separator()
-        # self.verMenu.add_command(label="  Script Crop Text",
-        #     command=self.RecortarMinMax,
-        #     image=self.iconoScriptCrop,
-        #     compound=tk.LEFT,
-        #     state="normal"
-        # )
-        # self.verMenu.add_command(label="  Decorador SFIT SUDO",
-        #     command=self.DecorarSfit,
-        #     image=self.iconoScriptCrop,
-        #     compound=tk.LEFT,
-        #     state="normal"
-        # )
         #TODO PRUEBAS
         #***************************
         global listScripts
@@ -3003,15 +2976,14 @@ class Aplicacion():
                 listScripts.append(customer['name'])
         listScripts = list(listScripts)
         listScripts.sort()
-        print(listScripts)
 
         self.scriptsVar = tk.IntVar()
-        self.verMenu.add_command(label="  "+"Incidencias Criticas",
-            command=self.bsc,
-            image=self.iconoIncident,
-            compound=tk.LEFT,
-            state="normal"
-        )
+        # self.verMenu.add_command(label="  "+"Incidencias Criticas",
+        #     command=self.bsc,
+        #     image=self.iconoIncident,
+        #     compound=tk.LEFT,
+        #     state="normal"
+        # )
         for m in listScripts:
             self.verMenu.add_command(
                 label="  "+m,
@@ -3046,12 +3018,12 @@ class Aplicacion():
             activebackground=default_select_bg,
             activeforeground=default_select_fg,
         )
-        self.helpMenu.add_command(label="  Ayuda",
-            image=self.iconoHelp,
-            compound=tk.LEFT,
-            command=self._glosario
-        )
-        self.helpMenu.add_separator()
+        # self.helpMenu.add_command(label="  Ayuda",
+        #     image=self.iconoHelp,
+        #     compound=tk.LEFT,
+        #     command=self._glosario
+        # )
+        #self.helpMenu.add_separator()
         self.helpMenu.add_command(label="  Acerca de...",
             image=self.iconoAbout,
             compound=tk.LEFT,
@@ -3059,8 +3031,8 @@ class Aplicacion():
         )
 
         self.bar.add_cascade(label=" Archivo ", menu=self.fileMenu)
-        self.bar.add_cascade(label=" Editar ", menu=self.editMenu)
-        self.bar.add_cascade(label=" Ver ", menu=self.verMenu)
+        #self.bar.add_cascade(label=" Editar ", menu=self.editMenu)
+        self.bar.add_cascade(label=" Scripts ", menu=self.verMenu)
         self.bar.add_cascade(label=" Ayuda ", menu=self.helpMenu)
 
     def active_radio_botton(self, canva, button, *args):
@@ -3225,6 +3197,7 @@ class Aplicacion():
         self.bar.config(background=default_menu_bg, foreground=default_scrText_fg)
 
     def appModeDark(self):
+
         self.cuaderno.btnMode['image'] = self.iconoSwitchOn
         self.cuaderno.btnMode.config(    background=pers_bottom_app, highlightbackground=pers_bottom_app, activebackground=pers_bottom_app)
         self.root.configure(    background=pers_bottom_app,
@@ -3244,7 +3217,14 @@ class Aplicacion():
         # self.rbOpenAuto.canvas.itemconfig(1, fill=default_boton_bg)
         
         self.bar.config(background=pers_menu_bg, foreground=pers_scrText_fg)
-
+        # try:
+        #     self.boton.configure(
+        #         background=pers_bottom_app, 
+        #         highlightbackground=pers_bottom_app,
+        #         activebackground=pers_bottom_app
+        #         )
+        # except AttributeError:
+        #     pass
     def deviationModeDark(self):
         if PST_DESV != "":
             if PST_VTN != "":
@@ -3547,7 +3527,7 @@ class Aplicacion():
         try:
             custom.destroy()
             tooltip = False
-        except TclError:
+        except (TclError, NameError):
             pass
         self.activeDefault()
 

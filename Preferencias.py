@@ -22,7 +22,6 @@ class SelectFont(tk.Toplevel):
         font_styles = ["Regular", "Bold", "Italic", "Bold/Italic", "Underline", "Strike"]
         self.fr1 =  ttk.Frame(
             self, 
-            #height=210
         )
         self.fr1.pack(
             #expand=1, 

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) Jose Alvaro Cedeño 2022
 # For license see LICENSE
-# Version  2.0
+# Version  3.0
 import csv
 import os
 import sys

@@ -348,7 +348,6 @@ class ScrollableNotebook(ttk.Frame):
         return self.notebookTab.tab(tab_id, option=None, **kwargs)
 
     def tabs(self):
-        #return self.notebookContent.tabs()
         return self.notebookTab.tabs()
 
     def enable_traversal(self):

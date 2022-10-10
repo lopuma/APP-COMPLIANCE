@@ -7,6 +7,8 @@ from PIL import Image, ImageTk
 from Compliance import   hlh_def, default_Framework, default_select_fg, default_select_bg, home, parse, pathIcon, pathConfig, pers_scrText_fg, modo_dark, hhtk, default_scrText_bg, default_bottom_app, default_scrText_fg, default_scrText_bg, bg_submenu, default_scrText_fg, fuente_texto, fg_submenu, default_scrText_fg, default_color_titulos, _Font_Texto, default_scrText_fg, default_scrText_bg, default_scrText_fg, default_hglcolor, _Font_Menu, oddrow, evenrow
 from DataExtraction import MyEntry
 from pathlib import Path
+from tkinter import messagebox as mb
+
 
 fileApariencaIni = str(pathConfig).format("apariencia.ini")
 
@@ -247,7 +249,7 @@ class Ventana(ttk.Frame):
                         self.tree.insert(parent='', index='end', iid=count, text='', value=(md['object'],md['owner'],md['tipo'],md['ownerGroup'],md['code']), tags=('oddrow'))
                     count += 1
             except KeyError:
-                print("NO existen datos para {}, del cliente {}".format(self.path_ventanas, customer))
+                mb.showerror("No such file or directory", "No existen datos para {}, del cliente {}".format(self.path_ventanas, customer))
 
     def limpiar_tree(self):
         records = self.tree.get_children()

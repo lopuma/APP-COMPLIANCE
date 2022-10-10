@@ -14,16 +14,7 @@ class CustomHovertip(tk.Toplevel):
         self.position_window(boton)
 
     def showcontents(self):
-        # self.frame_label = CornerRadius(
-        #     self,
-        #     alto=self.y_alto_btn,
-        #     ancho=self.x_ancho_btn,
-        #     radio=25,
-        #     width=2,
-        #     bg_color="#151515",
-        # )
         label = tk.Label(
-#            self.frame_label,
             self,
             text=self.text,
             bg="#151515",
@@ -31,15 +22,7 @@ class CustomHovertip(tk.Toplevel):
             font=("Noto Mono", 13)
             )
         label.pack(expand=1, fill=tk.BOTH)
-        # label.place(
-        #     relx=0.5,
-        #     rely=0.5,
-        #     anchor=tk.CENTER,
-        #     height=self.hg_btn,
-        #     width=self.wd_btn,
-        # )
-        # self.frame_label.pack(expand=1, fill=tk.BOTH)
-
+        
     def position_window(self, boton):
         x, y = self.get_position(boton)
         root_x = boton.winfo_rootx() + x

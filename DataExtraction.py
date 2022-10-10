@@ -84,7 +84,7 @@ class MyScrollText(st.ScrolledText):
         self.tag_configure(
             "required",
             background=pers_scrText_bg,
-            foreground='red',
+            foreground='yellow',
             selectbackground=default_select_bg,
             selectforeground=default_select_fg,
             font=_Font_Texto
@@ -456,15 +456,13 @@ class Extracion(ttk.Frame):
         switch = False
 
         self.plantilla = plantilla
-        with codecs.open(plantilla, encoding="utf8") as g:
+        with codecs.open(plantilla, encoding="utf-8") as g:
             data = g.read()
             self.txt.delete('1.0', tk.END)
             for md in data:
                 self.txt.insert(tk.END, md)
         try:
-            print("SWITCH -", switch)
             self._buscar_siguiente(None)
-            print("SWITCH ", switch)
         except:
             pass
         # try:
@@ -529,7 +527,6 @@ class Extracion(ttk.Frame):
         """
         iid = self.treeview.selection()[0]
         records = self.treeview.get_children(iid)
-        print(records)
         self.treeview.delete(*self.treeview.get_children())
         self.load_tree(abspath(pathExtractions))
 
@@ -590,8 +587,8 @@ class Extracion(ttk.Frame):
         
         PST_EXT.txt.tag_configure(
             "titulo",
-            background="#EDEDED",
-            # foreground="#990033",
+            #background="#EDEDED",
+            foreground="#DD5353",
             selectbackground=default_select_bg,
             selectforeground=default_select_fg,
             font=_Font_Texto_bold
@@ -609,7 +606,7 @@ class Extracion(ttk.Frame):
         PST_EXT.txt.tag_configure(
             "coment2",
             # background="#E9D5DA",
-            foreground="#064663",
+            foreground="#5F9DF7",
             selectbackground=default_select_bg,
             selectforeground=default_select_fg,
             font=_Font_Texto_bold
@@ -627,7 +624,7 @@ class Extracion(ttk.Frame):
         PST_EXT.txt.tag_configure(
             "required",
             background=pers_scrText_bg,
-            foreground='red',
+            foreground='yellow',
             selectbackground=default_select_bg,
             selectforeground=default_select_fg,
             font=_Font_Texto
@@ -754,7 +751,6 @@ class Extracion(ttk.Frame):
             self.menu_Contextual.entryconfig("  Copiar", state="disabled")
 
     def limpiar_busqueda(self, event):
-        print("LIMPIA :: ", event)
         PST_EXT.var_entry_bsc.set("")
         PST_EXT.menu_Contextual.entryconfig(
             '  Limpiar Busqueda', state='disabled')
@@ -846,7 +842,11 @@ class Extracion(ttk.Frame):
     def indice_ocurrencia_actual(self, idx):
         # establecer la marca distintiva para la ocurrencia a etiquetar
         self.elim_tags(['found_prev_next'])
-        self.txt.tag_config('found_prev_next', background='orangered')
+        self.txt.tag_config(
+            'found_prev_next', 
+            background='#874C62', 
+            foreground="#A7D2CB"
+        )
 
         if idx is not None:
             self.txt.tag_add('found_prev_next', *idx)
@@ -877,7 +877,8 @@ class Extracion(ttk.Frame):
             window_height = self.y_alto_btn
             bus_reem_top_msg_w = 240
             ##WINDOWS no FUNCIONA
-            #self.busca_top.attributes('-type', 'splash')            #self.busca_top.overrideredirect(True)
+            #self.busca_top.attributes('-type', 'splash')    
+            self.busca_top.overrideredirect(True)
             screen_width = (self.app.root.winfo_x() + 640)
             screen_height = (self.app.root.winfo_y()+40)
             position_top = int(screen_height)
@@ -1138,7 +1139,6 @@ class Extracion(ttk.Frame):
                 self.noFoundEntry()
 
     def messageResult(self, message1, message2):
-        print('~ {} ~ {}'.format(message1, message2))
         if message1 == None or message2 == None:
             return '~ {} ~'.format("No hay resultados")
         else:
@@ -1163,7 +1163,6 @@ class Extracion(ttk.Frame):
     def buscar_todo(self, txt_buscar=None):
         '''Buscar todas las ocurrencias en el Entry de MainApp'''
         # eliminar toda marca establecida, si existiera, antes de plasmar nuevos resultados
-        print("--- TXT BUSCAR ", txt_buscar)
         self.txt.tag_remove('found', '1.0', tk.END)
         self.txt.tag_remove('found_prev_next', '1.0', tk.END)
         if txt_buscar:
@@ -1183,7 +1182,11 @@ class Extracion(ttk.Frame):
                 idx = lastidx
                 self.txt.see(idx)
             # configurando la forma de etiquetar las ocurrencias encontradas
-            self.txt.tag_config('found', background='dodgerblue')
+            self.txt.tag_config(
+                'found', 
+                background='#C98474', 
+                foreground="#F2D388"
+            )
             # FUNCIONA
 
             # self.buscar_next(self.entrySearch.get().strip())

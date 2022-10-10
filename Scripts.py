@@ -103,7 +103,6 @@ class FramesPoliticas(ttk.Frame):
         x_ancho_btn = 300
         hg_btn = int(y_alto_btn - 22)
         wd_btn = int(x_ancho_btn - 22)
-        print("----------------", data['politica'])
         for pl in data['politica']:
             politica_icon = pl['icon']
             logo_script_ico = ImageTk.PhotoImage(
@@ -151,7 +150,6 @@ class FramesPoliticas(ttk.Frame):
             data = json.load(pr_clt)
             for dt in data:
                 if dt['name'] == name:
-                    print("----DT ----", data)
                     self.format_response(dt)
     
     def FR_POL_motion(self, event):
