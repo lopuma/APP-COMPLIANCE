@@ -562,7 +562,7 @@ class TextSimilar(ttk.Frame):
         self.titulo = titulo
         self.vtn_modulos = tk.Toplevel(self)
         self.vtn_modulos.config(background=default_bottom_app)
-        window_width = 1200
+        window_width = 1300
         window_height = 300
         screen_width = app.root.winfo_x()
         screen_height = app.root.winfo_y()
@@ -570,30 +570,34 @@ class TextSimilar(ttk.Frame):
         position_right = int(screen_width+150)
         self.vtn_modulos.geometry(f'{window_width}x{window_height}+{position_right}+{position_top}')
         self.vtn_modulos.resizable(0, 0)
-        self.vtn_modulos.transient(self)
-        self.vtn_modulos.grab_set()
-        self.vtn_modulos.focus_set()
+        # self.vtn_modulos.transient(self)
+        # self.vtn_modulos.grab_set()
+        # self.vtn_modulos.focus_set()
         self.vtn_modulos.config(background=default_bottom_app)
-
+        self.vtn_modulos.rowconfigure(1, weight=1)
+        self.vtn_modulos.columnconfigure(0, weight=1)
 
 # --- FRAME TITULO
         self.frame1 = ttk.Frame(self.vtn_modulos,
         )
-        self.frame1.pack(fill='both', side='top', expand=0)
+        #self.frame1.pack(fill='both', side='top', expand=0)
+        self.frame1.grid(column=0, row=0, sticky='nsew', padx=10, pady=5)
 
         self.titulo = ttk.Label(self.frame1,
             text=self.titulo,
         )
-        self.titulo.pack(pady=10)
+        #self.titulo.pack(pady=10)
+        self.titulo.grid(column=0, row=0, sticky='nsew', padx=10, pady=5)
 
-# --- FRAME LISTBOX
+# --- FRAME LISTBOX        self.frame1.pack(fill='both', side='top', expand=0)
+
         self.frame2 = ttk.Frame(self.vtn_modulos,
         )
-        self.frame2.pack(fill='both', side=tk.LEFT, expand=1, pady=5, padx=5)
-        self.frame2.pack_propagate(1)
+        #self.frame2.pack(fill='both', side='top', expand=1, pady=5, padx=5)
+        #self.frame2.pack_propagate(1)
+        self.frame2.grid(column=0, row=1, sticky='nsew', padx=10, pady=5)
         self.frame2.rowconfigure(0, weight=1)
-        self.frame2.columnconfigure(0, weight=4)
-        self.frame2.columnconfigure(1, weight=2)
+        self.frame2.columnconfigure(0, weight=1)
         #self.frame2.columnconfigure(2, weight=1)
 
 # --- LISTBOX MODULO - FRAME2
@@ -609,18 +613,9 @@ class TextSimilar(ttk.Frame):
         )
 
         self._list_modulo.grid(row=0, column=0, sticky='nsew', pady=10, padx=5)
-
-# --- FUNCIONES LIST MODULO A SCROLL
         self._list_modulo.bind("<Down>", lambda e: self._OnVsb_down(e))
         self._list_modulo.bind("<Up>", lambda e: self._OnVsb_up(e))
-
-# --- FRAME 3
-        # self.frame2 = ttk.Frame(        #     self.vtn_modulos,
-        # )
-        # self.frame2.pack(fill='both', side='right', expand=0, pady=5, padx=5)
-        # self.frame2.rowconfigure(0, weight=1)
-
-# --- LISTBOX CLAVE - FRAME 3
+        
         self._list_clave = tk.Listbox(self.frame2,
             font=_Font_Texto,
             foreground=default_scrText_fg,
@@ -629,10 +624,11 @@ class TextSimilar(ttk.Frame):
             exportselection=False,
             highlightthickness=hhtk,
             highlightcolor=default_hglcolor,
+            width=30
         )
         self._list_clave.grid(row=0, column=1, sticky='nsew', pady=10, padx=5)
 
-# --- LISTBOX SO - FRAME 2
+# --- LISTBOX SO - FRAME 4002
         self._list_SO = tk.Listbox(self.frame2,
             font=_Font_Texto,
             foreground=default_scrText_fg,
@@ -641,11 +637,11 @@ class TextSimilar(ttk.Frame):
             exportselection=False,
             highlightthickness=hhtk,
             highlightcolor=default_hglcolor,
-            width=10
+            width=15
         )
         self._list_SO.grid(row=0, column=2, sticky='nsew', pady=10, padx=5)
 
-# - CREAR SCROLL
+# - CREAR SCROLL400
         self.vsb_scroll = tk.Scrollbar(self.frame2,
             orient="vertical",
             command=self.yview
@@ -653,7 +649,7 @@ class TextSimilar(ttk.Frame):
 
         self.vsb_scroll.grid(row=0, column=3, sticky='ns', pady=10)
 
-# --- list asociados a los SCROLL
+# --- list asociados a los selfSCROLL
         self._list_modulo.configure(yscrollcommand=self.yscroll_modulo)
         self._list_clave.configure(yscrollcommand=self.yscroll_clave)
         self._list_SO.configure(yscrollcommand=self.yscroll_so)
@@ -683,9 +679,19 @@ class TextSimilar(ttk.Frame):
 # TODO --- Bloquear select listbox
         self._list_clave.bindtags((self._list_clave, app, "all"))
         self._list_SO.bindtags((self._list_clave, app, "all"))
+        
+        self.sizegride = ttk.Sizegrip(
+            self.vtn_modulos,
+        )
+        self.sizegride.bind('<Button-1>', self.resizable)
+        self.sizegride.grid(column=0, row=2, sticky='nsew')
 
 # --- FUNCIONES PARA SCROLLBAR
-
+    def resizable(self, e):
+        self.click = False
+        if self.click == False:
+            self.vtn_modulos.resizable(1,1)
+        
     def yscroll_modulo(self, *args):
         wyview = self._list_modulo.yview()
         if self._list_clave.yview() != wyview:
@@ -1291,7 +1297,8 @@ class Desviacion(ttk.Frame):
 ## --- LIMPIAR ------------------------------------- ##
         self.cleanWidgets()
         self.enabled_Widgets()
-# --------- OBTENER MODULO POR CLAVE O MODULO -------------- ## //TODO "definir si buscar por clave o modulo"
+# --------- OBTENER MODULO POR CLAVE O MODULO -------------- #
+# TODO "definir si buscar por clave o modulo"
 # TODO --- SI NO EXISTE, MODULO O CLAVE
         if len(keyFound) == 0 and len(moduleFound) == 0:
             self.disabled_btn_expandir()
@@ -1372,7 +1379,7 @@ class Desviacion(ttk.Frame):
                                 dict_clave_modulo[md['modulo']
                                                   ] = md['clave'], md['SO']
                 titulo = 'LISTA DE MODULOS ENCONTRADOS, SEGUN SU CRITERIO DE BUSQUEDA, en {}'.format(        customer)
-                textsimilar = TextSimilar(        self, titulo, dict_clave_modulo)
+                textsimilar = TextSimilar(self, titulo, dict_clave_modulo)
                 return 'break'
 # TODO --- SI ES MODULO UNICO
         elif len(moduleFound) == 1 and len(keyFound) == 0:
@@ -1406,7 +1413,7 @@ class Desviacion(ttk.Frame):
                                 dict_clave_modulo[md['modulo']
                                                   ] = md['clave'], md['SO']
                 titulo = 'LISTA DE MODULOS ENCONTRADOS, SEGUN SU CRITERIO DE BUSQUEDA, en {}'.format(        customer)
-                textsimilar = TextSimilar(        self, titulo, dict_clave_modulo)
+                textsimilar = TextSimilar(self, titulo, dict_clave_modulo)
                 return 'break'
 # TODO --- SI EXISTE UN MODULO Y UNA CLAVE
         else:
@@ -1427,7 +1434,7 @@ class Desviacion(ttk.Frame):
                                 dict_clave_modulo[md['modulo']
                                                   ] = md['clave'], md['SO']
                 titulo = 'LISTA DE MODULOS ENCONTRADOS, SEGUN SU CRITERIO DE BUSQUEDA, en {}'.format(        customer)
-                textsimilar = TextSimilar(        self, titulo, dict_clave_modulo)
+                textsimilar = TextSimilar(self, titulo, dict_clave_modulo)
 
     def clear_busqueda(self, event):
         text_widget = event.widget
@@ -2454,9 +2461,6 @@ class Aplicacion():
     def cerrar_vtn(self):
         self.vtn_acerca_de.destroy()
 
-    def cerrar_vtn_gls(self):
-        self.vtn_glosario.destroy()
-
     def _acerca_de(self):
         self.vtn_acerca_de = tk.Toplevel(self.root)
         self.vtn_acerca_de.config(background=default_bottom_app)
@@ -2576,17 +2580,6 @@ class Aplicacion():
             highlightbackground=default_bottom_app
         )
 
-    def _cargar_modulo_glosario(self, *args):
-        with open(str(pathInclude).format('include_glosario.json'), encoding='utf-8') as g:
-            data = json.load(g)
-            listModulo = []
-            listClave = []
-            for md in data:
-                listModulo.append(md['modulo'])
-                listClave.append(md['clave'])
-        self._list_modulo.insert(tk.END, *listModulo)
-        self._list_clave.insert(tk.END, *listClave)
-
     def on_select(self, event):
         global listbox_list
         widget = event.widget
@@ -2596,130 +2589,6 @@ class Aplicacion():
                 listbox.selection_clear(0, tk.END)
                 for index in items:
                     listbox.selection_set(int(index))
-
-    def _glosario(self):
-        self.vtn_glosario = tk.Toplevel(self.root)
-        self.vtn_glosario.config(background=default_bottom_app)
-        window_width = 1000
-        window_height = 500
-        screen_width = app.root.winfo_x()
-        screen_height = app.root.winfo_y()
-        position_top = int(screen_height+70)
-        position_right = int(screen_width+150)
-        self.vtn_glosario.geometry(f'{window_width}x{window_height}+{position_right}+{position_top}')
-        self.vtn_glosario.tk.call('wm', 'iconphoto', self.vtn_glosario._w, tk.PhotoImage(file=str(pathIcon).format('acercaDe.png')))
-        self.vtn_glosario.transient(self.root)
-        self.vtn_glosario.resizable(False, False)
-        self.vtn_glosario.title("Ayuda")
-
-        self.close_icon_gls = ImageTk.PhotoImage(Image.open(pathIcon.format(r"close1.png")).resize((80, 60)))
-
-        self.fr1_gls = ttk.Frame(self.vtn_glosario,
-            height=20,
-        )
-        self.fr1_gls.pack(fill='both', side='top', expand=0)
-
-        # ? FONt AYUDA
-        self.titulo = ttk.Label(self.fr1_gls,
-            text='PALABRAS CLAVES DESVIACIONES',
-            font=(fuente_titulos, 20, weight_DF),
-        )
-        self.titulo.pack(expand=1, pady=10)
-
-        self.fr2_gls = ttk.Frame(self.vtn_glosario,
-        )
-        self.fr2_gls.pack(fill='both', side=tk.TOP, expand=1)
-
-        self.frame2 = ttk.Frame(self.fr2_gls,
-        )
-        self.frame2.pack(fill='both', side=tk.LEFT, expand=1, pady=10)
-
-        self.frame2.rowconfigure(1, weight=1)
-
-        # ? FONt AYUDA
-        self.titulo_modulo = ttk.Label(self.frame2,
-            text='MODULO',
-            foreground=default_color_titulos,
-            font=font.Font(family=fuente_titulos, size=16, weight='bold'),
-            anchor='center',
-            width=45
-        )
-        self.titulo_modulo.grid(row=0, column=0, sticky='nsew', pady=10, padx=5)
-
-        self.ListModulo_yScroll = tk.Scrollbar(self.frame2, orient=tk.VERTICAL)
-
-        # LISTBOX MODULO
-        self._list_modulo = tk.Listbox(self.frame2,
-            font=_Font_Texto,
-            foreground=default_scrText_fg,
-            selectbackground=default_select_bg,
-            selectforeground=default_select_fg,
-            exportselection=False,
-            highlightthickness=hhtk,
-            highlightcolor=default_hglcolor,
-            yscrollcommand=self.ListModulo_yScroll.set,
-        )
-        self._list_modulo.grid(row=1, column=0, sticky='nsew', pady=10, padx=(10, 0))
-        listbox_list.append(self._list_modulo)
-
-        self.frame2 = ttk.Frame(self.fr2_gls,
-            width=30
-        )
-        self.frame2.pack(fill='both', side='right', expand=1, pady=10, padx=10)
-        self.frame2.columnconfigure(0, weight=1)
-        self.frame2.rowconfigure(1, weight=1)
-
-        self.titulo_clave = ttk.Label(self.frame2,
-            text='CLAVE',
-            foreground=default_color_titulos,
-            font=font.Font(family=fuente_titulos, size=16, weight='bold'),
-            anchor='center'
-        )
-        self.titulo_clave.grid(row=0, column=0, sticky='nsew', pady=10, padx=5, columnspan=2)
-
-        self.ListClave_yScroll = tk.Scrollbar(self.frame2, orient=tk.VERTICAL)
-
-        # LISTBOX CLAVE
-        self._list_clave = tk.Listbox(self.frame2,
-            font=_Font_Texto,
-            foreground=default_scrText_fg,
-            selectbackground=default_select_bg,
-            selectforeground=default_select_fg,
-            exportselection=False,
-            highlightthickness=hhtk,
-            highlightcolor=default_hglcolor,
-            yscrollcommand=self.ListClave_yScroll.set,
-        )
-        self._list_clave.grid(row=1, column=0, sticky='nsew', pady=10,)
-
-        self.fr3_gls = ttk.Frame(self.vtn_glosario,
-            height=30
-        )
-        self.fr3_gls.pack(fill='both', side=tk.BOTTOM, expand=0, padx=10)
-
-        self.boton_gls = tk.Button(self.fr3_gls,
-            text='Close',
-            image=self.close_icon_gls,
-            command=self.cerrar_vtn_gls
-        )
-        self.boton_gls.pack(side=tk.RIGHT, padx=10, pady=10)
-        self.boton_gls.config(background=default_bottom_app,
-            activebackground=default_bottom_app,
-            borderwidth=0,
-            highlightbackground=default_bottom_app
-        )
-
-        listbox_list.append(self._list_clave)
-
-        self.ListClave_yScroll.grid(row=1, column=1, pady=10, sticky='nse')
-        self.ListModulo_yScroll.grid(row=1, column=1, pady=10, sticky='nse')
-
-        self._list_modulo.bind('<<ListboxSelect>>', self.on_select)
-        self._list_clave.bind('<<ListboxSelect>>', self.on_select)
-        # self._list_modulo.bind("<Button-3>", self.displayMenuClickRight_GLS)
-
-        self._cargar_modulo_glosario()
-        self._menu_clickDerecho_GLS()
 
     def widgets_APP(self):
 
@@ -3016,12 +2885,6 @@ class Aplicacion():
             activebackground=default_select_bg,
             activeforeground=default_select_fg,
         )
-        # self.helpMenu.add_command(label="  Ayuda",
-        #     image=self.iconoHelp,
-        #     compound=tk.LEFT,
-        #     command=self._glosario
-        # )
-        #self.helpMenu.add_separator()
         self.helpMenu.add_command(label="  Acerca de...",
             image=self.iconoAbout,
             compound=tk.LEFT,

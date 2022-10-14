@@ -32,8 +32,6 @@ class Ventana(ttk.Frame):
         self.click = True        
 
         self.vtn_ventanas = tk.Toplevel(self)
-        #CLS_VENTANA = self.vtn_ventanas
-        #self.vtn_ventanas.bind('<Motion>', self.app.activeDefault)
         self.vtn_ventanas.config(
             background=default_bottom_app
         )
@@ -49,9 +47,6 @@ class Ventana(ttk.Frame):
 
         self.vtn_ventanas.title('{} for client {}'.format(self.tt_vtn, self.customer))
         self.vtn_ventanas.tk.call('wm', 'iconphoto', self.vtn_ventanas._w, tk.PhotoImage(file=pathIcon.format(r'ventanas.png')))       
-
-        #self.vtn_ventanas.transient(self)
-        #self.vtn_ventanas.grab_set()
         self.vtn_ventanas.columnconfigure(0, weight=1)
         self.vtn_ventanas.rowconfigure(1, weight=1)
         self.vtn_ventanas.rowconfigure(2, weight=1)
@@ -68,7 +63,6 @@ class Ventana(ttk.Frame):
         self.srcVariable.bind("<Key>", lambda e: self.app.widgets_SoloLectura(e))
         self.cbxUser.bind("<Key>", lambda e: self.app.widgets_SoloLectura(e))
         self.VTN_entry.bind("<Any-KeyRelease>", self.on_entr_str_busca_key_release)
-        #self.vtn_ventanas.bind("<Motion>", lambda e:desviacion.activar_Focus(e))
         self.srcImpact.bind("<Button-3>", self.display_menu_clickDerecho)
         self.srcRisk.bind("<Button-3>", self.display_menu_clickDerecho)
         self.srcVariable.bind("<Button-3>", self.display_menu_clickDerecho)
