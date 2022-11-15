@@ -195,7 +195,20 @@ class Ventana(ttk.Frame):
     def _buscar(self, event=None):
         VTN_entry_Event = event
         VTN_entry_Event.focus()
-        self._buscar_todo(VTN_entry_Event.get().strip())
+        # self._buscar_todo(VTN_entry_Event.get())
+        try:
+            words = VTN_entry_Event.get().split(' ')
+            print(len(words))
+            if (len(words) > 2):
+                file = [ n for n in words if "/" in n]
+                file = str(file).replace(",","").replace("[","").replace("]","").replace("'","").replace(";","")
+                print(file)
+                self._buscar_todo(file)
+            else:
+                self._buscar_todo(VTN_entry_Event.get())
+        except:
+            pass
+        
 
     def _buscar_todo(self, txt_buscar=None):
         valor_aBuscar = txt_buscar

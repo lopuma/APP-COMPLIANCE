@@ -111,12 +111,21 @@ default_hglcolor = parse.get('app', 'color_widget_activo')
 # ? COLOR FONDO PARA WIDGETS
 default_scrText_bg = parse.get('app', 'colour_scroll')
 default_color_descripcion = '#838389'
-default_colourCodeFg = '#FF5E5E'
 # default_colourCodeBg = '#FFE7E7'
-default_colourCodeBg = '#fedee1'
-default_color_line_fg = '#1E90FF'
-default_colourNoteFg = '#7A7A7A'
 default_Framework = '#838389'
+
+#TODO COLORES TEXT
+default_colourCodeBg = '#fedee1'
+default_colourCodeFg = '#FF5E5E'
+default_colourNoteBg = '#8FD6E1'
+default_colourNoteFg = '#000000'
+default_colourComentBg = '#555555'
+default_colourComentFg = '#FFC045'
+default_colourServerBg = '#4ECCA3'
+default_colourServerFg = '#000000'
+default_colourRequiredBg = '#555555'
+default_colourRequiredFg = 'yellow'
+default_color_line_fg = '#1E90FF'
 
 # FUENTES
 fuente_titulos = parse.get('app', 'fuente_titulo')
@@ -150,20 +159,27 @@ modo_dark = parse.get('dark', 'modo_dark')
 activar_modo = parse.get('dark', 'activar_modo')
 text_btnMode = "Dark Mode ON"
 
-# * COLOR PERSONALIZADO
-
-pers_scrText_fg = '#f4f4f4'
+#TODO COLOR PERSONALIZADO
 pers_scrText_bg = '#555555'  # ? PARA CUADRO DE TEXTO
+pers_scrText_fg = '#f4f4f4'
+pers_colourCodeBg = '#555555'
+pers_colourCodeFg = '#E68080'
+pers_colourNoteBg = '#555555'
+pers_colourNoteFg = '#8FD6E1'
+pers_colourComentBg = '#555555'
+pers_colourComentFg = '#FFC045'
+pers_colourServerBg = '#555555'
+pers_colourServerFg = '#4ECCA3'
+pers_colourRequiredBg = '#555555'
+pers_colourRequiredFg = '#FF8243'
+
 pers_color_titulo = '#FF8080'
 pers_menu_bg = '#353535'  # ? COLOR PRIMARIO
 pers_bottom_app = '#454545'  # ? SECUNDARIO
 pers_hglcolor = '#E7E7E7'
 pers_OutlineDark = '#F47C7C'  # ? color rojo outline
 pers_Outline = '#4A8CCA'  # ? color azul outline
-pers_colourCodeFg = '#E68080'
-pers_colourNoteFg = '#BABABA'
 pers_Framework = '#545454'
-pers_colourCodeBg = '#555555'
 pers_boton_bg_dark = '#F4D4D4'
 pers_boton_bg_default = '#DAEAF1'
 
@@ -1194,17 +1210,17 @@ class Desviacion(ttk.Frame):
 
     def llamada_colores(self):
         if modo_dark == 'False':
-            PST_DESV.DESV_scrCheck.colourText(    default_scrText_bg, default_colourCodeBg, default_colourCodeFg, default_colourNoteFg)
-            PST_DESV.DESV_scrBackup.colourText(    default_scrText_bg, default_colourCodeBg, default_colourCodeFg, default_colourNoteFg)
-            PST_DESV.DESV_scrEdit.colourText(    default_scrText_bg, default_colourCodeBg, default_colourCodeFg, default_colourNoteFg)
-            PST_DESV.DESV_scrRefresh.colourText(    default_scrText_bg, default_colourCodeBg, default_colourCodeFg, default_colourNoteFg)
-            PST_DESV.DESV_scrEvidencia.colourText(    default_scrText_bg, default_colourCodeBg, default_colourCodeFg, default_colourNoteFg)
+            PST_DESV.DESV_scrCheck.colourText(    default_scrText_bg, default_colourCodeBg, default_colourCodeFg, default_colourNoteBg, default_colourNoteFg, default_colourComentBg, default_colourComentFg, default_colourServerBg, default_colourServerFg, default_colourRequiredBg, default_colourRequiredFg)
+            PST_DESV.DESV_scrBackup.colourText(    default_scrText_bg, default_colourCodeBg, default_colourCodeFg, default_colourNoteBg,default_colourNoteFg, default_colourComentBg, default_colourComentFg, default_colourServerBg, default_colourServerFg, default_colourRequiredBg, default_colourRequiredFg)
+            PST_DESV.DESV_scrEdit.colourText(    default_scrText_bg, default_colourCodeBg, default_colourCodeFg, default_colourNoteBg, default_colourNoteFg, default_colourComentBg, default_colourComentFg, default_colourServerBg, default_colourServerFg, default_colourRequiredBg, default_colourRequiredFg)
+            PST_DESV.DESV_scrRefresh.colourText(    default_scrText_bg, default_colourCodeBg, default_colourCodeFg, default_colourNoteBg, default_colourNoteFg, default_colourComentBg, default_colourComentFg, default_colourServerBg, default_colourServerFg, default_colourRequiredBg, default_colourRequiredFg)
+            PST_DESV.DESV_scrEvidencia.colourText(    default_scrText_bg, default_colourCodeBg, default_colourCodeFg, default_colourNoteBg, default_colourNoteFg, default_colourComentBg, default_colourComentFg, default_colourServerBg, default_colourServerFg, default_colourRequiredBg, default_colourRequiredFg)
         elif modo_dark == 'True':
-            PST_DESV.DESV_scrCheck.colourText(    pers_scrText_bg, pers_scrText_bg, pers_colourCodeFg, pers_colourNoteFg)
-            PST_DESV.DESV_scrBackup.colourText(    pers_scrText_bg, pers_scrText_bg, pers_colourCodeFg, pers_colourNoteFg)
-            PST_DESV.DESV_scrEdit.colourText(    pers_scrText_bg, pers_scrText_bg, pers_colourCodeFg, pers_colourNoteFg)
-            PST_DESV.DESV_scrRefresh.colourText(    pers_scrText_bg, pers_scrText_bg, pers_colourCodeFg, pers_colourNoteFg)
-            PST_DESV.DESV_scrEvidencia.colourText(    pers_scrText_bg, pers_scrText_bg, pers_colourCodeFg, pers_colourNoteFg)
+            PST_DESV.DESV_scrCheck.colourText(    pers_scrText_bg, pers_scrText_bg, pers_colourCodeFg, pers_colourNoteBg, pers_colourNoteFg, pers_colourComentBg, pers_colourComentFg, pers_colourServerBg, pers_colourServerFg, pers_colourRequiredBg, pers_colourRequiredFg)
+            PST_DESV.DESV_scrBackup.colourText(    pers_scrText_bg, pers_scrText_bg, pers_colourCodeFg, pers_colourNoteBg, pers_colourNoteFg, pers_colourComentBg, pers_colourComentFg, pers_colourServerBg, pers_colourServerFg, pers_colourRequiredBg, pers_colourRequiredFg)
+            PST_DESV.DESV_scrEdit.colourText(    pers_scrText_bg, pers_scrText_bg, pers_colourCodeFg, pers_colourNoteBg, pers_colourNoteFg, pers_colourComentBg, pers_colourComentFg, pers_colourServerBg, pers_colourServerFg, pers_colourRequiredBg, pers_colourRequiredFg)
+            PST_DESV.DESV_scrRefresh.colourText(    pers_scrText_bg, pers_scrText_bg, pers_colourCodeFg, pers_colourNoteBg, pers_colourNoteFg, pers_colourComentBg, pers_colourComentFg, pers_colourServerBg, pers_colourServerFg, pers_colourRequiredBg, pers_colourRequiredFg)
+            PST_DESV.DESV_scrEvidencia.colourText(    pers_scrText_bg, pers_scrText_bg, pers_colourCodeFg, pers_colourNoteBg, pers_colourNoteFg, pers_colourComentBg, pers_colourComentFg, pers_colourServerBg, pers_colourServerFg, pers_colourRequiredBg, pers_colourRequiredFg)
 
     def newButtonModule(self, nameButton, pathScript, active):
         global createOn
@@ -1288,8 +1304,7 @@ class Desviacion(ttk.Frame):
         keyFound = [n for n in listKeys if valor_aBuscar.upper().strip() in n]
 
         moduleFound = self.solve(valor_aBuscar)
-        moduleFound = [
-            n for n in listModulo if moduleFound.strip().replace("\\", "/") in n]
+        moduleFound = [ n for n in listModulo if moduleFound.strip().replace("\\", "/") in n]
 
         self.DESV_btnFind.grid_forget()
         self.DESVfr1_btnLimpiar.grid(row=1, column=1, pady=5, padx=5, sticky='nsw')
@@ -2516,7 +2531,7 @@ class Aplicacion():
         self.lbl5.bind("<Configure>", self.label_resize)
 
         self.lbl2 = ttk.Label(self.AcercaDe_txt_frame,
-            text='Versión:   2.5',
+            text='Versión:   3.0',
             anchor='w',
             font=(fuente_titulos, 13)
         )
@@ -3220,7 +3235,7 @@ class Aplicacion():
                                  )
 
     def expandirModeDefault(self):
-        PST_EXP.EXP_scrExpandir.colourText(default_scrText_bg, default_colourCodeBg, default_colourCodeFg, default_colourNoteFg)
+        PST_EXP.EXP_scrExpandir.colourText(default_scrText_bg, default_colourCodeBg, default_colourCodeFg, default_colourNoteBg, default_colourNoteFg, default_colourComentBg, default_colourComentFg, default_colourServerBg, default_colourServerFg, default_colourRequiredBg, default_colourRequiredFg)
         PST_EXP.vtn_expandir.config(background=default_bottom_app,
         )
         PST_EXP.EXP_btnNext.config(background=default_bottom_app,
@@ -3238,7 +3253,7 @@ class Aplicacion():
         )
 
     def expandirModeDark(self):
-        PST_EXP.EXP_scrExpandir.colourText(pers_scrText_bg, pers_scrText_bg, pers_colourCodeFg, pers_colourNoteFg)
+        PST_EXP.EXP_scrExpandir.colourText(pers_scrText_bg, pers_scrText_bg, pers_colourCodeFg, pers_colourNoteBg, pers_colourNoteFg, pers_colourComentBg, pers_colourComentFg, pers_colourServerBg, pers_colourServerFg, pers_colourRequiredBg, pers_colourRequiredFg)
         PST_EXP.vtn_expandir.config(background=pers_bottom_app,
         )
         PST_EXP.EXP_btnNext.config(background=pers_bottom_app,

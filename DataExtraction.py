@@ -55,7 +55,7 @@ class MyScrollText(st.ScrolledText):
         )
 
     # FUNCION PARA APLICAR COLORES A LOS SCROLLNOTES
-    def colourText(self, bg_color, bg_codigo, fg_codigo, fg_nota):
+    def colourText(self, bg_color, bg_codigo, fg_codigo, bg_nota, fg_nota, bg_coment, fg_coment, bg_server, fg_server, bg_required, fg_required):
         self.tag_configure(
             "codigo",
             background=bg_codigo,
@@ -76,8 +76,8 @@ class MyScrollText(st.ScrolledText):
 
         self.tag_configure(
             "nota",
-            background='#D4EFEE',
-            foreground='#000000',
+            background=bg_nota,
+            foreground=fg_nota,
             selectbackground=default_select_bg,
             selectforeground=default_select_fg,
             font=_Font_Texto
@@ -85,8 +85,8 @@ class MyScrollText(st.ScrolledText):
 
         self.tag_configure(
             "required",
-            background=pers_scrText_bg,
-            foreground='yellow',
+            background=bg_required,
+            foreground=fg_required,
             selectbackground=default_select_bg,
             selectforeground=default_select_fg,
             font=_Font_Texto
@@ -94,8 +94,8 @@ class MyScrollText(st.ScrolledText):
 
         self.tag_configure(
             "server",
-            background='#7BB3A4',
-            foreground='#000000',
+            background=bg_server,
+            foreground=fg_server,
             selectbackground=default_select_bg,
             selectforeground=default_select_fg,
             font=_Font_Texto
@@ -103,8 +103,8 @@ class MyScrollText(st.ScrolledText):
 
         self.tag_configure(
             "coment",
-            background=pers_scrText_bg,
-            foreground='#EFB810',
+            background=bg_coment,
+            foreground=fg_coment,
             selectbackground=default_select_bg,
             selectforeground=default_select_fg,
             font=_Font_Texto
