@@ -467,13 +467,6 @@ class Extracion(ttk.Frame):
             self._buscar_siguiente(None)
         except:
             pass
-        # try:
-        #     if _estado_actual:
-        #         print("LLEGA ------------ ", switch)
-        #         self._buscar_siguiente(None)
-        #         print("PASA ------------ ", switch)
-        # except:
-        #     pass
     def listdir(self, path):
         try:
             return listdir(path)

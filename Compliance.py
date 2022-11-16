@@ -254,8 +254,6 @@ class Expandir(ttk.Frame):
         self.vtn_expandir.destroy()
         
         # #TODO PRUEBA de cerrar y abrir
-        # print("ARRAY DE VENTANAS {}".format(ventanasExpandir))        
-        # print(ventanasExpandir[0])
         # abrir = Expandir(self, PST_DESV.phase, PST_DESV.widget_Expan,
         #                     "Nuevo", "Nuevo", PST_DESV.system , varNum)
         # abrir.config(width=300, height=200)
@@ -1888,9 +1886,6 @@ class Desviacion(ttk.Frame):
         self.DESV_btnScreamEvidencia.bind('<Motion>', partial(self.cambiar_icono, self.DESV_btnScreamEvidencia, icon_cap))
         self.DESV_btnCopyALL.bind('<Motion>', partial(self.cambiar_icono, self.DESV_btnCopyALL, icon_copy))
         self.DESV_btn1CopyALL.bind('<Motion>', partial(self.cambiar_icono, self.DESV_btn1CopyALL, icon_copy))
-
-    # def changeColorActiveToolTipRB(self):
-    #     print("EN CONSTRUNCION NO FOUND 404")
 
 class Aplicacion():
     WIDTH = 1360
