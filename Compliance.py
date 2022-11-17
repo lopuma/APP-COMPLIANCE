@@ -498,6 +498,29 @@ class Expandir(ttk.Frame):
         if createOn:
             desviacion.addButton(PST_EXP.vtn_expandir, PST_DESV.nameButtonCurrent, PST_DESV.pathScriptCurrent, 0, 0)
 
+    def resizable(self, e):
+        self.click = False
+        if self.click == False:
+            self.vtn_expandir.resizable(1,1)
+    
+    def _release_callback(self, e):
+        global window_width
+        global window_height
+        self.click = True
+        self.vtn_expandir.resizable(0, 0)
+        alto = self.vtn_expandir.winfo_height()
+        ancho = self.vtn_expandir.winfo_width()
+        window_width = ancho
+        window_height = alto
+        window_width = str(window_width)
+        window_height = str(window_height)
+        
+        parse.set('medidas_expandir', 'width', window_width)
+        parse.set('medidas_expandir', 'height', window_height)
+        with open(fileConfig, 'w', encoding='utf-8') as configfile:
+            parse.write(configfile)
+
+
     def WIDGETS_EXPANDIR(self):
         from DataExtraction import MyScrollText
         self.EXP_lblWidget = ttk.Label(self.vtn_expandir,
@@ -566,6 +589,16 @@ class Expandir(ttk.Frame):
         self.EXP_btnReducir.grid(row=0, column=6, padx=(0, 20), pady=15, sticky='ne')
 
         self.EXP_scrExpandir.grid(row=1, column=0, padx=5, pady=5, sticky='nsew', columnspan=7)
+        
+        self.sizegrid = ttk.Sizegrip(
+            self.vtn_expandir,
+        )
+        self.sizegrid.grid(row=2, column=0, sticky='nsew', columnspan=7) 
+        self.sizegrid.bind(
+            '<Button-1>', self.resizable
+        )
+
+        self.sizegrid.bind("<ButtonRelease-1>", self._release_callback)
 
         self.activeIncludeExpand()
 
@@ -1076,8 +1109,6 @@ class Desviacion(ttk.Frame):
                 self.menu_Contextual.entryconfig("  Copiar", state="normal")
             else:
                 self.menu_Contextual.entryconfig("  Copiar", state="disabled")
-        if str(PST_DESV.widgetActive) == str(PST_EXP.EXP_scrExpandir):
-            self.menu_Contextual.entryconfig('  Buscar', state='disabled')
     
     def buscar(self, event):
         self.DESV_entry.focus()

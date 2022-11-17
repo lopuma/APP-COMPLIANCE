@@ -207,7 +207,6 @@ class Ventana(ttk.Frame):
         except:
             pass
         
-
     def _buscar_todo(self, txt_buscar=None):
         valor_aBuscar = txt_buscar
         if valor_aBuscar == "Buscar Directories / File ...":
