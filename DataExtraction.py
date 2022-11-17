@@ -2,6 +2,7 @@
 import codecs
 from functools import partial
 import os
+import sys
 import time
 import tkinter as tk
 from os import listdir
@@ -18,6 +19,7 @@ HIDDEN = 0
 _activeFocus = False
 switch = False
 fileApariencaIni = str(pathConfig).format("apariencia.ini")
+myOs = sys.platform
 
 def beep_error(f):
     def applicator(*args, **kwargs):
@@ -53,7 +55,7 @@ class MyScrollText(st.ScrolledText):
         )
 
     # FUNCION PARA APLICAR COLORES A LOS SCROLLNOTES
-    def colourText(self, bg_color, bg_codigo, fg_codigo, fg_nota):
+    def colourText(self, bg_color, bg_codigo, fg_codigo, bg_nota, fg_nota, bg_coment, fg_coment, bg_server, fg_server, bg_required, fg_required):
         self.tag_configure(
             "codigo",
             background=bg_codigo,
@@ -74,8 +76,8 @@ class MyScrollText(st.ScrolledText):
 
         self.tag_configure(
             "nota",
-            background='#D4EFEE',
-            foreground='#000000',
+            background=bg_nota,
+            foreground=fg_nota,
             selectbackground=default_select_bg,
             selectforeground=default_select_fg,
             font=_Font_Texto
@@ -83,8 +85,8 @@ class MyScrollText(st.ScrolledText):
 
         self.tag_configure(
             "required",
-            background=pers_scrText_bg,
-            foreground='yellow',
+            background=bg_required,
+            foreground=fg_required,
             selectbackground=default_select_bg,
             selectforeground=default_select_fg,
             font=_Font_Texto
@@ -92,8 +94,8 @@ class MyScrollText(st.ScrolledText):
 
         self.tag_configure(
             "server",
-            background='#7BB3A4',
-            foreground='#000000',
+            background=bg_server,
+            foreground=fg_server,
             selectbackground=default_select_bg,
             selectforeground=default_select_fg,
             font=_Font_Texto
@@ -101,8 +103,8 @@ class MyScrollText(st.ScrolledText):
 
         self.tag_configure(
             "coment",
-            background=pers_scrText_bg,
-            foreground='#EFB810',
+            background=bg_coment,
+            foreground=fg_coment,
             selectbackground=default_select_bg,
             selectforeground=default_select_fg,
             font=_Font_Texto
@@ -465,13 +467,6 @@ class Extracion(ttk.Frame):
             self._buscar_siguiente(None)
         except:
             pass
-        # try:
-        #     if _estado_actual:
-        #         print("LLEGA ------------ ", switch)
-        #         self._buscar_siguiente(None)
-        #         print("PASA ------------ ", switch)
-        # except:
-        #     pass
     def listdir(self, path):
         try:
             return listdir(path)
@@ -877,8 +872,9 @@ class Extracion(ttk.Frame):
             window_height = self.y_alto_btn
             bus_reem_top_msg_w = 240
             ##WINDOWS no FUNCIONA
-            #self.busca_top.attributes('-type', 'splash')    
-            self.busca_top.overrideredirect(True)
+            #self.busca_top.attributes('-type', 'splash')
+            if(myOs=='linux'): 
+                self.busca_top.overrideredirect(True)
             screen_width = (self.app.root.winfo_x() + 640)
             screen_height = (self.app.root.winfo_y()+40)
             position_top = int(screen_height)
@@ -953,9 +949,12 @@ class Extracion(ttk.Frame):
                 self.busca_frm_content,
                 textvariable=self.var_entry_bsc,
             )
-
+            if(myOs == 'linux'):
+                widthSearch = 40
+            else:
+                widthSearch = 49
             self.entrySearch.configure(
-                width=40,
+                width=widthSearch,
                 highlightcolor=default_hglcolor,
                 insertbackground=default_hglcolor,
                 insertwidth=1,

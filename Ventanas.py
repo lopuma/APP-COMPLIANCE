@@ -32,8 +32,6 @@ class Ventana(ttk.Frame):
         self.click = True        
 
         self.vtn_ventanas = tk.Toplevel(self)
-        #CLS_VENTANA = self.vtn_ventanas
-        #self.vtn_ventanas.bind('<Motion>', self.app.activeDefault)
         self.vtn_ventanas.config(
             background=default_bottom_app
         )
@@ -49,9 +47,6 @@ class Ventana(ttk.Frame):
 
         self.vtn_ventanas.title('{} for client {}'.format(self.tt_vtn, self.customer))
         self.vtn_ventanas.tk.call('wm', 'iconphoto', self.vtn_ventanas._w, tk.PhotoImage(file=pathIcon.format(r'ventanas.png')))       
-
-        #self.vtn_ventanas.transient(self)
-        #self.vtn_ventanas.grab_set()
         self.vtn_ventanas.columnconfigure(0, weight=1)
         self.vtn_ventanas.rowconfigure(1, weight=1)
         self.vtn_ventanas.rowconfigure(2, weight=1)
@@ -68,7 +63,6 @@ class Ventana(ttk.Frame):
         self.srcVariable.bind("<Key>", lambda e: self.app.widgets_SoloLectura(e))
         self.cbxUser.bind("<Key>", lambda e: self.app.widgets_SoloLectura(e))
         self.VTN_entry.bind("<Any-KeyRelease>", self.on_entr_str_busca_key_release)
-        #self.vtn_ventanas.bind("<Motion>", lambda e:desviacion.activar_Focus(e))
         self.srcImpact.bind("<Button-3>", self.display_menu_clickDerecho)
         self.srcRisk.bind("<Button-3>", self.display_menu_clickDerecho)
         self.srcVariable.bind("<Button-3>", self.display_menu_clickDerecho)
@@ -201,8 +195,18 @@ class Ventana(ttk.Frame):
     def _buscar(self, event=None):
         VTN_entry_Event = event
         VTN_entry_Event.focus()
-        self._buscar_todo(VTN_entry_Event.get().strip())
-
+        # self._buscar_todo(VTN_entry_Event.get())
+        try:
+            words = VTN_entry_Event.get().split(' ')
+            if (len(words) > 2):
+                file = [ n for n in words if "/" in n]
+                file = str(file).replace(",","").replace("[","").replace("]","").replace("'","").replace(";","")
+                self._buscar_todo(file)
+            else:
+                self._buscar_todo(VTN_entry_Event.get())
+        except:
+            pass
+        
     def _buscar_todo(self, txt_buscar=None):
         valor_aBuscar = txt_buscar
         if valor_aBuscar == "Buscar Directories / File ...":

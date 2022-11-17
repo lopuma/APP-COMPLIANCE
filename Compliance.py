@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-#!/usr/bin/python
 # Copyright (c) Jose Alvaro Cedeño 2022
 # For license see FREE LICENSE
 try:
@@ -9,7 +8,6 @@ except ImportError:
 import json
 import os
 import time
-import subprocess
 import sys
 from pathlib import Path
 from getpass import getuser
@@ -113,12 +111,21 @@ default_hglcolor = parse.get('app', 'color_widget_activo')
 # ? COLOR FONDO PARA WIDGETS
 default_scrText_bg = parse.get('app', 'colour_scroll')
 default_color_descripcion = '#838389'
-default_colourCodeFg = '#FF5E5E'
 # default_colourCodeBg = '#FFE7E7'
-default_colourCodeBg = '#fedee1'
-default_color_line_fg = '#1E90FF'
-default_colourNoteFg = '#7A7A7A'
 default_Framework = '#838389'
+
+#TODO COLORES TEXT
+default_colourCodeBg = '#fedee1'
+default_colourCodeFg = '#FF5E5E'
+default_colourNoteBg = '#8FD6E1'
+default_colourNoteFg = '#000000'
+default_colourComentBg = '#555555'
+default_colourComentFg = '#FFC045'
+default_colourServerBg = '#4ECCA3'
+default_colourServerFg = '#000000'
+default_colourRequiredBg = '#555555'
+default_colourRequiredFg = 'yellow'
+default_color_line_fg = '#1E90FF'
 
 # FUENTES
 fuente_titulos = parse.get('app', 'fuente_titulo')
@@ -152,20 +159,27 @@ modo_dark = parse.get('dark', 'modo_dark')
 activar_modo = parse.get('dark', 'activar_modo')
 text_btnMode = "Dark Mode ON"
 
-# * COLOR PERSONALIZADO
-
-pers_scrText_fg = '#f4f4f4'
+#TODO COLOR PERSONALIZADO
 pers_scrText_bg = '#555555'  # ? PARA CUADRO DE TEXTO
+pers_scrText_fg = '#f4f4f4'
+pers_colourCodeBg = '#555555'
+pers_colourCodeFg = '#E68080'
+pers_colourNoteBg = '#555555'
+pers_colourNoteFg = '#8FD6E1'
+pers_colourComentBg = '#555555'
+pers_colourComentFg = '#FFC045'
+pers_colourServerBg = '#555555'
+pers_colourServerFg = '#4ECCA3'
+pers_colourRequiredBg = '#555555'
+pers_colourRequiredFg = '#FF8243'
+
 pers_color_titulo = '#FF8080'
 pers_menu_bg = '#353535'  # ? COLOR PRIMARIO
 pers_bottom_app = '#454545'  # ? SECUNDARIO
 pers_hglcolor = '#E7E7E7'
 pers_OutlineDark = '#F47C7C'  # ? color rojo outline
 pers_Outline = '#4A8CCA'  # ? color azul outline
-pers_colourCodeFg = '#E68080'
-pers_colourNoteFg = '#BABABA'
 pers_Framework = '#545454'
-pers_colourCodeBg = '#555555'
 pers_boton_bg_dark = '#F4D4D4'
 pers_boton_bg_default = '#DAEAF1'
 
@@ -240,8 +254,6 @@ class Expandir(ttk.Frame):
         self.vtn_expandir.destroy()
         
         # #TODO PRUEBA de cerrar y abrir
-        # print("ARRAY DE VENTANAS {}".format(ventanasExpandir))        
-        # print(ventanasExpandir[0])
         # abrir = Expandir(self, PST_DESV.phase, PST_DESV.widget_Expan,
         #                     "Nuevo", "Nuevo", PST_DESV.system , varNum)
         # abrir.config(width=300, height=200)
@@ -486,6 +498,29 @@ class Expandir(ttk.Frame):
         if createOn:
             desviacion.addButton(PST_EXP.vtn_expandir, PST_DESV.nameButtonCurrent, PST_DESV.pathScriptCurrent, 0, 0)
 
+    def resizable(self, e):
+        self.click = False
+        if self.click == False:
+            self.vtn_expandir.resizable(1,1)
+    
+    def _release_callback(self, e):
+        global window_width
+        global window_height
+        self.click = True
+        self.vtn_expandir.resizable(0, 0)
+        alto = self.vtn_expandir.winfo_height()
+        ancho = self.vtn_expandir.winfo_width()
+        window_width = ancho
+        window_height = alto
+        window_width = str(window_width)
+        window_height = str(window_height)
+        
+        parse.set('medidas_expandir', 'width', window_width)
+        parse.set('medidas_expandir', 'height', window_height)
+        with open(fileConfig, 'w', encoding='utf-8') as configfile:
+            parse.write(configfile)
+
+
     def WIDGETS_EXPANDIR(self):
         from DataExtraction import MyScrollText
         self.EXP_lblWidget = ttk.Label(self.vtn_expandir,
@@ -554,6 +589,16 @@ class Expandir(ttk.Frame):
         self.EXP_btnReducir.grid(row=0, column=6, padx=(0, 20), pady=15, sticky='ne')
 
         self.EXP_scrExpandir.grid(row=1, column=0, padx=5, pady=5, sticky='nsew', columnspan=7)
+        
+        self.sizegrid = ttk.Sizegrip(
+            self.vtn_expandir,
+        )
+        self.sizegrid.grid(row=2, column=0, sticky='nsew', columnspan=7) 
+        self.sizegrid.bind(
+            '<Button-1>', self.resizable
+        )
+
+        self.sizegrid.bind("<ButtonRelease-1>", self._release_callback)
 
         self.activeIncludeExpand()
 
@@ -564,7 +609,7 @@ class TextSimilar(ttk.Frame):
         self.titulo = titulo
         self.vtn_modulos = tk.Toplevel(self)
         self.vtn_modulos.config(background=default_bottom_app)
-        window_width = 1200
+        window_width = 1300
         window_height = 300
         screen_width = app.root.winfo_x()
         screen_height = app.root.winfo_y()
@@ -572,30 +617,34 @@ class TextSimilar(ttk.Frame):
         position_right = int(screen_width+150)
         self.vtn_modulos.geometry(f'{window_width}x{window_height}+{position_right}+{position_top}')
         self.vtn_modulos.resizable(0, 0)
-        self.vtn_modulos.transient(self)
-        self.vtn_modulos.grab_set()
-        self.vtn_modulos.focus_set()
+        # self.vtn_modulos.transient(self)
+        # self.vtn_modulos.grab_set()
+        # self.vtn_modulos.focus_set()
         self.vtn_modulos.config(background=default_bottom_app)
-
+        self.vtn_modulos.rowconfigure(1, weight=1)
+        self.vtn_modulos.columnconfigure(0, weight=1)
 
 # --- FRAME TITULO
         self.frame1 = ttk.Frame(self.vtn_modulos,
         )
-        self.frame1.pack(fill='both', side='top', expand=0)
+        #self.frame1.pack(fill='both', side='top', expand=0)
+        self.frame1.grid(column=0, row=0, sticky='nsew', padx=10, pady=5)
 
         self.titulo = ttk.Label(self.frame1,
             text=self.titulo,
         )
-        self.titulo.pack(pady=10)
+        #self.titulo.pack(pady=10)
+        self.titulo.grid(column=0, row=0, sticky='nsew', padx=10, pady=5)
 
-# --- FRAME LISTBOX
+# --- FRAME LISTBOX        self.frame1.pack(fill='both', side='top', expand=0)
+
         self.frame2 = ttk.Frame(self.vtn_modulos,
         )
-        self.frame2.pack(fill='both', side=tk.LEFT, expand=1, pady=5, padx=5)
-        self.frame2.pack_propagate(1)
+        #self.frame2.pack(fill='both', side='top', expand=1, pady=5, padx=5)
+        #self.frame2.pack_propagate(1)
+        self.frame2.grid(column=0, row=1, sticky='nsew', padx=10, pady=5)
         self.frame2.rowconfigure(0, weight=1)
-        self.frame2.columnconfigure(0, weight=4)
-        self.frame2.columnconfigure(1, weight=2)
+        self.frame2.columnconfigure(0, weight=1)
         #self.frame2.columnconfigure(2, weight=1)
 
 # --- LISTBOX MODULO - FRAME2
@@ -611,18 +660,9 @@ class TextSimilar(ttk.Frame):
         )
 
         self._list_modulo.grid(row=0, column=0, sticky='nsew', pady=10, padx=5)
-
-# --- FUNCIONES LIST MODULO A SCROLL
         self._list_modulo.bind("<Down>", lambda e: self._OnVsb_down(e))
         self._list_modulo.bind("<Up>", lambda e: self._OnVsb_up(e))
-
-# --- FRAME 3
-        # self.frame2 = ttk.Frame(        #     self.vtn_modulos,
-        # )
-        # self.frame2.pack(fill='both', side='right', expand=0, pady=5, padx=5)
-        # self.frame2.rowconfigure(0, weight=1)
-
-# --- LISTBOX CLAVE - FRAME 3
+        
         self._list_clave = tk.Listbox(self.frame2,
             font=_Font_Texto,
             foreground=default_scrText_fg,
@@ -631,10 +671,11 @@ class TextSimilar(ttk.Frame):
             exportselection=False,
             highlightthickness=hhtk,
             highlightcolor=default_hglcolor,
+            width=30
         )
         self._list_clave.grid(row=0, column=1, sticky='nsew', pady=10, padx=5)
 
-# --- LISTBOX SO - FRAME 2
+# --- LISTBOX SO - FRAME 4002
         self._list_SO = tk.Listbox(self.frame2,
             font=_Font_Texto,
             foreground=default_scrText_fg,
@@ -643,11 +684,11 @@ class TextSimilar(ttk.Frame):
             exportselection=False,
             highlightthickness=hhtk,
             highlightcolor=default_hglcolor,
-            width=10
+            width=15
         )
         self._list_SO.grid(row=0, column=2, sticky='nsew', pady=10, padx=5)
 
-# - CREAR SCROLL
+# - CREAR SCROLL400
         self.vsb_scroll = tk.Scrollbar(self.frame2,
             orient="vertical",
             command=self.yview
@@ -655,7 +696,7 @@ class TextSimilar(ttk.Frame):
 
         self.vsb_scroll.grid(row=0, column=3, sticky='ns', pady=10)
 
-# --- list asociados a los SCROLL
+# --- list asociados a los selfSCROLL
         self._list_modulo.configure(yscrollcommand=self.yscroll_modulo)
         self._list_clave.configure(yscrollcommand=self.yscroll_clave)
         self._list_SO.configure(yscrollcommand=self.yscroll_so)
@@ -685,9 +726,19 @@ class TextSimilar(ttk.Frame):
 # TODO --- Bloquear select listbox
         self._list_clave.bindtags((self._list_clave, app, "all"))
         self._list_SO.bindtags((self._list_clave, app, "all"))
+        
+        self.sizegride = ttk.Sizegrip(
+            self.vtn_modulos,
+        )
+        self.sizegride.bind('<Button-1>', self.resizable)
+        self.sizegride.grid(column=0, row=2, sticky='nsew')
 
 # --- FUNCIONES PARA SCROLLBAR
-
+    def resizable(self, e):
+        self.click = False
+        if self.click == False:
+            self.vtn_modulos.resizable(1,1)
+        
     def yscroll_modulo(self, *args):
         wyview = self._list_modulo.yview()
         if self._list_clave.yview() != wyview:
@@ -1058,8 +1109,6 @@ class Desviacion(ttk.Frame):
                 self.menu_Contextual.entryconfig("  Copiar", state="normal")
             else:
                 self.menu_Contextual.entryconfig("  Copiar", state="disabled")
-        if str(PST_DESV.widgetActive) == str(PST_EXP.EXP_scrExpandir):
-            self.menu_Contextual.entryconfig('  Buscar', state='disabled')
     
     def buscar(self, event):
         self.DESV_entry.focus()
@@ -1190,17 +1239,17 @@ class Desviacion(ttk.Frame):
 
     def llamada_colores(self):
         if modo_dark == 'False':
-            PST_DESV.DESV_scrCheck.colourText(    default_scrText_bg, default_colourCodeBg, default_colourCodeFg, default_colourNoteFg)
-            PST_DESV.DESV_scrBackup.colourText(    default_scrText_bg, default_colourCodeBg, default_colourCodeFg, default_colourNoteFg)
-            PST_DESV.DESV_scrEdit.colourText(    default_scrText_bg, default_colourCodeBg, default_colourCodeFg, default_colourNoteFg)
-            PST_DESV.DESV_scrRefresh.colourText(    default_scrText_bg, default_colourCodeBg, default_colourCodeFg, default_colourNoteFg)
-            PST_DESV.DESV_scrEvidencia.colourText(    default_scrText_bg, default_colourCodeBg, default_colourCodeFg, default_colourNoteFg)
+            PST_DESV.DESV_scrCheck.colourText(    default_scrText_bg, default_colourCodeBg, default_colourCodeFg, default_colourNoteBg, default_colourNoteFg, default_colourComentBg, default_colourComentFg, default_colourServerBg, default_colourServerFg, default_colourRequiredBg, default_colourRequiredFg)
+            PST_DESV.DESV_scrBackup.colourText(    default_scrText_bg, default_colourCodeBg, default_colourCodeFg, default_colourNoteBg,default_colourNoteFg, default_colourComentBg, default_colourComentFg, default_colourServerBg, default_colourServerFg, default_colourRequiredBg, default_colourRequiredFg)
+            PST_DESV.DESV_scrEdit.colourText(    default_scrText_bg, default_colourCodeBg, default_colourCodeFg, default_colourNoteBg, default_colourNoteFg, default_colourComentBg, default_colourComentFg, default_colourServerBg, default_colourServerFg, default_colourRequiredBg, default_colourRequiredFg)
+            PST_DESV.DESV_scrRefresh.colourText(    default_scrText_bg, default_colourCodeBg, default_colourCodeFg, default_colourNoteBg, default_colourNoteFg, default_colourComentBg, default_colourComentFg, default_colourServerBg, default_colourServerFg, default_colourRequiredBg, default_colourRequiredFg)
+            PST_DESV.DESV_scrEvidencia.colourText(    default_scrText_bg, default_colourCodeBg, default_colourCodeFg, default_colourNoteBg, default_colourNoteFg, default_colourComentBg, default_colourComentFg, default_colourServerBg, default_colourServerFg, default_colourRequiredBg, default_colourRequiredFg)
         elif modo_dark == 'True':
-            PST_DESV.DESV_scrCheck.colourText(    pers_scrText_bg, pers_scrText_bg, pers_colourCodeFg, pers_colourNoteFg)
-            PST_DESV.DESV_scrBackup.colourText(    pers_scrText_bg, pers_scrText_bg, pers_colourCodeFg, pers_colourNoteFg)
-            PST_DESV.DESV_scrEdit.colourText(    pers_scrText_bg, pers_scrText_bg, pers_colourCodeFg, pers_colourNoteFg)
-            PST_DESV.DESV_scrRefresh.colourText(    pers_scrText_bg, pers_scrText_bg, pers_colourCodeFg, pers_colourNoteFg)
-            PST_DESV.DESV_scrEvidencia.colourText(    pers_scrText_bg, pers_scrText_bg, pers_colourCodeFg, pers_colourNoteFg)
+            PST_DESV.DESV_scrCheck.colourText(    pers_scrText_bg, pers_scrText_bg, pers_colourCodeFg, pers_colourNoteBg, pers_colourNoteFg, pers_colourComentBg, pers_colourComentFg, pers_colourServerBg, pers_colourServerFg, pers_colourRequiredBg, pers_colourRequiredFg)
+            PST_DESV.DESV_scrBackup.colourText(    pers_scrText_bg, pers_scrText_bg, pers_colourCodeFg, pers_colourNoteBg, pers_colourNoteFg, pers_colourComentBg, pers_colourComentFg, pers_colourServerBg, pers_colourServerFg, pers_colourRequiredBg, pers_colourRequiredFg)
+            PST_DESV.DESV_scrEdit.colourText(    pers_scrText_bg, pers_scrText_bg, pers_colourCodeFg, pers_colourNoteBg, pers_colourNoteFg, pers_colourComentBg, pers_colourComentFg, pers_colourServerBg, pers_colourServerFg, pers_colourRequiredBg, pers_colourRequiredFg)
+            PST_DESV.DESV_scrRefresh.colourText(    pers_scrText_bg, pers_scrText_bg, pers_colourCodeFg, pers_colourNoteBg, pers_colourNoteFg, pers_colourComentBg, pers_colourComentFg, pers_colourServerBg, pers_colourServerFg, pers_colourRequiredBg, pers_colourRequiredFg)
+            PST_DESV.DESV_scrEvidencia.colourText(    pers_scrText_bg, pers_scrText_bg, pers_colourCodeFg, pers_colourNoteBg, pers_colourNoteFg, pers_colourComentBg, pers_colourComentFg, pers_colourServerBg, pers_colourServerFg, pers_colourRequiredBg, pers_colourRequiredFg)
 
     def newButtonModule(self, nameButton, pathScript, active):
         global createOn
@@ -1284,8 +1333,7 @@ class Desviacion(ttk.Frame):
         keyFound = [n for n in listKeys if valor_aBuscar.upper().strip() in n]
 
         moduleFound = self.solve(valor_aBuscar)
-        moduleFound = [
-            n for n in listModulo if moduleFound.strip().replace("\\", "/") in n]
+        moduleFound = [ n for n in listModulo if moduleFound.strip().replace("\\", "/") in n]
 
         self.DESV_btnFind.grid_forget()
         self.DESVfr1_btnLimpiar.grid(row=1, column=1, pady=5, padx=5, sticky='nsw')
@@ -1293,7 +1341,8 @@ class Desviacion(ttk.Frame):
 ## --- LIMPIAR ------------------------------------- ##
         self.cleanWidgets()
         self.enabled_Widgets()
-# --------- OBTENER MODULO POR CLAVE O MODULO -------------- ## //TODO "definir si buscar por clave o modulo"
+# --------- OBTENER MODULO POR CLAVE O MODULO -------------- #
+# TODO "definir si buscar por clave o modulo"
 # TODO --- SI NO EXISTE, MODULO O CLAVE
         if len(keyFound) == 0 and len(moduleFound) == 0:
             self.disabled_btn_expandir()
@@ -1374,7 +1423,7 @@ class Desviacion(ttk.Frame):
                                 dict_clave_modulo[md['modulo']
                                                   ] = md['clave'], md['SO']
                 titulo = 'LISTA DE MODULOS ENCONTRADOS, SEGUN SU CRITERIO DE BUSQUEDA, en {}'.format(        customer)
-                textsimilar = TextSimilar(        self, titulo, dict_clave_modulo)
+                textsimilar = TextSimilar(self, titulo, dict_clave_modulo)
                 return 'break'
 # TODO --- SI ES MODULO UNICO
         elif len(moduleFound) == 1 and len(keyFound) == 0:
@@ -1408,7 +1457,7 @@ class Desviacion(ttk.Frame):
                                 dict_clave_modulo[md['modulo']
                                                   ] = md['clave'], md['SO']
                 titulo = 'LISTA DE MODULOS ENCONTRADOS, SEGUN SU CRITERIO DE BUSQUEDA, en {}'.format(        customer)
-                textsimilar = TextSimilar(        self, titulo, dict_clave_modulo)
+                textsimilar = TextSimilar(self, titulo, dict_clave_modulo)
                 return 'break'
 # TODO --- SI EXISTE UN MODULO Y UNA CLAVE
         else:
@@ -1429,7 +1478,7 @@ class Desviacion(ttk.Frame):
                                 dict_clave_modulo[md['modulo']
                                                   ] = md['clave'], md['SO']
                 titulo = 'LISTA DE MODULOS ENCONTRADOS, SEGUN SU CRITERIO DE BUSQUEDA, en {}'.format(        customer)
-                textsimilar = TextSimilar(        self, titulo, dict_clave_modulo)
+                textsimilar = TextSimilar(self, titulo, dict_clave_modulo)
 
     def clear_busqueda(self, event):
         text_widget = event.widget
@@ -1868,9 +1917,6 @@ class Desviacion(ttk.Frame):
         self.DESV_btnScreamEvidencia.bind('<Motion>', partial(self.cambiar_icono, self.DESV_btnScreamEvidencia, icon_cap))
         self.DESV_btnCopyALL.bind('<Motion>', partial(self.cambiar_icono, self.DESV_btnCopyALL, icon_copy))
         self.DESV_btn1CopyALL.bind('<Motion>', partial(self.cambiar_icono, self.DESV_btn1CopyALL, icon_copy))
-
-    # def changeColorActiveToolTipRB(self):
-    #     print("EN CONSTRUNCION NO FOUND 404")
 
 class Aplicacion():
     WIDTH = 1360
@@ -2456,9 +2502,6 @@ class Aplicacion():
     def cerrar_vtn(self):
         self.vtn_acerca_de.destroy()
 
-    def cerrar_vtn_gls(self):
-        self.vtn_glosario.destroy()
-
     def _acerca_de(self):
         self.vtn_acerca_de = tk.Toplevel(self.root)
         self.vtn_acerca_de.config(background=default_bottom_app)
@@ -2514,7 +2557,7 @@ class Aplicacion():
         self.lbl5.bind("<Configure>", self.label_resize)
 
         self.lbl2 = ttk.Label(self.AcercaDe_txt_frame,
-            text='Versión:   2.5',
+            text='Versión:   3.0',
             anchor='w',
             font=(fuente_titulos, 13)
         )
@@ -2578,17 +2621,6 @@ class Aplicacion():
             highlightbackground=default_bottom_app
         )
 
-    def _cargar_modulo_glosario(self, *args):
-        with open(str(pathInclude).format('include_glosario.json'), encoding='utf-8') as g:
-            data = json.load(g)
-            listModulo = []
-            listClave = []
-            for md in data:
-                listModulo.append(md['modulo'])
-                listClave.append(md['clave'])
-        self._list_modulo.insert(tk.END, *listModulo)
-        self._list_clave.insert(tk.END, *listClave)
-
     def on_select(self, event):
         global listbox_list
         widget = event.widget
@@ -2598,130 +2630,6 @@ class Aplicacion():
                 listbox.selection_clear(0, tk.END)
                 for index in items:
                     listbox.selection_set(int(index))
-
-    def _glosario(self):
-        self.vtn_glosario = tk.Toplevel(self.root)
-        self.vtn_glosario.config(background=default_bottom_app)
-        window_width = 1000
-        window_height = 500
-        screen_width = app.root.winfo_x()
-        screen_height = app.root.winfo_y()
-        position_top = int(screen_height+70)
-        position_right = int(screen_width+150)
-        self.vtn_glosario.geometry(f'{window_width}x{window_height}+{position_right}+{position_top}')
-        self.vtn_glosario.tk.call('wm', 'iconphoto', self.vtn_glosario._w, tk.PhotoImage(file=str(pathIcon).format('acercaDe.png')))
-        self.vtn_glosario.transient(self.root)
-        self.vtn_glosario.resizable(False, False)
-        self.vtn_glosario.title("Ayuda")
-
-        self.close_icon_gls = ImageTk.PhotoImage(Image.open(pathIcon.format(r"close1.png")).resize((80, 60)))
-
-        self.fr1_gls = ttk.Frame(self.vtn_glosario,
-            height=20,
-        )
-        self.fr1_gls.pack(fill='both', side='top', expand=0)
-
-        # ? FONt AYUDA
-        self.titulo = ttk.Label(self.fr1_gls,
-            text='PALABRAS CLAVES DESVIACIONES',
-            font=(fuente_titulos, 20, weight_DF),
-        )
-        self.titulo.pack(expand=1, pady=10)
-
-        self.fr2_gls = ttk.Frame(self.vtn_glosario,
-        )
-        self.fr2_gls.pack(fill='both', side=tk.TOP, expand=1)
-
-        self.frame2 = ttk.Frame(self.fr2_gls,
-        )
-        self.frame2.pack(fill='both', side=tk.LEFT, expand=1, pady=10)
-
-        self.frame2.rowconfigure(1, weight=1)
-
-        # ? FONt AYUDA
-        self.titulo_modulo = ttk.Label(self.frame2,
-            text='MODULO',
-            foreground=default_color_titulos,
-            font=font.Font(family=fuente_titulos, size=16, weight='bold'),
-            anchor='center',
-            width=45
-        )
-        self.titulo_modulo.grid(row=0, column=0, sticky='nsew', pady=10, padx=5)
-
-        self.ListModulo_yScroll = tk.Scrollbar(self.frame2, orient=tk.VERTICAL)
-
-        # LISTBOX MODULO
-        self._list_modulo = tk.Listbox(self.frame2,
-            font=_Font_Texto,
-            foreground=default_scrText_fg,
-            selectbackground=default_select_bg,
-            selectforeground=default_select_fg,
-            exportselection=False,
-            highlightthickness=hhtk,
-            highlightcolor=default_hglcolor,
-            yscrollcommand=self.ListModulo_yScroll.set,
-        )
-        self._list_modulo.grid(row=1, column=0, sticky='nsew', pady=10, padx=(10, 0))
-        listbox_list.append(self._list_modulo)
-
-        self.frame2 = ttk.Frame(self.fr2_gls,
-            width=30
-        )
-        self.frame2.pack(fill='both', side='right', expand=1, pady=10, padx=10)
-        self.frame2.columnconfigure(0, weight=1)
-        self.frame2.rowconfigure(1, weight=1)
-
-        self.titulo_clave = ttk.Label(self.frame2,
-            text='CLAVE',
-            foreground=default_color_titulos,
-            font=font.Font(family=fuente_titulos, size=16, weight='bold'),
-            anchor='center'
-        )
-        self.titulo_clave.grid(row=0, column=0, sticky='nsew', pady=10, padx=5, columnspan=2)
-
-        self.ListClave_yScroll = tk.Scrollbar(self.frame2, orient=tk.VERTICAL)
-
-        # LISTBOX CLAVE
-        self._list_clave = tk.Listbox(self.frame2,
-            font=_Font_Texto,
-            foreground=default_scrText_fg,
-            selectbackground=default_select_bg,
-            selectforeground=default_select_fg,
-            exportselection=False,
-            highlightthickness=hhtk,
-            highlightcolor=default_hglcolor,
-            yscrollcommand=self.ListClave_yScroll.set,
-        )
-        self._list_clave.grid(row=1, column=0, sticky='nsew', pady=10,)
-
-        self.fr3_gls = ttk.Frame(self.vtn_glosario,
-            height=30
-        )
-        self.fr3_gls.pack(fill='both', side=tk.BOTTOM, expand=0, padx=10)
-
-        self.boton_gls = tk.Button(self.fr3_gls,
-            text='Close',
-            image=self.close_icon_gls,
-            command=self.cerrar_vtn_gls
-        )
-        self.boton_gls.pack(side=tk.RIGHT, padx=10, pady=10)
-        self.boton_gls.config(background=default_bottom_app,
-            activebackground=default_bottom_app,
-            borderwidth=0,
-            highlightbackground=default_bottom_app
-        )
-
-        listbox_list.append(self._list_clave)
-
-        self.ListClave_yScroll.grid(row=1, column=1, pady=10, sticky='nse')
-        self.ListModulo_yScroll.grid(row=1, column=1, pady=10, sticky='nse')
-
-        self._list_modulo.bind('<<ListboxSelect>>', self.on_select)
-        self._list_clave.bind('<<ListboxSelect>>', self.on_select)
-        # self._list_modulo.bind("<Button-3>", self.displayMenuClickRight_GLS)
-
-        self._cargar_modulo_glosario()
-        self._menu_clickDerecho_GLS()
 
     def widgets_APP(self):
 
@@ -3018,12 +2926,6 @@ class Aplicacion():
             activebackground=default_select_bg,
             activeforeground=default_select_fg,
         )
-        # self.helpMenu.add_command(label="  Ayuda",
-        #     image=self.iconoHelp,
-        #     compound=tk.LEFT,
-        #     command=self._glosario
-        # )
-        #self.helpMenu.add_separator()
         self.helpMenu.add_command(label="  Acerca de...",
             image=self.iconoAbout,
             compound=tk.LEFT,
@@ -3359,7 +3261,7 @@ class Aplicacion():
                                  )
 
     def expandirModeDefault(self):
-        PST_EXP.EXP_scrExpandir.colourText(default_scrText_bg, default_colourCodeBg, default_colourCodeFg, default_colourNoteFg)
+        PST_EXP.EXP_scrExpandir.colourText(default_scrText_bg, default_colourCodeBg, default_colourCodeFg, default_colourNoteBg, default_colourNoteFg, default_colourComentBg, default_colourComentFg, default_colourServerBg, default_colourServerFg, default_colourRequiredBg, default_colourRequiredFg)
         PST_EXP.vtn_expandir.config(background=default_bottom_app,
         )
         PST_EXP.EXP_btnNext.config(background=default_bottom_app,
@@ -3377,7 +3279,7 @@ class Aplicacion():
         )
 
     def expandirModeDark(self):
-        PST_EXP.EXP_scrExpandir.colourText(pers_scrText_bg, pers_scrText_bg, pers_colourCodeFg, pers_colourNoteFg)
+        PST_EXP.EXP_scrExpandir.colourText(pers_scrText_bg, pers_scrText_bg, pers_colourCodeFg, pers_colourNoteBg, pers_colourNoteFg, pers_colourComentBg, pers_colourComentFg, pers_colourServerBg, pers_colourServerFg, pers_colourRequiredBg, pers_colourRequiredFg)
         PST_EXP.vtn_expandir.config(background=pers_bottom_app,
         )
         PST_EXP.EXP_btnNext.config(background=pers_bottom_app,

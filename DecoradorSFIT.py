@@ -1,4 +1,3 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
 # Copyright (c) Jose Alvaro Cedeño 2022
 # For license see LICENSE
@@ -69,7 +68,7 @@ def decorar_csv():
         except UnboundLocalError:
             print("")
             print("\033[0;31;43m"+"No existen WARNING or ERROR, en el CSV : [ {} ]".format(hostname)+"\033[0m")
-            os.remove(file_result)
+            #os.remove(file_result)
     else:
         print("")
         print("\033[1;31m"+"\nError, no as selecionado ningun archivo CSV\n"+"\033[0m")
